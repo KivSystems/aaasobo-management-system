@@ -50,7 +50,7 @@ export function createDatesBetween(start: Date, end: Date): Date[] {
   }
   return dates;
 }
-const getDayNumber = (day: Day): number => {
+export const getDayNumber = (day: Day): number => {
   return days.indexOf(day);
 };
 
@@ -73,4 +73,16 @@ export function calculateFirstDate(from: Date, day: Day, time: string): Date {
 
 export const getMonthNumber = (month: Month): number => {
   return months.indexOf(month);
+};
+
+export const formatTime = (date: Date) => {
+  // TODO: The local time zone should be used. 
+  // const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timeZone = "Asia/Tokyo";
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone,
+  }).format(date);
 };

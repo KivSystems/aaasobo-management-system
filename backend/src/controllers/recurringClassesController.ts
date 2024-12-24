@@ -4,6 +4,7 @@ import {
   deleteRecurringClass,
   getRecurringClassByRecurringClassId,
   getRecurringClassesBySubscriptionId,
+  getValidRecurringClasses,
   getValidRecurringClassesByInstructorId,
   terminateRecurringClass,
 } from "../services/recurringClassesService";
@@ -13,6 +14,8 @@ import {
   createDatesBetween,
   calculateFirstDate,
   JAPAN_TIME_DIFF,
+  formatTime,
+  getDayNumber,
 } from "../helper/dateUtils";
 import { prisma } from "../../prisma/prismaClient";
 
@@ -145,6 +148,7 @@ export const updateRecurringClassesController = async (
 
   // If classStartDate is shorter than today, it shouldn't be executed.
   // This validation is commented out as of now.
+  // TODO: Japan time should be converted to local time.
   const today = new Date();
   const jpnToday = new Date(today.getTime() + JAPAN_TIME_DIFF * 60 * 60 * 1000);
   // if (new Date(classStartDate) <= jpnToday) {
@@ -153,6 +157,23 @@ export const updateRecurringClassesController = async (
 
   try {
     const updatedRecurringClasses = await prisma.$transaction(async (tx) => {
+      // If a recurring class is already taken, it shouldn't be updated.
+      const allValidRecurringClasses = await getValidRecurringClasses(
+        tx,
+        today,
+      );
+      allValidRecurringClasses.find((recurringClass) => {
+        const recurringClassDay = recurringClass.startAt?.getDay();
+        const recurringClassTime = formatTime(recurringClass.startAt as Date);
+        if (
+          recurringClass.instructorId === instructorId &&
+          recurringClassDay === getDayNumber(day) &&
+          recurringClassTime === time
+        ) {
+          throw new Error("Recurring class is already taken");
+        }
+      });
+
       // GET the current recurring class by recurring class id
       const recurringClass = await getRecurringClassByRecurringClassId(
         tx,
