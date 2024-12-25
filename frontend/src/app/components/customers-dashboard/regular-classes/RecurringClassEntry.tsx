@@ -163,7 +163,13 @@ function RecurringClassEntry({
           name="instructors"
           value={instructorId || ""}
           onChange={(e) => {
-            setState({ ...state, instructorId: parseInt(e.target.value) });
+            setState({
+              ...state,
+              instructorId: parseInt(e.target.value),
+              day: "",
+              time: "",
+            });
+            setTimes([]);
           }}
         >
           <option key="" value="" hidden></option>
