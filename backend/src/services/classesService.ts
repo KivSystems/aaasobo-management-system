@@ -448,3 +448,21 @@ export const checkDoubleBooking = async (
     throw new Error("Failed to check class booking.");
   }
 };
+
+// Fetch valid classes by instructor id.
+export const getValidClassesByInstructorId = async (
+  tx: Prisma.TransactionClient,
+  instructorId: number,
+  date: Date,
+) => {
+  try {
+    const classes = await tx.class.findMany({
+      where: { instructorId, dateTime: { gte: date } },
+    });
+
+    return classes;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch classes.");
+  }
+};

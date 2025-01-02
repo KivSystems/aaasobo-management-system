@@ -18,6 +18,8 @@ import {
   getDayNumber,
 } from "../helper/dateUtils";
 import { prisma } from "../../prisma/prismaClient";
+import { getValidInstructorUnavailabilities } from "../services/instructorsUnavailabilitiesService";
+import { getValidClassesByInstructorId } from "../services/classesService";
 
 // POST a recurring class
 export const addRecurringClassController = async (
@@ -247,9 +249,37 @@ export const updateRecurringClassesController = async (
       // Condition3
       if (condition3) {
         // Generate recurring dates until the end of the next two months.
-        const until = getFirstDateInMonths(firstClassDate, 2);
+        const until = getFirstDateInMonths(firstClassDate, 3);
         dateTimes = createDatesBetween(firstClassDate, until);
       }
+
+      // Exclude instructor unavailability from the dateTimes.
+      const originalDatesLength = dateTimes.length;
+      const instructorUnavailabilities =
+        await getValidInstructorUnavailabilities(tx, instructorId, today);
+      dateTimes = dateTimes.filter(
+        (dateTime) =>
+          !instructorUnavailabilities.some(
+            (unavailability) =>
+              unavailability.dateTime.getTime() === dateTime.getTime(),
+          ),
+      );
+
+      // Exclude duplicated classes.
+      const bookedClasses = await getValidClassesByInstructorId(
+        tx,
+        instructorId,
+        today,
+      );
+      dateTimes = dateTimes.filter(
+        (dateTime) =>
+          !bookedClasses.some(
+            (bookedClass) =>
+              bookedClass.dateTime.getTime() === dateTime.getTime(),
+          ),
+      );
+
+      const totalNonBookableClasses = originalDatesLength - dateTimes.length;
 
       // Add a new recurring class
       return await addRecurringClass(
