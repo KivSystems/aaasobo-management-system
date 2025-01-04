@@ -92,6 +92,14 @@ cd frontend
 npm install
 ```
 
+#### (Optional) .env
+
+Currently, the frontend does not require any environment variables. However, if you want to run the backend on a different port, you can create a `.env` file in the `frontend` directory with the following content:
+
+```
+NEXT_PUBLIC_BACKEND_ORIGIN=http://localhost:4001
+```
+
 #### Start Next.js
 
 ```sh
