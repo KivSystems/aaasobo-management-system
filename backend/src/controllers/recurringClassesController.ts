@@ -19,7 +19,10 @@ import {
 } from "../helper/dateUtils";
 import { prisma } from "../../prisma/prismaClient";
 import { getValidInstructorUnavailabilities } from "../services/instructorsUnavailabilitiesService";
-import { getValidClassesByInstructorId } from "../services/classesService";
+import {
+  createCanceledClasses,
+  getValidClassesByInstructorId,
+} from "../services/classesService";
 
 // POST a recurring class
 export const addRecurringClassController = async (
@@ -254,35 +257,40 @@ export const updateRecurringClassesController = async (
       }
 
       // Exclude instructor unavailability from the dateTimes.
-      const originalDatesLength = dateTimes.length;
       const instructorUnavailabilities =
         await getValidInstructorUnavailabilities(tx, instructorId, today);
+      const instructorUnavailableDates = dateTimes.filter((dateTime) =>
+        instructorUnavailabilities.some(
+          (unavailability) =>
+            unavailability.dateTime.getTime() === dateTime.getTime(),
+        ),
+      );
       dateTimes = dateTimes.filter(
-        (dateTime) =>
-          !instructorUnavailabilities.some(
-            (unavailability) =>
-              unavailability.dateTime.getTime() === dateTime.getTime(),
-          ),
+        (dateTime) => !instructorUnavailableDates.includes(dateTime),
       );
 
       // Exclude duplicated classes.
-      const bookedClasses = await getValidClassesByInstructorId(
+      const classes = await getValidClassesByInstructorId(
         tx,
         instructorId,
         today,
       );
+      const duplicatedClassesDates = dateTimes.filter((dateTimes) =>
+        classes.some(
+          (Class) => Class.dateTime.getTime() === dateTimes.getTime(),
+        ),
+      );
       dateTimes = dateTimes.filter(
-        (dateTime) =>
-          !bookedClasses.some(
-            (bookedClass) =>
-              bookedClass.dateTime.getTime() === dateTime.getTime(),
-          ),
+        (dateTime) => !duplicatedClassesDates.includes(dateTime),
       );
 
-      const totalNonBookableClasses = originalDatesLength - dateTimes.length;
+      const unbookableDateTimes: Date[] = [
+        ...instructorUnavailableDates,
+        ...duplicatedClassesDates,
+      ];
 
       // Add a new recurring class
-      return await addRecurringClass(
+      const updatedRecurringClass = await addRecurringClass(
         tx,
         instructorId,
         customerId,
@@ -292,6 +300,19 @@ export const updateRecurringClassesController = async (
         dateTimes,
         newEndAt ?? null,
       );
+
+      // Create the classes as canceled by instructor.
+      const canceledClasses = await createCanceledClasses({
+        tx,
+        dateTimes: unbookableDateTimes,
+        instructorId,
+        customerId,
+        subscriptionId,
+        recurringClassId: updatedRecurringClass.id,
+        childrenIds,
+      });
+
+      return { updatedRecurringClass, canceledClasses };
     });
 
     res.status(200).json({
