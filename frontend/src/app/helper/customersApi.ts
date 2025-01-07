@@ -1,7 +1,7 @@
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
-export const getCustomerById = async (customerId: string) => {
+export const getCustomerById = async (customerId: number) => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/customer`,
