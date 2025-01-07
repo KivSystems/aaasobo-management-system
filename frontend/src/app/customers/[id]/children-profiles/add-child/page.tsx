@@ -5,7 +5,10 @@ import styles from "./page.module.scss";
 import Link from "next/link";
 
 function Page({ params }: { params: { id: string } }) {
-  const customerId = params.id;
+  const customerId = parseInt(params.id);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
 
   return (
     <>

@@ -19,7 +19,7 @@ function EditChildForm({
   child,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   child: Child;
   isAdminAuthenticated?: boolean;
 }) {

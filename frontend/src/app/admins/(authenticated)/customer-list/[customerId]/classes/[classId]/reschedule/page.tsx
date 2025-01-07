@@ -5,7 +5,10 @@ import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import RescheduleClass from "@/app/components/customers-dashboard/classes/RescheduleClass";
 
 function Page({ params }: { params: { customerId: string; classId: string } }) {
-  const customerId = params.customerId;
+  const customerId = parseInt(params.customerId);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
   const classId = params.classId;
 
   // Check the authentication of the admin.

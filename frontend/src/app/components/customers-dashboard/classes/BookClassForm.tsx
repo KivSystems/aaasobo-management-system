@@ -21,7 +21,7 @@ function BookClassForm({
   classToRebook,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   instructors: Instructor[];
   children: Child[];
   classToRebook: ClassType | undefined;
@@ -112,7 +112,7 @@ function BookClassForm({
 
       // Check if there is already a booked class for this customer at the same time
       const classDoubleBookingResult = await checkDoubleBooking(
-        parseInt(customerId),
+        customerId,
         selectedDateTime,
       );
 
@@ -131,7 +131,7 @@ function BookClassForm({
         classId: classToRebook.id,
         dateTime: selectedDateTime,
         instructorId: selectedInstructorId,
-        customerId: parseInt(customerId),
+        customerId,
         status: "booked",
         childrenIds: selectedChildrenIdsArray,
         recurringClassId: classToRebook.recurringClassId,

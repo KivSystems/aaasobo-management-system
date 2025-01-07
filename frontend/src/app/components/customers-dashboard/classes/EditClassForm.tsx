@@ -14,7 +14,7 @@ function EditClassForm({
   editedClass,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   instructors: Instructor[];
   children: Child[];
   editedClass: ClassType;

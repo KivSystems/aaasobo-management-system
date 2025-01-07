@@ -63,9 +63,7 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
     if (!customerId) return;
 
     try {
-      const classes: ClassType[] = await getClassesByCustomerId(
-        customerId.toString(),
-      );
+      const classes: ClassType[] = await getClassesByCustomerId(customerId);
       setClasses(classes);
     } catch (error) {
       console.error("Failed to fetch classes:", error);
@@ -287,7 +285,7 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
           {customerId ? (
             <ClassDetail
               classDetail={classDetail}
-              customerId={customerId.toString()}
+              customerId={customerId}
               timeZone="Asia/Tokyo"
               handleCancel={handleCancel}
               isAdminAuthenticated

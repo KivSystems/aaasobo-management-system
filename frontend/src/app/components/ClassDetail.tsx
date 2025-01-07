@@ -31,7 +31,7 @@ const ClassDetail = ({
   isAdminAuthenticated, // Necessary when implimenting the Rescheduling functionality
   handleModalClose,
 }: {
-  customerId: string;
+  customerId: number;
   classDetail: ClassType | null;
   timeZone: string;
   handleCancel: (classId: number, classDateTime: string) => void;

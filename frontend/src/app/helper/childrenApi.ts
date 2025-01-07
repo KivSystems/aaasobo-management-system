@@ -2,7 +2,7 @@ const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
 // GET children data by customer id
-export const getChildrenByCustomerId = async (customerId: string) => {
+export const getChildrenByCustomerId = async (customerId: number) => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/children?customerId=${customerId}`,
@@ -19,7 +19,7 @@ export const getChildrenByCustomerId = async (customerId: string) => {
 };
 
 // GET a child data by the child's id
-export const getChildById = async (id: string) => {
+export const getChildById = async (id: number) => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/children/${id}`);
     if (!response.ok) {
@@ -38,7 +38,7 @@ export const addChild = async (
   childName: string,
   childBirthdate: string,
   childPersonalInfo: string,
-  customerId: string,
+  customerId: number,
 ) => {
   // Define the data to be sent to the server side.
   const childrenURL = `${BACKEND_ORIGIN}/children`;
@@ -47,7 +47,7 @@ export const addChild = async (
     name: childName,
     birthdate: childBirthdate,
     personalInfo: childPersonalInfo,
-    customerId: Number(customerId),
+    customerId,
   });
 
   const response = await fetch(childrenURL, {
@@ -69,16 +69,16 @@ export const addChild = async (
 export const editChild = async (
   childId: number,
   childName: string,
-  childBirthedate: string,
+  childBirthdate: string,
   childInfo: string,
-  customerId: string,
+  customerId: number,
 ) => {
   // Define the data to be sent to the server side.
   const childrenURL = `${BACKEND_ORIGIN}/children/${childId}`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
     name: childName,
-    birthdate: childBirthedate,
+    birthdate: childBirthdate,
     personalInfo: childInfo,
     customerId: Number(customerId),
   });

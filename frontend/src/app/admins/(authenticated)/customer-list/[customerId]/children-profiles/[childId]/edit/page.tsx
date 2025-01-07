@@ -5,8 +5,14 @@ import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import EditChildProfile from "@/app/components/customers-dashboard/children-profiles/EditChildProfile";
 
 function Page({ params }: { params: { customerId: string; childId: string } }) {
-  const customerId = params.customerId;
-  const childId = params.childId;
+  const customerId = parseInt(params.customerId);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
+  const childId = parseInt(params.childId);
+  if (isNaN(childId)) {
+    throw new Error("Invalid childId");
+  }
 
   // Check the authentication of the admin.
   const { isAuthenticated } = useContext(AuthContext);

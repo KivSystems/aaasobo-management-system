@@ -4,7 +4,10 @@ import ChildrenProfiles from "@/app/components/customers-dashboard/children-prof
 import styles from "./page.module.scss";
 
 function Page({ params }: { params: { id: string } }) {
-  const customerId = params.id;
+  const customerId = parseInt(params.id);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
 
   return (
     <>
