@@ -15,9 +15,14 @@ function Page({ params }: { params: { id: string } }) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const message = searchParams.get("message");
-    if (message) {
-      toast.success(message);
+    const successMessage = searchParams.get("successMessage");
+    if (successMessage) {
+      toast.success(successMessage);
+    }
+
+    const warningMessage = searchParams.get("warningMessage");
+    if (warningMessage) {
+      toast.warning(warningMessage);
     }
 
     // clean up the URL

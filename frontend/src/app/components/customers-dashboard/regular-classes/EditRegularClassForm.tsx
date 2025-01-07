@@ -142,11 +142,17 @@ function EditRegularClassForm({
       );
 
       // Set the URL depending on authenticated admin or not.
-      const targetURL = isAdminAuthenticated
-        ? `/admins/customer-list/${customerId}?message=${encodeURIComponent(data.message)}`
-        : `/customers/${customerId}/regular-classes?message=${encodeURIComponent(data.message)}`;
-
-      router.push(targetURL);
+      if (data.messages[1]) {
+        const targetURL = isAdminAuthenticated
+          ? `/admins/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`
+          : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`;
+        router.push(targetURL);
+      } else {
+        const targetURL = isAdminAuthenticated
+          ? `/admins/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}`
+          : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}`;
+        router.push(targetURL);
+      }
     } catch (error) {
       console.error("Failed to edit a new recurring class data:", error);
     }

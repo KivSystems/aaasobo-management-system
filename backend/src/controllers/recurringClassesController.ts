@@ -315,8 +315,17 @@ export const updateRecurringClassesController = async (
       return { updatedRecurringClass, canceledClasses };
     });
 
+    const messages = ["Regular Class is updated successfully"];
+
+    // Check if there are any unbookable classes
+    if (updatedRecurringClasses.canceledClasses.length > 0) {
+      messages.push(
+        "There are classes that cannot be booked. Please book alternative classes instead.",
+      );
+    }
+
     res.status(200).json({
-      message: "Regular Class is updated successfully",
+      messages,
       updatedRecurringClasses,
     });
   } catch (error) {
