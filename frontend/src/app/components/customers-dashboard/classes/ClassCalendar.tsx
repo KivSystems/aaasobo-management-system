@@ -20,7 +20,7 @@ function ClassCalendar({
   customerId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const [classesForCalendar, setClassesForCalendar] = useState<EventType[]>([]);
@@ -40,7 +40,7 @@ function ClassCalendar({
   const fetchData = useCallback(async () => {
     try {
       const classesData: ClassForCalendar[] = await fetchClassesForCalendar(
-        parseInt(customerId),
+        customerId,
         "customer",
       );
 
@@ -234,7 +234,7 @@ function ClassCalendar({
             events={classesForCalendar}
             // TODO: Fetch holidays from the backend
             // holidays={["2024-07-29", "2024-07-30", "2024-07-31"]}
-            customerId={parseInt(customerId)}
+            customerId={customerId}
             isAdminAuthenticated={isAdminAuthenticated}
             fetchData={fetchData}
           />

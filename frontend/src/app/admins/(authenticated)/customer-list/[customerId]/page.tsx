@@ -11,7 +11,10 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/Loading";
 
 function Page({ params }: { params: { customerId: string } }) {
-  const customerId = params.customerId;
+  const customerId = parseInt(params.customerId);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
   const breadcrumb = [
     "Customer List",
     `/admins/customer-list`,

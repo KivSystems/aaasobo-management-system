@@ -19,7 +19,7 @@ export const getCustomerById = async (customerId: number) => {
 
 // PATCH customer data
 export const editCustomer = async (
-  customerId: string,
+  customerId: number,
   customerName: string,
   customerEmail: string,
   customerPrefecture: string,
