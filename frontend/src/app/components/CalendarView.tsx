@@ -76,11 +76,12 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
 
   // Formats and displays the content of an event on the calendar view page
   const renderEventContent = (eventInfo: EventContentArg) => {
-    const startDate = new Date(
-      new Date(eventInfo.event.startStr).toLocaleString("en-US", {
-        timeZone: instructorId ? "Asia/Manila" : "Asia/Tokyo",
-      }),
-    );
+    // const startDate = new Date(
+    //   new Date(eventInfo.event.startStr).toLocaleString("en-US", {
+    //     timeZone: instructorId ? "Asia/Manila" : "Asia/Tokyo",
+    //   }),
+    // );
+    const startDate = new Date(eventInfo.event.startStr);
     const hours = startDate.getHours();
     const minutes = String(startDate.getMinutes()).padStart(2, "0");
     const formattedStartTime = `${hours}:${minutes}`;
