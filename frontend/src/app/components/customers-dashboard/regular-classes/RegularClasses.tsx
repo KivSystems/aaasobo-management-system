@@ -13,7 +13,7 @@ function RegularClasses({
   customerId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const [subscriptionsData, setSubscriptionsData] =

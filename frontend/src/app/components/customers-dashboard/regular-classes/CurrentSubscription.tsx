@@ -11,7 +11,7 @@ function CurrentSubscription({
 }: {
   subscriptionsData?: Subscriptions | null;
   isAdminAuthenticated?: boolean | null;
-  customerId: string;
+  customerId: number;
 }) {
   return (
     <div className={styles.outsideContainer}>

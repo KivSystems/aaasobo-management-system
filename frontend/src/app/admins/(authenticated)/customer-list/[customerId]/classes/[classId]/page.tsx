@@ -9,7 +9,10 @@ const ClassDetailPage = ({
 }: {
   params: { customerId: string; classId: string };
 }) => {
-  const customerId = params.customerId;
+  const customerId = parseInt(params.customerId);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
   const classId = parseInt(params.classId);
 
   // Check the authentication of the admin.

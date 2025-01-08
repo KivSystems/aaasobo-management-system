@@ -14,7 +14,7 @@ function AddSubscription({
   onClose,
   updateSubscription,
 }: {
-  customerId: string;
+  customerId: number;
   isOpen: boolean;
   onClose: () => void;
   updateSubscription: () => void;

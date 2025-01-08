@@ -2,7 +2,7 @@ const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
 // GET subscriptions by a customer id
-export const getSubscriptionsByCustomerId = async (customerId: string) => {
+export const getSubscriptionsByCustomerId = async (customerId: number) => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/subscriptions`,
@@ -21,7 +21,7 @@ export const getSubscriptionsByCustomerId = async (customerId: string) => {
 
 // Register a subscription
 export const registerSubscription = async (
-  customerId: string,
+  customerId: number,
   subscriptionData: RegisterSubscription,
 ) => {
   try {
