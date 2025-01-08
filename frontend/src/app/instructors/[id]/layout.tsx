@@ -26,7 +26,10 @@ export default function Layout({
 }) {
   const [instructorName, setInstructorName] = useState<string | null>(null);
   const router = useRouter();
-  const instructorId = params.id;
+  const instructorId = parseInt(params.id);
+  if (isNaN(instructorId)) {
+    throw new Error("Invalid instructorId");
+  }
 
   // Check the authentication of the instructor.
   // const { isLoading } = InstructorAuthentication(instructorId);
@@ -52,7 +55,7 @@ export default function Layout({
   // TODO: Get the instructor name from the session?
   useEffect(() => {
     const fetchInstructor = async () => {
-      const response = await getInstructor(parseInt(instructorId));
+      const response = await getInstructor(instructorId);
       if ("instructor" in response) {
         setInstructorName(response.instructor.nickname);
       } else {

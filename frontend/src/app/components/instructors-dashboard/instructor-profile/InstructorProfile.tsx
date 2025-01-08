@@ -17,15 +17,15 @@ function InstructorProfile({
   instructorId,
   isAdminAuthenticated,
 }: {
-  instructorId: string;
+  instructorId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const [instructor, setInstructor] = useState<Instructor | null>(null);
 
   useEffect(() => {
-    const fetchInstructorById = async (instructorId: string) => {
+    const fetchInstructorById = async (instructorId: number) => {
       try {
-        const id = parseInt(instructorId);
+        const id = instructorId;
         const response = await getInstructor(id);
         if ("message" in response) {
           alert(response.message);
