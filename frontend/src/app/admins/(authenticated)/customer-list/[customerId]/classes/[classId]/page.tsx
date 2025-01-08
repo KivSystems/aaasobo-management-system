@@ -14,6 +14,9 @@ const ClassDetailPage = ({
     throw new Error("Invalid customerId");
   }
   const classId = parseInt(params.classId);
+  if (isNaN(classId)) {
+    throw new Error("Invalid classId");
+  }
 
   // Check the authentication of the admin.
   const { isAuthenticated } = useContext(AuthContext);

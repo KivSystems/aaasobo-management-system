@@ -75,7 +75,7 @@ export const bookClass = async (classData: {
 };
 
 // GET a class by id
-export const getClassById = async (classId: string) => {
+export const getClassById = async (classId: number) => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/classes/class/${classId}`);
     if (!response.ok) {

@@ -9,7 +9,10 @@ function Page({ params }: { params: { customerId: string; classId: string } }) {
   if (isNaN(customerId)) {
     throw new Error("Invalid customerId");
   }
-  const classId = params.classId;
+  const classId = parseInt(params.classId);
+  if (isNaN(classId)) {
+    throw new Error("Invalid classId");
+  }
 
   // Check the authentication of the admin.
   const { isAuthenticated } = useContext(AuthContext);

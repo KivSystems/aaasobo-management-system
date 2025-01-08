@@ -7,7 +7,10 @@ function Page({ params }: { params: { id: string; classId: string } }) {
   if (isNaN(customerId)) {
     throw new Error("Invalid customerId");
   }
-  const classId = params.classId;
+  const classId = parseInt(params.classId);
+  if (isNaN(classId)) {
+    throw new Error("Invalid classId");
+  }
 
   return <RescheduleClass customerId={customerId} classId={classId} />;
 }
