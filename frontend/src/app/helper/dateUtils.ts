@@ -239,3 +239,21 @@ export const getDay = (dateString: string, timeZone: string): number => {
   });
   return parseInt(formatter.format(date), 10);
 };
+
+// Formats a Date object into a short English-style string (e.g., "Jun 29, 2024") for the "en-US" locale.
+export const formatEnglishShortDate = (date: Date) => {
+  const day = date.getDate();
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(new Date(date.setDate(day)));
+};
+
+// Formats a Date object into a 24-hour time string without leading zeros (e.g., "9:00").
+export const formatTime24Hour = (date: Date): string => {
+  const hours = date.getHours(); // Get the hour (0-23)
+  const minutes = date.getMinutes(); // Get the minutes (0-59)
+
+  return `${hours}:${minutes.toString().padStart(2, "0")}`;
+};

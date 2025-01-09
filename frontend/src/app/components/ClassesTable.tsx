@@ -3,6 +3,8 @@ import {
   formatTime,
   isPastPreviousDayDeadline,
   isPastClassDateTime,
+  formatEnglishShortDate,
+  formatTime24Hour,
 } from "../helper/dateUtils";
 import ActionButton from "./ActionButton";
 import styles from "./ClassesTable.module.scss";
@@ -74,9 +76,10 @@ const ClassesTable = ({
             </thead>
             <tbody className={styles.classesTable__body}>
               {bookedClasses.map((eachClass) => {
-                const dateTime = new Date(eachClass.dateTime);
-                const date = formatDate(dateTime, timeZone);
-                const japanTime = formatTime(dateTime, timeZone);
+                const classDateTime = new Date(eachClass.dateTime);
+                const classDate = formatEnglishShortDate(classDateTime);
+                const classTime = formatTime24Hour(classDateTime);
+
                 const pastPrevDayDeadline = isPastPreviousDayDeadline(
                   eachClass.dateTime,
                   "Asia/Tokyo",
@@ -122,7 +125,9 @@ const ClassesTable = ({
 
                     <td className={styles.classesTable__td}>
                       <div className={styles.classesTable__dateContainer}>
-                        <div className={styles.classesTable__date}>{date}</div>
+                        <div className={styles.classesTable__date}>
+                          {classDate}
+                        </div>
 
                         {pastPrevDayDeadline && !pastClassTimeDeadline ? (
                           <InformationCircleIcon
@@ -134,7 +139,7 @@ const ClassesTable = ({
 
                     <td className={styles.classesTable__td}>
                       <div className={styles.classesTable__time}>
-                        <p>{japanTime}</p>
+                        <p>{classTime}</p>
                       </div>
                     </td>
 
@@ -159,31 +164,6 @@ const ClassesTable = ({
                         .map((child) => child.name)
                         .join(", ")}
                     </td>
-
-                    {/* <td className={styles.classesTable__td}> */}
-                    {/* condition 1: before the day of the class => with 'Reschedule' btn*/}
-                    {/* condition 2: the same day of the class or after the class starts => 'Reschedule' btn*/}
-
-                    {/* {!pastPrevDayDeadline ? (
-                         isAdminAuthenticated ? (
-                           <RedirectButton
-                             linkURL={`/admins/customer-list/${userId}/classes/${eachClass.id}/reschedule`}
-                             btnText={"Reschedule"}
-                             Icon={PencilIcon}
-                             className="rescheduleBtn"
-                           />
-                         ) : (
-                           <RedirectButton
-                             linkURL={`/customers/${userId}/classes/${eachClass.id}/reschedule`}
-                             btnText={"Reschedule"}
-                             Icon={PencilIcon}
-                             className="rescheduleBtn"
-                           />
-                         )
-                       ) : (
-                         ""
-                       )}
-                     </td> */}
                   </tr>
                 );
               })}
