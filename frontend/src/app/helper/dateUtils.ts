@@ -11,16 +11,15 @@ export const formatTime = (date: Date, timeZone: string) => {
   }).format(date);
 };
 
-// Function to format date and time for a given time zone (e.g., Mon, July 23, 2024, 19:30)
-export const formatDateTime = (date: Date, timeZone: string) => {
-  return new Intl.DateTimeFormat("en-US", {
+// Formats date and time (e.g., "Thu, January 11 at 09:30", "1月11日(木) 9:30")
+export const formatDateTime = (date: Date, locale: string = "en-US") => {
+  return new Intl.DateTimeFormat(locale, {
     weekday: "short",
     month: "long",
-    day: "2-digit",
-    hour: "2-digit",
+    day: "numeric",
+    hour: "numeric",
     minute: "2-digit",
     hour12: false,
-    timeZone,
   }).format(date);
 };
 

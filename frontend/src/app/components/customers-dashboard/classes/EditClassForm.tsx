@@ -136,10 +136,7 @@ function EditClassForm({
                 </option>
                 {selectedInstructorAvailabilities.map((availability, index) => (
                   <option key={index} value={availability.dateTime}>
-                    {formatDateTime(
-                      new Date(availability.dateTime),
-                      "Asia/Tokyo",
-                    )}
+                    {formatDateTime(new Date(availability.dateTime))}
                   </option>
                 ))}
               </select>

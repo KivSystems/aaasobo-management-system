@@ -197,11 +197,14 @@ function BookClassForm({
                 <option value="" disabled>
                   Select a class date and time
                 </option>
-                {instructorAvailabilities.map((availability, index) => (
-                  <option key={index} value={availability}>
-                    {formatDateTime(new Date(availability), "Asia/Tokyo")}
-                  </option>
-                ))}
+                {instructorAvailabilities.map((availability, index) => {
+                  const classDateTime = formatDateTime(new Date(availability));
+                  return (
+                    <option key={index} value={availability}>
+                      {classDateTime}
+                    </option>
+                  );
+                })}
               </select>
               <CalendarIcon className={styles.icon} />
             </div>
