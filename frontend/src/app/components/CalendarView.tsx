@@ -241,26 +241,6 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
                 right: "",
               }
         }
-        views={{
-          timeGridWeek: {
-            slotMinTime: "08:00:00",
-            slotMaxTime: "20:30:00",
-            slotLabelFormat: {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            },
-          },
-          timeGridDay: {
-            slotMinTime: "08:00:00",
-            slotMaxTime: "20:30:00",
-            slotLabelFormat: {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            },
-          },
-        }}
         events={events}
         eventClick={handleEventClick}
         eventContent={renderEventContent}
@@ -274,7 +254,6 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
         selectable={false}
         eventDisplay="block"
         allDaySlot={false}
-        timeZone={instructorId ? "Asia/Manila" : "Asia/Tokyo"}
       />
 
       <Modal isOpen={isClassDetailModalOpen} onClose={handleModalClose}>
