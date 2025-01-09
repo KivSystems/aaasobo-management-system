@@ -1,16 +1,13 @@
 import {
-  formatDate,
-  formatTime,
   isPastPreviousDayDeadline,
   isPastClassDateTime,
-  formatEnglishShortDate,
+  formatShortDate,
   formatTime24Hour,
 } from "../helper/dateUtils";
 import ActionButton from "./ActionButton";
 import styles from "./ClassesTable.module.scss";
 import Image from "next/image";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
 
 const ClassesTable = ({
   classes,
@@ -77,7 +74,7 @@ const ClassesTable = ({
             <tbody className={styles.classesTable__body}>
               {bookedClasses.map((eachClass) => {
                 const classDateTime = new Date(eachClass.dateTime);
-                const classDate = formatEnglishShortDate(classDateTime);
+                const classDate = formatShortDate(classDateTime);
                 const classTime = formatTime24Hour(classDateTime);
 
                 const pastPrevDayDeadline = isPastPreviousDayDeadline(

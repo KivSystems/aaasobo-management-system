@@ -1,16 +1,6 @@
 import { addMinutes, startOfDay, isAfter } from "date-fns";
 import { format, toZonedTime } from "date-fns-tz";
 
-// Function to format date for a given time zone (e.g., Jun 29, 2024)
-export const formatDate = (date: Date, timeZone: string) => {
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    timeZone,
-  }).format(date);
-};
-
 // Function to format time for a given time zone(e.g., 19:00)
 export const formatTime = (date: Date, timeZone: string) => {
   return new Intl.DateTimeFormat("en-US", {
@@ -59,7 +49,7 @@ export const formatDayDate = (date: Date, timeZone: string) => {
   }).format(date);
 };
 
-// Function to format time with added minutes for a given time zone (e.g., 19:25)
+// Function to format time with added minutes (e.g., 19:25)
 export const formatTimeWithAddedMinutes = (
   date: Date,
   minutesToAdd: number,
@@ -221,10 +211,10 @@ export const getShortMonth = (date: Date): string => {
   return formatter.format(date).toUpperCase(); // Converts to uppercase
 };
 
-// Formats a Date object into a short English-style string (e.g., "Jun 29, 2024") for the "en-US" locale.
-export const formatEnglishShortDate = (date: Date) => {
+// Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
+export const formatShortDate = (date: Date, locale: string = "en-US") => {
   const day = date.getDate();
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
