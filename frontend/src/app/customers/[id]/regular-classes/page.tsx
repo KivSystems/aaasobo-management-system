@@ -8,7 +8,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Page({ params }: { params: { id: string } }) {
-  const customerId = params.id;
+  const customerId = parseInt(params.id);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
   const searchParams = useSearchParams();
 
   useEffect(() => {

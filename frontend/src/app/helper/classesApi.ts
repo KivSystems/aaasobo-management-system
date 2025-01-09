@@ -2,7 +2,7 @@ const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
 // GET classes by customer id
-export const getClassesByCustomerId = async (customerId: string) => {
+export const getClassesByCustomerId = async (customerId: number) => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/classes/${customerId}`);
     if (!response.ok) {
@@ -75,7 +75,7 @@ export const bookClass = async (classData: {
 };
 
 // GET a class by id
-export const getClassById = async (classId: string) => {
+export const getClassById = async (classId: number) => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/classes/class/${classId}`);
     if (!response.ok) {

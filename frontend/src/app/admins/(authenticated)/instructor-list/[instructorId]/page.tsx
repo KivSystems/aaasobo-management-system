@@ -11,7 +11,10 @@ import InstructorSchedule from "./InstructorSchedule";
 import Loading from "@/app/components/Loading";
 
 function Page({ params }: { params: { instructorId: string } }) {
-  const instructorId = params.instructorId;
+  const instructorId = parseInt(params.instructorId);
+  if (isNaN(instructorId)) {
+    throw new Error("Invalid instructorId");
+  }
   const breadcrumb = [
     "Instructor List",
     `/admins/instructor-list`,
@@ -33,7 +36,7 @@ function Page({ params }: { params: { instructorId: string } }) {
       label: "Class Schedule",
       content: (
         <InstructorCalendar
-          id={parseInt(instructorId)}
+          id={instructorId}
           isAdminAuthenticated={isAuthenticated}
         />
       ),
@@ -49,11 +52,11 @@ function Page({ params }: { params: { instructorId: string } }) {
     },
     {
       label: "Instructor's Availability",
-      content: <AvailabilityCalendar instructorId={parseInt(instructorId)} />,
+      content: <AvailabilityCalendar instructorId={instructorId} />,
     },
     {
       label: "Instructor's Schedule",
-      content: <InstructorSchedule instructorId={parseInt(instructorId)} />,
+      content: <InstructorSchedule instructorId={instructorId} />,
     },
   ];
 

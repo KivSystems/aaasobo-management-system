@@ -5,7 +5,10 @@ import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import AddChildForm from "@/app/components/customers-dashboard/children-profiles/AddChildForm";
 
 function Page({ params }: { params: { customerId: string; childId: string } }) {
-  const customerId = params.customerId;
+  const customerId = parseInt(params.customerId);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
 
   // Check the authentication of the admin.
   const { isAuthenticated } = useContext(AuthContext);

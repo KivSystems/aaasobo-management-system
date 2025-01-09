@@ -4,7 +4,13 @@ import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/
 
 const Page = ({ params }: { params: { id: string; classId: string } }) => {
   const instructorId = parseInt(params.id);
+  if (isNaN(instructorId)) {
+    throw new Error("Invalid instructorId");
+  }
   const classId = parseInt(params.classId);
+  if (isNaN(classId)) {
+    throw new Error("Invalid classId");
+  }
 
   return <ClassDetails instructorId={instructorId} classId={classId} />;
 };

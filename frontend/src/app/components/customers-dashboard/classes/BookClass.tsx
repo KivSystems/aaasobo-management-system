@@ -11,7 +11,7 @@ function BookClass({
   customerId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const [instructors, setInstructors] = useState<Instructor[] | undefined>(
@@ -36,7 +36,7 @@ function BookClass({
   }, []);
 
   useEffect(() => {
-    const fetchChildrenByCustomerId = async (customerId: string) => {
+    const fetchChildrenByCustomerId = async (customerId: number) => {
       try {
         const children = await getChildrenByCustomerId(customerId);
         setChildren(children);
@@ -49,7 +49,7 @@ function BookClass({
   }, [customerId]);
 
   useEffect(() => {
-    const fetchRebookableClassesByCustomerId = async (customerId: string) => {
+    const fetchRebookableClassesByCustomerId = async (customerId: number) => {
       try {
         const classes: ClassType[] = await getClassesByCustomerId(customerId);
         const rebookableClasses = classes.filter((eachClass) => {

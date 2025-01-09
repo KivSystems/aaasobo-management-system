@@ -9,14 +9,14 @@ function EditChildProfile({
   childId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
-  childId: string;
+  customerId: number;
+  childId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const [child, setChild] = useState<Child | null>(null);
 
   useEffect(() => {
-    const fetchChildById = async (id: string) => {
+    const fetchChildById = async (id: number) => {
       try {
         const child = await getChildById(id);
         setChild(child);

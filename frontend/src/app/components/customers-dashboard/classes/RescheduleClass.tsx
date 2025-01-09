@@ -9,8 +9,8 @@ function RescheduleClass({
   classId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
-  classId: string;
+  customerId: number;
+  classId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const [editedClass, setEditedClass] = useState<ClassType | null>(null);
@@ -31,7 +31,7 @@ function RescheduleClass({
   }, []);
 
   useEffect(() => {
-    const fetchChildrenByCustomerId = async (customerId: string) => {
+    const fetchChildrenByCustomerId = async (customerId: number) => {
       try {
         const children = await getChildrenByCustomerId(customerId);
         setChildren(children);
@@ -44,7 +44,7 @@ function RescheduleClass({
   }, [customerId]);
 
   useEffect(() => {
-    const fetchClassById = async (id: string) => {
+    const fetchClassById = async (id: number) => {
       try {
         const editedClass = await getClassById(id);
         setEditedClass(editedClass);

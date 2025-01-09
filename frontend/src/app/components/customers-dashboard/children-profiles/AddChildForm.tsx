@@ -20,7 +20,7 @@ function AddChildForm({
   customerId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const [childName, onChildNameChange] = useInput();

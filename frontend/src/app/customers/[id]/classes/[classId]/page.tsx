@@ -15,8 +15,14 @@ const ClassDetailPage = ({
 }: {
   params: { id: string; classId: string };
 }) => {
-  const customerId = params.id;
+  const customerId = parseInt(params.id);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
   const classId = parseInt(params.classId);
+  if (isNaN(classId)) {
+    throw new Error("Invalid classId");
+  }
   const [classDetail, setClassDetail] = useState<ClassType | null>(null);
   const [classes, setClasses] = useState<ClassType[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -26,7 +32,7 @@ const ClassDetailPage = ({
   >([]);
 
   const fetchClassDetails = useCallback(async () => {
-    if (!customerId || isNaN(classId)) return;
+    if (!customerId) return;
 
     try {
       const classes: ClassType[] = await getClassesByCustomerId(customerId);

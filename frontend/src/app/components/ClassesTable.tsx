@@ -24,7 +24,7 @@ const ClassesTable = ({
   timeZone: string;
   selectedClasses: { classId: number; classDateTime: string }[];
   toggleSelectClass: (classId: number, classDateTime: string) => void;
-  userId: string;
+  userId: number;
   handleBulkCancel: () => void;
   isAdminAuthenticated?: boolean;
   handleCancelingModalClose: () => void;

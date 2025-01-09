@@ -22,7 +22,7 @@ function ChildrenProfiles({
   customerId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const [children, setChildren] = useState<Child[] | undefined>([]);

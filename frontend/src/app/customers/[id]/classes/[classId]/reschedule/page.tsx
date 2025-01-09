@@ -3,8 +3,14 @@
 import RescheduleClass from "@/app/components/customers-dashboard/classes/RescheduleClass";
 
 function Page({ params }: { params: { id: string; classId: string } }) {
-  const customerId = params.id;
-  const classId = params.classId;
+  const customerId = parseInt(params.id);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
+  const classId = parseInt(params.classId);
+  if (isNaN(classId)) {
+    throw new Error("Invalid classId");
+  }
 
   return <RescheduleClass customerId={customerId} classId={classId} />;
 }

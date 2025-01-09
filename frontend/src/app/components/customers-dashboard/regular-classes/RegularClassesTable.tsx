@@ -15,7 +15,7 @@ function RegularClassesTable({
 }: {
   subscriptionId: number;
   isAdminAuthenticated?: boolean | null;
-  customerId: string;
+  customerId: number;
 }) {
   const [currRecurringClasses, setCurrRecurringClasses] = useState<
     RecurringClass[]

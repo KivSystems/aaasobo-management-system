@@ -21,7 +21,7 @@ function EditRegularClassForm({
   subscriptionId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   subscriptionId?: number | null;
   isAdminAuthenticated?: boolean;
 }) {
@@ -41,7 +41,7 @@ function EditRegularClassForm({
       }
     };
 
-    const fetchChildrenByCustomerId = async (customerId: string) => {
+    const fetchChildrenByCustomerId = async (customerId: number) => {
       try {
         const data = await getChildrenByCustomerId(customerId);
         setChildren(data);

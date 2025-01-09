@@ -14,7 +14,7 @@ function ClassDetails({
   classId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   classId: number;
   isAdminAuthenticated?: boolean;
 }) {

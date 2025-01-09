@@ -31,7 +31,10 @@ export default function Layout({
 }) {
   const [customerName, setCustomerName] = useState<string | null>(null);
   const router = useRouter();
-  const customerId = params.id;
+  const customerId = parseInt(params.id);
+  if (isNaN(customerId)) {
+    throw new Error("Invalid customerId");
+  }
 
   // Check the authentication of the customer.
   // const { isLoading } = CustomerAuthentication(customerId);

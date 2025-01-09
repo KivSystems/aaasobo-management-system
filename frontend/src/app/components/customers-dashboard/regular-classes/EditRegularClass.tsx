@@ -12,7 +12,7 @@ function EditRegularClass({
   customerId,
   isAdminAuthenticated,
 }: {
-  customerId: string;
+  customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
   const searchParams = useSearchParams();
