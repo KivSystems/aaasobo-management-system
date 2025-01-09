@@ -51,7 +51,7 @@ export const getRecurringClassesBySubscriptionId = async (
 export const editRecurringClass = async (
   recurringClassId: number,
   subscriptionId: number,
-  customerId: string,
+  customerId: number,
   state: RecurringClassState,
   classStartDate: string,
 ) => {
@@ -63,7 +63,7 @@ export const editRecurringClass = async (
     day: state.day,
     time: state.time,
     instructorId: state.instructorId,
-    customerId: Number(customerId),
+    customerId,
     childrenIds: Array.from(state.childrenIds),
     classStartDate,
   });
