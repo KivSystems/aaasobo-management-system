@@ -62,15 +62,13 @@ export const formatDayDate = (date: Date, timeZone: string) => {
 // Function to format time with added minutes for a given time zone (e.g., 19:25)
 export const formatTimeWithAddedMinutes = (
   date: Date,
-  timeZone: string,
   minutesToAdd: number,
-) => {
+): string => {
   const updatedDate = addMinutes(date, minutesToAdd);
   return new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
     hour12: false,
-    timeZone,
   }).format(updatedDate);
 };
 
@@ -212,32 +210,15 @@ export const formatDateToISO = (dateString: string): string => {
 };
 
 // e.g., Monday, Tuesday ...
-export const getDayOfWeek = (dateString: string, timeZone: string): string => {
-  const date = new Date(dateString);
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    timeZone,
-  });
+export const getDayOfWeek = (date: Date): string => {
+  const formatter = new Intl.DateTimeFormat("en-US", { weekday: "long" });
   return formatter.format(date);
 };
 
 // e.g., JAN, FEB ...
-export const getShortMonth = (dateString: string, timeZone: string): string => {
-  const date = new Date(dateString);
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    timeZone,
-  });
-  return formatter.format(date).toUpperCase();
-};
-
-export const getDay = (dateString: string, timeZone: string): number => {
-  const date = new Date(dateString);
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    day: "numeric",
-    timeZone,
-  });
-  return parseInt(formatter.format(date), 10);
+export const getShortMonth = (date: Date): string => {
+  const formatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+  return formatter.format(date).toUpperCase(); // Converts to uppercase
 };
 
 // Formats a Date object into a short English-style string (e.g., "Jun 29, 2024") for the "en-US" locale.
@@ -252,8 +233,8 @@ export const formatEnglishShortDate = (date: Date) => {
 
 // Formats a Date object into a 24-hour time string without leading zeros (e.g., "9:00").
 export const formatTime24Hour = (date: Date): string => {
-  const hours = date.getHours(); // Get the hour (0-23)
-  const minutes = date.getMinutes(); // Get the minutes (0-59)
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
 
   return `${hours}:${minutes.toString().padStart(2, "0")}`;
 };

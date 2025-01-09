@@ -1,14 +1,13 @@
 import {
   formatFiveMonthsLaterEndOfMonth,
   formatPreviousDay,
-  formatTime,
   formatTimeWithAddedMinutes,
   isPastPreviousDayDeadline,
   isPastClassDateTime,
-  getDay,
   getShortMonth,
   getDayOfWeek,
   isPastClassEndTime,
+  formatTime24Hour,
 } from "../helper/dateUtils";
 import Image from "next/image";
 import ActionButton from "./ActionButton";
@@ -24,11 +23,11 @@ import {
 } from "@heroicons/react/24/solid";
 
 const ClassDetail = ({
-  customerId, // Necessary when implimenting the Rescheduling functionality
+  customerId, // Necessary when implementing the Rescheduling functionality
   classDetail,
   timeZone,
   handleCancel,
-  isAdminAuthenticated, // Necessary when implimenting the Rescheduling functionality
+  isAdminAuthenticated, // Necessary when implementing the Rescheduling functionality
   handleModalClose,
 }: {
   customerId: number;
@@ -41,6 +40,13 @@ const ClassDetail = ({
   if (!classDetail) {
     return <div>No class details available</div>;
   }
+
+  const classDateTime = new Date(classDetail.dateTime);
+  const classMonth = getShortMonth(classDateTime);
+  const classDay = classDateTime.getDate();
+  const classDayOfWeek = getDayOfWeek(classDateTime);
+  const classStartTime = formatTime24Hour(classDateTime);
+  const classEndTime = formatTimeWithAddedMinutes(classDateTime, 25);
 
   const formatChildren = (children: Child[]) =>
     children.map((child) => child.name).join(", ");
@@ -101,7 +107,7 @@ const ClassDetail = ({
         </div>
       </div>
 
-      {/* Date & TIme */}
+      {/* Date & Time */}
       <div className={styles.dateTime}>
         <div className={styles.dateTime__iconContainer}>
           <CalendarDaysIcon className={styles.dateTime__icon} />
@@ -109,25 +115,14 @@ const ClassDetail = ({
 
         <div className={styles.dateTime__details}>
           <div className={styles.dateTime__date}>
-            <div className={styles.dateTime__day}>
-              {getDay(classDetail.dateTime, timeZone)}
-            </div>
-            <div className={styles.dateTime__month}>
-              {getShortMonth(classDetail.dateTime, timeZone)}
-            </div>
+            <div className={styles.dateTime__day}>{classDay}</div>
+            <div className={styles.dateTime__month}>{classMonth}</div>
           </div>
 
           <div className={styles.dateTime__time}>
-            <div className={styles.dateTime__dayOfWeek}>
-              {getDayOfWeek(classDetail.dateTime, timeZone)}
-            </div>
+            <div className={styles.dateTime__dayOfWeek}>{classDayOfWeek}</div>
             <div className={styles.dateTime__classTime}>
-              {formatTime(new Date(classDetail.dateTime), timeZone)} -{" "}
-              {formatTimeWithAddedMinutes(
-                new Date(classDetail.dateTime),
-                timeZone,
-                25,
-              )}
+              {classStartTime} - {classEndTime}
             </div>
           </div>
         </div>
