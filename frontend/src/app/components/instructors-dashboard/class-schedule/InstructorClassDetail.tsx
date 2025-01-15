@@ -1,8 +1,7 @@
 import {
   formatBirthdateToISO,
-  formatTime,
+  formatTime24Hour,
   formatTimeWithAddedMinutes,
-  getDay,
   getDayOfWeek,
   getShortMonth,
   isPastClassEndTime,
@@ -29,6 +28,13 @@ const InstructorClassDetail = ({
   if (!classDetail) {
     return <div>No class details available</div>;
   }
+
+  const classDateTime = new Date(classDetail.dateTime);
+  const classMonth = getShortMonth(classDateTime);
+  const classDay = classDateTime.getDate();
+  const classDayOfWeek = getDayOfWeek(classDateTime);
+  const classStartTime = formatTime24Hour(classDateTime);
+  const classEndTime = formatTimeWithAddedMinutes(classDateTime, 25);
 
   const statusClass =
     classDetail.status === "booked"
@@ -83,25 +89,14 @@ const InstructorClassDetail = ({
 
           <div className={styles.dateTime__details}>
             <div className={styles.dateTime__date}>
-              <div className={styles.dateTime__day}>
-                {getDay(classDetail.dateTime, timeZone)}
-              </div>
-              <div className={styles.dateTime__month}>
-                {getShortMonth(classDetail.dateTime, timeZone)}
-              </div>
+              <div className={styles.dateTime__day}>{classDay}</div>
+              <div className={styles.dateTime__month}>{classMonth}</div>
             </div>
 
             <div className={styles.dateTime__time}>
-              <div className={styles.dateTime__dayOfWeek}>
-                {getDayOfWeek(classDetail.dateTime, timeZone)}
-              </div>
+              <div className={styles.dateTime__dayOfWeek}>{classDayOfWeek}</div>
               <div className={styles.dateTime__classTime}>
-                {formatTime(new Date(classDetail.dateTime), timeZone)} -{" "}
-                {formatTimeWithAddedMinutes(
-                  new Date(classDetail.dateTime),
-                  timeZone,
-                  25,
-                )}
+                {classStartTime} - {classEndTime}
               </div>
             </div>
           </div>

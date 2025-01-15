@@ -1,11 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { getClassesByInstructorId } from "@/app/helper/classesApi";
-import { formatDate } from "@/app/helper/dateUtils";
+import { formatShortDate } from "@/app/helper/dateUtils";
 import InstructorClassDetail from "@/app/components/instructors-dashboard/class-schedule/InstructorClassDetail";
 import InstructorClassesTable from "@/app/components/instructors-dashboard/class-schedule/InstructorClassesTable";
 import styles from "./ClassDetails.module.scss";
 import Link from "next/link";
-import { set } from "date-fns";
 import Loading from "../../Loading";
 
 type StatusType =
@@ -44,14 +43,13 @@ function ClassDetails({
       setClassDetail(classDetail || null);
 
       const selectedClassDate = classDetail?.dateTime
-        ? formatDate(new Date(classDetail.dateTime), "Asia/Manila")
+        ? formatShortDate(new Date(classDetail.dateTime))
         : "";
       setClassDate(selectedClassDate);
 
       const classesOnSelectedDate = classes.filter(
         (eachClass) =>
-          formatDate(new Date(eachClass.dateTime), "Asia/Manila") ===
-          selectedClassDate,
+          formatShortDate(new Date(eachClass.dateTime)) === selectedClassDate,
       );
       setSelectedDateClasses(classesOnSelectedDate);
     } catch (error) {

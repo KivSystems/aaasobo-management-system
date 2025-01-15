@@ -1,16 +1,6 @@
 import { addMinutes, startOfDay, isAfter } from "date-fns";
 import { format, toZonedTime } from "date-fns-tz";
 
-// Function to format date for a given time zone (e.g., Jun 29, 2024)
-export const formatDate = (date: Date, timeZone: string) => {
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    timeZone,
-  }).format(date);
-};
-
 // Function to format time for a given time zone(e.g., 19:00)
 export const formatTime = (date: Date, timeZone: string) => {
   return new Intl.DateTimeFormat("en-US", {
@@ -21,16 +11,15 @@ export const formatTime = (date: Date, timeZone: string) => {
   }).format(date);
 };
 
-// Function to format date and time for a given time zone (e.g., Mon, July 23, 2024, 19:30)
-export const formatDateTime = (date: Date, timeZone: string) => {
-  return new Intl.DateTimeFormat("en-US", {
+// Formats date and time (e.g., "Thu, January 11 at 09:30", "1月11日(木) 9:30")
+export const formatDateTime = (date: Date, locale: string = "en-US") => {
+  return new Intl.DateTimeFormat(locale, {
     weekday: "short",
     month: "long",
-    day: "2-digit",
-    hour: "2-digit",
+    day: "numeric",
+    hour: "numeric",
     minute: "2-digit",
     hour12: false,
-    timeZone,
   }).format(date);
 };
 
@@ -59,18 +48,16 @@ export const formatDayDate = (date: Date, timeZone: string) => {
   }).format(date);
 };
 
-// Function to format time with added minutes for a given time zone (e.g., 19:25)
+// Function to format time with added minutes (e.g., 19:25)
 export const formatTimeWithAddedMinutes = (
   date: Date,
-  timeZone: string,
   minutesToAdd: number,
-) => {
+): string => {
   const updatedDate = addMinutes(date, minutesToAdd);
   return new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
     hour12: false,
-    timeZone,
   }).format(updatedDate);
 };
 
@@ -212,30 +199,34 @@ export const formatDateToISO = (dateString: string): string => {
 };
 
 // e.g., Monday, Tuesday ...
-export const getDayOfWeek = (dateString: string, timeZone: string): string => {
-  const date = new Date(dateString);
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    timeZone,
-  });
+export const getDayOfWeek = (date: Date): string => {
+  const formatter = new Intl.DateTimeFormat("en-US", { weekday: "long" });
   return formatter.format(date);
 };
 
 // e.g., JAN, FEB ...
-export const getShortMonth = (dateString: string, timeZone: string): string => {
-  const date = new Date(dateString);
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    timeZone,
-  });
-  return formatter.format(date).toUpperCase();
+export const getShortMonth = (date: Date): string => {
+  const formatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+  return formatter.format(date).toUpperCase(); // Converts to uppercase
 };
 
-export const getDay = (dateString: string, timeZone: string): number => {
-  const date = new Date(dateString);
-  const formatter = new Intl.DateTimeFormat("en-US", {
+// Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
+export const formatShortDate = (
+  date: Date,
+  locale: string = Intl.DateTimeFormat().resolvedOptions().locale,
+) => {
+  const day = date.getDate();
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "short",
     day: "numeric",
-    timeZone,
-  });
-  return parseInt(formatter.format(date), 10);
+  }).format(new Date(date.setDate(day)));
+};
+
+// Formats a Date object into a 24-hour time string without leading zeros (e.g., "9:00").
+export const formatTime24Hour = (date: Date): string => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  return `${hours}:${minutes.toString().padStart(2, "0")}`;
 };

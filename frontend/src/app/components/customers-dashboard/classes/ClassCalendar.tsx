@@ -69,6 +69,7 @@ function ClassCalendar({
           const dateB = new Date(b.dateTime).getTime();
           return dateA - dateB;
         });
+
       setRebookableClasses(rebookableClasses);
 
       const formattedClasses = classesData.map((eachClass) => {

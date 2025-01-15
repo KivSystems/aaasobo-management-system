@@ -15,7 +15,10 @@ import {
 import Modal from "./Modal";
 import { cancelClass, getClassesByCustomerId } from "../helper/classesApi";
 import ClassDetail from "./ClassDetail";
-import { isPastPreviousDayDeadline } from "../helper/dateUtils";
+import {
+  formatTime24Hour,
+  isPastPreviousDayDeadline,
+} from "../helper/dateUtils";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
@@ -76,14 +79,8 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
 
   // Formats and displays the content of an event on the calendar view page
   const renderEventContent = (eventInfo: EventContentArg) => {
-    const startDate = new Date(
-      new Date(eventInfo.event.startStr).toLocaleString("en-US", {
-        timeZone: instructorId ? "Asia/Manila" : "Asia/Tokyo",
-      }),
-    );
-    const hours = startDate.getHours();
-    const minutes = String(startDate.getMinutes()).padStart(2, "0");
-    const formattedStartTime = `${hours}:${minutes}`;
+    const classDateTime = new Date(eventInfo.event.startStr);
+    const classTime = formatTime24Hour(classDateTime);
 
     const { instructorIcon, instructorNickname, classStatus } =
       eventInfo.event.extendedProps;
@@ -125,7 +122,7 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
         <div
           className={`${styles.eventDetails} ${classStatus === "booked" ? styles.booked : classStatus === "completed" ? styles.completed : classStatus === "canceledByCustomer" || classStatus === "canceledByInstructor" ? styles.canceled : ""}`}
         >
-          <div className={styles.eventTime}>{formattedStartTime} -</div>
+          <div className={styles.eventTime}>{classTime} -</div>
           <div className={styles.eventTitle}>{title}</div>
         </div>
       </div>
@@ -244,26 +241,6 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
                 right: "",
               }
         }
-        views={{
-          timeGridWeek: {
-            slotMinTime: "08:00:00",
-            slotMaxTime: "20:30:00",
-            slotLabelFormat: {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            },
-          },
-          timeGridDay: {
-            slotMinTime: "08:00:00",
-            slotMaxTime: "20:30:00",
-            slotLabelFormat: {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            },
-          },
-        }}
         events={events}
         eventClick={handleEventClick}
         eventContent={renderEventContent}
@@ -277,7 +254,6 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
         selectable={false}
         eventDisplay="block"
         allDaySlot={false}
-        timeZone={instructorId ? "Asia/Manila" : "Asia/Tokyo"}
       />
 
       <Modal isOpen={isClassDetailModalOpen} onClose={handleModalClose}>

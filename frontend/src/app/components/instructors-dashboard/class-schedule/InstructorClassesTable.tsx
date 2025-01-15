@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { formatTime, isPastClassEndTime } from "@/app/helper/dateUtils";
+import { formatTime24Hour, isPastClassEndTime } from "@/app/helper/dateUtils";
 import styles from "./InstructorClassesTable.module.scss";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
@@ -181,8 +181,8 @@ const InstructorClassesTable = ({
         classes
           .filter((eachClass) => eachClass.status !== "canceledByCustomer")
           .map((eachClass) => {
-            const dateTime = new Date(eachClass.dateTime);
-            const philippineTime = formatTime(dateTime, timeZone);
+            const classDateTime = new Date(eachClass.dateTime);
+            const classStartTime = formatTime24Hour(classDateTime);
 
             let statusClass;
 
@@ -331,14 +331,14 @@ const InstructorClassesTable = ({
                         href={`/admins/instructor-list/${instructorId}/class-schedule/${eachClass.id}`}
                         passHref
                       >
-                        {philippineTime}
+                        {classStartTime}
                       </Link>
                     ) : (
                       <Link
                         href={`/instructors/${instructorId}/class-schedule/${eachClass.id}`}
                         passHref
                       >
-                        {philippineTime}
+                        {classStartTime}
                       </Link>
                     )}
                   </div>
