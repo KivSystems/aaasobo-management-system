@@ -211,7 +211,10 @@ export const getShortMonth = (date: Date): string => {
 };
 
 // Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
-export const formatShortDate = (date: Date, locale: string = "en-US") => {
+export const formatShortDate = (
+  date: Date,
+  locale: string = Intl.DateTimeFormat().resolvedOptions().locale,
+) => {
   const day = date.getDate();
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
