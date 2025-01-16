@@ -1,8 +1,7 @@
-"use client";
+// "use client";
 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import SideNav from "@/app/components/SideNav";
 import styles from "./layout.module.scss";
 import {
   UsersIcon,
@@ -15,12 +14,13 @@ import { getCustomerById, logoutCustomer } from "@/app/helper/customersApi";
 import { useRouter } from "next/navigation";
 import { CustomerAuthentication } from "@/app/helper/authenticationUtils";
 import Loading from "@/app/components/Loading";
+import SideNav from "@/app/components/layouts/sideNav/SideNav";
 
-type Link = {
-  name: string;
-  href: string;
-  icon: FC<SVGProps<SVGSVGElement>>;
-};
+// type Link = {
+//   name: string;
+//   href: string;
+//   icon: FC<SVGProps<SVGSVGElement>>;
+// };
 
 export default function Layout({
   children,
@@ -29,8 +29,8 @@ export default function Layout({
   children: React.ReactNode;
   params: { id: string };
 }) {
-  const [customerName, setCustomerName] = useState<string | null>(null);
-  const router = useRouter();
+  // const [customerName, setCustomerName] = useState<string | null>(null);
+  // const router = useRouter();
   const customerId = parseInt(params.id);
   if (isNaN(customerId)) {
     throw new Error("Invalid customerId");
@@ -39,46 +39,46 @@ export default function Layout({
   // Check the authentication of the customer.
   // const { isLoading } = CustomerAuthentication(customerId);
 
-  const links: Link[] = [
-    {
-      name: "Class Calendar",
-      href: `/customers/${customerId}/classes`,
-      icon: CalendarDaysIcon,
-    },
-    {
-      name: "Customer Profile",
-      href: `/customers/${customerId}/profile`,
-      icon: UserIcon,
-    },
-    {
-      name: "Children's Profiles",
-      href: `/customers/${customerId}/children-profiles`,
-      icon: UsersIcon,
-    },
-    {
-      name: "Regular Classes",
-      href: `/customers/${customerId}/regular-classes`,
-      icon: ClipboardDocumentListIcon,
-    },
-  ];
+  // const links: Link[] = [
+  //   {
+  //     name: "Class Calendar",
+  //     href: `/customers/${customerId}/classes`,
+  //     icon: CalendarDaysIcon,
+  //   },
+  //   {
+  //     name: "Customer Profile",
+  //     href: `/customers/${customerId}/profile`,
+  //     icon: UserIcon,
+  //   },
+  //   {
+  //     name: "Children's Profiles",
+  //     href: `/customers/${customerId}/children-profiles`,
+  //     icon: UsersIcon,
+  //   },
+  //   {
+  //     name: "Regular Classes",
+  //     href: `/customers/${customerId}/regular-classes`,
+  //     icon: ClipboardDocumentListIcon,
+  //   },
+  // ];
 
   // TODO: Get the customer name from the session?
-  useEffect(() => {
-    const fetchCustomer = async () => {
-      const customer = await getCustomerById(customerId);
-      setCustomerName(customer.name);
-    };
-    fetchCustomer();
-  }, [customerId]);
+  // useEffect(() => {
+  //   const fetchCustomer = async () => {
+  //     const customer = await getCustomerById(customerId);
+  //     setCustomerName(customer.name);
+  //   };
+  //   fetchCustomer();
+  // }, [customerId]);
 
-  const logout = async () => {
-    const result = await logoutCustomer();
-    if (result.ok) {
-      router.push("/customers/login");
-      return;
-    }
-    toast.error(result.error);
-  };
+  // const logout = async () => {
+  //   const result = await logoutCustomer();
+  //   if (result.ok) {
+  //     router.push("/customers/login");
+  //     return;
+  //   }
+  //   toast.error(result.error);
+  // };
 
   // Display a loading message while checking authentication.
   // if (isLoading) {
@@ -89,9 +89,10 @@ export default function Layout({
     <div className={styles.container}>
       <ToastContainer />
       <div className={styles.sidebar}>
-        {customerName && (
+        {/* {customerName && (
           <SideNav links={links} userName={customerName} logout={logout} />
-        )}
+        )} */}
+        <SideNav customerId={customerId} />
       </div>
       <div className={styles.content}>{children}</div>
     </div>

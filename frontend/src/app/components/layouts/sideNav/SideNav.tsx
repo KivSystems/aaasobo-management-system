@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import styles from "./SideNav.module.scss";
 import Link from "next/link";
@@ -8,23 +8,20 @@ import { usePathname } from "next/navigation";
 import { FC, SVGProps } from "react";
 import { UserIcon as UserIconSolid } from "@heroicons/react/24/solid";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import NavLinks from "./NavLinks";
 
-type LinkProps = {
-  name: string;
-  href: string;
-  icon: FC<SVGProps<SVGSVGElement>>;
-};
-
-function SideNav({
-  links,
-  userName,
-  logout,
+export default function SideNav({
+  // links,
+  // userName,
+  // logout,
+  customerId,
 }: {
-  links: LinkProps[];
-  userName: string;
-  logout: () => void;
+  // links: LinkProps[];
+  // userName: string;
+  // logout: () => void;
+  customerId: number;
 }) {
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   return (
     <div className={styles.sideNavContainer}>
@@ -41,27 +38,13 @@ function SideNav({
 
         <div className={styles.sideNavUser}>
           <UserIconSolid className={styles.sideNavUser__icon} />
-          <div className={styles.sideNavUser__name}>{userName}</div>
+          {/* <div className={styles.sideNavUser__name}>{userName}</div> */}
         </div>
 
-        {links.map((link) => {
-          const LinkIcon = link.icon;
-          return (
-            <Link
-              key={link.name}
-              href={link.href}
-              // clsx is used for conditional rendering
-              className={clsx(styles.link, {
-                [styles.active]: pathname === link.href,
-              })}
-            >
-              <LinkIcon className={styles.icon} />
-              <p className={styles.linkText}>{link.name}</p>
-            </Link>
-          );
-        })}
+        <NavLinks customerId={customerId} />
 
-        <div className={`${styles.link} ${styles.logout}`} onClick={logout}>
+        {/* <div className={`${styles.link} ${styles.logout}`} onClick={logout}> */}
+        <div className={`${styles.link} ${styles.logout}`}>
           <ArrowLeftStartOnRectangleIcon className={styles.icon} />
           <p className={styles.linkText}>Log Out</p>
         </div>
@@ -69,5 +52,3 @@ function SideNav({
     </div>
   );
 }
-
-export default SideNav;
