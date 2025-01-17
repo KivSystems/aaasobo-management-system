@@ -6,13 +6,13 @@ import NavLinks from "./NavLinks";
 import { handleLogout } from "@/app/helper/actions";
 
 export default function SideNav({
-  userId,
   userType,
   userName,
+  links,
 }: {
-  userId: number;
   userType: "admin" | "customer" | "instructor";
   userName: string;
+  links: LinkType[];
 }) {
   const handleLogoutWithUserType = handleLogout.bind(null, userType);
 
@@ -34,7 +34,7 @@ export default function SideNav({
           <div className={styles.sideNavUser__name}>{userName}</div>
         </div>
 
-        <NavLinks userId={userId} />
+        <NavLinks links={links} />
 
         <form className={styles.logout} action={handleLogoutWithUserType}>
           <button className={`${styles.link} ${styles.logout}`} type="submit">

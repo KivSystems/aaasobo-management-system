@@ -3,6 +3,7 @@ import "react-toastify/dist/ReactToastify.css";
 import styles from "./layout.module.scss";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
 import { getUserName } from "@/app/helper/api/usersApi";
+import { getLinks } from "@/app/helper/data/navLinks";
 
 export default async function Layout({
   children,
@@ -17,16 +18,13 @@ export default async function Layout({
   }
 
   const customerName = await getUserName(customerId, "customer");
+  const links = getLinks(customerId, "customer");
 
   return (
     <div className={styles.container}>
       <ToastContainer />
       <div className={styles.sidebar}>
-        <SideNav
-          userId={customerId}
-          userType="customer"
-          userName={customerName}
-        />
+        <SideNav userType="customer" userName={customerName} links={links} />
       </div>
       <div className={styles.content}>{children}</div>
     </div>

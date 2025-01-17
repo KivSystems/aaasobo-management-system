@@ -4,7 +4,7 @@ import styles from "./CustomerProfile.module.scss";
 import { useEffect, useState } from "react";
 import { getCustomerById, editCustomer } from "@/app/helper/api/customersApi";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
-import { prefectures } from "@/app/helper/data";
+import { prefectures } from "@/app/helper/data/data";
 import ActionButton from "../../ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { toast, ToastContainer } from "react-toastify";

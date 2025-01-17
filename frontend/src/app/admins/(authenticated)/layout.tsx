@@ -7,11 +7,9 @@ import {
   UsersIcon,
   CalendarDaysIcon,
   ClipboardDocumentListIcon,
-  UserIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
-import { FC, SVGProps, useEffect, useState } from "react";
-import { getCustomerById } from "@/app/helper/api/customersApi";
+import { FC, SVGProps } from "react";
 import { AdminAuthentication } from "@/app/helper/authenticationUtils";
 import { AuthContext } from "./authContext";
 import { logoutAdmin } from "@/app/helper/adminsApi";
@@ -50,8 +48,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       icon: UserGroupIcon,
     },
   ];
-
-  // TODO: Get the admin name from the session?
 
   // Display a loading message while checking authentication.
   if (isLoading) {

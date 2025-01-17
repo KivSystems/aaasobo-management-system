@@ -183,3 +183,9 @@ type RecurringAvailability = {
   startAt: Date;
   endAt: Date | null;
 };
+
+type LinkType = {
+  name: string;
+  href: string;
+  icon: FC<SVGProps<SVGSVGElement>>;
+};
