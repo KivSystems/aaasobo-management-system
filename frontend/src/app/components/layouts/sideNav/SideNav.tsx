@@ -3,15 +3,16 @@ import Image from "next/image";
 import { UserIcon as UserIconSolid } from "@heroicons/react/24/solid";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import NavLinks from "./NavLinks";
-import UserName from "./UserName";
 import { handleLogout } from "@/app/helper/actions";
 
 export default function SideNav({
   userId,
   userType,
+  userName,
 }: {
   userId: number;
   userType: "admin" | "customer" | "instructor";
+  userName: string;
 }) {
   const handleLogoutWithUserType = handleLogout.bind(null, userType);
 
@@ -30,7 +31,7 @@ export default function SideNav({
 
         <div className={styles.sideNavUser}>
           <UserIconSolid className={styles.sideNavUser__icon} />
-          <UserName userId={userId} userType={userType} />
+          <div className={styles.sideNavUser__name}>{userName}</div>
         </div>
 
         <NavLinks userId={userId} />
