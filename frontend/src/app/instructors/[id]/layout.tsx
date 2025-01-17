@@ -28,7 +28,7 @@ export default async function Layout({
       <div className={styles.sidebar}>
         <SideNav
           userId={instructorId}
-          userType="customer"
+          userType="instructor"
           userName={instructorName}
         />
       </div>
