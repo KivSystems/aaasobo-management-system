@@ -11,7 +11,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { FC, SVGProps, useEffect, useState } from "react";
-import { getCustomerById } from "@/app/helper/customersApi";
+import { getCustomerById } from "@/app/helper/api/customersApi";
 import { AdminAuthentication } from "@/app/helper/authenticationUtils";
 import { AuthContext } from "./authContext";
 import { logoutAdmin } from "@/app/helper/adminsApi";

@@ -18,28 +18,28 @@ type Link = {
   icon: FC<SVGProps<SVGSVGElement>>;
 };
 
-export default function NavLinks({ customerId }: { customerId: number }) {
+export default function NavLinks({ userId }: { userId: number }) {
   const pathname = usePathname();
 
   const links: Link[] = [
     {
       name: "Class Calendar",
-      href: `/customers/${customerId}/classes`,
+      href: `/customers/${userId}/classes`,
       icon: CalendarDaysIcon,
     },
     {
       name: "Customer Profile",
-      href: `/customers/${customerId}/profile`,
+      href: `/customers/${userId}/profile`,
       icon: UserIcon,
     },
     {
       name: "Children's Profiles",
-      href: `/customers/${customerId}/children-profiles`,
+      href: `/customers/${userId}/children-profiles`,
       icon: UsersIcon,
     },
     {
       name: "Regular Classes",
-      href: `/customers/${customerId}/regular-classes`,
+      href: `/customers/${userId}/regular-classes`,
       icon: ClipboardDocumentListIcon,
     },
   ];

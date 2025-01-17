@@ -66,3 +66,26 @@ export const logoutCustomer = async (): Promise<Response<string>> => {
     ? { ok: true }
     : { ok: false, error: (await response.json()).message };
 };
+
+export const authenticateCustomer = async (customerId: number) => {
+  console.log("fire authenticateCustomer");
+  try {
+    const response = await fetch(
+      `${BACKEND_ORIGIN}/customers/${customerId}/authentication`,
+      {
+        method: "GET",
+        credentials: "include",
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+
+    console.log(data.isAuthenticated);
+    return data.isAuthenticated;
+  } catch (error) {
+    console.error("Failed to fetch customer authentication:", error);
+    throw error;
+  }
+};
