@@ -3,7 +3,7 @@
 import { useInput } from "@/app/hooks/useInput";
 import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react";
-import { prefectures } from "@/app/helper/data/data";
+import { prefectures } from "@/app/helper/data";
 import styles from "./page.module.scss";
 import Image from "next/image";
 import Link from "next/link";

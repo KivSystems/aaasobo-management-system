@@ -315,3 +315,16 @@ export async function getUnavailabilities(instructorId: number) {
     throw new Error("Failed to fetch instructor unavailabilities.");
   }
 }
+
+export async function getInstructorProfile(instructorId: number) {
+  const instructorProfile = await prisma.instructor.findUnique({
+    where: { id: instructorId },
+    select: { id: true, name: true, nickname: true },
+  });
+
+  if (!instructorProfile) {
+    throw new Error("Instructor not found.");
+  }
+
+  return instructorProfile;
+}

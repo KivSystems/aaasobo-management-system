@@ -4,9 +4,17 @@ import styles from "./SideNav.module.scss";
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
+import { getLinks } from "@/app/helper/data/navLinks";
 
-export default function NavLinks({ links }: { links: LinkType[] }) {
+export default function NavLinks({
+  userId,
+  userType,
+}: {
+  userId: number;
+  userType: "admin" | "customer" | "instructor";
+}) {
   const pathname = usePathname();
+  const links = getLinks(userId, userType);
 
   return (
     <>

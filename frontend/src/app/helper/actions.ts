@@ -1,6 +1,6 @@
 "use server";
 import { redirect } from "next/navigation";
-import { logoutCustomer } from "./api/customersApi";
+import { logoutCustomer } from "./customersApi";
 import { logoutAdmin } from "./adminsApi";
 import { logoutInstructor } from "./instructorsApi";
 

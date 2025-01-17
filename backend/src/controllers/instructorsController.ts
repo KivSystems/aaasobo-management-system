@@ -25,6 +25,7 @@ import {
   getInstructorWithRecurringAvailabilityDay,
   updateRecurringAvailabilityInterval,
   getUnavailabilities,
+  getInstructorProfile,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import bcrypt from "bcrypt";
@@ -511,4 +512,18 @@ export const logoutInstructorController = async (
   res: Response,
 ) => {
   return logout(req, res, "instructor");
+};
+
+export const getInstructorProfileController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const instructorId = req.id;
+
+  try {
+    const profile = await getInstructorProfile(instructorId);
+    res.status(200).json(profile);
+  } catch (error) {
+    return setErrorResponse(res, error);
+  }
 };

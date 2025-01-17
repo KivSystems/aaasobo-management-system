@@ -4,6 +4,8 @@ import {
   ClipboardDocumentListIcon,
   UserIcon,
   UserGroupIcon,
+  CalendarIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 
 export function getLinks(
@@ -58,11 +60,20 @@ export function getLinks(
 
   const instructorLinks: LinkType[] = [
     {
-      name: "Teaching Schedule",
-      href: `/instructors/${userId}/schedule`,
-      icon: CalendarDaysIcon,
+      name: "Class Schedule",
+      href: `/instructors/${userId}/class-schedule`,
+      icon: CalendarIcon,
     },
-    // Add more instructor-specific links
+    {
+      name: "Profile",
+      href: `/instructors/${userId}/profile`,
+      icon: UserIcon,
+    },
+    {
+      name: "Availability Schedule",
+      href: `/instructors/${userId}/availability`,
+      icon: ClockIcon,
+    },
   ];
 
   switch (userType) {

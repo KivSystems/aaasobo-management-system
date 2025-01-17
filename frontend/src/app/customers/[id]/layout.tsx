@@ -2,8 +2,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./layout.module.scss";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
-import { getUserName } from "@/app/helper/api/usersApi";
-import { getLinks } from "@/app/helper/data/navLinks";
+import { getCustomerById } from "@/app/helper/customersApi";
 
 export default async function Layout({
   children,
@@ -17,14 +16,18 @@ export default async function Layout({
     throw new Error("Invalid customerId");
   }
 
-  const customerName = await getUserName(customerId, "customer");
-  const links = getLinks(customerId, "customer");
+  const customerData = await getCustomerById(customerId);
+  const customerName = customerData.name;
 
   return (
     <div className={styles.container}>
       <ToastContainer />
       <div className={styles.sidebar}>
-        <SideNav userType="customer" userName={customerName} links={links} />
+        <SideNav
+          userId={customerId}
+          userType="customer"
+          userName={customerName}
+        />
       </div>
       <div className={styles.content}>{children}</div>
     </div>

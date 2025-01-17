@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import SideNav from "@/app/components/SideNav";
 import styles from "./layout.module.scss";
 import {
   UsersIcon,
@@ -14,6 +13,7 @@ import { AdminAuthentication } from "@/app/helper/authenticationUtils";
 import { AuthContext } from "./authContext";
 import { logoutAdmin } from "@/app/helper/adminsApi";
 import Loading from "@/app/components/Loading";
+import ClientRenderedSideNav from "@/app/components/layouts/sideNav/ClientRenderedSideNav";
 
 type Link = {
   name: string;
@@ -63,7 +63,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{ isAuthenticated }}>
       <div className={styles.container}>
         <div className={styles.sidebar}>
-          <SideNav links={links} userName="Admin" logout={logout} />
+          <ClientRenderedSideNav
+            links={links}
+            userName="Admin"
+            logout={logout}
+          />
         </div>
         <div className={styles.content}>{children}</div>
       </div>
