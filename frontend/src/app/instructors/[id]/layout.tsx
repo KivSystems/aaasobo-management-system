@@ -2,10 +2,7 @@ import styles from "./layout.module.scss";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
-import {
-  getInstructor,
-  getInstructorProfile,
-} from "@/app/helper/instructorsApi";
+import { getInstructorProfile } from "@/app/helper/instructorsApi";
 
 export default async function Layout({
   children,
