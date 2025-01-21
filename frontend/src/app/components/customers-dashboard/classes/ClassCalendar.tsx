@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import CalendarView from "@/app/components/CalendarView";
+import CalendarView from "@/app/components/features/calendarView/CalendarView";
 import styles from "./ClassCalendar.module.scss";
 import FullCalendar from "@fullcalendar/react";
 import {
@@ -11,7 +11,7 @@ import RedirectButton from "@/app/components/elements/buttons/redirectButton/Red
 import { PlusIcon } from "@heroicons/react/24/outline";
 import Modal from "@/app/components/elements/modal/Modal";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import ClassesTable from "../../ClassesTable";
+import ClassesTable from "../../features/classesTable/ClassesTable";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { cancelClass, getClassesByCustomerId } from "@/app/helper/classesApi";
-import ClassDetail from "@/app/components/ClassDetail";
-import ClassesTable from "@/app/components/ClassesTable";
+import ClassDetail from "@/app/components/features/classDetail/ClassDetail";
+import ClassesTable from "@/app/components/features/classesTable/ClassesTable";
 import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
 import {
   isPastClassDateTime,

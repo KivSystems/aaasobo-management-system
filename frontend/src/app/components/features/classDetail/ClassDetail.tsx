@@ -8,9 +8,9 @@ import {
   getDayOfWeek,
   isPastClassEndTime,
   formatTime24Hour,
-} from "../helper/dateUtils";
+} from "../../../helper/dateUtils";
 import Image from "next/image";
-import ActionButton from "./elements/buttons/actionButton/ActionButton";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import styles from "./ClassDetail.module.scss";
 import {
   CalendarDaysIcon,

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import Calendar from "@/app/components/Calendar";
+import Calendar from "@/app/components/features/calendar/Calendar";
 import {
   getInstructor,
   registerUnavailability,

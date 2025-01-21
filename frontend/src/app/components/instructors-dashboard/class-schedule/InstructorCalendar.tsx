@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import CalendarView from "@/app/components/CalendarView";
+import CalendarView from "@/app/components/features/calendarView/CalendarView";
 import styles from "./InstructorCalendar.module.scss";
 import FullCalendar from "@fullcalendar/react";
 import { fetchClassesForCalendar } from "@/app/helper/classesApi";

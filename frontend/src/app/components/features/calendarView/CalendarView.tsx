@@ -12,13 +12,16 @@ import {
   EventClickArg,
   EventContentArg,
 } from "@fullcalendar/core";
-import Modal from "./elements/modal/Modal";
-import { cancelClass, getClassesByCustomerId } from "../helper/classesApi";
-import ClassDetail from "./ClassDetail";
+import Modal from "../../elements/modal/Modal";
+import {
+  cancelClass,
+  getClassesByCustomerId,
+} from "../../../helper/classesApi";
+import ClassDetail from "../classDetail/ClassDetail";
 import {
   formatTime24Hour,
   isPastPreviousDayDeadline,
-} from "../helper/dateUtils";
+} from "../../../helper/dateUtils";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
