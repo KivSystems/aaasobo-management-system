@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from "./EditRegularClass.module.scss";
 import { CalendarIcon, TagIcon } from "@heroicons/react/24/solid";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function EditRegularClass({
   customerId,

@@ -11,12 +11,12 @@ import {
   UserCircleIcon as UserCircleSolid,
 } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
-import ActionButton from "../../ActionButton";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { formatBirthdateToISO, formatDateToISO } from "@/app/helper/dateUtils";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import RedirectButton from "../../RedirectButton";
-import Loading from "../../Loading";
+import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
+import Loading from "../../elements/loading/Loading";
 
 function ChildrenProfiles({
   customerId,

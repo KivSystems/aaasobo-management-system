@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { getCustomerById, editCustomer } from "@/app/helper/customersApi";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { prefectures } from "@/app/helper/data";
-import ActionButton from "../../ActionButton";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function CustomerProfile({ customerId }: { customerId: number }) {
   const [customer, setCustomer] = useState<Customer | undefined>();

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./RedirectButton.module.scss";
+import styles from "./ActionButton.module.scss";
 
 type ActionButtonProps = {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;

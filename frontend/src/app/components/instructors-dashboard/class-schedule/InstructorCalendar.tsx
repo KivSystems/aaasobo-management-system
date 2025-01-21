@@ -6,7 +6,7 @@ import styles from "./InstructorCalendar.module.scss";
 import FullCalendar from "@fullcalendar/react";
 import { fetchClassesForCalendar } from "@/app/helper/classesApi";
 import { fetchInstructorAvailabilitiesForTodayAndAfter } from "@/app/helper/instructorsApi";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function InstructorCalendar({
   id,

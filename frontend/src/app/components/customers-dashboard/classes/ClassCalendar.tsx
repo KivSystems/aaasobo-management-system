@@ -7,14 +7,14 @@ import {
   isPastPreviousDayDeadline,
 } from "@/app/helper/dateUtils";
 import { cancelClass, fetchClassesForCalendar } from "@/app/helper/classesApi";
-import RedirectButton from "@/app/components/RedirectButton";
+import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import Modal from "@/app/components/Modal";
-import ActionButton from "../../ActionButton";
+import Modal from "@/app/components/elements/modal/Modal";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import ClassesTable from "../../ClassesTable";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function ClassCalendar({
   customerId,

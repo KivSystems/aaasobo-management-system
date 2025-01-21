@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import styles from "./AddSubscription.module.scss";
 import { getAllPlans } from "@/app/helper/plansApi";
 import { registerSubscription } from "@/app/helper/subscriptionsApi";
-import ActionButton from "@/app/components/ActionButton";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 function AddSubscription({
   customerId,

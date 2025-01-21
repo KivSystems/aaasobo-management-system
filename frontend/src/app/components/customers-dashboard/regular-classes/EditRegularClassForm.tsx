@@ -11,10 +11,10 @@ import RecurringClassEntry from "./RecurringClassEntry";
 import { useRouter } from "next/navigation";
 import { formatTime, getWeekday } from "@/app/helper/dateUtils";
 import styles from "./EditRegularClassForm.module.scss";
-import RedirectButton from "../../RedirectButton";
+import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function EditRegularClassForm({
   customerId,

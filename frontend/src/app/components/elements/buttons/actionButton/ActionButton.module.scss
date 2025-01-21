@@ -1,4 +1,4 @@
-@import "../variables.module.scss";
+@import "../../../../variables.module.scss";
 
 .btnComponent {
   display: inline-block;
@@ -141,29 +141,6 @@
 
   &:hover {
     background-color: $back-btn-bc-hover;
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(38, 143, 255, 0.5);
-  }
-}
-
-.bookClass {
-  background-color: $green-success;
-  transition:
-    background-color 0.3s ease,
-    transform 0.3s ease;
-  border: 1px solid transparent;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 100px;
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; // width: 140px;
-
-  &:hover {
-    background-color: $green-success-hover;
   }
 
   &:focus-visible {

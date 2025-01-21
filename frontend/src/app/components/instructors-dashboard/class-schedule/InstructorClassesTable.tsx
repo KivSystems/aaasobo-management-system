@@ -5,7 +5,7 @@ import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { editClass } from "@/app/helper/classesApi";
-import ActionButton from "../../ActionButton";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,

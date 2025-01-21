@@ -12,7 +12,7 @@ import { FC, SVGProps } from "react";
 import { AdminAuthentication } from "@/app/helper/authenticationUtils";
 import { AuthContext } from "./authContext";
 import { logoutAdmin } from "@/app/helper/adminsApi";
-import Loading from "@/app/components/Loading";
+import Loading from "@/app/components/elements/loading/Loading";
 import ClientRenderedSideNav from "@/app/components/layouts/sideNav/ClientRenderedSideNav";
 
 type Link = {

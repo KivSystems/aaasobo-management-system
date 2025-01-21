@@ -11,7 +11,7 @@ import {
   UserCircleIcon,
   VideoCameraIcon,
 } from "@heroicons/react/24/outline";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function InstructorProfile({
   instructorId,

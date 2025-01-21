@@ -12,7 +12,7 @@ import {
   EventClickArg,
   EventContentArg,
 } from "@fullcalendar/core";
-import Modal from "./Modal";
+import Modal from "./elements/modal/Modal";
 import { cancelClass, getClassesByCustomerId } from "../helper/classesApi";
 import ClassDetail from "./ClassDetail";
 import {

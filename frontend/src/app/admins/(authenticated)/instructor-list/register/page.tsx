@@ -14,11 +14,11 @@ import {
   PhotoIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import ActionButton from "@/app/components/ActionButton";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import TextInput from "@/app/components/TextInput";
+import TextInput from "@/app/components/elements/textInput/TextInput";
 
 function Register() {
   const [name, onNameChange] = useInput();

@@ -3,7 +3,7 @@
 import { formatTime, getEndTime, getWeekday } from "@/app/helper/dateUtils";
 import { getRecurringClassesBySubscriptionId } from "@/app/helper/recurringClassesApi";
 import React, { useEffect, useState } from "react";
-import ActionButton from "../../ActionButton";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { useRouter } from "next/navigation";
 import styles from "./RegularClassesTable.module.scss";
 import { CheckCircleIcon, ArrowUpCircleIcon } from "@heroicons/react/24/solid";

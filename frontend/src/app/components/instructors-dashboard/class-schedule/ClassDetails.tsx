@@ -5,7 +5,7 @@ import InstructorClassDetail from "@/app/components/instructors-dashboard/class-
 import InstructorClassesTable from "@/app/components/instructors-dashboard/class-schedule/InstructorClassesTable";
 import styles from "./ClassDetails.module.scss";
 import Link from "next/link";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 type StatusType =
   | "booked"

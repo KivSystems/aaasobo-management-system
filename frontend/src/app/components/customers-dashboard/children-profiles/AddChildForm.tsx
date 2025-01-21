@@ -11,8 +11,8 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { formatDateToISO } from "@/app/helper/dateUtils";
-import ActionButton from "../../ActionButton";
-import RedirectButton from "../../RedirectButton";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
+import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

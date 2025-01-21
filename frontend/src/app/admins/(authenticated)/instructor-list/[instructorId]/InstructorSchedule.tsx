@@ -8,7 +8,7 @@ import {
 } from "@/app/helper/instructorsApi";
 import { SlotsOfDays } from "@/app/helper/instructorsApi";
 import ScheduleCalendar from "@/app/components/admins-dashboard/ScheduleCalendar";
-import ActionButton from "@/app/components/ActionButton";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function InstructorSchedule({

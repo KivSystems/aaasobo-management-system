@@ -15,7 +15,7 @@ import {
   getAllCustomers,
   getAllChildren,
 } from "@/app/helper/adminsApi";
-import RedirectButton from "../RedirectButton";
+import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
 
 type UsersTableProps = {
   userType: string;

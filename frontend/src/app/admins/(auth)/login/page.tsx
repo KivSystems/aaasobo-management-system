@@ -8,9 +8,9 @@ import styles from "./page.module.scss";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
-import TextInput from "@/app/components/TextInput";
+import TextInput from "@/app/components/elements/textInput/TextInput";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
-import ActionButton from "@/app/components/ActionButton";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 function Login() {
   const [email, onEmailChange] = useInput();

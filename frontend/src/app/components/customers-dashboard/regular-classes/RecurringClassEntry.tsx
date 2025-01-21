@@ -9,8 +9,8 @@ import {
 import { getRecurringClassesByInstructorId } from "@/app/helper/recurringClassesApi";
 import { useEffect, useState } from "react";
 import styles from "./RecurringClassEntry.module.scss";
-import ActionButton from "../../ActionButton";
-import Loading from "../../Loading";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
+import Loading from "../../elements/loading/Loading";
 
 function RecurringClassEntry({
   state,

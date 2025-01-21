@@ -4,8 +4,8 @@ import {
   getInstructor,
   registerUnavailability,
 } from "@/app/helper/instructorsApi";
-import ActionButton from "@/app/components/ActionButton";
-import Loading from "@/app/components/Loading";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
+import Loading from "@/app/components/elements/loading/Loading";
 
 export default function AvailabilityCalendar({
   instructorId,

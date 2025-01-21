@@ -11,8 +11,8 @@ import {
   IdentificationIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import RedirectButton from "../../RedirectButton";
-import ActionButton from "../../ActionButton";
+import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 
 function EditChildForm({
   customerId,

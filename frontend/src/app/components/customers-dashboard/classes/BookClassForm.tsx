@@ -9,8 +9,8 @@ import {
 } from "@/app/helper/classesApi";
 import { useRouter } from "next/navigation";
 import { fetchInstructorAvailabilitiesForTomorrowAndAfter } from "@/app/helper/instructorsApi";
-import RedirectButton from "../../RedirectButton";
-import ActionButton from "../../ActionButton";
+import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

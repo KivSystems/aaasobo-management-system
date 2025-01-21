@@ -2,12 +2,12 @@ import { useEffect, useState, useCallback } from "react";
 import { cancelClass, getClassesByCustomerId } from "@/app/helper/classesApi";
 import ClassDetail from "@/app/components/ClassDetail";
 import ClassesTable from "@/app/components/ClassesTable";
-import RedirectButton from "@/app/components/RedirectButton";
+import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
 import {
   isPastClassDateTime,
   isPastPreviousDayDeadline,
 } from "@/app/helper/dateUtils";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function ClassDetails({
   customerId,

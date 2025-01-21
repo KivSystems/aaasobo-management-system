@@ -4,8 +4,8 @@ import { getChildrenByCustomerId } from "@/app/helper/childrenApi";
 import BookClassForm from "@/app/components/customers-dashboard/classes/BookClassForm";
 import { getClassesByCustomerId } from "@/app/helper/classesApi";
 import { formatFiveMonthsLaterEndOfMonth } from "@/app/helper/dateUtils";
-import Breadcrumb from "../../Breadcrumb";
-import Loading from "../../Loading";
+import Breadcrumb from "../../elements/breadcrumb/Breadcrumb";
+import Loading from "../../elements/loading/Loading";
 
 function BookClass({
   customerId,
