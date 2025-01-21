@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getInstructors } from "@/app/helper/instructorsApi";
-import { SlotsOfDays } from "@/app/helper/instructorsApi";
+import { getInstructors } from "@/app/helper/api/instructorsApi";
+import { SlotsOfDays } from "@/app/helper/api/instructorsApi";
 
 export type Instructor = {
   id: number;

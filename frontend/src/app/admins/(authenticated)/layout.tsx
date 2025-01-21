@@ -9,9 +9,9 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { FC, SVGProps } from "react";
-import { AdminAuthentication } from "@/app/helper/authenticationUtils";
+import { AdminAuthentication } from "@/app/helper/utils/authenticationUtils";
 import { AuthContext } from "./authContext";
-import { logoutAdmin } from "@/app/helper/adminsApi";
+import { logoutAdmin } from "@/app/helper/api/adminsApi";
 import Loading from "@/app/components/elements/loading/Loading";
 import ClientRenderedSideNav from "@/app/components/layouts/sideNav/ClientRenderedSideNav";
 

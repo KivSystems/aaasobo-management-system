@@ -16,12 +16,12 @@ import Modal from "../../elements/modal/Modal";
 import {
   cancelClass,
   getClassesByCustomerId,
-} from "../../../helper/classesApi";
+} from "../../../helper/api/classesApi";
 import ClassDetail from "../classDetail/ClassDetail";
 import {
   formatTime24Hour,
   isPastPreviousDayDeadline,
-} from "../../../helper/dateUtils";
+} from "../../../helper/utils/dateUtils";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,

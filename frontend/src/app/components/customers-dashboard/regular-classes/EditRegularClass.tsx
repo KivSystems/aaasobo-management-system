@@ -1,7 +1,7 @@
 "use client";
 
 import EditRegularClassForm from "@/app/components/customers-dashboard/regular-classes/EditRegularClassForm";
-import { getSubscriptionById } from "@/app/helper/subscriptionsApi";
+import { getSubscriptionById } from "@/app/helper/api/subscriptionsApi";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from "./EditRegularClass.module.scss";

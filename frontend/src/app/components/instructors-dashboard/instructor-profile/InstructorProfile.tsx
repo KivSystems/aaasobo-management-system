@@ -1,6 +1,6 @@
 "use client";
 
-import { getInstructor } from "@/app/helper/instructorsApi";
+import { getInstructor } from "@/app/helper/api/instructorsApi";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./InstructorProfile.module.scss";

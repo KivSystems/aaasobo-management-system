@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./AddSubscription.module.scss";
-import { getAllPlans } from "@/app/helper/plansApi";
-import { registerSubscription } from "@/app/helper/subscriptionsApi";
+import { getAllPlans } from "@/app/helper/api/plansApi";
+import { registerSubscription } from "@/app/helper/api/subscriptionsApi";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 function AddSubscription({

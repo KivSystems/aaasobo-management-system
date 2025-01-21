@@ -1,14 +1,14 @@
 import { UserCircleIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import styles from "./BookClassForm.module.scss";
 import { useEffect, useState } from "react";
-import { formatDateTime } from "@/app/helper/dateUtils";
+import { formatDateTime } from "@/app/helper/utils/dateUtils";
 import {
   bookClass,
   checkChildrenAvailability,
   checkDoubleBooking,
-} from "@/app/helper/classesApi";
+} from "@/app/helper/api/classesApi";
 import { useRouter } from "next/navigation";
-import { fetchInstructorAvailabilitiesForTomorrowAndAfter } from "@/app/helper/instructorsApi";
+import { fetchInstructorAvailabilitiesForTomorrowAndAfter } from "@/app/helper/api/instructorsApi";
 import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { toast } from "react-toastify";

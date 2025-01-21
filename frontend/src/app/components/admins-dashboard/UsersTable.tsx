@@ -14,7 +14,7 @@ import {
   getAllInstructors,
   getAllCustomers,
   getAllChildren,
-} from "@/app/helper/adminsApi";
+} from "@/app/helper/api/adminsApi";
 import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
 
 type UsersTableProps = {

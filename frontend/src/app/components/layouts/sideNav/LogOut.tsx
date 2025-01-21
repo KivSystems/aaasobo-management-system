@@ -1,12 +1,12 @@
 "use client";
 
-import { logoutCustomer } from "@/app/helper/customersApi";
+import { logoutCustomer } from "@/app/helper/api/customersApi";
 import styles from "./SideNav.module.scss";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { logoutInstructor } from "@/app/helper/instructorsApi";
+import { logoutInstructor } from "@/app/helper/api/instructorsApi";
 import { toast } from "react-toastify";
-import { logoutAdmin } from "@/app/helper/adminsApi";
+import { logoutAdmin } from "@/app/helper/api/adminsApi";
 
 export default function LogOut({
   userType,

@@ -1,12 +1,12 @@
 "use client";
 
-import { formatTime, getWeekday } from "@/app/helper/dateUtils";
+import { formatTime, getWeekday } from "@/app/helper/utils/dateUtils";
 import {
   Day,
   fetchInstructorRecurringAvailabilities,
   SlotsOfDays,
-} from "@/app/helper/instructorsApi";
-import { getRecurringClassesByInstructorId } from "@/app/helper/recurringClassesApi";
+} from "@/app/helper/api/instructorsApi";
+import { getRecurringClassesByInstructorId } from "@/app/helper/api/recurringClassesApi";
 import { useEffect, useState } from "react";
 import styles from "./RecurringClassEntry.module.scss";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";

@@ -3,7 +3,7 @@ import {
   isPastClassDateTime,
   formatShortDate,
   formatTime24Hour,
-} from "../../../helper/dateUtils";
+} from "../../../helper/utils/dateUtils";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import styles from "./ClassesTable.module.scss";
 import Image from "next/image";

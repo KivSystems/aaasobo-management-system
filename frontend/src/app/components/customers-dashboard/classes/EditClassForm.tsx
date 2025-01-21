@@ -2,8 +2,8 @@ import { UserCircleIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import styles from "./BookClassForm.module.scss";
 import { useState } from "react";
 import Link from "next/link";
-import { formatDateTime } from "@/app/helper/dateUtils";
-import { editClass } from "@/app/helper/classesApi";
+import { formatDateTime } from "@/app/helper/utils/dateUtils";
+import { editClass } from "@/app/helper/api/classesApi";
 import { useRouter } from "next/navigation";
 import { useSelect } from "@/app/hooks/useSelect";
 

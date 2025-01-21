@@ -1,7 +1,7 @@
 "use client";
 
 import EditChildForm from "@/app/components/customers-dashboard/children-profiles/EditChildForm";
-import { getChildById } from "@/app/helper/childrenApi";
+import { getChildById } from "@/app/helper/api/childrenApi";
 import { useEffect, useState } from "react";
 
 function EditChildProfile({

@@ -3,7 +3,7 @@ import Calendar from "@/app/components/features/calendar/Calendar";
 import {
   getInstructor,
   registerUnavailability,
-} from "@/app/helper/instructorsApi";
+} from "@/app/helper/api/instructorsApi";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import Loading from "@/app/components/elements/loading/Loading";
 

@@ -10,8 +10,8 @@ import {
   Day,
   fetchInstructorRecurringAvailabilities,
   SlotsOfDays,
-} from "@/app/helper/instructorsApi";
-import { formatTime, getWeekday } from "@/app/helper/dateUtils";
+} from "@/app/helper/api/instructorsApi";
+import { formatTime, getWeekday } from "@/app/helper/utils/dateUtils";
 import styles from "./InstructorsSchedule.module.scss";
 
 function InstructorsSchedule() {

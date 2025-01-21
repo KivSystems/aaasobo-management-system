@@ -2,7 +2,7 @@
 
 import { FormEvent } from "react";
 import { useInput } from "@/app/hooks/useInput";
-import { isValidRegister } from "@/app/helper/validationUtils";
+import { isValidRegister } from "@/app/helper/utils/validationUtils";
 
 function Register() {
   const [name, onNameChange] = useInput();

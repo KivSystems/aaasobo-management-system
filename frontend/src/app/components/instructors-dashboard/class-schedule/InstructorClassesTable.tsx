@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { formatTime24Hour, isPastClassEndTime } from "@/app/helper/dateUtils";
+import {
+  formatTime24Hour,
+  isPastClassEndTime,
+} from "@/app/helper/utils/dateUtils";
 import styles from "./InstructorClassesTable.module.scss";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { editClass } from "@/app/helper/classesApi";
+import { editClass } from "@/app/helper/api/classesApi";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
   CheckCircleIcon,

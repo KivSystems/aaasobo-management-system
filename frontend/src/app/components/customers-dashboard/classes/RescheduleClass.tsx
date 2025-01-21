@@ -1,6 +1,6 @@
-import { getChildrenByCustomerId } from "@/app/helper/childrenApi";
-import { getInstructors } from "@/app/helper/instructorsApi";
-import { getClassById } from "@/app/helper/classesApi";
+import { getChildrenByCustomerId } from "@/app/helper/api/childrenApi";
+import { getInstructors } from "@/app/helper/api/instructorsApi";
+import { getClassById } from "@/app/helper/api/classesApi";
 import { useEffect, useState } from "react";
 import EditClassForm from "@/app/components/customers-dashboard/classes/EditClassForm";
 

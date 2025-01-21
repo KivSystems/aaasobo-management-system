@@ -1,5 +1,5 @@
 import styles from "./ScheduleCalendar.module.scss";
-import { Day, SlotsOfDays } from "@/app/helper/instructorsApi";
+import { Day, SlotsOfDays } from "@/app/helper/api/instructorsApi";
 
 export default function ScheduleCalendar({
   slotsOfDays,

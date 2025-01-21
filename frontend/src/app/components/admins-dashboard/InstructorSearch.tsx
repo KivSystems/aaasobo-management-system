@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./InstructorSearch.module.scss";
-import { getInstructors } from "@/app/helper/instructorsApi";
+import { getInstructors } from "@/app/helper/api/instructorsApi";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 function InstructorSearch({

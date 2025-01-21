@@ -1,15 +1,15 @@
 "use client";
 
-import { getInstructors } from "@/app/helper/instructorsApi";
+import { getInstructors } from "@/app/helper/api/instructorsApi";
 import { useEffect, useState } from "react";
-import { getChildrenByCustomerId } from "@/app/helper/childrenApi";
+import { getChildrenByCustomerId } from "@/app/helper/api/childrenApi";
 import {
   editRecurringClass,
   getRecurringClassesBySubscriptionId,
-} from "@/app/helper/recurringClassesApi";
+} from "@/app/helper/api/recurringClassesApi";
 import RecurringClassEntry from "./RecurringClassEntry";
 import { useRouter } from "next/navigation";
-import { formatTime, getWeekday } from "@/app/helper/dateUtils";
+import { formatTime, getWeekday } from "@/app/helper/utils/dateUtils";
 import styles from "./EditRegularClassForm.module.scss";
 import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
 import { toast, ToastContainer } from "react-toastify";

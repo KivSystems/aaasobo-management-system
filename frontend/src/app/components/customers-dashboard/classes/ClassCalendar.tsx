@@ -5,8 +5,11 @@ import FullCalendar from "@fullcalendar/react";
 import {
   formatFiveMonthsLaterEndOfMonth,
   isPastPreviousDayDeadline,
-} from "@/app/helper/dateUtils";
-import { cancelClass, fetchClassesForCalendar } from "@/app/helper/classesApi";
+} from "@/app/helper/utils/dateUtils";
+import {
+  cancelClass,
+  fetchClassesForCalendar,
+} from "@/app/helper/api/classesApi";
 import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import Modal from "@/app/components/elements/modal/Modal";

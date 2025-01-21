@@ -3,7 +3,7 @@
 import React, { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useInput } from "@/app/hooks/useInput";
-import { isValidLogin } from "@/app/helper/validationUtils";
+import { isValidLogin } from "@/app/helper/utils/validationUtils";
 import styles from "./page.module.scss";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

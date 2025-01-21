@@ -3,8 +3,11 @@
 import styles from "./AddChildForm.module.scss";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { editChild } from "@/app/helper/childrenApi";
-import { formatBirthdateToISO, formatDateToISO } from "@/app/helper/dateUtils";
+import { editChild } from "@/app/helper/api/childrenApi";
+import {
+  formatBirthdateToISO,
+  formatDateToISO,
+} from "@/app/helper/utils/dateUtils";
 import { useState } from "react";
 import {
   CakeIcon,

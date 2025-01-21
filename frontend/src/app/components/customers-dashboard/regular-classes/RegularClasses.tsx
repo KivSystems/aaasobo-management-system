@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import styles from "./RegularClasses.module.scss";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { getSubscriptionsByCustomerId } from "@/app/helper/subscriptionsApi";
+import { getSubscriptionsByCustomerId } from "@/app/helper/api/subscriptionsApi";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import CurrentSubscription from "@/app/components/customers-dashboard/regular-classes/CurrentSubscription";
 import AddSubscription from "@/app/components/customers-dashboard/regular-classes/AddSubscription";
