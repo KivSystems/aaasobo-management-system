@@ -152,13 +152,19 @@ export const updateRecurringClassesController = async (
   }
 
   // If classStartDate is shorter than today, it shouldn't be executed.
-  // This validation is commented out as of now.
-  // TODO: Japan time should be converted to local time.
-  const today = new Date();
-  const jpnToday = new Date(today.getTime() + JAPAN_TIME_DIFF * 60 * 60 * 1000);
-  // if (new Date(classStartDate) <= jpnToday) {
-  //   return res.status(400).json({ message: "Invalid Start From Date" });
-  // }
+  const now = new Date();
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const todayStr = now.toLocaleDateString("en-US", {
+    timeZone,
+  });
+
+  const [month, date, year] = todayStr.split("/").map(Number);
+  const today = new Date(year, month - 1, date);
+
+  if (new Date(classStartDate) <= today) {
+    return res.status(400).json({ message: "Invalid Start From Date" });
+  }
 
   try {
     const updatedRecurringClasses = await prisma.$transaction(async (tx) => {
