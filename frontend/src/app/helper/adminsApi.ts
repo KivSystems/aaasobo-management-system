@@ -47,22 +47,14 @@ export const getAllChildren = async () => {
   }
 };
 
-export const logoutAdmin = async (): Promise<{
-  ok: boolean;
-  error?: string;
-}> => {
+export const logoutAdmin = async () => {
   try {
     const response = await fetch(`${BASE_URL}/logout`, {
       credentials: "include",
     });
     if (!response.ok) {
-      const errorText = await response.text();
-      return {
-        ok: false,
-        error: errorText || `HTTP error! status: ${response.status}`,
-      };
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return { ok: true };
   } catch (error) {
     console.error("Failed to logout:", error);
     throw error;
