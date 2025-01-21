@@ -29,7 +29,6 @@ export const authenticateCustomerSession = async (
   if (isNaN(customerId)) {
     return res.status(400).json({ message: "Invalid customer ID" });
   }
-
   const isAuthenticated =
     req.session?.userType === "customer" && req.session?.userId === customerId;
   res.status(200).json({ isAuthenticated: isAuthenticated });

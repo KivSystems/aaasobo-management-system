@@ -15,7 +15,7 @@ type LinkProps = {
   icon: FC<SVGProps<SVGSVGElement>>;
 };
 
-function SideNav({
+export default function ClientRenderedSideNav({
   links,
   userName,
   logout,
@@ -69,5 +69,3 @@ function SideNav({
     </div>
   );
 }
-
-export default SideNav;
