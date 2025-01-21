@@ -107,6 +107,7 @@ function RegularClassesTable({
 export default RegularClassesTable;
 
 function Table({ recurringClasses }: { recurringClasses: RecurringClass[] }) {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return (
     <table className={styles.table}>
       <thead className={styles.header}>
@@ -129,15 +130,12 @@ function Table({ recurringClasses }: { recurringClasses: RecurringClass[] }) {
           let day = null;
 
           if (recurringClass.dateTime) {
-            startTime = formatTime(
-              new Date(recurringClass.dateTime),
-              "Asia/Tokyo",
-            );
+            startTime = formatTime(new Date(recurringClass.dateTime), timeZone);
             endTime = formatTime(
               getEndTime(new Date(recurringClass.dateTime)),
-              "Asia/Tokyo",
+              timeZone,
             );
-            day = getWeekday(new Date(recurringClass.dateTime), "Asia/Tokyo");
+            day = getWeekday(new Date(recurringClass.dateTime), timeZone);
           }
 
           return (

@@ -29,6 +29,7 @@ function EditRegularClassForm({
   const [children, setChildren] = useState<Child[] | undefined>([]);
   const [states, setStates] = useState<RecurringClassState[]>([]);
   const [keepStates, setKeepStates] = useState<RecurringClassState[]>([]);
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const router = useRouter();
 
   useEffect(() => {
@@ -68,8 +69,8 @@ function EditRegularClassForm({
             let time = null;
 
             if (dateTime) {
-              day = getWeekday(new Date(dateTime), "Asia/Tokyo");
-              time = formatTime(new Date(dateTime), "Asia/Tokyo");
+              day = getWeekday(new Date(dateTime), timeZone);
+              time = formatTime(new Date(dateTime), timeZone);
             }
 
             return {

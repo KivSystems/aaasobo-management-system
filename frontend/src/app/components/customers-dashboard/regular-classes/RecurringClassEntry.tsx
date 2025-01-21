@@ -47,10 +47,13 @@ function RecurringClassEntry({
   const [times, setTimes] = useState<string[]>([]);
 
   // Get tomorrow's date
-  // TODO: Tomorrow needs to be fixed.
-  const tomorrow = new Date();
-  tomorrow.setHours(0, 0, 0, 0);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  const now = new Date();
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const todayStr = now.toLocaleDateString("en-US", {
+    timeZone,
+  });
+  const [month, date, year] = todayStr.split("/").map(Number);
+  const tomorrow = new Date(year, month - 1, date + 1);
   const tomorrowFormatted = tomorrow.toISOString().split("T")[0];
 
   useEffect(() => {
@@ -74,12 +77,9 @@ function RecurringClassEntry({
           (recurringClass: RecurringAvailability) => {
             const day = getWeekday(
               new Date(recurringClass.startAt),
-              "Asia/Tokyo",
+              timeZone,
             ) as Day;
-            const time = formatTime(
-              new Date(recurringClass.startAt),
-              "Asia/Tokyo",
-            );
+            const time = formatTime(new Date(recurringClass.startAt), timeZone);
 
             newUnavailableSlots[day].push(time);
           },
@@ -105,9 +105,9 @@ function RecurringClassEntry({
         data.forEach((availability: RecurringAvailability) => {
           const day = getWeekday(
             new Date(availability.startAt),
-            "Asia/Tokyo",
+            timeZone,
           ) as Day;
-          const time = formatTime(new Date(availability.startAt), "Asia/Tokyo");
+          const time = formatTime(new Date(availability.startAt), timeZone);
 
           if (!newUnavailableSlots[day].includes(time)) {
             newSlots[day].push(time);
