@@ -76,9 +76,7 @@ export const getMonthNumber = (month: Month): number => {
 };
 
 export const formatTime = (date: Date) => {
-  // TODO: The local time zone should be used. 
-  // const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const timeZone = "Asia/Tokyo";
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
     minute: "2-digit",
