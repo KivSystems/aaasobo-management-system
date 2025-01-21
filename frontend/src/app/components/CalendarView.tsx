@@ -6,7 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
-import styles from "./CalendarHeaderView.module.scss";
+import styles from "./CalendarView.module.scss";
 import {
   DayCellContentArg,
   EventClickArg,
