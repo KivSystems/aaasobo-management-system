@@ -14,6 +14,7 @@ export default function LoginPage() {
           width={100}
           height={100}
           className={styles.logo}
+          priority={true}
         />
         <h2>Login</h2>
         <p>
