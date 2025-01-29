@@ -1,83 +1,53 @@
 "use client";
 
-import { useInput } from "@/app/hooks/useInput";
-import { useRouter } from "next/navigation";
-import React, { FormEvent } from "react";
+import React from "react";
 import styles from "./LoginForm.module.scss";
-import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
-import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
-import TextInput from "@/app/components/elements/textInput/TextInput";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { authenticate } from "@/app/actions/authActions";
+import { useFormState } from "react-dom";
 
-export default function LoginForm() {
-  const [email, onEmailChange] = useInput();
-  const [password, onPasswordChange] = useInput();
-  const router = useRouter();
+export default function LoginForm({ userType }: { userType: UserType }) {
+  const [errorMessage, formAction, isPending] = useFormState(
+    authenticate,
+    undefined,
+  );
 
-  const loginHandler = async (e: FormEvent) => {
-    e.preventDefault();
-
-    // If the values are null, return it.
-    if (!email || !password) {
-      toast.warning("Please enter your email and password.");
-      return;
-    }
-
-    // Define the data to be sent to the server side.
-    const BACKEND_ORIGIN =
-      process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
-    const loginURL = `${BACKEND_ORIGIN}/customers/login`;
-    const headers = { "Content-Type": "application/json" };
-    const body = JSON.stringify({
-      email,
-      password,
-    });
-
-    const response = await fetch(loginURL, {
-      method: "POST",
-      credentials: "include",
-      headers,
-      body,
-    });
-
-    if (!response.ok) {
-      toast.error("Login Failed. Please check email/password.");
-      throw new Error("Something went wrong");
-    }
-
-    const data = await response.json();
-
-    // Redirect to the customer page
-    const redirectUrl =
-      data.redirectUrl || `/customers/${data.customer.id}/classes`;
-    router.push(redirectUrl);
-  };
   return (
-    <form className={styles.form}>
-      <TextInput
-        label="Email"
-        type="email"
-        value={email}
-        placeholder="example@aaasobo.com"
-        onChange={onEmailChange}
-        icon={<EnvelopeIcon className={styles.icon} />}
-      />
-      <TextInput
-        label="Password"
-        type="password"
-        value={password}
-        placeholder="password"
-        onChange={onPasswordChange}
-        icon={<LockClosedIcon className={styles.icon} />}
-      />
-      {/* <Link href="/customers/register">Forgot Password?</Link> */}
-      <div className={styles.buttonWrapper}>
-        <ActionButton
-          btnText="Login"
-          onClick={loginHandler}
-          className="bookBtn"
-        />
+    <form action={formAction} className={styles.form}>
+      <div>
+        <label htmlFor="email">Email</label>
+        <div className="relative">
+          <input
+            id="email"
+            type="email"
+            name="email"
+            placeholder="Enter your email address"
+            required
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="password">Password</label>
+        <div className="relative">
+          <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Enter password"
+            required
+            // TODO: set the minimum length of password with "minLength={6}"
+          />
+        </div>
+      </div>
+
+      <input type="hidden" name="userType" value={userType} />
+      <button aria-disabled={isPending}>Log in</button>
+      <div>
+        {errorMessage && (
+          <>
+            <p>{errorMessage}</p>
+          </>
+        )}
       </div>
     </form>
   );
