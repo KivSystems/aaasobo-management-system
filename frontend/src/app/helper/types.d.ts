@@ -189,3 +189,5 @@ type LinkType = {
   href: string;
   icon: FC<SVGProps<SVGSVGElement>>;
 };
+
+type UserType = "admin" | "customer" | "instructor";
