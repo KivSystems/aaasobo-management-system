@@ -35,7 +35,8 @@ export default function LoginForm({ userType }: { userType: UserType }) {
             name="password"
             placeholder="Enter password"
             required
-            // TODO: set the minimum length of password with "minLength={6}"
+            // TODO: set the minimum length of password
+            // minLength={8}
           />
         </div>
       </div>
