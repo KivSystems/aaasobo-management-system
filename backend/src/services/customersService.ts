@@ -55,3 +55,22 @@ export const getAllCustomers = async () => {
     throw new Error("Failed to fetch customers.");
   }
 };
+
+export const getCustomerByEmail = async (
+  email: string,
+): Promise<Customer | null> => {
+  try {
+    const customer = await prisma.customer.findUnique({
+      where: { email },
+    });
+
+    if (!customer) {
+      throw new Error("Customer not found.");
+    }
+
+    return customer;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch customer.");
+  }
+};
