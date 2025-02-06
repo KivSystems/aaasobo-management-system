@@ -32,7 +32,10 @@
   padding-right: 0.5rem;
 }
 
-.required {
+.required,
+.errorText {
   color: $red-alert;
   font-size: 0.8rem;
 }
+
+
