@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
   fetchCustomerById,
+  registerCustomer,
   updateCustomer,
 } from "../services/customersService";
 import {
@@ -12,33 +13,30 @@ import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
 import { logout } from "../helper/logout";
 
-export const registerCustomer = async (req: Request, res: Response) => {
-  const { name, email, password, prefecture } = req.body;
+export const registerCustomerController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { name, password, prefecture } = req.body ?? {};
+  let { email } = req.body ?? {};
 
-  // TODO: Validate an email and the password.
-  // TODO: Hash the password.
+  if (!name || !email || !password || !prefecture) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  // Normalize email
+  email = email.trim().toLowerCase();
 
   try {
-    // Insert the customer data into the DB.
-    const customer = await prisma.customer.create({
-      data: {
-        name,
-        email,
-        password,
-        prefecture,
-      },
-    });
+    await registerCustomer({ name, email, password, prefecture });
 
-    // Exclude the password from the response.
-    const { password: _, ...customerWithoutPassword } = customer;
-
-    res.status(200).json({
-      redirectUrl: "/login",
-      message: "Customer is registered successfully",
-      customer: customerWithoutPassword,
+    res.status(201).json({
+      message: "Registration successful!",
+      redirectUrl: "/customers/login",
     });
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    console.error("Registration Error:", error);
+    return res.status(error.statusCode || 500).json({ message: error.message });
   }
 };
 
