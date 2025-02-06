@@ -66,3 +66,33 @@ export const logoutCustomer = async (): Promise<Response<string>> => {
     ? { ok: true }
     : { ok: false, error: (await response.json()).message };
 };
+
+export const registerCustomer = async (userData: {
+  name: string;
+  email: string;
+  password: string;
+  prefecture: string;
+}) => {
+  try {
+    const registerURL = `${BACKEND_ORIGIN}/customers/register`;
+
+    const response = await fetch(registerURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        status: response.status,
+        message: data.message || "Something went wrong",
+      };
+    }
+
+    return { status: response.status, ...data };
+  } catch (error) {
+    return { status: 500, message: "An unexpected error occurred." };
+  }
+};
