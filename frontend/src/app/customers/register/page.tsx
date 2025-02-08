@@ -21,7 +21,7 @@ import { useSelect } from "@/app/hooks/useSelect";
 import { registerCustomer } from "@/app/helper/api/customersApi";
 import { customerRegisterSchema } from "@/app/schemas/customerRegisterSchema";
 import zxcvbn from "zxcvbn";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import PasswordStrengthMeter from "@/app/components/elements/passwordStrengthMeter/PasswordStrengthMeter";
 
 function Register() {
   const [name, onNameChange] = useInput();
@@ -49,14 +49,10 @@ function Register() {
     }
   }, [password]);
 
-  const strengthLabels = ["Weak", "Good!", "Very Good!"];
-  const strengthColors = ["#FF3E3E", "#A0D468", "#4CAF50"];
-  const strengthWidths = ["20%", "60%", "100%"];
-  const mappedStrength =
-    passwordStrength < 3 ? 0 : passwordStrength === 3 ? 1 : 2;
-
   const registerHandler = async (e: FormEvent) => {
     e.preventDefault();
+
+    setErrors({});
 
     // Validate form using Zod
     const validationResult = customerRegisterSchema.safeParse({
@@ -83,7 +79,7 @@ function Register() {
     }
 
     // Prevent submission if password is weak
-    if (passwordStrength < 2) {
+    if (passwordStrength < 3) {
       setErrors({
         password:
           "Your password is too weak. Try using a longer passphrase or a password manager.",
@@ -140,7 +136,7 @@ function Register() {
             Already a member? <Link href="/customers/login">Log In</Link>
           </p>
 
-          <form className={styles.form}>
+          <form className={styles.form} onSubmit={registerHandler}>
             <p className={styles.required}>*Required</p>
             <TextInput
               label="Name"
@@ -172,44 +168,15 @@ function Register() {
               onChange={onPasswordChange}
               icon={<LockClosedIcon className={styles.icon} />}
               inputRequired={true}
+              minLength={8}
               error={errors.password}
             />
-            {/* Password Strength Section */}
-            <p className={styles.strengthLabel}>
-              Strength:{" "}
-              <span>
-                {password ? (
-                  passwordStrength >= 3 ? (
-                    <CheckCircleIcon
-                      className={`${styles.strengthLabel__icon} ${styles["strengthLabel__icon--check"]}`}
-                    />
-                  ) : (
-                    <XCircleIcon
-                      className={`${styles.strengthLabel__icon} ${styles["strengthLabel__icon--x"]}`}
-                    />
-                  )
-                ) : (
-                  ""
-                )}
-              </span>
-              <span>{password ? strengthLabels[mappedStrength] : ""}</span>
-            </p>
 
-            <div className={styles.strengthBarContainer}>
-              <div
-                className={styles.strengthBar}
-                style={{
-                  width: password ? strengthWidths[mappedStrength] : "0",
-                  backgroundColor: password
-                    ? strengthColors[mappedStrength]
-                    : "transparent",
-                }}
-              />
-            </div>
-
-            <div className={styles.passwordFeedback}>
-              {passwordFeedback ? <p>{passwordFeedback}</p> : ""}
-            </div>
+            <PasswordStrengthMeter
+              password={password}
+              passwordStrength={passwordStrength}
+              passwordFeedback={passwordFeedback}
+            />
 
             <TextInput
               label="Password Confirmation"
@@ -231,6 +198,7 @@ function Register() {
                   className={styles.select}
                   value={prefecture}
                   onChange={onPrefectureChange}
+                  required
                   style={{ color: prefecture ? "black" : "gray" }}
                 >
                   <option value="" disabled>
@@ -279,7 +247,6 @@ function Register() {
             <div className={styles.buttonWrapper}>
               <ActionButton
                 btnText="Create Account"
-                onClick={registerHandler}
                 className="bookBtn"
                 type="submit"
               />
