@@ -225,10 +225,29 @@ export const fetchInstructorAvailabilitiesForTomorrowAndAfter = async (
   }
 };
 
-export const logoutInstructor = async (): Promise<Response<undefined>> => {
+export const logoutInstructor = async (): Promise<{
+  ok: boolean;
+  error?: string;
+}> => {
   const response = await fetch(`${BASE_URL}/logout`, {
     method: "POST",
     credentials: "include",
   });
-  return response.ok ? undefined : response.json();
+  return response.ok
+    ? { ok: true }
+    : { ok: false, error: (await response.json()).message };
+};
+
+export const getInstructorProfile = async (instructorId: number) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${instructorId}/profile`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch instructor profile:", error);
+    throw error;
+  }
 };

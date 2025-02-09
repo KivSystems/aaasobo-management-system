@@ -11,7 +11,7 @@ export const AdminAuthentication = () => {
   return { isAuthenticated, isLoading };
 };
 
-export const CustomerAuthentication = (id: string) => {
+export const CustomerAuthentication = (id: number) => {
   const endpoint = `${BACKEND_ORIGIN}/customers/${id}/authentication`;
   const redirectPath = "/customers/login";
   const { isAuthenticated, isLoading } = useAuth(endpoint, redirectPath);
@@ -19,7 +19,7 @@ export const CustomerAuthentication = (id: string) => {
   return { isAuthenticated, isLoading };
 };
 
-export const InstructorAuthentication = (id: string) => {
+export const InstructorAuthentication = (id: number) => {
   const endpoint = `${BACKEND_ORIGIN}/instructors/${id}/authentication`;
   const redirectPath = "/instructors/login";
   const { isAuthenticated, isLoading } = useAuth(endpoint, redirectPath);

@@ -1,21 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import SideNav from "@/app/components/SideNav";
 import styles from "./layout.module.scss";
 import {
   UsersIcon,
   CalendarDaysIcon,
   ClipboardDocumentListIcon,
-  UserIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
-import { FC, SVGProps, useEffect, useState } from "react";
-import { getCustomerById } from "@/app/helper/customersApi";
+import { FC, SVGProps } from "react";
 import { AdminAuthentication } from "@/app/helper/authenticationUtils";
 import { AuthContext } from "./authContext";
 import { logoutAdmin } from "@/app/helper/adminsApi";
 import Loading from "@/app/components/Loading";
+import ClientRenderedSideNav from "@/app/components/layouts/sideNav/ClientRenderedSideNav";
 
 type Link = {
   name: string;
@@ -51,8 +49,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
   ];
 
-  // TODO: Get the admin name from the session?
-
   // Display a loading message while checking authentication.
   if (isLoading) {
     return <Loading />;
@@ -67,7 +63,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{ isAuthenticated }}>
       <div className={styles.container}>
         <div className={styles.sidebar}>
-          <SideNav links={links} userName="Admin" logout={logout} />
+          <ClientRenderedSideNav
+            links={links}
+            userName="Admin"
+            logout={logout}
+          />
         </div>
         <div className={styles.content}>{children}</div>
       </div>
