@@ -18,11 +18,12 @@ export default async function UserName({
       if (userType === "customer") {
         const customerData = await getCustomerById(userId);
         return customerData?.name || "Customer";
-      } else if (userType === "instructor") {
+      }
+      if (userType === "instructor") {
         const instructorProfile = await getInstructorProfile(userId);
         return instructorProfile?.nickname || "Instructor";
       }
-      return "admin";
+      return "Admin";
     } catch (error) {
       console.error(`Failed to fetch user data for ${userType}:`, error);
       return `Unknown ${userType.charAt(0).toUpperCase() + userType.slice(1)}`;

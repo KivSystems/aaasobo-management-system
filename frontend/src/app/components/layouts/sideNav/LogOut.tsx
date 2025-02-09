@@ -24,7 +24,7 @@ export default function LogOut({
     },
   };
 
-  const { logoutFn, redirectUrl } = logoutActions[userType] || {};
+  const { logoutFn, redirectUrl } = logoutActions[userType];
 
   const handleLogout = async () => {
     if (!logoutFn) {
