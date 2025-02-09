@@ -1,5 +1,6 @@
 import React, { ChangeEvent } from "react";
 import styles from "./TextInput.module.scss";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
 type TextInputProps = {
   id?: string;
@@ -15,6 +16,8 @@ type TextInputProps = {
   minLength?: number;
   pattern?: string;
   autoComplete?: string;
+  showPassword?: boolean;
+  onTogglePasswordVisibility?: () => void;
 };
 
 function TextInput({
@@ -31,6 +34,8 @@ function TextInput({
   minLength,
   pattern,
   autoComplete,
+  showPassword = false,
+  onTogglePasswordVisibility,
 }: TextInputProps) {
   return (
     <div className={styles.inputWrapper}>
@@ -41,7 +46,7 @@ function TextInput({
           {icon ? <div className={styles.icon}>{icon}</div> : ""}
           <input
             id={id}
-            type={type}
+            type={showPassword ? "text" : type}
             value={value}
             placeholder={placeholder}
             onChange={onChange}
@@ -52,6 +57,18 @@ function TextInput({
             pattern={pattern}
             autoComplete={autoComplete}
           />
+          {type === "password" && (
+            <div
+              className={styles.eyeIcon}
+              onClick={onTogglePasswordVisibility}
+            >
+              {showPassword ? (
+                <EyeIcon className={styles.eyeIconSvg} />
+              ) : (
+                <EyeSlashIcon className={styles.eyeIconSvg} />
+              )}
+            </div>
+          )}
         </div>
         {error && <p className={styles.errorText}>{error}</p>}
       </label>

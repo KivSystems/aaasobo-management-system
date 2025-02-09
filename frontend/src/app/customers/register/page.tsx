@@ -33,6 +33,7 @@ function Register() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
   const [passwordFeedback, setPasswordFeedback] = useState<string>("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
 
@@ -48,6 +49,10 @@ function Register() {
       setPasswordFeedback("");
     }
   }, [password]);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
 
   const registerHandler = async (e: FormEvent) => {
     e.preventDefault();
@@ -173,6 +178,8 @@ function Register() {
               minLength={8}
               autoComplete="new-password"
               error={errors.password}
+              showPassword={showPassword}
+              onTogglePasswordVisibility={togglePasswordVisibility}
             />
 
             <PasswordStrengthMeter
@@ -191,6 +198,8 @@ function Register() {
               inputRequired={true}
               autoComplete="new-password"
               error={errors.passConfirmation}
+              showPassword={showPassword}
+              onTogglePasswordVisibility={togglePasswordVisibility}
             />
 
             <label className={styles.label}>
