@@ -168,6 +168,7 @@ function Register() {
             />
 
             <TextInput
+              id="password"
               label="Password"
               type="password"
               value={password}
