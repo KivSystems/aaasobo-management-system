@@ -1,7 +1,7 @@
-import { getCustomerById } from "@/app/helper/customersApi";
+import { getCustomerById } from "@/app/helper/api/customersApi";
 import styles from "./SideNav.module.scss";
 import { UserIcon as UserIconSolid } from "@heroicons/react/24/solid";
-import { getInstructorProfile } from "@/app/helper/instructorsApi";
+import { getInstructorProfile } from "@/app/helper/api/instructorsApi";
 
 export default async function UserName({
   userId,

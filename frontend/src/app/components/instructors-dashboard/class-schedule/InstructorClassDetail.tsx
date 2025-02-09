@@ -5,7 +5,7 @@ import {
   getDayOfWeek,
   getShortMonth,
   isPastClassEndTime,
-} from "@/app/helper/dateUtils";
+} from "@/app/helper/utils/dateUtils";
 import styles from "./InstructorClassDetail.module.scss";
 import CheckCircleIcon from "@heroicons/react/24/solid/CheckCircleIcon";
 import {

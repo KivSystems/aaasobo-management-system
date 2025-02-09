@@ -1,20 +1,23 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import CalendarView from "@/app/components/CalendarView";
+import CalendarView from "@/app/components/features/calendarView/CalendarView";
 import styles from "./ClassCalendar.module.scss";
 import FullCalendar from "@fullcalendar/react";
 import {
   formatFiveMonthsLaterEndOfMonth,
   isPastPreviousDayDeadline,
-} from "@/app/helper/dateUtils";
-import { cancelClass, fetchClassesForCalendar } from "@/app/helper/classesApi";
-import RedirectButton from "@/app/components/RedirectButton";
+} from "@/app/helper/utils/dateUtils";
+import {
+  cancelClass,
+  fetchClassesForCalendar,
+} from "@/app/helper/api/classesApi";
+import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import Modal from "@/app/components/Modal";
-import ActionButton from "../../ActionButton";
-import ClassesTable from "../../ClassesTable";
+import Modal from "@/app/components/elements/modal/Modal";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
+import ClassesTable from "../../features/classesTable/ClassesTable";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function ClassCalendar({
   customerId,

@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { getClassesByInstructorId } from "@/app/helper/classesApi";
-import { formatShortDate } from "@/app/helper/dateUtils";
+import { getClassesByInstructorId } from "@/app/helper/api/classesApi";
+import { formatShortDate } from "@/app/helper/utils/dateUtils";
 import InstructorClassDetail from "@/app/components/instructors-dashboard/class-schedule/InstructorClassDetail";
 import InstructorClassesTable from "@/app/components/instructors-dashboard/class-schedule/InstructorClassesTable";
 import styles from "./ClassDetails.module.scss";
 import Link from "next/link";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 type StatusType =
   | "booked"

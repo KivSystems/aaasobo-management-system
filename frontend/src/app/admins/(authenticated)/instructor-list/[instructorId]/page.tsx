@@ -8,7 +8,7 @@ import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
 import AvailabilityCalendar from "./AvailabilityCalendar";
 import InstructorSchedule from "./InstructorSchedule";
-import Loading from "@/app/components/Loading";
+import Loading from "@/app/components/elements/loading/Loading";
 
 function Page({ params }: { params: { instructorId: string } }) {
   const instructorId = parseInt(params.instructorId);

@@ -1,6 +1,6 @@
 "use client";
 
-import { getInstructor } from "@/app/helper/instructorsApi";
+import { getInstructor } from "@/app/helper/api/instructorsApi";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./InstructorProfile.module.scss";
@@ -11,7 +11,7 @@ import {
   UserCircleIcon,
   VideoCameraIcon,
 } from "@heroicons/react/24/outline";
-import Loading from "../../Loading";
+import Loading from "../../elements/loading/Loading";
 
 function InstructorProfile({
   instructorId,

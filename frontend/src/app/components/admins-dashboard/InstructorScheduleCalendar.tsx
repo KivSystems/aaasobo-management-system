@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import ScheduleCalendar from "@/app/components/admins-dashboard/ScheduleCalendar";
-import { SlotsOfDays } from "@/app/helper/instructorsApi";
+import { SlotsOfDays } from "@/app/helper/api/instructorsApi";
 
 import {
   getInstructorRecurringAvailability,
   addRecurringAvailabilities,
-} from "@/app/helper/instructorsApi";
+} from "@/app/helper/api/instructorsApi";
 
 import {
   InstructorSelect,

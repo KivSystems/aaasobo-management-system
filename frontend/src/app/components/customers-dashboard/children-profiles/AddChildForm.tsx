@@ -3,16 +3,16 @@
 import styles from "./AddChildForm.module.scss";
 import { useRouter } from "next/navigation";
 import { useInput } from "@/app/hooks/useInput";
-import { addChild } from "@/app/helper/childrenApi";
+import { addChild } from "@/app/helper/api/childrenApi";
 import {
   CakeIcon,
   IdentificationIcon,
   PlusIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import { formatDateToISO } from "@/app/helper/dateUtils";
-import ActionButton from "../../ActionButton";
-import RedirectButton from "../../RedirectButton";
+import { formatDateToISO } from "@/app/helper/utils/dateUtils";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
+import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

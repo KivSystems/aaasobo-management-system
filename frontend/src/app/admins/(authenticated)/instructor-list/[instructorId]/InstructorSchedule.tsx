@@ -5,10 +5,10 @@ import { ToastContainer, toast } from "react-toastify";
 import {
   getInstructorRecurringAvailability,
   addRecurringAvailabilities,
-} from "@/app/helper/instructorsApi";
-import { SlotsOfDays } from "@/app/helper/instructorsApi";
+} from "@/app/helper/api/instructorsApi";
+import { SlotsOfDays } from "@/app/helper/api/instructorsApi";
 import ScheduleCalendar from "@/app/components/admins-dashboard/ScheduleCalendar";
-import ActionButton from "@/app/components/ActionButton";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function InstructorSchedule({

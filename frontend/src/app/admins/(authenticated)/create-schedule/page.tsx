@@ -1,8 +1,8 @@
 "use client";
 
-import { createMonthlyClasses } from "@/app/helper/classesApi";
-import { addAvailability } from "@/app/helper/instructorsApi";
-import { getInstructors } from "@/app/helper/instructorsApi";
+import { createMonthlyClasses } from "@/app/helper/api/classesApi";
+import { addAvailability } from "@/app/helper/api/instructorsApi";
+import { getInstructors } from "@/app/helper/api/instructorsApi";
 import React, { useState } from "react";
 
 function Page() {

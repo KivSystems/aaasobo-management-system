@@ -8,7 +8,7 @@ import CustomerProfile from "@/app/components/customers-dashboard/profile/Custom
 import ChildrenProfiles from "@/app/components/customers-dashboard/children-profiles/ChildrenProfiles";
 import RegularClasses from "@/app/components/customers-dashboard/regular-classes/RegularClasses";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
-import Loading from "@/app/components/Loading";
+import Loading from "@/app/components/elements/loading/Loading";
 
 function Page({ params }: { params: { customerId: string } }) {
   const customerId = parseInt(params.customerId);

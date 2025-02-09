@@ -6,19 +6,22 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
-import styles from "./CalendarHeaderView.module.scss";
+import styles from "./CalendarView.module.scss";
 import {
   DayCellContentArg,
   EventClickArg,
   EventContentArg,
 } from "@fullcalendar/core";
-import Modal from "./Modal";
-import { cancelClass, getClassesByCustomerId } from "../helper/classesApi";
-import ClassDetail from "./ClassDetail";
+import Modal from "../../elements/modal/Modal";
+import {
+  cancelClass,
+  getClassesByCustomerId,
+} from "../../../helper/api/classesApi";
+import ClassDetail from "../classDetail/ClassDetail";
 import {
   formatTime24Hour,
   isPastPreviousDayDeadline,
-} from "../helper/dateUtils";
+} from "../../../helper/utils/dateUtils";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,

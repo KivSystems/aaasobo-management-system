@@ -107,3 +107,99 @@ npm run dev
 ```
 
 The frontend should be available at [http://localhost:3000](http://localhost:3000).
+
+---
+
+## 🧩 Folder Structure
+
+This project is structured to separate concerns and make it easier to maintain and scale the application. Below is an overview of the key folders:
+
+### 📂 `components/` Directory
+
+The `components/` folder is organized into three main subfolders to promote code reusability and better organization.
+
+#### 🧩 `elements/` – Small, Reusable UI Elements
+
+Contains **generic**, low-level UI components that can be used across multiple features. These components are simple and don't contain any business logic. Examples include:
+
+- `breadcrumb/` – A component for showing the page hierarchy.
+- `buttons/` – Reusable button components with different styles.
+- `loading/` – Components for showing loading states.
+- `modal/` – A reusable modal dialog component.
+
+#### 🔧 `features/` – Feature-Specific Components
+
+This folder contains components that belong to specific application features and are used across multiple pages. They are more **complex** and include business logic or interact with backend data. Examples include:
+
+- `calendar/` – The main calendar view.
+- `calendarView/` – Displays different views of the calendar (e.g., daily, weekly, monthly).
+- `classDetail/` – Displays detailed information about a class.
+- `classesTable/` – A table for displaying and managing classes.
+
+#### 🏗️ `layout/` – Layout & Navigation Components
+
+This folder holds structural components that define the layout and navigation of the application. These include global elements used across the app, like side navigation bars. Examples:
+
+- `sideNav/` – A sidebar navigation menu for the app.
+
+---
+
+### ✅ Example of the Folder Structure
+
+```plaintext
+components/
+  elements/
+    breadcrumb/
+    buttons/
+    loading/
+    modal/
+  features/
+    calendar/
+    calendarView/
+    classDetail/
+    classesTable/
+  layout/
+    sideNav/
+```
+
+### 🛠️ `helper/` Directory
+
+The `helper/` folder contains utility files and logic that assist with various aspects of the application, but aren't directly tied to the UI or core features. It's organized into three subfolders: `api/`, `data/`, and `utils`.
+
+#### 🌐 `api/` – API Interaction Helpers
+
+This folder contains functions that handle interactions with the backend controllers. These are typically service-like functions that facilitate communication between the frontend and the backend by calling specific controller actions.
+
+- `adminsApi.ts` – Functions related to API calls for admin data, interacting with backend controllers.
+- `customersApi.ts` – Functions related to API calls for customer data, interacting with backend controllers.
+
+#### 🧮 `data/` – Static or Predefined Data
+
+Contains files with static or predefined data that might be used throughout the application. These files store **non-dynamic data** like navigation links or fixed configurations.
+
+- `data.ts` – Contains any general or shared data used across the app.
+- `navLinks.ts` – Defines the navigation links structure for the app, used in the sidebar.
+
+#### 🛠️ `utils/` – Utility Functions
+
+This folder holds general utility functions that perform tasks like data formatting or other common operations. These functions are **reusable** across different parts of the application.
+
+- `authenticationUtils.ts` – Functions for authentication-related tasks like password validation, token verification, etc.
+- `dateUtils.ts` – Functions for working with dates, such as formatting, parsing, or manipulating date objects.
+
+---
+
+### ✅ Example of the Folder Structure
+
+```plaintext
+helper/
+  api/
+    adminsApi.ts
+    customersApi.ts
+  data/
+    data.ts
+    navLinks.ts
+  utils/
+    authenticationUtils.ts
+    dateUtils.ts
+```

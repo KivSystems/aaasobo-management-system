@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import CalendarView from "@/app/components/CalendarView";
+import CalendarView from "@/app/components/features/calendarView/CalendarView";
 import styles from "./InstructorCalendar.module.scss";
 import FullCalendar from "@fullcalendar/react";
-import { fetchClassesForCalendar } from "@/app/helper/classesApi";
-import { fetchInstructorAvailabilitiesForTodayAndAfter } from "@/app/helper/instructorsApi";
-import Loading from "../../Loading";
+import { fetchClassesForCalendar } from "@/app/helper/api/classesApi";
+import { fetchInstructorAvailabilitiesForTodayAndAfter } from "@/app/helper/api/instructorsApi";
+import Loading from "../../elements/loading/Loading";
 
 function InstructorCalendar({
   id,

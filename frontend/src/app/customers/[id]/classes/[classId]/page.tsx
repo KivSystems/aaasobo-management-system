@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { cancelClass, getClassesByCustomerId } from "@/app/helper/classesApi";
-import ClassDetail from "@/app/components/ClassDetail";
-import ClassesTable from "@/app/components/ClassesTable";
-import RedirectButton from "@/app/components/RedirectButton";
+import {
+  cancelClass,
+  getClassesByCustomerId,
+} from "@/app/helper/api/classesApi";
+import ClassDetail from "@/app/components/features/classDetail/ClassDetail";
+import ClassesTable from "@/app/components/features/classesTable/ClassesTable";
+import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
 import {
   isPastClassDateTime,
   isPastPreviousDayDeadline,
-} from "@/app/helper/dateUtils";
+} from "@/app/helper/utils/dateUtils";
 
 const ClassDetailPage = ({
   params,

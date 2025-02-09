@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import Calendar from "@/app/components/Calendar";
+import Calendar from "@/app/components/features/calendar/Calendar";
 import {
   getInstructor,
   registerUnavailability,
-} from "@/app/helper/instructorsApi";
-import ActionButton from "@/app/components/ActionButton";
-import Loading from "@/app/components/Loading";
+} from "@/app/helper/api/instructorsApi";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
+import Loading from "@/app/components/elements/loading/Loading";
 
 export default function AvailabilityCalendar({
   instructorId,
