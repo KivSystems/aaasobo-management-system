@@ -146,6 +146,7 @@ function Register() {
               onChange={onNameChange}
               icon={<UserCircleIcon className={styles.icon} />}
               inputRequired={true}
+              autoComplete="name"
               error={errors.name}
             />
 
@@ -157,6 +158,7 @@ function Register() {
               onChange={onEmailChange}
               icon={<EnvelopeIcon className={styles.icon} />}
               inputRequired={true}
+              autoComplete="email"
               error={errors.email}
             />
 
@@ -169,6 +171,7 @@ function Register() {
               icon={<LockClosedIcon className={styles.icon} />}
               inputRequired={true}
               minLength={8}
+              autoComplete="new-password"
               error={errors.password}
             />
 
@@ -186,6 +189,7 @@ function Register() {
               onChange={onPassConfirmationChange}
               icon={<LockClosedIcon className={styles.icon} />}
               inputRequired={true}
+              autoComplete="new-password"
               error={errors.passConfirmation}
             />
 
