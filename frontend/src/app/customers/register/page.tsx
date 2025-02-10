@@ -2,7 +2,7 @@
 
 import { useInput } from "@/app/hooks/useInput";
 import { useRouter } from "next/navigation";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { prefectures } from "@/app/helper/data/data";
 import styles from "./page.module.scss";
 import Image from "next/image";
@@ -15,73 +15,117 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelect } from "@/app/hooks/useSelect";
+import { registerCustomer } from "@/app/helper/api/customersApi";
+import { customerRegisterSchema } from "@/app/schemas/customerRegisterSchema";
+import zxcvbn from "zxcvbn";
+import PasswordStrengthMeter from "@/app/components/elements/passwordStrengthMeter/PasswordStrengthMeter";
 
 function Register() {
   const [name, onNameChange] = useInput();
   const [email, onEmailChange] = useInput();
   const [password, onPasswordChange] = useInput();
   const [passConfirmation, onPassConfirmationChange] = useInput();
-  const [prefecture, setPrefecture, onPrefectureChange] = useSelect(
-    prefectures[0],
-  );
+  const [prefecture, setPrefecture, onPrefectureChange] = useSelect("");
   const [isAgreed, setIsAgreed] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [passwordStrength, setPasswordStrength] = useState<number>(0);
+  const [passwordFeedback, setPasswordFeedback] = useState<string>("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const router = useRouter();
+
+  // Real-time password strength check
+  useEffect(() => {
+    if (password) {
+      setErrors((prev) => ({ ...prev, password: "" }));
+      const result = zxcvbn(password);
+      setPasswordStrength(result.score);
+      setPasswordFeedback(result.feedback.suggestions.join(" "));
+    } else {
+      setPasswordStrength(0);
+      setPasswordFeedback("");
+    }
+  }, [password]);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
 
   const registerHandler = async (e: FormEvent) => {
     e.preventDefault();
 
-    // If the values are null, return it.
-    if (!name || !email || !password || !passConfirmation || !prefecture) {
-      toast.warning("Please fill in the required information.");
-      return;
-    }
+    setErrors({});
 
-    // If values of password and password confirmation is different, return it.
-    if (password !== passConfirmation) {
-      toast.warning("Passwords do not match.");
-      return;
-    }
-
-    if (!isAgreed) {
-      toast.warning("You must agree to the privacy policy.");
-      return;
-    }
-
-    // Define the data to be sent to the server side.
-    const BACKEND_ORIGIN =
-      process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
-    const registerURL = `${BACKEND_ORIGIN}/customers/register`;
-    const headers = { "Content-Type": "application/json" };
-    const body = JSON.stringify({
+    // Validate form using Zod
+    const validationResult = customerRegisterSchema.safeParse({
       name,
       email,
       password,
+      passConfirmation,
       prefecture,
+      isAgreed,
     });
 
-    const response = await fetch(registerURL, {
-      method: "POST",
-      headers,
-      body,
-    });
+    // If validation fails, extract error messages
+    if (!validationResult.success) {
+      const validationErrors: Record<string, string> = {};
 
-    if (!response.ok) {
-      throw new Error("Something went wrong");
+      validationResult.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          validationErrors[err.path[0]] = err.message;
+        }
+      });
+
+      setErrors(validationErrors);
+      return;
     }
 
-    const data = await response.json();
+    // Prevent submission if password is weak
+    if (passwordStrength < 3) {
+      setErrors({
+        password:
+          "Your password is too weak. Try using a longer passphrase or a password manager.",
+      });
 
-    // Redirect to the login page
-    const redirectUrl = data.redirectUrl || "/login";
-    router.push(`/customers${redirectUrl}`);
+      // Refocus password field for browser suggestions
+      document.getElementById("password")?.focus();
+      return;
+    }
+
+    try {
+      const response = await registerCustomer({
+        name,
+        email,
+        password,
+        prefecture,
+      });
+
+      if (response.status === 409) {
+        setErrors({ email: response.message });
+        return;
+      }
+
+      const successMessage = response.message || "Registration successful!";
+      const redirectUrl = response.redirectUrl || "/customers/login";
+
+      toast.success(successMessage);
+
+      router.push(redirectUrl);
+    } catch (error) {
+      setErrors({
+        unexpectedError:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred.",
+      });
+    }
   };
 
   return (
-    <div>
-      <ToastContainer />
+    <main>
       <div className={styles.outsideContainer}>
         <div className={styles.container}>
           <Image
@@ -90,12 +134,14 @@ function Register() {
             width={100}
             height={100}
             className={styles.logo}
+            priority={true}
           />
           <h2>Create a free account</h2>
           <p className={styles.paragraph}>
             Already a member? <Link href="/customers/login">Log In</Link>
           </p>
-          <form className={styles.form}>
+
+          <form className={styles.form} onSubmit={registerHandler}>
             <p className={styles.required}>*Required</p>
             <TextInput
               label="Name"
@@ -105,7 +151,10 @@ function Register() {
               onChange={onNameChange}
               icon={<UserCircleIcon className={styles.icon} />}
               inputRequired={true}
+              autoComplete="name"
+              error={errors.name}
             />
+
             <TextInput
               label="Email"
               type="email"
@@ -114,16 +163,32 @@ function Register() {
               onChange={onEmailChange}
               icon={<EnvelopeIcon className={styles.icon} />}
               inputRequired={true}
+              autoComplete="email"
+              error={errors.email}
             />
+
             <TextInput
+              id="password"
               label="Password"
               type="password"
               value={password}
-              placeholder="At least 6 alphanumeric characters"
+              placeholder="Create a password (8+ characters)"
               onChange={onPasswordChange}
               icon={<LockClosedIcon className={styles.icon} />}
               inputRequired={true}
+              minLength={8}
+              autoComplete="new-password"
+              error={errors.password}
+              showPassword={showPassword}
+              onTogglePasswordVisibility={togglePasswordVisibility}
             />
+
+            <PasswordStrengthMeter
+              password={password}
+              passwordStrength={passwordStrength}
+              passwordFeedback={passwordFeedback}
+            />
+
             <TextInput
               label="Password Confirmation"
               type="password"
@@ -132,7 +197,12 @@ function Register() {
               onChange={onPassConfirmationChange}
               icon={<LockClosedIcon className={styles.icon} />}
               inputRequired={true}
+              autoComplete="new-password"
+              error={errors.passConfirmation}
+              showPassword={showPassword}
+              onTogglePasswordVisibility={togglePasswordVisibility}
             />
+
             <label className={styles.label}>
               Prefecture of Residence
               <span className={styles.required}>*</span>
@@ -142,7 +212,12 @@ function Register() {
                   className={styles.select}
                   value={prefecture}
                   onChange={onPrefectureChange}
+                  required
+                  style={{ color: prefecture ? "black" : "gray" }}
                 >
+                  <option value="" disabled>
+                    Select your prefecture of residence
+                  </option>
                   {prefectures.map((prefecture) => (
                     <option key={prefecture} value={prefecture}>
                       {prefecture}
@@ -150,7 +225,15 @@ function Register() {
                   ))}
                 </select>
               </div>
+              {errors.prefecture && (
+                <p
+                  className={`${styles.errorText} ${styles["errorText--prefecture"]}`}
+                >
+                  {errors.prefecture}
+                </p>
+              )}
             </label>
+
             <label className={styles.label}>
               Privacy Policy
               <span className={styles.required}>*</span>
@@ -170,18 +253,25 @@ function Register() {
                 />
                 I agree.
               </label>
+              {errors.isAgreed && (
+                <p className={styles.errorText}>{errors.isAgreed}</p>
+              )}
             </div>
+
             <div className={styles.buttonWrapper}>
               <ActionButton
                 btnText="Create Account"
-                onClick={registerHandler}
                 className="bookBtn"
+                type="submit"
               />
             </div>
+            {errors.unexpectedError && (
+              <p className={styles.errorText}>{errors.unexpectedError}</p>
+            )}
           </form>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
