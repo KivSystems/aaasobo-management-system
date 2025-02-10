@@ -26,7 +26,7 @@ export default function NavLinks({
             href={link.href}
             // clsx is used for conditional rendering
             className={clsx(styles.link, {
-              [styles.active]: pathname === link.href,
+              [styles.active]: pathname.startsWith(link.href),
             })}
           >
             <LinkIcon className={styles.icon} />
