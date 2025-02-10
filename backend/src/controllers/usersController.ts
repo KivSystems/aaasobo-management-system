@@ -6,7 +6,8 @@ import { getInstructorByEmail } from "../services/instructorsService";
 const getUserByEmail = async (userType: string, email: string) => {
   if (userType === "customer") {
     return getCustomerByEmail(email);
-  } else if (userType === "instructor") {
+  }
+  if (userType === "instructor") {
     return getInstructorByEmail(email);
   }
   return null;
@@ -25,11 +26,10 @@ export const authenticateUserController = async (
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // TODO: Check if the password is correct or not.
-    // const passwordsMatch = await bcrypt.compare(password, user.password);
-    // if (!passwordsMatch) {
-    //   return res.status(401).json({ message: "Invalid email or password" });
-    // }
+    const passwordsMatch = await bcrypt.compare(password, user.password);
+    if (!passwordsMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
     res.status(200).json({ id: user.id });
   } catch (error) {
