@@ -5,6 +5,7 @@ import { prefectures } from "@/app/helper/data/data";
 import { registerCustomer } from "@/app/helper/api/customersApi";
 import zxcvbn from "zxcvbn";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import styles from "./RegisterForm.module.scss";
 import {
   EnvelopeIcon,
