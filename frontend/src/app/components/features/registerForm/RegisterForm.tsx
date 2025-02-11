@@ -194,6 +194,15 @@ const RegisterForm = ({
         )}
       </label>
 
+      <label className={styles.label}>
+        Privacy Policy
+        <span className={styles.required}>*</span>
+        <p className={styles.privacyPolicy}>
+          We will take a screenshot as a record that the class was conducted.
+          Additionally, we may record the session for the purpose of improving
+          the instructor&apos;s skills.
+        </p>
+      </label>
       <div className={styles.checkboxWrapper}>
         <label className={styles.label}>
           <input
@@ -202,7 +211,7 @@ const RegisterForm = ({
             onChange={() => setIsAgreed(!isAgreed)}
             required
           />
-          I agree to the privacy policy.
+          I agree.
         </label>
         {errors.isAgreed && (
           <p className={styles.errorText}>{errors.isAgreed}</p>

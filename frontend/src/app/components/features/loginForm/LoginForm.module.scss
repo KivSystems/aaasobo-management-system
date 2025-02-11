@@ -1,3 +1,5 @@
+@import "../../../variables.module.scss";
+
 .buttonWrapper {
   display: flex;
   justify-content: center;
@@ -11,4 +13,9 @@
 
 .form {
   width: 100%;
+}
+
+.errorText {
+  color: $red-alert;
+  font-size: 0.8rem;
 }

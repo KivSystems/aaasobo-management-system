@@ -11,6 +11,7 @@ type TextInputProps = {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   icon?: React.ReactNode;
   inputRequired?: boolean;
+  required?: boolean;
   name?: string;
   error?: string;
   minLength?: number;
@@ -29,6 +30,7 @@ function TextInput({
   onChange,
   icon,
   inputRequired,
+  required,
   name,
   error,
   minLength,
@@ -51,7 +53,7 @@ function TextInput({
             placeholder={placeholder}
             onChange={onChange}
             className={styles.inputField}
-            required={inputRequired}
+            required={inputRequired || required}
             name={name}
             minLength={minLength}
             pattern={pattern}
