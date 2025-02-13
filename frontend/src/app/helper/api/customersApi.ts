@@ -5,6 +5,9 @@ export const getCustomerById = async (customerId: number) => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/customer`,
+      {
+        cache: "no-store",
+      },
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

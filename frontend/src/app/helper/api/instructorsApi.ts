@@ -240,7 +240,9 @@ export const logoutInstructor = async (): Promise<{
 
 export const getInstructorProfile = async (instructorId: number) => {
   try {
-    const response = await fetch(`${BASE_URL}/${instructorId}/profile`);
+    const response = await fetch(`${BASE_URL}/${instructorId}/profile`, {
+      cache: "no-store",
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
