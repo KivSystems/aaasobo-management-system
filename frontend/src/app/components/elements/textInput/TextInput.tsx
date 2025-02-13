@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from "react";
 import styles from "./TextInput.module.scss";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import { Tooltip } from "../tooltip/Tooltip";
 
 type TextInputProps = {
   id?: string;
@@ -58,16 +59,20 @@ function TextInput({
             autoComplete={autoComplete}
           />
           {type === "password" && (
-            <div
-              className={styles.eyeIcon}
-              onClick={onTogglePasswordVisibility}
+            <Tooltip
+              message={showPassword ? "Click to hide" : "Click to reveal"}
             >
-              {showPassword ? (
-                <EyeIcon className={styles.eyeIconSvg} />
-              ) : (
-                <EyeSlashIcon className={styles.eyeIconSvg} />
-              )}
-            </div>
+              <div
+                className={styles.eyeIcon}
+                onClick={onTogglePasswordVisibility}
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className={styles.eyeIconSvg} />
+                ) : (
+                  <EyeIcon className={styles.eyeIconSvg} />
+                )}
+              </div>
+            </Tooltip>
           )}
         </div>
         {error && <p className={styles.errorText}>{error}</p>}
