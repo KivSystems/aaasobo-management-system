@@ -1,7 +1,9 @@
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
-export const getCustomerById = async (customerId: number) => {
+export const getCustomerById = async (
+  customerId: number,
+): Promise<Customer> => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/customer`,
@@ -12,7 +14,7 @@ export const getCustomerById = async (customerId: number) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const data: { customer: Customer } = await response.json();
     return data.customer;
   } catch (error) {
     console.error("Failed to fetch customer data:", error);

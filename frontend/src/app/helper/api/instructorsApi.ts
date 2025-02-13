@@ -238,7 +238,9 @@ export const logoutInstructor = async (): Promise<{
     : { ok: false, error: (await response.json()).message };
 };
 
-export const getInstructorProfile = async (instructorId: number) => {
+export const getInstructorProfile = async (
+  instructorId: number,
+): Promise<InstructorProfile> => {
   try {
     const response = await fetch(`${BASE_URL}/${instructorId}/profile`, {
       cache: "no-store",
@@ -246,7 +248,7 @@ export const getInstructorProfile = async (instructorId: number) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const data: InstructorProfile = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to fetch instructor profile:", error);
