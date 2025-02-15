@@ -13,7 +13,7 @@ import {
   LockClosedIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import { customerRegisterSchema } from "@/app/schemas/customerAuthSchema";
+import { customerRegisterSchema } from "@/app/schemas/authSchema";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import TextInput from "../../elements/textInput/TextInput";
 import PasswordStrengthMeter from "../../elements/passwordStrengthMeter/PasswordStrengthMeter";

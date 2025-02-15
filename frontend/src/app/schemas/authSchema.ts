@@ -18,3 +18,13 @@ export const customerRegisterSchema = z
     message: "Passwords do not match.",
     path: ["passConfirmation"],
   });
+
+export const userLoginSchema = z.object({
+  email: z
+    .string()
+    .email("Please enter a valid email address.")
+    .min(1, "Email is required."),
+  password: z.string().min(8, "At least 8 characters long."),
+});
+
+export const userTypeSchema = z.enum(["admin", "customer", "instructor"]);

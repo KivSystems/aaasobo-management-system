@@ -2,11 +2,11 @@
 
 import { AuthError } from "next-auth";
 import { signIn } from "../../../auth.config";
-import { z } from "zod";
 import { authenticateUser } from "../helper/api/usersApi";
+import { userLoginSchema, userTypeSchema } from "../schemas/authSchema";
 
 export async function authenticate(
-  prevState: string | undefined,
+  prevState: { message: string; timestamp: number } | undefined,
   formData: FormData,
 ) {
   try {
@@ -14,46 +14,27 @@ export async function authenticate(
     const password = formData.get("password") as string;
     const userType = formData.get("userType") as UserType;
 
-    // TODO: Uncomment the following password validation after revising the user registration code.
-    // Validate the types of credentials (email and password)
-    // const credentialsSchema = z.object({
-    //   email: z.string().email(),
-    //   password: z
-    //     .string()
-    //     .min(8, "Password must be at least 8 characters")
-    //     .max(12, "Password must be at most 12 characters")
-    //     .regex(/[a-z]/, "Password must include a lowercase letter")
-    //     .regex(/[A-Z]/, "Password must include an uppercase letter")
-    //     .regex(/\d/, "Password must include a number")
-    //     .regex(
-    //       /[!@#$%^&*]/,
-    //       "Password must include a special character (!@#$%^&*)",
-    //     ),
-    // });
+    // Validate email and password format
+    const parsedCredentials = userLoginSchema.safeParse({ email, password });
+    if (!parsedCredentials.success) {
+      console.error("Invalid credentials received:");
+      return { message: "Invalid email or password", timestamp: Date.now() };
+    }
 
-    // const parsedCredentials = credentialsSchema.safeParse({ email, password });
-
-    // if (!parsedCredentials.success) {
-    //   console.error(
-    //     "Invalid credentials received:",
-    //     parsedCredentials.error.format(),
-    //   );
-    //   return "Invalid email or password";
-    // }
-
-    // Validate the type of userType
-    const userTypeSchema = z.enum(["admin", "customer", "instructor"]);
+    // Validate userType format
     const parsedUserType = userTypeSchema.safeParse(userType);
-
     if (!parsedUserType.success) {
       console.error("Invalid userType received:", userType);
-      return "Something went wrong. Please try again later.";
+      return {
+        message: "Something went wrong. Please try again later.",
+        timestamp: Date.now(),
+      };
     }
 
     // Authenticate the user with backend
     const result = await authenticateUser(email, password, userType);
     if (!result.success) {
-      return result.message;
+      return { message: result.message, timestamp: Date.now() };
     }
 
     const userId = result.userId ? String(result.userId) : undefined;
@@ -61,10 +42,12 @@ export async function authenticate(
       customer: `/customers/${userId}/classes`,
       instructor: `/instructors/${userId}/class-schedule`,
     };
-
     const redirectUrl = redirectUrls[userType];
     if (!userId || !redirectUrl) {
-      return "Authentication failed. Please try again later.";
+      return {
+        message: "Authentication failed. Please try again later.",
+        timestamp: Date.now(),
+      };
     }
 
     // Sign in with NextAuth
@@ -75,11 +58,17 @@ export async function authenticate(
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return "Something went wrong during login. Please try again later.";
+      return {
+        message: "Something went wrong during login. Please try again later.",
+        timestamp: Date.now(),
+      };
     }
     if ((error as Error)?.message?.startsWith("NEXT_REDIRECT")) {
       throw error;
     }
-    return "Something went wrong. Please try again later.";
+    return {
+      message: "Something went wrong. Please try again later.",
+      timestamp: Date.now(),
+    };
   }
 }

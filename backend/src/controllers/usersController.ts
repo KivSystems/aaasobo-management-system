@@ -27,6 +27,7 @@ export const authenticateUserController = async (
     }
 
     const passwordsMatch = await bcrypt.compare(password, user.password);
+
     if (!passwordsMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -34,6 +35,6 @@ export const authenticateUserController = async (
     res.status(200).json({ id: user.id });
   } catch (error) {
     console.error("Authentication error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Invalid email or password" });
   }
 };

@@ -15,7 +15,18 @@
   width: 100%;
 }
 
-.errorText {
+.errorWrapper {
+  height: 1.2rem;
   color: $red-alert;
+  display: flex;
+  gap: 0.2rem;
+}
+
+.errorIcon {
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+.errorText {
   font-size: 0.8rem;
 }
