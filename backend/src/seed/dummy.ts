@@ -13,7 +13,8 @@ async function insertInstructors() {
       classURL: "https://zoom.us/j/12345?pwd=ABCde",
       meetingId: "123 456 7890",
       passcode: "helen",
-      password: "$2b$12$lzg9z2HDTl/dwd8DSnGHJOdPIYiFvn40fwEzRtimoty5VtOugaTfa", // password: helen
+      // password: "$2b$12$lzg9z2HDTl/dwd8DSnGHJOdPIYiFvn40fwEzRtimoty5VtOugaTfa", // password: helen
+      password: "$2b$10$oHI8W.V4wjvs8pSH9BdCoeXqUy7eICX6kwmuEilIcJcez7Ivin45W", // AaasoBo!Helen
       introductionURL:
         "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=129259",
     },
@@ -161,7 +162,9 @@ async function insertCustomers() {
       {
         name: "Alice",
         email: "alice@example.com",
-        password: "alice",
+        // password: "alice",
+        password:
+          "$2b$10$7mzo9sqXQ0ZG7oGQJoHjMulOENyQqJIATxtQZEG2B0LxERcAo68oW", // AaasoBo!Alice
         prefecture: "Aomori",
       },
       // {
