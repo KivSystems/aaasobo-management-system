@@ -15,7 +15,7 @@ export default function LoginForm({ userType }: { userType: UserType }) {
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLocalError(errorState?.message);
+    setLocalError(errorState?.message ?? null);
   }, [errorState]);
 
   return (
