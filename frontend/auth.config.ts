@@ -3,6 +3,7 @@ import { userLoginSchema, userTypeSchema } from "@/app/schemas/authSchema";
 import type { NextAuthConfig } from "next-auth";
 import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { convertToSingular } from "./src/app/helper/utils/stringUtils";
 
 export const authConfig: NextAuthConfig = {
   pages: {
@@ -26,7 +27,29 @@ export const authConfig: NextAuthConfig = {
       return session;
     },
 
-    // TODO: Define "authorized" callback here
+    async authorized({ auth, request: { nextUrl } }): Promise<boolean> {
+      const isLoggedIn = !!auth?.user;
+      const userType = auth?.user?.userType;
+      const userId = auth?.user?.id;
+
+      // Check if the user is on customer dashboard (/customers/[id]/...) or instructor dashboard (/instructors/[id]/...)
+      const matchPath = nextUrl.pathname.match(
+        /^\/(customers|instructors)\/(\d+)(\/.*)?$/,
+      );
+
+      if (!matchPath) {
+        return true; // Allow access to other pages
+      }
+
+      const [_, pluralRole, pathId] = matchPath;
+      const role = convertToSingular(pluralRole);
+
+      if (isLoggedIn && userType === role && userId === pathId) {
+        return true; // Authorized
+      }
+
+      return false; // Unauthorized
+    },
   },
 
   providers: [
