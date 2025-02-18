@@ -35,9 +35,12 @@ function RegularClassesTable({
         const data = await getRecurringClassesBySubscriptionId(subscriptionId);
 
         // Get the local date and the begging of its time.
-        const date = new Date();
-        date.setHours(0, 0, 0, 0);
-        const today = date.toISOString().split("T")[0];
+        const now = new Date();
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const todayStr = now.toLocaleString("en-US", {
+          timeZone,
+        });
+        const todayFormatted = new Date(todayStr).toISOString().split("T")[0];
 
         const curr: RecurringClass[] = [];
         const upcoming: RecurringClass[] = [];
@@ -45,7 +48,10 @@ function RegularClassesTable({
         // Set the current Regular Classes and the up coming Regular Class separately.
         data.recurringClasses.forEach((recurringClass: RecurringClass) => {
           const { dateTime } = recurringClass;
-          if (new Date(today + "T00:00:00Z") < new Date(dateTime)) {
+          const dateTimeStr = new Date(dateTime).toLocaleDateString("en-US", {
+            timeZone,
+          });
+          if (new Date(todayFormatted) < new Date(dateTimeStr)) {
             upcoming.push(recurringClass);
           } else {
             curr.push(recurringClass);
@@ -169,12 +175,19 @@ function Table({ recurringClasses }: { recurringClasses: RecurringClass[] }) {
               </td>
               <td className={styles.bodyText}>
                 {recurringClass.dateTime
-                  ? recurringClass.dateTime.toString().split("T")[0]
+                  ? new Date(recurringClass.dateTime).toLocaleDateString(
+                      "en-US",
+                      {
+                        timeZone,
+                      },
+                    )
                   : ""}
               </td>
               <td className={styles.bodyText}>
                 {recurringClass.endAt
-                  ? recurringClass.endAt.toString().split("T")[0]
+                  ? new Date(recurringClass.endAt).toLocaleDateString("en-US", {
+                      timeZone,
+                    })
                   : ""}
               </td>
             </tr>

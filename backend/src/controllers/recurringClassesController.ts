@@ -13,9 +13,9 @@ import {
   getFirstDateInMonths,
   createDatesBetween,
   calculateFirstDate,
-  JAPAN_TIME_DIFF,
   formatTime,
   getDayNumber,
+  convertDayTimeToUTC,
 } from "../helper/dateUtils";
 import { prisma } from "../../prisma/prismaClient";
 import { getValidInstructorUnavailabilities } from "../services/instructorsUnavailabilitiesService";
@@ -151,18 +151,16 @@ export const updateRecurringClassesController = async (
     return res.status(400).json({ message: "Invalid parameters provided." });
   }
 
-  // If classStartDate is shorter than today, it shouldn't be executed.
-  const now = new Date();
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // Convert the local class start date to UTC time.
+  const LocalClassStartDateTime = classStartDate + "T00:00:00"; // In the new Date object, the time will increase by 8 hours.
+  const utcClassStartDate =
+    new Date(LocalClassStartDateTime).toISOString().split("T")[0] +
+    "T00:00:00.000Z"; // In the new Date object, the time will remain unchanged at 00:00.
+  const utcToday = new Date();
 
-  const todayStr = now.toLocaleDateString("en-US", {
-    timeZone,
-  });
-
-  const [month, date, year] = todayStr.split("/").map(Number);
-  const today = new Date(year, month - 1, date);
-
-  if (new Date(classStartDate) <= today) {
+  // Compare the classStart date and today's date in UTC time.
+  // If classStartDate is equal to or shorter than today, it shouldn't be executed.
+  if (new Date(LocalClassStartDateTime) <= new Date(utcToday)) {
     return res.status(400).json({ message: "Invalid Start From Date" });
   }
 
@@ -171,15 +169,19 @@ export const updateRecurringClassesController = async (
       // If a recurring class is already taken, it shouldn't be updated.
       const allValidRecurringClasses = await getValidRecurringClasses(
         tx,
-        today,
+        utcToday,
       );
+
+      // Convert the local day and time from the request body to UTC time.
+      const { utcDay, utcTime } = convertDayTimeToUTC(day, time);
+
       allValidRecurringClasses.find((recurringClass) => {
         const recurringClassDay = recurringClass.startAt?.getDay();
         const recurringClassTime = formatTime(recurringClass.startAt as Date);
         if (
           recurringClass.instructorId === instructorId &&
-          recurringClassDay === getDayNumber(day) &&
-          recurringClassTime === time
+          recurringClassDay === getDayNumber(utcDay) &&
+          recurringClassTime === utcTime
         ) {
           throw new Error("Recurring class is already taken");
         }
@@ -196,15 +198,16 @@ export const updateRecurringClassesController = async (
       const { endAt, startAt } = recurringClass;
 
       const firstClassDate = calculateFirstDate(
-        new Date(classStartDate),
-        day,
-        time,
+        new Date(utcClassStartDate),
+        utcDay,
+        utcTime,
       );
+
       let dateTimes: Date[] = [];
       const newStartAt = calculateFirstDate(
-        new Date(classStartDate),
-        day,
-        time,
+        new Date(utcClassStartDate),
+        utcDay,
+        utcTime,
       );
       let newEndAt: Date | null = null;
 
@@ -220,9 +223,9 @@ export const updateRecurringClassesController = async (
       // -> All upcoming classes are deleted and recreated new recurring ones until the end of the next two months.
 
       const condition1 =
-        endAt !== null && new Date(endAt) <= new Date(classStartDate);
+        endAt !== null && new Date(endAt) <= new Date(utcClassStartDate);
       const condition2 =
-        endAt !== null && new Date(classStartDate) < new Date(endAt);
+        endAt !== null && new Date(utcClassStartDate) < new Date(endAt);
       const condition3 = endAt === null;
 
       // Condition1
@@ -231,13 +234,9 @@ export const updateRecurringClassesController = async (
       }
 
       // Terminate the current recurring class.
-      await terminateRecurringClass(tx, req.id, new Date(classStartDate));
+      await terminateRecurringClass(tx, req.id, new Date(utcClassStartDate));
 
       // Delete unnecessary future recurring class.
-      const date = new Date(classStartDate);
-      const utcClassStartDate = new Date(
-        date.getTime() - JAPAN_TIME_DIFF * 60 * 60 * 1000,
-      );
       if (
         startAt === null ||
         (startAt !== null && new Date(utcClassStartDate) < new Date(startAt))
@@ -264,7 +263,7 @@ export const updateRecurringClassesController = async (
 
       // Exclude instructor unavailability from the dateTimes.
       const instructorUnavailabilities =
-        await getValidInstructorUnavailabilities(tx, instructorId, today);
+        await getValidInstructorUnavailabilities(tx, instructorId, utcToday);
       const instructorUnavailableDates = dateTimes.filter((dateTime) =>
         instructorUnavailabilities.some(
           (unavailability) =>
@@ -279,7 +278,7 @@ export const updateRecurringClassesController = async (
       const classes = await getValidClassesByInstructorId(
         tx,
         instructorId,
-        today,
+        utcToday,
       );
       const duplicatedClassesDates = dateTimes.filter((dateTimes) =>
         classes.some(
@@ -352,13 +351,15 @@ export const getRecurringClassesByInstructorIdController = async (
 
   try {
     // Get the local date and the begging of its time.
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    const today = date.toISOString().split("T")[0];
+    const now = new Date();
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const todayStr = now.toLocaleDateString("en-US", {
+      timeZone,
+    });
 
     const recurringClasses = await getValidRecurringClassesByInstructorId(
       instructorId,
-      new Date(today + "T00:00:00Z"),
+      new Date(todayStr),
     );
 
     res.json({ recurringClasses });
