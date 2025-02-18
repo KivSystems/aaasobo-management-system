@@ -102,7 +102,11 @@ const RegisterForm = ({
       const redirectUrl = response.redirectUrl || `/${userType}s/login`;
 
       toast.success(successMessage);
-      onSuccessRedirect(redirectUrl);
+
+      // Add a delay before redirect to allow the toast to appear
+      setTimeout(() => {
+        onSuccessRedirect(redirectUrl);
+      }, 500);
     } catch (error) {
       setErrors({
         unexpectedError:
