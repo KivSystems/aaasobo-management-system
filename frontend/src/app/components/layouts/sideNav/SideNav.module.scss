@@ -64,6 +64,7 @@
     background-color 0.2s,
     color 0.2s;
   text-decoration: none;
+  cursor: pointer;
 
   &:hover {
     background-color: $active-sidenav-menu;
@@ -73,7 +74,10 @@
 
 .logout {
   margin-top: auto;
-  cursor: pointer;
+
+  button {
+    border: none; 
+  }
 }
 
 .icon {
