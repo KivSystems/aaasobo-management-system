@@ -1,6 +1,8 @@
 import { Customer } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
+import { generateVerificationToken } from "./verificationTokenService";
+import { sendVerificationEmail } from "../helper/mail";
 
 export const fetchCustomerById = async (
   customerId: number,
@@ -103,8 +105,33 @@ export const registerCustomer = async ({
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Insert the customer data into the DB
-  await prisma.customer.create({
-    data: { name, email, password: hashedPassword, prefecture },
-  });
+  // Use a Prisma transaction to ensure all customer register operations succeed together, or none should be applied
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      // Insert the customer data into the DB
+      await tx.customer.create({
+        data: { name, email, password: hashedPassword, prefecture },
+      });
+
+      // Generate verification token
+      const verificationToken = await generateVerificationToken(email);
+
+      // Send verification email
+      const sendResult = await sendVerificationEmail(
+        verificationToken.email,
+        verificationToken.token,
+      );
+
+      if (!sendResult.success) {
+        throw new Error("Failed to send the confirmation email.");
+      }
+
+      return "We have sent a confirmation email. Please click the link in the email to activate your account.";
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error during registration:", error);
+    throw new Error("Registration failed. Please try again later.");
+  }
 };

@@ -28,12 +28,14 @@ export const registerCustomerController = async (
   email = email.trim().toLowerCase();
 
   try {
-    await registerCustomer({ name, email, password, prefecture });
-
-    res.status(201).json({
-      message: "Registration successful!",
-      redirectUrl: "/customers/login",
+    const resultMessage = await registerCustomer({
+      name,
+      email,
+      password,
+      prefecture,
     });
+
+    res.status(201).json({ message: resultMessage });
   } catch (error: any) {
     console.error("Registration Error:", error);
     return res.status(error.statusCode || 500).json({ message: error.message });
