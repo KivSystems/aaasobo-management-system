@@ -1,6 +1,6 @@
 "use server";
 
-import { AuthError } from "next-auth";
+import { CredentialsSignin } from "next-auth";
 import { signIn } from "../../../auth.config";
 
 export async function authenticate(
@@ -19,11 +19,11 @@ export async function authenticate(
       redirectTo: "/redirect",
     });
   } catch (error) {
-    if (error instanceof AuthError) {
+    if (error instanceof CredentialsSignin) {
+      // Remove unnecessary URL from the error message
+      const cleanedMessage = error.message.split(". Read more at ")[0];
       return {
-        message: error.message.startsWith("Unexpected")
-          ? "Something went wrong. Please try again later."
-          : "Invalid email or password.",
+        message: cleanedMessage,
         timestamp: Date.now(),
       };
     }

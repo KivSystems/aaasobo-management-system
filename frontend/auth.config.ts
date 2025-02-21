@@ -62,14 +62,16 @@ export const authConfig: NextAuthConfig = {
         });
         if (!parsedCredentials.success) {
           console.error("Invalid credentials received:");
-          return null;
+          throw new CredentialsSignin("Invalid email or password.");
         }
 
         // Validate userType format
         const parsedUserType = userTypeSchema.safeParse(credentials.userType);
         if (!parsedUserType.success) {
           console.error("Invalid userType received:", credentials.userType);
-          throw new CredentialsSignin("Unexpected error");
+          throw new CredentialsSignin(
+            "Something went wrong. Please try again later.",
+          );
         }
 
         // Authenticate the user with backend
@@ -78,11 +80,13 @@ export const authConfig: NextAuthConfig = {
 
         const result = await authenticateUser(email, password, userType);
         if (!result.success) {
-          return null;
+          throw new CredentialsSignin(result.message);
         }
         const userId = result.userId ? String(result.userId) : undefined;
         if (!userId) {
-          throw new CredentialsSignin("Unexpected error");
+          throw new CredentialsSignin(
+            "Something went wrong. Please try again later.",
+          );
         }
 
         // Return user data for NextAuth session, including custom userType for role-based access.
