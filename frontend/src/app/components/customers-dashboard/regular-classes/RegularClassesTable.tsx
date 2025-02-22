@@ -32,7 +32,7 @@ function RegularClassesTable({
   useEffect(() => {
     const fetchRecurringClassesBySubscriptionId = async () => {
       try {
-        const data = await getRecurringClassesBySubscriptionId(subscriptionId)
+        const data = await getRecurringClassesBySubscriptionId(subscriptionId);
 
         const curr: RecurringClass[] = [];
         const upcoming: RecurringClass[] = [];
