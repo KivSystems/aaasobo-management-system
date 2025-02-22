@@ -32,15 +32,7 @@ function RegularClassesTable({
   useEffect(() => {
     const fetchRecurringClassesBySubscriptionId = async () => {
       try {
-        const data = await getRecurringClassesBySubscriptionId(subscriptionId);
-
-        // Get the local date and the begging of its time.
-        const now = new Date();
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const todayStr = now.toLocaleString("en-US", {
-          timeZone,
-        });
-        const todayFormatted = new Date(todayStr).toISOString().split("T")[0];
+        const data = await getRecurringClassesBySubscriptionId(subscriptionId)
 
         const curr: RecurringClass[] = [];
         const upcoming: RecurringClass[] = [];
@@ -48,10 +40,8 @@ function RegularClassesTable({
         // Set the current Regular Classes and the up coming Regular Class separately.
         data.recurringClasses.forEach((recurringClass: RecurringClass) => {
           const { dateTime } = recurringClass;
-          const dateTimeStr = new Date(dateTime).toLocaleDateString("en-US", {
-            timeZone,
-          });
-          if (new Date(todayFormatted) < new Date(dateTimeStr)) {
+          // Compare the date in UTC time.
+          if (new Date() < new Date(dateTime)) {
             upcoming.push(recurringClass);
           } else {
             curr.push(recurringClass);
@@ -176,7 +166,7 @@ function Table({ recurringClasses }: { recurringClasses: RecurringClass[] }) {
               <td className={styles.bodyText}>
                 {recurringClass.dateTime
                   ? new Date(recurringClass.dateTime).toLocaleDateString(
-                      "en-US",
+                      "en-CA",
                       {
                         timeZone,
                       },
@@ -185,7 +175,7 @@ function Table({ recurringClasses }: { recurringClasses: RecurringClass[] }) {
               </td>
               <td className={styles.bodyText}>
                 {recurringClass.endAt
-                  ? new Date(recurringClass.endAt).toLocaleDateString("en-US", {
+                  ? new Date(recurringClass.endAt).toLocaleDateString("en-CA", {
                       timeZone,
                     })
                   : ""}

@@ -50,6 +50,8 @@ export function createDatesBetween(start: Date, end: Date): Date[] {
   }
   return dates;
 }
+
+// Return the number of the week day (e.g., Sun: 0, Mon: 1...)
 export const getDayNumber = (day: Day): number => {
   return days.indexOf(day);
 };
@@ -76,7 +78,7 @@ export const getMonthNumber = (month: Month): number => {
   return months.indexOf(month);
 };
 
-// Function to format time for a given time zone(e.g., 19:00)
+// Function to format time (e.g., 19:00)
 export const formatTime = (date: Date) => {
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return new Intl.DateTimeFormat("en-US", {

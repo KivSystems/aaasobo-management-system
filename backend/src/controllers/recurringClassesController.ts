@@ -152,7 +152,7 @@ export const updateRecurringClassesController = async (
   }
 
   // Convert the local class start date to UTC time.
-  const LocalClassStartDateTime = classStartDate + "T00:00:00"; // In the new Date object, the time will increase by 8 hours.
+  const LocalClassStartDateTime = classStartDate + "T00:00:00"; // In the new Date object, the time will change based on the local date.
   const utcClassStartDate =
     new Date(LocalClassStartDateTime).toISOString().split("T")[0] +
     "T00:00:00.000Z"; // In the new Date object, the time will remain unchanged at 00:00.
@@ -166,15 +166,16 @@ export const updateRecurringClassesController = async (
 
   try {
     const updatedRecurringClasses = await prisma.$transaction(async (tx) => {
+      // Convert the local day and time from the request body to UTC time.
+      const { utcDay, utcTime } = convertDayTimeToUTC(day, time);
+
+      console.log(getDayNumber(utcDay));
+
       // If a recurring class is already taken, it shouldn't be updated.
       const allValidRecurringClasses = await getValidRecurringClasses(
         tx,
         utcToday,
       );
-
-      // Convert the local day and time from the request body to UTC time.
-      const { utcDay, utcTime } = convertDayTimeToUTC(day, time);
-
       allValidRecurringClasses.find((recurringClass) => {
         const recurringClassDay = recurringClass.startAt?.getDay();
         const recurringClassTime = formatTime(recurringClass.startAt as Date);
@@ -258,7 +259,9 @@ export const updateRecurringClassesController = async (
       if (condition3) {
         // Generate recurring dates until the end of the next two months.
         const until = getFirstDateInMonths(firstClassDate, 3);
+        console.log(until);
         dateTimes = createDatesBetween(firstClassDate, until);
+        console.log(dateTimes);
       }
 
       // Exclude instructor unavailability from the dateTimes.
@@ -293,6 +296,9 @@ export const updateRecurringClassesController = async (
         ...instructorUnavailableDates,
         ...duplicatedClassesDates,
       ];
+
+      console.log(dateTimes);
+      console.log(unbookableDateTimes);
 
       // Add a new recurring class
       const updatedRecurringClass = await addRecurringClass(
@@ -350,16 +356,12 @@ export const getRecurringClassesByInstructorIdController = async (
   }
 
   try {
-    // Get the local date and the begging of its time.
-    const now = new Date();
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const todayStr = now.toLocaleDateString("en-US", {
-      timeZone,
-    });
+    // Get the today's UTC date at 00:00.
+    const utcToday = new Date().toISOString().split("T")[0] + "T00:00:00.000Z";
 
     const recurringClasses = await getValidRecurringClassesByInstructorId(
       instructorId,
-      new Date(todayStr),
+      new Date(utcToday),
     );
 
     res.json({ recurringClasses });

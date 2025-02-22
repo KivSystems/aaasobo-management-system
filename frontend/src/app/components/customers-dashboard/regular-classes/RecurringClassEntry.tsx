@@ -46,10 +46,9 @@ function RecurringClassEntry({
   const [slots, setSlots] = useState<SlotsOfDays>(emptySlots);
   const [times, setTimes] = useState<string[]>([]);
 
-  // Get tomorrow's date
-  const now = new Date();
+  // Get the local tomorrow's date
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const todayStr = now.toLocaleDateString("en-US", {
+  const todayStr = new Date().toLocaleDateString("en-US", {
     timeZone,
   });
   const [month, date, year] = todayStr.split("/").map(Number);
