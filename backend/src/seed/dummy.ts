@@ -131,6 +131,23 @@ async function insertInstructorAvailabilities() {
     "2025-02-10T07:00:00Z",
     "2025-02-17T07:00:00Z",
     "2025-02-24T07:00:00Z",
+    "2025-03-03T07:00:00Z",
+    "2025-03-10T07:00:00Z",
+    "2025-03-17T07:00:00Z",
+    "2025-03-24T07:00:00Z",
+    "2025-03-31T07:00:00Z",
+  ]);
+
+  await insertAvailabilities(helen.id, "2025-02-03T07:30:00Z", [
+    "2025-02-03T07:30:00Z",
+    "2025-02-10T07:30:00Z",
+    "2025-02-17T07:30:00Z",
+    "2025-02-24T07:30:00Z",
+    "2025-03-03T07:30:00Z",
+    "2025-03-10T07:30:00Z",
+    "2025-03-17T07:30:00Z",
+    "2025-03-24T07:30:00Z",
+    "2025-03-31T07:30:00Z",
   ]);
 
   await insertAvailabilities(elian.id, "2025-02-03T07:00:00Z", [
@@ -138,7 +155,25 @@ async function insertInstructorAvailabilities() {
     "2025-02-10T07:00:00Z",
     "2025-02-17T07:00:00Z",
     "2025-02-24T07:00:00Z",
+    "2025-03-03T07:00:00Z",
+    "2025-03-10T07:00:00Z",
+    "2025-03-17T07:00:00Z",
+    "2025-03-24T07:00:00Z",
+    "2025-03-31T07:00:00Z",
   ]);
+
+  await insertAvailabilities(elian.id, "2025-02-03T07:30:00Z", [
+    "2025-02-03T07:30:00Z",
+    "2025-02-10T07:30:00Z",
+    "2025-02-17T07:30:00Z",
+    "2025-02-24T07:30:00Z",
+    "2025-03-03T07:30:00Z",
+    "2025-03-10T07:30:00Z",
+    "2025-03-17T07:30:00Z",
+    "2025-03-24T07:30:00Z",
+    "2025-03-31T07:30:00Z",
+  ]);
+
   // await insertAvailabilities(helen.id, "2024-07-01T07:30:00Z", [
   //   "2024-07-01T07:30:00Z",
   //   "2024-07-08T07:30:00Z",
@@ -217,12 +252,12 @@ async function insertCustomers() {
         password: "alice",
         prefecture: "Aomori",
       },
-      // {
-      //   name: "Bob",
-      //   email: "bob@example.com",
-      //   password: "bob",
-      //   prefecture: "Hokkaido",
-      // },
+      {
+        name: "Bob",
+        email: "bob@example.com",
+        password: "bob",
+        prefecture: "Hokkaido",
+      },
     ],
   });
 }
@@ -559,7 +594,7 @@ async function insertClasses() {
 
 async function insertChildren() {
   const alice = await getCustomer("Alice");
-  // const bob = await getCustomer("Bob");
+  const bob = await getCustomer("Bob");
 
   await prisma.children.createMany({
     data: [
@@ -577,13 +612,13 @@ async function insertChildren() {
         personalInfo:
           "Age: 6 years, English Level: Beginner. Likes playing with dolls and has a pet sheep named Woolly.",
       },
-      // {
-      //   name: "Emily",
-      //   customerId: bob.id,
-      //   birthdate: new Date("2017-11-02"),
-      //   personalInfo:
-      //     "Age: 7 years, English Level: Intermediate. Loves drawing and is very creative. Enjoys reading stories.",
-      // },
+      {
+        name: "Emily",
+        customerId: bob.id,
+        birthdate: new Date("2017-11-02"),
+        personalInfo:
+          "Age: 7 years, English Level: Intermediate. Loves drawing and is very creative. Enjoys reading stories.",
+      },
     ],
   });
 }
@@ -656,7 +691,7 @@ async function insertPlans() {
 
 async function insertSubscriptions() {
   const alice = await getCustomer("Alice");
-  // const bob = await getCustomer("Bob");
+  const bob = await getCustomer("Bob");
   const plan1 = await getPlan("3,180 yen/month");
   const plan2 = await getPlan("7,980 yen/month");
 
@@ -668,18 +703,19 @@ async function insertSubscriptions() {
         startAt: new Date("2024-08-01"),
         endAt: null,
       },
-      // {
-      //   customerId: bob.id,
-      //   planId: plan2.id,
-      //   startAt: new Date("2024-06-01"),
-      //   endAt: null,
-      // },
+      {
+        customerId: bob.id,
+        planId: plan2.id,
+        startAt: new Date("2024-06-01"),
+        endAt: null,
+      },
     ],
   });
 }
 
 async function insertRecurringClasses() {
   const alice = await getCustomer("Alice");
+  const bob = await getCustomer("Bob");
   const helen = await getInstructor("Helen");
   // const elian = await getInstructor("Elian");
 
@@ -706,6 +742,21 @@ async function insertRecurringClasses() {
       subscriptionId: alice.subscription[0].id,
       instructorId: helen.id,
       startAt: "2025-02-04T07:00:00Z",
+      recurringClassAttendance: {
+        create: [
+          {
+            childrenId: alice.children[0].id,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.recurringClass.create({
+    data: {
+      subscriptionId: bob.subscription[0].id,
+      instructorId: helen.id,
+      startAt: "2025-02-05T07:00:00Z",
       recurringClassAttendance: {
         create: [
           {
@@ -790,11 +841,11 @@ async function insertInstructorUnavailabilities() {
     data: [
       {
         instructorId: helen.id,
-        dateTime: new Date("2024-08-20T07:30:00Z"),
+        dateTime: new Date("2025-03-17T07:00:00Z"),
       },
       {
         instructorId: helen.id,
-        dateTime: new Date("2024-08-22T07:30:00Z"),
+        dateTime: new Date("2025-03-17T07:30:00Z"),
       },
     ],
   });
@@ -877,7 +928,7 @@ async function main() {
     await insertClasses();
 
     // Dependant on the above
-    // await insertInstructorUnavailabilities();
+    await insertInstructorUnavailabilities();
 
     // Dependant on the above
     await insertClassAttendance();
