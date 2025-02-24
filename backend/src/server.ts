@@ -15,7 +15,6 @@ import { plansRouter } from "./routes/plansRouter";
 import { subscriptionsRouter } from "./routes/subscriptionsRouter";
 import { indexRouter } from "./routes/indexRouter";
 import { usersRouter } from "./routes/usersRouter";
-import { verificationTokensRouter } from "./routes/verificationTokensRoute";
 
 export const server = express();
 
@@ -93,4 +92,3 @@ server.use("/recurring-classes", recurringClassesRouter);
 server.use("/plans", plansRouter);
 server.use("/subscriptions", subscriptionsRouter);
 server.use("/users", usersRouter);
-server.use("/verification-tokens", verificationTokensRouter);
