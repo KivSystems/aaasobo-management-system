@@ -63,18 +63,14 @@ export const getCustomerByEmail = async (
   email: string,
 ): Promise<Customer | null> => {
   try {
-    const customer = await prisma.customer.findUnique({
+    return await prisma.customer.findUnique({
       where: { email },
     });
-
-    if (!customer) {
-      throw new Error("Customer not found.");
-    }
-
-    return customer;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch customer.");
+    console.error("Database error while fetching customer by email:", error);
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 };
 
@@ -120,6 +116,7 @@ export const registerCustomer = async ({
       const sendResult = await sendVerificationEmail(
         verificationToken.email,
         verificationToken.token,
+        "customer",
       );
 
       if (!sendResult.success) {
@@ -133,5 +130,30 @@ export const registerCustomer = async ({
   } catch (error) {
     console.error("Error during registration:", error);
     throw new Error("Registration failed. Please try again later.");
+  }
+};
+
+export const verifyCustomerEmail = async (
+  id: number,
+  email: string,
+): Promise<void> => {
+  try {
+    await prisma.customer.update({
+      where: {
+        id,
+      },
+      data: {
+        emailVerified: new Date(),
+        email,
+      },
+    });
+  } catch (error) {
+    console.error(
+      `Database error while verifying customer email (ID: ${id}):`,
+      error,
+    );
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 };

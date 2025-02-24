@@ -40,8 +40,10 @@ export const getVerificationTokenByToken = async (token: string) => {
 
     return verificationToken;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to get a verification token by token.");
+    console.error("Database error while fetching verification token:", error);
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 };
 

@@ -197,10 +197,3 @@ type LinkType = {
 };
 
 type UserType = "admin" | "customer" | "instructor";
-
-type VerificationToken = {
-  id: string;
-  email: string;
-  token: string;
-  expires: Date;
-};
