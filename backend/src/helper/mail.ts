@@ -2,9 +2,14 @@ import { Resend } from "resend";
 
 // Initialize Resend with API key
 const resend = new Resend(process.env.RESEND_API_KEY);
+export type UserType = "admin" | "customer" | "instructor";
 
-export const sendVerificationEmail = async (email: string, token: string) => {
-  const confirmLink = `${process.env.FRONTEND_ORIGIN}/auth/new-verification?token=${token}`;
+export const sendVerificationEmail = async (
+  email: string,
+  token: string,
+  userType: UserType,
+) => {
+  const confirmLink = `${process.env.FRONTEND_ORIGIN}/auth/new-verification?token=${token}&type=${userType}`;
 
   try {
     await resend.emails.send({
