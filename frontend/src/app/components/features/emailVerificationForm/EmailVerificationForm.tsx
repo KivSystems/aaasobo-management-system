@@ -54,21 +54,28 @@ export const EmailVerificationForm = () => {
 
   return (
     <div className={styles.verificationForm}>
-      <div className={styles.verificationForm__loader}>
-        {!message && <Loading />}
-      </div>
-      {message?.type === "success" && <p>{message.text}</p>}
-      {message?.type === "error" && (
-        <p style={{ color: "red" }}>{message.text}</p>
+      {!message ? (
+        <div className={styles.verificationForm__loaderWrapper}>
+          <Loading />
+        </div>
+      ) : (
+        <>
+          {message?.type === "success" && <p>{message.text}</p>}
+          {message?.type === "error" && (
+            <p style={{ color: "red" }}>{message.text}</p>
+          )}
+          <Link
+            className={styles.verificationForm__loginLink}
+            href={
+              userType === "customer"
+                ? "/customers/login"
+                : "/instructors/login"
+            }
+          >
+            Login here
+          </Link>
+        </>
       )}
-      <Link
-        className={styles.verificationForm__loginLink}
-        href={
-          userType === "customer" ? "/customers/login" : "/instructors/login"
-        }
-      >
-        Login here
-      </Link>
     </div>
   );
 };
