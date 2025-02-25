@@ -6,18 +6,17 @@
   gap: 1rem;
 
   &__loaderWrapper {
-    height: 3rem; 
+    height: 3rem;
     display: flex;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
   }
-  
+
   &__loaderWrapper > * {
-    height: 100%; 
+    height: 100%;
   }
 
   &__loginLink {
     margin: 0 auto;
   }
 }
-
