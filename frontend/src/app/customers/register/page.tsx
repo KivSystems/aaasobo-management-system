@@ -1,6 +1,3 @@
-"use client";
-
-import { useRouter } from "next/navigation";
 import React from "react";
 import styles from "./page.module.scss";
 import Image from "next/image";
@@ -8,8 +5,6 @@ import Link from "next/link";
 import RegisterForm from "@/app/components/features/registerForm/RegisterForm";
 
 function Register() {
-  const router = useRouter();
-
   return (
     <main>
       <div className={styles.outsideContainer}>
@@ -27,7 +22,7 @@ function Register() {
             Already a member? <Link href="/customers/login">Log In</Link>
           </p>
 
-          <RegisterForm userType="customer" onSuccessRedirect={router.push} />
+          <RegisterForm userType="customer" />
         </div>
       </div>
     </main>

@@ -74,7 +74,8 @@
   height: 1.2rem;
 }
 
-.errorText {
+.errorText,
+.successText {
   color: $red-alert;
   font-size: 0.8rem;
 
