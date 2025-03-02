@@ -1,0 +1,19 @@
+@import "../../../variables.module.scss";
+
+.checkboxWrapper {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  font-size: 0.9rem;
+  margin-bottom: 5rem;
+
+  input {
+    margin-right: 0.25rem;
+  }
+}
+
+.errorText {
+  color: $red-alert;
+  font-size: 0.8rem;
+}

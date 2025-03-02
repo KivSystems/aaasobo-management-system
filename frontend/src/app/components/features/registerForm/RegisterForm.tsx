@@ -1,12 +1,8 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import { useInput } from "@/app/hooks/useInput";
-import { useSelect } from "@/app/hooks/useSelect";
 import { prefectures } from "@/app/helper/data/data";
-import { registerCustomer } from "@/app/helper/api/customersApi";
-import zxcvbn from "zxcvbn";
-import "react-toastify/dist/ReactToastify.css";
 import styles from "./RegisterForm.module.scss";
 import {
   EnvelopeIcon,
@@ -14,133 +10,67 @@ import {
   LockClosedIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import { customerRegisterSchema } from "@/app/schemas/authSchema";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import TextInput from "../../elements/textInput/TextInput";
 import PasswordStrengthMeter from "../../elements/passwordStrengthMeter/PasswordStrengthMeter";
+import { useFormState } from "react-dom";
+import { registerUser } from "@/app/actions/registerUser";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
+import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
+import CheckboxInput from "../../elements/checkboxInput/CheckboxInput";
 
 const RegisterForm = ({ userType }: { userType: UserType }) => {
-  const [name, onNameChange] = useInput();
-  const [email, onEmailChange] = useInput();
+  const [registerResultState, formAction] = useFormState(
+    registerUser,
+    undefined,
+  );
   const [password, onPasswordChange] = useInput();
-  const [passConfirmation, onPassConfirmationChange] = useInput();
-  const [prefecture, setPrefecture, onPrefectureChange] = useSelect("");
-  const [isAgreed, setIsAgreed] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [passwordStrength, setPasswordStrength] = useState<number>(0);
-  const [passwordFeedback, setPasswordFeedback] = useState<string>("");
+  const [selectedPrefecture, setSelectedPrefecture] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState<string>("");
-
-  // Real-time password strength check
-  useEffect(() => {
-    if (password) {
-      setErrors((prev) => ({ ...prev, password: "" }));
-      const result = zxcvbn(password);
-      setPasswordStrength(result.score);
-      setPasswordFeedback(result.feedback.suggestions.join(" "));
-    } else {
-      setPasswordStrength(0);
-      setPasswordFeedback("");
-    }
-  }, [password]);
-
-  const registerHandler = async (e: FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-    setSuccess("");
-
-    // Validate form using Zod
-    // TODO: If this component is used for different user types, the appropriate schema must be used for each based the userType prop.
-    const validationResult = customerRegisterSchema.safeParse({
-      name,
-      email,
-      password,
-      passConfirmation,
-      prefecture,
-      isAgreed,
-    });
-
-    if (!validationResult.success) {
-      const validationErrors: Record<string, string> = {};
-      validationResult.error.errors.forEach((err) => {
-        if (err.path[0]) {
-          validationErrors[err.path[0]] = err.message;
-        }
-      });
-      setErrors(validationErrors);
-      return;
-    }
-
-    if (passwordStrength < 3) {
-      setErrors({
-        password:
-          "Your password is too weak. Try using a longer passphrase or a password manager.",
-      });
-      document.getElementById("password")?.focus();
-      return;
-    }
-
-    try {
-      // TODO: If this component handles different user types, the appropriate API function must be called for each based the userType prop.
-      const response = await registerCustomer({
-        name,
-        email,
-        password,
-        prefecture,
-      });
-
-      if (response.status === 409) {
-        setErrors({ email: response.message });
-        return;
-      }
-
-      const successMessage = response.message || "Registration successful!";
-      setSuccess(successMessage);
-    } catch (error) {
-      setErrors({
-        unexpectedError:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred.",
-      });
-    }
-  };
+  const { localMessages, clearErrorMessage } =
+    useFormMessages(registerResultState);
+  const { passwordStrength, passwordFeedback } = usePasswordStrength(password);
 
   return (
-    <form className={styles.form} onSubmit={registerHandler}>
+    <form action={formAction} className={styles.form}>
       <p className={styles.required}>*Required</p>
       <TextInput
+        id="name"
         label="Name"
         type="text"
-        value={name}
+        name="name"
         placeholder="e.g., John Doe"
-        onChange={onNameChange}
         icon={<UserCircleIcon className={styles.icon} />}
         inputRequired
-        error={errors.name}
+        error={localMessages.name}
+        onChange={() => clearErrorMessage("name")}
       />
       <TextInput
+        id="email"
         label="Email"
         type="email"
-        value={email}
+        name="email"
         placeholder="e.g., example@aaasobo.com"
-        onChange={onEmailChange}
         icon={<EnvelopeIcon className={styles.icon} />}
         inputRequired
-        error={errors.email}
+        error={localMessages.email}
+        onChange={() => clearErrorMessage("email")}
       />
       <TextInput
         id="password"
         label="Password"
         type="password"
+        name="password"
         value={password}
-        placeholder="Create a password (8+ characters)"
-        onChange={onPasswordChange}
+        placeholder="At least 8 characters"
+        onChange={(event) => {
+          onPasswordChange(event);
+          clearErrorMessage("password");
+        }}
         icon={<LockClosedIcon className={styles.icon} />}
         inputRequired
         minLength={8}
-        error={errors.password}
+        error={localMessages.password}
         showPassword={showPassword}
         onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
       />
@@ -149,15 +79,22 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
         passwordStrength={passwordStrength}
         passwordFeedback={passwordFeedback}
       />
+      <input
+        type="hidden"
+        id="passwordStrength"
+        name="passwordStrength"
+        value={passwordStrength}
+      />
       <TextInput
+        id="passConfirmation"
         label="Password Confirmation"
         type="password"
-        value={passConfirmation}
+        name="passConfirmation"
         placeholder="Re-enter your password"
-        onChange={onPassConfirmationChange}
         icon={<LockClosedIcon className={styles.icon} />}
         inputRequired
-        error={errors.passConfirmation}
+        error={localMessages.passConfirmation}
+        onChange={() => clearErrorMessage("passConfirmation")}
         showPassword={showPassword}
         onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
       />
@@ -169,13 +106,18 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
           <HomeIcon className={styles.icon} />
           <select
             className={styles.select}
-            value={prefecture}
-            onChange={onPrefectureChange}
+            id="prefecture"
+            name="prefecture"
+            value={selectedPrefecture}
+            onChange={(e) => {
+              setSelectedPrefecture(e.target.value);
+              clearErrorMessage("prefecture");
+            }}
             required
-            style={{ color: prefecture ? "black" : "gray" }}
+            style={{ color: selectedPrefecture ? "black" : "gray" }}
           >
             <option value="" disabled>
-              Select your prefecture of residence
+              Select a prefecture
             </option>
             {prefectures.map((prefecture) => (
               <option key={prefecture} value={prefecture}>
@@ -184,8 +126,8 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
             ))}
           </select>
         </div>
-        {errors.prefecture && (
-          <p className={styles.errorText}>{errors.prefecture}</p>
+        {localMessages.prefecture && (
+          <p className={styles.errorText}>{localMessages.prefecture}</p>
         )}
       </label>
 
@@ -198,20 +140,12 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
           the instructor&apos;s skills.
         </p>
       </label>
-      <div className={styles.checkboxWrapper}>
-        <label className={styles.label}>
-          <input
-            type="checkbox"
-            checked={isAgreed}
-            onChange={() => setIsAgreed(!isAgreed)}
-            required
-          />
-          I agree.
-        </label>
-        {errors.isAgreed && (
-          <p className={styles.errorText}>{errors.isAgreed}</p>
-        )}
-      </div>
+
+      <CheckboxInput
+        name="isAgreed"
+        label="I agree."
+        error={localMessages.isAgreed}
+      />
 
       <div className={styles.buttonWrapper}>
         <ActionButton
@@ -220,10 +154,12 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
           type="submit"
         />
       </div>
-      {errors.unexpectedError && (
-        <p className={styles.errorText}>{errors.unexpectedError}</p>
+      {localMessages.unexpectedError && (
+        <p className={styles.errorText}>{localMessages.unexpectedError}</p>
       )}
-      {success && <p className={styles.successText}>{success}</p>}
+      {localMessages.success && (
+        <p className={styles.successText}>{localMessages.success}</p>
+      )}
     </form>
   );
 };
