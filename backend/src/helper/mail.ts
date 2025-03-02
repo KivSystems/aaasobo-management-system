@@ -35,3 +35,35 @@ export const sendVerificationEmail = async (
     return { success: false };
   }
 };
+
+export const sendPasswordResetEmail = async (
+  email: string,
+  token: string,
+  userType: UserType,
+) => {
+  const resetLink = `${process.env.FRONTEND_ORIGIN}/auth/new-password?token=${token}&type=${userType}`;
+
+  try {
+    await resend.emails.send({
+      // TODO: Replace 'onboarding@resend.dev' with KIV's verified email address before going live.
+      from: "onboarding@resend.dev", // Resend-provided email
+      to: email,
+      subject: "パスワード再発行のお知らせ (Password Reset Notification)",
+      html: `<p>
+      以下のリンクをクリックして、パスワードのリセットを行ってください。<br>
+      <small><em>(Click the link below to reset your password.)</em></small>
+    </p>
+    <p>
+      <a href="${resetLink}" style="font-size: 16px; font-weight: bold;">
+        ここをクリック
+      </a><br>
+      <small><em>(Click here)</em></small>
+    </p>`,
+    });
+
+    return { success: true };
+  } catch (err) {
+    console.error(err);
+    return { success: false };
+  }
+};
