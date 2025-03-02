@@ -4,7 +4,7 @@ import { CredentialsSignin } from "next-auth";
 import { signIn } from "../../../auth.config";
 
 export async function authenticate(
-  prevState: { message: string; timestamp: number } | undefined,
+  prevState: { message: string } | undefined,
   formData: FormData,
 ) {
   try {
@@ -24,7 +24,6 @@ export async function authenticate(
       const cleanedMessage = error.message.split(". Read more at ")[0];
       return {
         message: cleanedMessage,
-        timestamp: Date.now(),
       };
     }
     throw error;
