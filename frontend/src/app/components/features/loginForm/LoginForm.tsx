@@ -8,15 +8,12 @@ import TextInput from "../../elements/textInput/TextInput";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
 
 export default function LoginForm({ userType }: { userType: UserType }) {
   const [errorState, formAction] = useFormState(authenticate, undefined);
   const [showPassword, setShowPassword] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLocalError(errorState?.message ?? null);
-  }, [errorState]);
+  const { localMessages, clearErrorMessage } = useFormMessages(errorState);
 
   return (
     <form action={formAction} className={styles.form}>
@@ -28,7 +25,7 @@ export default function LoginForm({ userType }: { userType: UserType }) {
         placeholder="e.g., example@aaasobo.com"
         icon={<EnvelopeIcon className={styles.icon} />}
         required={true}
-        onChange={() => setLocalError(null)}
+        onChange={() => clearErrorMessage("message")}
       />
 
       <TextInput
@@ -41,7 +38,7 @@ export default function LoginForm({ userType }: { userType: UserType }) {
         required={true}
         showPassword={showPassword}
         onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
-        onChange={() => setLocalError(null)}
+        onChange={() => clearErrorMessage("message")}
       />
 
       <input type="hidden" name="userType" value={userType} />
@@ -51,10 +48,10 @@ export default function LoginForm({ userType }: { userType: UserType }) {
       </div>
 
       <div className={styles.errorWrapper}>
-        {localError && (
+        {localMessages.message && (
           <>
             <ExclamationTriangleIcon className={styles.errorIcon} />{" "}
-            <p className={styles.errorText}>{localError}</p>
+            <p className={styles.errorText}>{localMessages.message}</p>
           </>
         )}
       </div>
