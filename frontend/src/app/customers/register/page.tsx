@@ -27,7 +27,7 @@ function Register() {
             Already a member? <Link href="/customers/login">Log In</Link>
           </p>
 
-          <RegisterForm userType="customer" onSuccessRedirect={router.push} />
+          <RegisterForm userType="customer" />
         </div>
       </div>
     </main>
