@@ -109,7 +109,6 @@ function InstructorProfile({
 
   return (
     <>
-      <ToastContainer />
       <h2>Profile Page</h2>
       <div className={styles.container}>
         {instructor ? (
