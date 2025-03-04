@@ -14,7 +14,12 @@ import {
   generateVerificationToken,
   getVerificationTokenByToken,
 } from "../services/verificationTokenService";
-import { sendVerificationEmail, UserType } from "../helper/mail";
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+  UserType,
+} from "../helper/mail";
+import { generatePasswordResetToken } from "../services/passwordResetTokensService";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {
@@ -136,5 +141,46 @@ export const verifyUserEmailController = async (
     return res.status(500).json({
       error: "Internal server error.",
     });
+  }
+};
+
+const PASSWORD_RESET_EMAIL_SUCCESS =
+  "We have sent a 'Password Reset Notification' to your registered email address.";
+
+const PASSWORD_RESET_EMAIL_ERROR =
+  "Something went wrong. Please try again later.";
+
+export const sendUserResetEmailController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { email, userType } = req.body;
+
+  try {
+    const user = await getUserByEmail(userType, email);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "The email address does not exist." });
+    }
+
+    const passwordResetToken = await generatePasswordResetToken(user.email);
+    const sendResult = await sendPasswordResetEmail(
+      passwordResetToken.email,
+      passwordResetToken.token,
+      userType,
+    );
+
+    if (!sendResult.success) {
+      throw new Error(
+        "Email service failure: Failed to send password reset email using Resend.",
+      );
+    }
+
+    res.status(201).json({ message: PASSWORD_RESET_EMAIL_SUCCESS });
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    res.status(500).json({ message: PASSWORD_RESET_EMAIL_ERROR });
   }
 };
