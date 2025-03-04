@@ -27,8 +27,13 @@ export const generatePasswordResetToken = async (email: string) => {
 
     return passwordResetToken;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to create a verification token.");
+    console.error(
+      "Database error while creating a password reset token:",
+      error,
+    );
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Failed to create a password reset token."}`,
+    );
   }
 };
 
@@ -40,9 +45,12 @@ export const getPasswordResetTokenByToken = async (token: string) => {
 
     return passwordResetToken;
   } catch (error) {
-    console.error("Database error while fetching verification token:", error);
+    console.error(
+      "Database error while fetching a password reset token by token:",
+      error,
+    );
     throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      `Database error: ${error instanceof Error ? error.message : "Failed to find a password reset token by token."}`,
     );
   }
 };
@@ -55,7 +63,12 @@ export const getPasswordResetTokenByEmail = async (email: string) => {
 
     return passwordResetToken;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to get a verification token by email.");
+    console.error(
+      "Database error while fetching a password reset token by email:",
+      error,
+    );
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Failed to find a password reset token by email."}`,
+    );
   }
 };
