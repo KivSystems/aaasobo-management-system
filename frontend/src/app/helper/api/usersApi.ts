@@ -93,3 +93,42 @@ export const verifyUserEmail = async (
     };
   }
 };
+
+export const sendUserResetEmail = async (
+  email: string,
+  userType: UserType,
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const apiURL = `${BACKEND_ORIGIN}/users/send-password-reset`;
+
+    const response = await fetch(apiURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, userType }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message:
+          response.status === 404
+            ? data.message || "The email address does not exist."
+            : data.message || "Something went wrong. Please try again later.",
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || "Password reset email sent successfully.",
+    };
+  } catch (error) {
+    console.error("Error in sendUserResetEmail:", error);
+
+    return {
+      success: false,
+      message: "An unexpected error occurred. Please try again later.",
+    };
+  }
+};

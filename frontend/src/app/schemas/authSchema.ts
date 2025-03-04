@@ -28,3 +28,8 @@ export const userLoginSchema = z.object({
 });
 
 export const userTypeSchema = z.enum(["admin", "customer", "instructor"]);
+
+export const emailSchema = z
+  .string()
+  .min(1, { message: "Email is required" })
+  .email({ message: "Invalid email format" });
