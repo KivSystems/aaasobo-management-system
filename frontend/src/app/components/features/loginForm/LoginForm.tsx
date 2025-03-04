@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./LoginForm.module.scss";
 import { authenticate } from "@/app/actions/authActions";
 import { useFormState } from "react-dom";
@@ -9,6 +9,7 @@ import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
+import Link from "next/link";
 
 export default function LoginForm({ userType }: { userType: UserType }) {
   const [errorState, formAction] = useFormState(authenticate, undefined);
@@ -40,6 +41,13 @@ export default function LoginForm({ userType }: { userType: UserType }) {
         onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
         onChange={() => clearErrorMessage("message")}
       />
+
+      <Link
+        className={styles.resetLink}
+        href={`/auth/password-reset?type=${userType}`}
+      >
+        Forgot Password?
+      </Link>
 
       <input type="hidden" name="userType" value={userType} />
 
