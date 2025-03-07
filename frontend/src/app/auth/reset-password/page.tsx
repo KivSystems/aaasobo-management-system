@@ -2,9 +2,9 @@ import styles from "./page.module.scss";
 import Image from "next/image";
 import { Suspense } from "react";
 import Loading from "@/app/components/elements/loading/Loading";
-import PasswordResetForm from "@/app/components/features/passwordResetForm/PasswordResetForm";
+import ResetPasswordForm from "@/app/components/features/resetPasswordForm/ResetPasswordForm";
 
-export default function PasswordResetPage() {
+export default function ResetPasswordPage() {
   return (
     <main className={styles.outsideContainer}>
       <div className={styles.container}>
@@ -16,11 +16,7 @@ export default function PasswordResetPage() {
           className={styles.logo}
           priority={true}
         />
-        <h2>Password Reset</h2>
-        <p className={styles.instruction}>
-          Enter your registered email address and press Submit to receive a
-          password reset link.
-        </p>
+        <h2>Reset Password</h2>
         <Suspense
           fallback={
             <div className={styles.loaderWrapper}>
@@ -28,7 +24,7 @@ export default function PasswordResetPage() {
             </div>
           }
         >
-          <PasswordResetForm />
+          <ResetPasswordForm />
         </Suspense>
       </div>
     </main>
