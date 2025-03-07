@@ -1,0 +1,31 @@
+@import "../../../variables.module.scss";
+
+.message {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  min-width: 1.2rem;
+  &--error {
+    color: $red-alert;
+  }
+  &--success {
+    color: $green-success;
+  }
+}
+
+.errorText {
+  font-size: 0.9rem;
+  color: $red-alert;
+  margin-bottom: unset !important;
+}
+
+.successText {
+  font-size: 0.9rem;
+  color: $green-success;
+  margin-bottom: unset !important;
+}
