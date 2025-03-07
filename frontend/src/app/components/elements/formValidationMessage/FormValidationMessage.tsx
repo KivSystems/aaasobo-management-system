@@ -7,14 +7,19 @@ import styles from "./FormValidationMessage.module.scss";
 type MessageProps = {
   type: "error" | "success";
   message: string;
+  className?: string;
 };
 
-export default function FormValidationMessage({ type, message }: MessageProps) {
+export default function FormValidationMessage({
+  type,
+  message,
+  className = "",
+}: MessageProps) {
   const isError = type === "error";
   const Icon = isError ? ExclamationTriangleIcon : CheckCircleIcon;
 
   return (
-    <div className={styles.message}>
+    <div className={`${styles.message} ${className ? styles[className] : ""}`}>
       <Icon
         className={`${styles.icon} ${isError ? styles["icon--error"] : styles["icon--success"]}`}
       />

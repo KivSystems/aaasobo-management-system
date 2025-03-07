@@ -2,6 +2,7 @@ import React, { ChangeEvent } from "react";
 import styles from "./TextInput.module.scss";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { Tooltip } from "../tooltip/Tooltip";
+import FormValidationMessage from "../formValidationMessage/FormValidationMessage";
 
 type TextInputProps = {
   id?: string;
@@ -77,7 +78,13 @@ function TextInput({
             </Tooltip>
           )}
         </div>
-        {error && <p className={styles.errorText}>{error}</p>}
+        {error && (
+          <FormValidationMessage
+            type="error"
+            message={error}
+            className="textInputError"
+          />
+        )}
       </label>
     </div>
   );
