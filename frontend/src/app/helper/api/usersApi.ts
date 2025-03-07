@@ -132,3 +132,44 @@ export const sendUserResetEmail = async (
     };
   }
 };
+
+export const updateUserPassword = async (
+  token: string,
+  userType: UserType,
+  password: string,
+): Promise<ResetPasswordFormState> => {
+  const PASSWORD_RESET_REQUEST_ERROR =
+    "An error has occurred. Please request the password reset email again using the link below.";
+  const GENERAL_ERROR_MESSAGE =
+    "An error has occurred. Please try again later.";
+
+  try {
+    const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
+    const response = await fetch(apiURL, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, userType, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return response.status === 500
+        ? { errorMessage: data.message || GENERAL_ERROR_MESSAGE }
+        : {
+            queryError:
+              `${data.message} Please request the password reset email again using the link below.` ||
+              PASSWORD_RESET_REQUEST_ERROR,
+          };
+    }
+
+    return {
+      successMessage: data.message || "Password was updated successfully.",
+    };
+  } catch (error) {
+    console.error("Error in updateUserPassword API call:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
