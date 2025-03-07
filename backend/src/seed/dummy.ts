@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 async function insertInstructors() {
   await prisma.instructor.create({
     data: {
-      email: "helen@example.com",
+      // email: "helen@example.com",
+      email: "kiv-developers@googlegroups.com",
       name: "Helene Gay Santos",
       nickname: "Helen",
       icon: "helen-1.jpg",
