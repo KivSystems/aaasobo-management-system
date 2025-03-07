@@ -41,7 +41,7 @@ export const sendPasswordResetEmail = async (
   token: string,
   userType: UserType,
 ) => {
-  const resetLink = `${process.env.FRONTEND_ORIGIN}/auth/new-password?token=${token}&type=${userType}`;
+  const resetLink = `${process.env.FRONTEND_ORIGIN}/auth/reset-password?token=${token}&type=${userType}`;
 
   try {
     await resend.emails.send({

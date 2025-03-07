@@ -157,3 +157,23 @@ export const verifyCustomerEmail = async (
     );
   }
 };
+
+export const updateCustomerPassword = async (
+  id: number,
+  newPassword: string,
+) => {
+  try {
+    return await prisma.customer.update({
+      where: { id },
+      data: { password: newPassword },
+    });
+  } catch (error) {
+    console.error(
+      `Database error while updating customer password (ID: ${id}):`,
+      error,
+    );
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
+};

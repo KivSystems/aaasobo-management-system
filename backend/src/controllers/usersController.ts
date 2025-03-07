@@ -4,10 +4,12 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import {
   getCustomerByEmail,
+  updateCustomerPassword,
   verifyCustomerEmail,
 } from "../services/customersService";
 import {
   getInstructorByEmail,
+  updateInstructorPassword,
   verifyInstructorEmail,
 } from "../services/instructorsService";
 import {
@@ -19,7 +21,10 @@ import {
   sendVerificationEmail,
   UserType,
 } from "../helper/mail";
-import { generatePasswordResetToken } from "../services/passwordResetTokensService";
+import {
+  generatePasswordResetToken,
+  getPasswordResetTokenByToken,
+} from "../services/passwordResetTokensService";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {
@@ -182,5 +187,47 @@ export const sendUserResetEmailController = async (
   } catch (error) {
     console.error("Error sending password reset email:", error);
     res.status(500).json({ message: PASSWORD_RESET_EMAIL_ERROR });
+  }
+};
+
+const PASSWORD_UPDATE_SUCCESS =
+  "Your password has been successfully updated. Please log in using the link below.";
+const PASSWORD_UPDATE_ERROR = "An error has occurred. Please try again later.";
+
+export const updatePasswordController = async (req: Request, res: Response) => {
+  const { token, userType, password } = req.body;
+
+  try {
+    const existingToken = await getPasswordResetTokenByToken(token);
+    if (!existingToken) {
+      return res.status(404).json({ message: "Token not found." });
+    }
+
+    const isTokenExpired = new Date(existingToken.expires) < new Date();
+    if (isTokenExpired) {
+      return res.status(400).json({
+        message: "The token has expired.",
+      });
+    }
+
+    const user = await getUserByEmail(userType, existingToken.email);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "The email address does not exist." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    if (userType === "customer") {
+      updateCustomerPassword(user.id, hashedPassword);
+    } else if (userType === "instructor") {
+      updateInstructorPassword(user.id, hashedPassword);
+    }
+
+    res.status(201).json({ message: PASSWORD_UPDATE_SUCCESS });
+  } catch (error) {
+    console.error("Error updating user password:", error);
+    res.status(500).json({ message: PASSWORD_UPDATE_ERROR });
   }
 };
