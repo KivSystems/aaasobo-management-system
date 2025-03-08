@@ -42,14 +42,15 @@ export default function LoginForm({ userType }: { userType: UserType }) {
         onChange={() => clearErrorMessage("message")}
       />
 
+      {/* Hidden input to send necessary data with form submission. */}
+      <input type="hidden" name="userType" value={userType ?? ""} />
+
       <Link
         className={styles.resetLink}
-        href={`/auth/password-reset?type=${userType}`}
+        href={`/auth/forgot-password?type=${userType}`}
       >
         Forgot Password?
       </Link>
-
-      <input type="hidden" name="userType" value={userType} />
 
       <div className={styles.buttonWrapper}>
         <ActionButton btnText="Log in" className="bookBtn" type="submit" />
