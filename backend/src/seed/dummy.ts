@@ -6,34 +6,34 @@ const prisma = new PrismaClient();
 async function insertInstructors() {
   await prisma.instructor.create({
     data: {
-      // email: "helen@example.com",
       email: "kiv-developers@googlegroups.com",
+      emailVerified: "2025-03-08T14:31:26.816Z",
       name: "Helene Gay Santos",
       nickname: "Helen",
       icon: "helen-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=ABCde",
       meetingId: "123 456 7890",
       passcode: "helen",
-      // password: "$2b$12$lzg9z2HDTl/dwd8DSnGHJOdPIYiFvn40fwEzRtimoty5VtOugaTfa", // password: helen
       password: "$2b$10$oHI8W.V4wjvs8pSH9BdCoeXqUy7eICX6kwmuEilIcJcez7Ivin45W", // AaasoBo!Helen
       introductionURL:
         "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=129259",
     },
   });
-  // await prisma.instructor.create({
-  //   data: {
-  //     email: "elian@example.com",
-  //     name: "Elian P.Quilisadio",
-  //     nickname: "Elian",
-  //     icon: "elian-1.jpg",
-  //     classURL: "https://zoom.us/j/67890?pwd=FGHij",
-  //     meetingId: "234 567 8901",
-  //     passcode: "elian",
-  //     password: "$2b$12$Oe8qdMedbkuqhY31pgkH7OaMukvbUawE63inMCoDSeY5CHRS3Gc.u", // password: elian
-  //     introductionURL:
-  //       "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=127929",
-  //   },
-  // });
+  await prisma.instructor.create({
+    data: {
+      email: "elian@example.com",
+      emailVerified: "2025-03-08T14:31:26.816Z",
+      name: "Elian P.Quilisadio",
+      nickname: "Elian",
+      icon: "elian-1.jpg",
+      classURL: "https://zoom.us/j/67890?pwd=FGHij",
+      meetingId: "234 567 8901",
+      passcode: "elian",
+      password: "$2b$10$bTL6vof/7DoBjjzltXEZVep7zJVSRUWT.zFe9mhsBTbBGOl8gEUXe", // password: AaasoBo!Elian
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=127929",
+    },
+  });
 }
 
 async function insertInstructorAvailabilities() {
@@ -162,18 +162,20 @@ async function insertCustomers() {
     data: [
       {
         name: "Alice",
-        email: "alice@example.com",
-        // password: "alice",
+        email: "kiv-developers@googlegroups.com",
+        emailVerified: "2025-03-08T14:31:26.816Z",
         password:
           "$2b$10$7mzo9sqXQ0ZG7oGQJoHjMulOENyQqJIATxtQZEG2B0LxERcAo68oW", // AaasoBo!Alice
         prefecture: "Aomori",
       },
-      // {
-      //   name: "Bob",
-      //   email: "bob@example.com",
-      //   password: "bob",
-      //   prefecture: "Hokkaido",
-      // },
+      {
+        name: "Bob",
+        email: "bob@example.com",
+        emailVerified: "2025-03-08T14:31:26.816Z",
+        password:
+          "$2b$10$bZez5GGcqLOKwVP1MoNIkufIQunzXGlhEv6dx04dqrUCvml7Ze8JO", // AaasoBo!Bob
+        prefecture: "Hokkaido",
+      },
     ],
   });
 }
@@ -510,7 +512,7 @@ async function insertClasses() {
 
 async function insertChildren() {
   const alice = await getCustomer("Alice");
-  // const bob = await getCustomer("Bob");
+  const bob = await getCustomer("Bob");
 
   await prisma.children.createMany({
     data: [
@@ -528,13 +530,13 @@ async function insertChildren() {
         personalInfo:
           "Age: 6 years, English Level: Beginner. Likes playing with dolls and has a pet sheep named Woolly.",
       },
-      // {
-      //   name: "Emily",
-      //   customerId: bob.id,
-      //   birthdate: new Date("2017-11-02"),
-      //   personalInfo:
-      //     "Age: 7 years, English Level: Intermediate. Loves drawing and is very creative. Enjoys reading stories.",
-      // },
+      {
+        name: "Emily",
+        customerId: bob.id,
+        birthdate: new Date("2017-11-02"),
+        personalInfo:
+          "Age: 7 years, English Level: Intermediate. Loves drawing and is very creative. Enjoys reading stories.",
+      },
     ],
   });
 }
@@ -607,7 +609,7 @@ async function insertPlans() {
 
 async function insertSubscriptions() {
   const alice = await getCustomer("Alice");
-  // const bob = await getCustomer("Bob");
+  const bob = await getCustomer("Bob");
   const plan1 = await getPlan("3,180 yen/month");
   const plan2 = await getPlan("7,980 yen/month");
 
@@ -619,12 +621,12 @@ async function insertSubscriptions() {
         startAt: new Date("2024-08-01"),
         endAt: null,
       },
-      // {
-      //   customerId: bob.id,
-      //   planId: plan2.id,
-      //   startAt: new Date("2024-06-01"),
-      //   endAt: null,
-      // },
+      {
+        customerId: bob.id,
+        planId: plan2.id,
+        startAt: new Date("2024-06-01"),
+        endAt: null,
+      },
     ],
   });
 }
