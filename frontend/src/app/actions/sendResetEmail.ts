@@ -1,44 +1,43 @@
 "use server";
 
 import { sendUserResetEmail } from "../helper/api/usersApi";
-import { emailSchema, userTypeSchema } from "../schemas/authSchema";
+import { GENERAL_ERROR_MESSAGE } from "../helper/utils/messages";
+import { extractResetRequestValidationErrors } from "../helper/utils/validationErrorUtils";
+import { forgotPasswordFormSchema } from "../schemas/authSchema";
 
 export async function sendResetEmail(
-  prevState: { success: boolean; message: string } | undefined,
+  prevState: ForgotPasswordFormState | undefined,
   formData: FormData,
-): Promise<{ success: boolean; message: string }> {
+): Promise<ForgotPasswordFormState> {
   try {
     const email = formData.get("email");
     const userType = formData.get("userType");
 
-    // Validate email using Zod
-    const parsedEmail = emailSchema.safeParse(email);
-    if (!parsedEmail.success) {
-      console.error("Email validation failed:", parsedEmail.error.format());
-      return { success: false, message: parsedEmail.error.errors[0].message };
-    }
+    const parsedForm = forgotPasswordFormSchema.safeParse({
+      email,
+      userType,
+    });
 
-    // Validate userType using Zod
-    const parsedUserType = userTypeSchema.safeParse(userType);
-    if (!parsedUserType.success) {
-      console.error("User type validation failed:", parsedUserType.error);
-      return {
-        success: false,
-        message: "Something went wrong. Please try again later.",
-      };
+    if (!parsedForm.success) {
+      const formattedErrors = parsedForm.error.format();
+      console.error(
+        "Password reset link request validation failed:",
+        formattedErrors,
+      );
+
+      return extractResetRequestValidationErrors(formattedErrors);
     }
 
     const response = await sendUserResetEmail(
-      parsedEmail.data,
-      parsedUserType.data,
+      parsedForm.data.email,
+      parsedForm.data.userType,
     );
 
     return response;
   } catch (error) {
-    console.error("Unexpected error in sendResetEmail:", error);
+    console.error("Unexpected error in sendResetEmail server action:", error);
     return {
-      success: false,
-      message: "An unexpected error occurred. Please try again later.",
+      errorMessage: GENERAL_ERROR_MESSAGE,
     };
   }
 }

@@ -1,17 +1,14 @@
 "use server";
 
 import { updateUserPassword } from "../helper/api/usersApi";
+import { GENERAL_ERROR_MESSAGE } from "../helper/utils/messages";
+import { extractPasswordResetValidationErrors } from "../helper/utils/validationErrorUtils";
 import { resetPasswordFormSchema } from "../schemas/authSchema";
 
 export async function resetPassword(
   prevState: ResetPasswordFormState | undefined,
   formData: FormData,
 ): Promise<ResetPasswordFormState> {
-  const PASSWORD_RESET_REQUEST_ERROR =
-    "An error has occurred. Please request the password reset email again using the link below.";
-  const GENERAL_ERROR_MESSAGE =
-    "An error has occurred. Please try again later.";
-
   try {
     const token = formData.get("token");
     const userType = formData.get("userType");
@@ -34,27 +31,7 @@ export async function resetPassword(
       const formattedErrors = parsedForm.error.format();
       console.error("Password reset validation failed:", formattedErrors);
 
-      // TODO: Create extractPasswordResetValidationErrors function in ../helper/util/formValidationUtils.ts
-      const errors: ResetPasswordFormState = {};
-
-      if (formattedErrors.token || formattedErrors.userType) {
-        errors.queryError = PASSWORD_RESET_REQUEST_ERROR;
-      }
-
-      if (formattedErrors.password) {
-        errors.password = formattedErrors.password._errors[0];
-      }
-
-      if (formattedErrors.passwordConfirmation) {
-        errors.passwordConfirmation =
-          formattedErrors.passwordConfirmation._errors[0];
-      }
-
-      if (formattedErrors.passwordStrength) {
-        errors.errorMessage = GENERAL_ERROR_MESSAGE;
-      }
-
-      return errors;
+      return extractPasswordResetValidationErrors(formattedErrors);
     }
 
     const response = await updateUserPassword(
