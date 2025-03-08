@@ -1,3 +1,8 @@
+import {
+  GENERAL_ERROR_MESSAGE,
+  PASSWORD_RESET_REQUEST_ERROR,
+} from "../utils/messages";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
@@ -97,10 +102,9 @@ export const verifyUserEmail = async (
 export const sendUserResetEmail = async (
   email: string,
   userType: UserType,
-): Promise<{ success: boolean; message: string }> => {
+): Promise<ForgotPasswordFormState> => {
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/send-password-reset`;
-
     const response = await fetch(apiURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -110,25 +114,21 @@ export const sendUserResetEmail = async (
     const data = await response.json();
 
     if (!response.ok) {
-      return {
-        success: false,
-        message:
-          response.status === 404
-            ? data.message || "The email address does not exist."
-            : data.message || "Something went wrong. Please try again later.",
-      };
+      return response.status === 404
+        ? { errorMessage: data.message || "The email address does not exist." }
+        : {
+            errorMessage: data.message || GENERAL_ERROR_MESSAGE,
+          };
     }
 
     return {
-      success: true,
-      message: data.message || "Password reset email sent successfully.",
+      successMessage: data.message || "Password reset email sent successfully.",
     };
   } catch (error) {
-    console.error("Error in sendUserResetEmail:", error);
+    console.error("Error in sendUserResetEmail API call:", error);
 
     return {
-      success: false,
-      message: "An unexpected error occurred. Please try again later.",
+      errorMessage: GENERAL_ERROR_MESSAGE,
     };
   }
 };
@@ -138,11 +138,6 @@ export const updateUserPassword = async (
   userType: UserType,
   password: string,
 ): Promise<ResetPasswordFormState> => {
-  const PASSWORD_RESET_REQUEST_ERROR =
-    "An error has occurred. Please request the password reset email again using the link below.";
-  const GENERAL_ERROR_MESSAGE =
-    "An error has occurred. Please try again later.";
-
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
     const response = await fetch(apiURL, {

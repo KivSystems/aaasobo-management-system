@@ -25,6 +25,12 @@ import {
   generatePasswordResetToken,
   getPasswordResetTokenByToken,
 } from "../services/passwordResetTokensService";
+import {
+  EMAIL_VERIFICATION_SUCCESS_MESSAGE,
+  GENERAL_ERROR_MESSAGE,
+  PASSWORD_RESET_EMAIL_SUCCESS,
+  PASSWORD_UPDATE_SUCCESS,
+} from "../helper/messages";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {
@@ -83,9 +89,6 @@ export const authenticateUserController = async (
     res.status(500).json({ message: errorMessage });
   }
 };
-
-const EMAIL_VERIFICATION_SUCCESS_MESSAGE =
-  "Your email address has been verified. Please log in from the login page.";
 
 export const verifyUserEmailController = async (
   req: Request,
@@ -149,12 +152,6 @@ export const verifyUserEmailController = async (
   }
 };
 
-const PASSWORD_RESET_EMAIL_SUCCESS =
-  "We have sent a 'Password Reset Notification' to your registered email address.";
-
-const PASSWORD_RESET_EMAIL_ERROR =
-  "Something went wrong. Please try again later.";
-
 export const sendUserResetEmailController = async (
   req: Request,
   res: Response,
@@ -186,13 +183,9 @@ export const sendUserResetEmailController = async (
     res.status(201).json({ message: PASSWORD_RESET_EMAIL_SUCCESS });
   } catch (error) {
     console.error("Error sending password reset email:", error);
-    res.status(500).json({ message: PASSWORD_RESET_EMAIL_ERROR });
+    res.status(500).json({ message: GENERAL_ERROR_MESSAGE });
   }
 };
-
-const PASSWORD_UPDATE_SUCCESS =
-  "Your password has been successfully updated. Please log in using the link below.";
-const PASSWORD_UPDATE_ERROR = "An error has occurred. Please try again later.";
 
 export const updatePasswordController = async (req: Request, res: Response) => {
   const { token, userType, password } = req.body;
@@ -228,6 +221,6 @@ export const updatePasswordController = async (req: Request, res: Response) => {
     res.status(201).json({ message: PASSWORD_UPDATE_SUCCESS });
   } catch (error) {
     console.error("Error updating user password:", error);
-    res.status(500).json({ message: PASSWORD_UPDATE_ERROR });
+    res.status(500).json({ message: GENERAL_ERROR_MESSAGE });
   }
 };
