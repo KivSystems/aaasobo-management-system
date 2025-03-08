@@ -198,6 +198,11 @@ type LinkType = {
 
 type UserType = "admin" | "customer" | "instructor";
 
+type ForgotPasswordFormState = {
+  errorMessage?: string;
+  successMessage?: string;
+};
+
 type ResetPasswordFormState = {
   queryError?: string;
   password?: string;
