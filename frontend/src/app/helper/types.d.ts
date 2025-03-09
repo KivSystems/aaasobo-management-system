@@ -198,7 +198,7 @@ type RegisterFormState = {
   email?: string;
   passConfirmation?: string;
   prefecture?: string;
-  isAgreed?: true;
+  isAgreed?: string;
   errorMessage?: string;
   successMessage?: string;
 };

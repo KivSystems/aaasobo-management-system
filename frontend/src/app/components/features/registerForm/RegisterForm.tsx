@@ -79,12 +79,6 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
         passwordStrength={passwordStrength}
         passwordFeedback={passwordFeedback}
       />
-      <input
-        type="hidden"
-        id="passwordStrength"
-        name="passwordStrength"
-        value={passwordStrength}
-      />
       <TextInput
         id="passConfirmation"
         label="Password Confirmation"
@@ -98,6 +92,13 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
         showPassword={showPassword}
         onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
       />
+
+      <input
+        type="hidden"
+        name="passwordStrength"
+        value={passwordStrength ?? ""}
+      />
+      <input type="hidden" name="userType" value={userType ?? ""} />
 
       {/* TODO: If this component supports multiple user types, render the appropriate UI for each. */}
       {userType === "customer" && (
@@ -120,14 +121,17 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
         />
       </div>
 
-      {localMessages.unexpectedError && (
+      {localMessages.errorMessage && (
         <FormValidationMessage
           type="error"
-          message={localMessages.unexpectedError}
+          message={localMessages.errorMessage}
         />
       )}
-      {localMessages.success && (
-        <FormValidationMessage type="success" message={localMessages.success} />
+      {localMessages.successMessage && (
+        <FormValidationMessage
+          type="success"
+          message={localMessages.successMessage}
+        />
       )}
     </form>
   );
