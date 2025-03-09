@@ -58,6 +58,22 @@ export const getAllCustomers = async () => {
   }
 };
 
+export const getCustomerByEmail = async (email: string) => {
+  try {
+    return await prisma.customer.findUnique({
+      where: { email },
+    });
+  } catch (error) {
+    console.error(
+      `Database error while getting customer by email (email: ${email}):`,
+      error,
+    );
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
+};
+
 export const registerCustomer = async ({
   name,
   email,
@@ -69,24 +85,19 @@ export const registerCustomer = async ({
   password: string;
   prefecture: string;
 }) => {
-  // Check if customer already exists
-  const existingCustomer = await prisma.customer.findUnique({
-    where: { email },
-  });
+  try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  if (existingCustomer) {
-    const error = new Error(
-      "This email address is already registered. Try a different one.",
+    await prisma.customer.create({
+      data: { name, email, password: hashedPassword, prefecture },
+    });
+  } catch (error) {
+    console.error(
+      `Database error while registering customer (email: ${email}):`,
+      error,
     );
-    (error as any).statusCode = 409;
-    throw error;
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
-
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-  // Insert the customer data into the DB
-  await prisma.customer.create({
-    data: { name, email, password: hashedPassword, prefecture },
-  });
 };
