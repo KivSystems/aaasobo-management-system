@@ -2,6 +2,7 @@ import React, { ChangeEvent } from "react";
 import styles from "./TextInput.module.scss";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { Tooltip } from "../tooltip/Tooltip";
+import FormValidationMessage from "../formValidationMessage/FormValidationMessage";
 
 type TextInputProps = {
   id?: string;
@@ -12,6 +13,7 @@ type TextInputProps = {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   icon?: React.ReactNode;
   inputRequired?: boolean;
+  required?: boolean;
   name?: string;
   error?: string;
   minLength?: number;
@@ -30,6 +32,7 @@ function TextInput({
   onChange,
   icon,
   inputRequired,
+  required,
   name,
   error,
   minLength,
@@ -52,7 +55,7 @@ function TextInput({
             placeholder={placeholder}
             onChange={onChange}
             className={styles.inputField}
-            required={inputRequired}
+            required={inputRequired || required}
             name={name}
             minLength={minLength}
             pattern={pattern}
@@ -75,7 +78,13 @@ function TextInput({
             </Tooltip>
           )}
         </div>
-        {error && <p className={styles.errorText}>{error}</p>}
+        {error && (
+          <FormValidationMessage
+            type="error"
+            message={error}
+            className="textInputError"
+          />
+        )}
       </label>
     </div>
   );

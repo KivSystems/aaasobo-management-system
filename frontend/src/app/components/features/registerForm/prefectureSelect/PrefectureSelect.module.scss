@@ -1,0 +1,50 @@
+@import "../../../../variables.module.scss";
+
+.label {
+  font-size: 0.9rem;
+  margin-bottom: 5rem;
+
+  input {
+    margin-right: 0.25rem;
+  }
+}
+
+.selectWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 0.3rem;
+  padding: 0.5rem;
+  margin: 0.25rem 0 1rem;
+
+  &:focus-within {
+    border-color: $blue_primary;
+  }
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.select {
+  width: 100%;
+  border: none;
+  padding-left: 0.3rem;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.errorText {
+  color: $red-alert;
+  font-size: 0.8rem;
+
+  &--prefecture {
+    margin-top: -0.9rem;
+    margin-bottom: 1rem;
+  }
+}
+
