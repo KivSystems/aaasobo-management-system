@@ -197,3 +197,14 @@ type LinkType = {
 };
 
 type UserType = "admin" | "customer" | "instructor";
+
+type RegisterFormState = {
+  password?: string;
+  name?: string;
+  email?: string;
+  passConfirmation?: string;
+  prefecture?: string;
+  isAgreed?: string;
+  errorMessage?: string;
+  successMessage?: string;
+};

@@ -10,7 +10,7 @@ import { getAllChildren } from "../services/childrenService";
 import bcrypt from "bcrypt";
 import { logout } from "../helper/logout";
 
-const saltRounds = 12;
+export const saltRounds = 12;
 
 // Login Admin
 export const loginAdminController = async (req: Request, res: Response) => {

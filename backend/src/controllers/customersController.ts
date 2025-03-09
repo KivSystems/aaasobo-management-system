@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
   fetchCustomerById,
+  getCustomerByEmail,
   registerCustomer,
   updateCustomer,
 } from "../services/customersService";
@@ -12,6 +13,11 @@ import {
 import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
 import { logout } from "../helper/logout";
+import {
+  EMAIL_ALREADY_REGISTERED_ERROR,
+  GENERAL_ERROR_MESSAGE,
+  REGISTRATION_SUCCESS_MESSAGE,
+} from "../helper/messages";
 
 export const registerCustomerController = async (
   req: Request,
@@ -21,22 +27,26 @@ export const registerCustomerController = async (
   let { email } = req.body ?? {};
 
   if (!name || !email || !password || !prefecture) {
-    return res.status(400).json({ message: "All fields are required." });
+    return res.status(400).json({ message: GENERAL_ERROR_MESSAGE });
   }
 
   // Normalize email
   email = email.trim().toLowerCase();
 
   try {
+    const existingCustomer = await getCustomerByEmail(email);
+    if (existingCustomer) {
+      return res.status(409).json({ message: EMAIL_ALREADY_REGISTERED_ERROR });
+    }
+
     await registerCustomer({ name, email, password, prefecture });
 
     res.status(201).json({
-      message: "Registration successful!",
-      redirectUrl: "/customers/login",
+      message: REGISTRATION_SUCCESS_MESSAGE,
     });
-  } catch (error: any) {
-    console.error("Registration Error:", error);
-    return res.status(error.statusCode || 500).json({ message: error.message });
+  } catch (error) {
+    console.error("Error registering customer:", error);
+    res.status(500).json({ message: GENERAL_ERROR_MESSAGE });
   }
 };
 

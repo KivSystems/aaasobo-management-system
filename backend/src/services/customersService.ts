@@ -1,6 +1,7 @@
 import { Customer } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
+import { saltRounds } from "../controllers/adminsController";
 
 export const fetchCustomerById = async (
   customerId: number,
@@ -61,18 +62,17 @@ export const getCustomerByEmail = async (
   email: string,
 ): Promise<Customer | null> => {
   try {
-    const customer = await prisma.customer.findUnique({
+    return await prisma.customer.findUnique({
       where: { email },
     });
-
-    if (!customer) {
-      throw new Error("Customer not found.");
-    }
-
-    return customer;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch customer.");
+    console.error(
+      `Database error while getting customer by email (email: ${email}):`,
+      error,
+    );
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 };
 
@@ -87,24 +87,19 @@ export const registerCustomer = async ({
   password: string;
   prefecture: string;
 }) => {
-  // Check if customer already exists
-  const existingCustomer = await prisma.customer.findUnique({
-    where: { email },
-  });
+  try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  if (existingCustomer) {
-    const error = new Error(
-      "This email address is already registered. Try a different one.",
+    await prisma.customer.create({
+      data: { name, email, password: hashedPassword, prefecture },
+    });
+  } catch (error) {
+    console.error(
+      `Database error while registering customer (email: ${email}):`,
+      error,
     );
-    (error as any).statusCode = 409;
-    throw error;
+    throw new Error(
+      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
-
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Insert the customer data into the DB
-  await prisma.customer.create({
-    data: { name, email, password: hashedPassword, prefecture },
-  });
 };
