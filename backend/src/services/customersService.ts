@@ -1,6 +1,7 @@
 import { Customer } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
+import { saltRounds } from "../controllers/adminsController";
 
 export const fetchCustomerById = async (
   customerId: number,
@@ -82,7 +83,7 @@ export const registerCustomer = async ({
   }
 
   // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   // Insert the customer data into the DB
   await prisma.customer.create({

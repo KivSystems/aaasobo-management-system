@@ -32,7 +32,6 @@ export const registerCustomerController = async (
 
     res.status(201).json({
       message: "Registration successful!",
-      redirectUrl: "/customers/login",
     });
   } catch (error: any) {
     console.error("Registration Error:", error);
