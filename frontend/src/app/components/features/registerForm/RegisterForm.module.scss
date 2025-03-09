@@ -1,0 +1,27 @@
+@import "../../../variables.module.scss";
+
+.buttonWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.form {
+  width: 100%;
+}
+
+.required {
+  color: $red-alert;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}

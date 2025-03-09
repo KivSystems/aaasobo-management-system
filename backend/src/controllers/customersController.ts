@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
   fetchCustomerById,
+  getCustomerByEmail,
+  registerCustomer,
   updateCustomer,
 } from "../services/customersService";
 import {
@@ -11,34 +13,40 @@ import {
 import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
 import { logout } from "../helper/logout";
+import {
+  EMAIL_ALREADY_REGISTERED_ERROR,
+  GENERAL_ERROR_MESSAGE,
+  REGISTRATION_SUCCESS_MESSAGE,
+} from "../helper/messages";
 
-export const registerCustomer = async (req: Request, res: Response) => {
-  const { name, email, password, prefecture } = req.body;
+export const registerCustomerController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { name, password, prefecture } = req.body ?? {};
+  let { email } = req.body ?? {};
 
-  // TODO: Validate an email and the password.
-  // TODO: Hash the password.
+  if (!name || !email || !password || !prefecture) {
+    return res.status(400).json({ message: GENERAL_ERROR_MESSAGE });
+  }
+
+  // Normalize email
+  email = email.trim().toLowerCase();
 
   try {
-    // Insert the customer data into the DB.
-    const customer = await prisma.customer.create({
-      data: {
-        name,
-        email,
-        password,
-        prefecture,
-      },
-    });
+    const existingCustomer = await getCustomerByEmail(email);
+    if (existingCustomer) {
+      return res.status(409).json({ message: EMAIL_ALREADY_REGISTERED_ERROR });
+    }
 
-    // Exclude the password from the response.
-    const { password: _, ...customerWithoutPassword } = customer;
+    await registerCustomer({ name, email, password, prefecture });
 
-    res.status(200).json({
-      redirectUrl: "/login",
-      message: "Customer is registered successfully",
-      customer: customerWithoutPassword,
+    res.status(201).json({
+      message: REGISTRATION_SUCCESS_MESSAGE,
     });
   } catch (error) {
-    res.status(500).json({ error });
+    console.error("Error registering customer:", error);
+    res.status(500).json({ message: GENERAL_ERROR_MESSAGE });
   }
 };
 

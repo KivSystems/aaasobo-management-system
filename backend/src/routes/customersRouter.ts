@@ -4,7 +4,7 @@ import {
   getCustomersClasses,
   getSubscriptionsByIdController,
   loginCustomer,
-  registerCustomer,
+  registerCustomerController,
   updateCustomerProfile,
   registerSubscriptionController,
   logoutCustomer,
@@ -15,7 +15,7 @@ export const customersRouter = express.Router();
 
 // http://localhost:4000/customers
 
-customersRouter.post("/register", registerCustomer);
+customersRouter.post("/register", registerCustomerController);
 customersRouter.post("/login", loginCustomer);
 customersRouter.post("/logout", logoutCustomer);
 

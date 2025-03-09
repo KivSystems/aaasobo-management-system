@@ -1,3 +1,8 @@
+import {
+  EMAIL_ALREADY_REGISTERED_ERROR,
+  GENERAL_ERROR_MESSAGE,
+} from "../utils/messages";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
@@ -65,4 +70,38 @@ export const logoutCustomer = async (): Promise<Response<string>> => {
   return response.ok
     ? { ok: true }
     : { ok: false, error: (await response.json()).message };
+};
+
+export const registerCustomer = async (userData: {
+  name: string;
+  email: string;
+  password: string;
+  prefecture: string;
+}): Promise<RegisterFormState> => {
+  try {
+    const registerURL = `${BACKEND_ORIGIN}/customers/register`;
+
+    const response = await fetch(registerURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return response.status === 409
+        ? { email: data.message || EMAIL_ALREADY_REGISTERED_ERROR }
+        : { errorMessage: data.message || GENERAL_ERROR_MESSAGE };
+    }
+
+    return {
+      successMessage: data.message || "Registration successful!",
+    };
+  } catch (error) {
+    console.error("Error in registerCustomer API call:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
 };

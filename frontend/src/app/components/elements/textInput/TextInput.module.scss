@@ -3,6 +3,7 @@
 .inputWrapper {
   margin-bottom: 1rem;
   font-size: 0.9rem;
+  position: relative;
 }
 
 .inputContainer {
@@ -12,6 +13,7 @@
   border-radius: 0.3rem;
   padding: 0.5rem;
   margin-top: 0.25rem;
+  position: relative;
 
   &:focus-within {
     border-color: $blue_primary;
@@ -21,6 +23,7 @@
 .inputField {
   width: 100%;
   border: none;
+  padding-right: 30px;
 
   &:focus {
     outline: none;
@@ -32,7 +35,23 @@
   padding-right: 0.5rem;
 }
 
-.required {
+.required,
+.errorText {
   color: $red-alert;
   font-size: 0.8rem;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.eyeIconSvg {
+  width: 1.2rem;
+  height: 1.2rem;
 }
