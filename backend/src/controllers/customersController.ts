@@ -35,7 +35,7 @@ export const registerCustomerController = async (
 
   try {
     const existingCustomer = await getCustomerByEmail(email);
-    if (!existingCustomer) {
+    if (existingCustomer) {
       return res.status(409).json({ message: EMAIL_ALREADY_REGISTERED_ERROR });
     }
 
