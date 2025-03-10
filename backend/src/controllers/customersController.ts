@@ -23,23 +23,27 @@ export const registerCustomerController = async (
   req: Request,
   res: Response,
 ) => {
-  const { name, password, prefecture } = req.body ?? {};
-  let { email } = req.body ?? {};
+  const { name, email, password, prefecture } = req.body;
 
   if (!name || !email || !password || !prefecture) {
     return res.status(400).json({ message: GENERAL_ERROR_MESSAGE });
   }
 
   // Normalize email
-  email = email.trim().toLowerCase();
+  const normalizedEmail = email.trim().toLowerCase();
 
   try {
-    const existingCustomer = await getCustomerByEmail(email);
+    const existingCustomer = await getCustomerByEmail(normalizedEmail);
     if (existingCustomer) {
       return res.status(409).json({ message: EMAIL_ALREADY_REGISTERED_ERROR });
     }
 
-    await registerCustomer({ name, email, password, prefecture });
+    await registerCustomer({
+      name,
+      email: normalizedEmail,
+      password,
+      prefecture,
+    });
 
     res.status(201).json({
       message: REGISTRATION_SUCCESS_MESSAGE,
