@@ -12,9 +12,18 @@ export function useFormMessages(
   }, [formResult]);
 
   const clearErrorMessage = (field: string) => {
-    if (localMessages[field]) {
-      setLocalMessages((prev) => ({ ...prev, [field]: "" }));
-    }
+    setLocalMessages((prev) => {
+      if (!prev[field] && !prev.successMessage && !prev.errorMessage) {
+        return prev;
+      }
+
+      const updatedMessages = { ...prev };
+      delete updatedMessages[field];
+      delete updatedMessages.successMessage;
+      delete updatedMessages.errorMessage;
+
+      return updatedMessages;
+    });
   };
 
   return { localMessages, clearErrorMessage };
