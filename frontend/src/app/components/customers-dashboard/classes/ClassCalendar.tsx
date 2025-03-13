@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import CalendarView from "@/app/components/features/calendarView/CalendarView";
 import styles from "./ClassCalendar.module.scss";
-import FullCalendar from "@fullcalendar/react";
 import {
   formatFiveMonthsLaterEndOfMonth,
   isPastPreviousDayDeadline,
@@ -10,14 +9,10 @@ import {
   cancelClass,
   fetchClassesForCalendar,
 } from "@/app/helper/api/classesApi";
-import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import Modal from "@/app/components/elements/modal/Modal";
-import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import ClassesTable from "../../features/classesTable/ClassesTable";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
+import ClassActions from "./classActions/ClassActions";
 
 function ClassCalendar({
   customerId,
@@ -125,7 +120,7 @@ function ClassCalendar({
   const handleBulkCancel = async () => {
     if (selectedClasses.length === 0) return;
 
-    // Get classes that have passes the previous day cancelation deadline
+    // Get classes that have passed the previous day cancelation deadline
     const pastPrevDayClasses = selectedClasses.filter((eachClass) =>
       isPastPreviousDayDeadline(eachClass.classDateTime, "Asia/Tokyo"),
     );
@@ -184,55 +179,25 @@ function ClassCalendar({
   if (error) return <div>{error}</div>;
 
   return (
-    <div className={styles.calendarContainer}>
+    <main className={styles.calendarContainer}>
       {isLoading ? (
         <Loading />
       ) : (
         <>
-          <div className={styles.calendarHeaderContainer}>
-            <div className={styles.calendarActions}>
-              <div className={styles.calendarActions__container}>
-                <div className={styles.calendarActions__canceling}>
-                  <ActionButton
-                    btnText="Cancel Classes"
-                    className="cancelClasses"
-                    onClick={() => {
-                      setIsCancelingModalOpen(true);
-                    }}
-                  />
-                </div>
-                <div className={styles.calendarActions__booking}>
-                  <p
-                    onClick={() =>
-                      rebookableClasses &&
-                      rebookableClasses.length > 0 &&
-                      setIsBookableClassesModalOpen(true)
-                    }
-                    className={`${styles.bookableClasses} ${rebookableClasses && rebookableClasses.length > 0 ? styles.clickable : ""}`}
-                  >
-                    Bookable Classes: {rebookableClasses?.length ?? 0}
-                  </p>
-                  {isAdminAuthenticated ? (
-                    <RedirectButton
-                      linkURL={`/admins/customer-list/${customerId}/classes/book`}
-                      btnText="Book Class"
-                      Icon={PlusIcon}
-                      className="bookClass"
-                      disabled={rebookableClasses?.length === 0}
-                    />
-                  ) : (
-                    <RedirectButton
-                      linkURL={`/customers/${customerId}/classes/book`}
-                      btnText="Book Class"
-                      Icon={PlusIcon}
-                      className="bookClass"
-                      disabled={rebookableClasses?.length === 0}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+          <ClassActions
+            setIsCancelingModalOpen={setIsCancelingModalOpen}
+            setIsBookableClassesModalOpen={setIsBookableClassesModalOpen}
+            rebookableClasses={rebookableClasses}
+            isAdminAuthenticated={isAdminAuthenticated}
+            customerId={customerId}
+            classes={classes}
+            handleBulkCancel={handleBulkCancel}
+            handleCancelingModalClose={handleCancelingModalClose}
+            isCancelingModalOpen={isCancelingModalOpen}
+            selectedClasses={selectedClasses}
+            toggleSelectClass={toggleSelectClass}
+            isBookableClassesModalOpen={isBookableClassesModalOpen}
+          />
 
           <CalendarView
             events={classesForCalendar}
@@ -242,48 +207,9 @@ function ClassCalendar({
             isAdminAuthenticated={isAdminAuthenticated}
             fetchData={fetchData}
           />
-
-          <Modal
-            isOpen={isBookableClassesModalOpen}
-            onClose={() => setIsBookableClassesModalOpen(false)}
-          >
-            <div className={styles.modal}>
-              <h2>Bookable Classes</h2>
-              <ul className={styles.modal__list}>
-                {rebookableClasses?.map((eachClass, index) => (
-                  <li key={eachClass.id}>
-                    {index + 1} : until{" "}
-                    {formatFiveMonthsLaterEndOfMonth(
-                      eachClass.dateTime,
-                      "Asia/Tokyo",
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Modal>
-
-          <Modal
-            isOpen={isCancelingModalOpen}
-            onClose={handleCancelingModalClose}
-          >
-            <div className={styles.modal}>
-              {/* Content of the Modal */}
-              <ClassesTable
-                classes={classes}
-                timeZone="Asia/Tokyo"
-                selectedClasses={selectedClasses}
-                toggleSelectClass={toggleSelectClass}
-                handleBulkCancel={handleBulkCancel}
-                userId={customerId}
-                isAdminAuthenticated
-                handleCancelingModalClose={handleCancelingModalClose}
-              />
-            </div>
-          </Modal>
         </>
       )}
-    </div>
+    </main>
   );
 }
 
