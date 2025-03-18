@@ -81,7 +81,6 @@ function CustomerProfile({ customerId }: { customerId: number }) {
 
   return (
     <>
-      <ToastContainer />
       {customer ? (
         <form className={styles.profileCard} onSubmit={handleFormSubmit}>
           {/* Customer Name */}
