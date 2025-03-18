@@ -1,44 +1,24 @@
 import styles from "./ClassActions.module.scss";
-import CancelClasses from "./cancelClasses/CancelClasses";
-import BookClass from "./bookClass/BookClass";
+import CancelClassesActions from "./cancelClassesActions/CancelClassesActions";
+import BookClassActions from "./bookClassActions/BookClassActions";
 
 export type ClassActionsProps = {
-  setIsBookableClassesModalOpen: (open: boolean) => void;
-  rebookableClasses?: { id: number; dateTime: string }[];
   isAdminAuthenticated?: boolean;
   customerId: number;
-  classes: any;
-  isBookableClassesModalOpen: boolean;
-  fetchData: () => void;
-  setError: (error: string) => void;
 };
 
-export default function ClassActions({
-  setIsBookableClassesModalOpen,
-  rebookableClasses,
+export default async function ClassActions({
   isAdminAuthenticated,
   customerId,
-  isBookableClassesModalOpen,
-  classes,
-  fetchData,
-  setError,
 }: ClassActionsProps) {
   return (
     <div className={styles.calendarHeaderContainer}>
       <div className={styles.calendarActions}>
         <div className={styles.calendarActions__container}>
-          <CancelClasses
-            classes={classes}
-            customerId={customerId}
-            fetchData={fetchData}
-            setError={setError}
-          />
+          <CancelClassesActions customerId={customerId} />
 
-          <BookClass
-            rebookableClasses={rebookableClasses}
+          <BookClassActions
             customerId={customerId}
-            isBookableClassesModalOpen={isBookableClassesModalOpen}
-            setIsBookableClassesModalOpen={setIsBookableClassesModalOpen}
             isAdminAuthenticated={isAdminAuthenticated}
           />
         </div>
