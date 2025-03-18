@@ -74,3 +74,19 @@ export function calculateFirstDate(from: Date, day: Day, time: string): Date {
 export const getMonthNumber = (month: Month): number => {
   return months.indexOf(month);
 };
+
+export function getFirstDayOfFiveMonthsAgo(): Date {
+  // Step 1: Get the current date in Japan time
+  const nowUTC = new Date();
+  const nowJST = new Date(nowUTC.getTime() + 9 * 60 * 60 * 1000);
+
+  // Step 2: Calculate the first day of the month, 5 months ago, at 00:00:00 JST
+  const firstDayJST = new Date(
+    Date.UTC(nowJST.getFullYear(), nowJST.getMonth() - 5, 1, 0, 0, 0, 0),
+  );
+
+  // Step 3: Convert JST to UTC (subtract 9 hours)
+  const firstDayUTC = new Date(firstDayJST.getTime() - 9 * 60 * 60 * 1000);
+
+  return firstDayUTC;
+}

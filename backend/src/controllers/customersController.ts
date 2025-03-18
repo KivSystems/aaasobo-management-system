@@ -18,6 +18,8 @@ import {
   GENERAL_ERROR_MESSAGE,
   REGISTRATION_SUCCESS_MESSAGE,
 } from "../helper/messages";
+import { RequestWithId } from "../middlewares/parseId.middleware";
+import { getBookableClasses } from "../services/classesService";
 
 export const registerCustomerController = async (
   req: Request,
@@ -210,5 +212,20 @@ export const registerSubscriptionController = async (
     res.status(200).json({ newSubscription });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+export const getBookableClassesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    const bookableClasses = await getBookableClasses(customerId);
+    res.status(200).json(bookableClasses);
+  } catch (error) {
+    console.error("Error getting bookable classes:", error);
+    res.status(500).json({ message: GENERAL_ERROR_MESSAGE });
   }
 };
