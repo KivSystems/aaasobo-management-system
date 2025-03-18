@@ -1,7 +1,8 @@
+import { FAILED_TO_FETCH_BOOKABLE_CLASSES } from "../messages/customerDashboard";
 import {
   EMAIL_ALREADY_REGISTERED_ERROR,
   GENERAL_ERROR_MESSAGE,
-} from "../utils/messages";
+} from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -102,6 +103,29 @@ export const registerCustomer = async (userData: {
     console.error("Error in registerCustomer API call:", error);
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+export const getBookableClasses = async (customerId: number) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_ORIGIN}/customers/${customerId}/bookable-classes`,
+      {
+        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
+        cache: "no-store",
+      },
+      // { next: { tags: ["bookable-classes"] } },
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error in getBookableClasses API call:", error);
+    return {
+      errorMessage: FAILED_TO_FETCH_BOOKABLE_CLASSES,
     };
   }
 };
