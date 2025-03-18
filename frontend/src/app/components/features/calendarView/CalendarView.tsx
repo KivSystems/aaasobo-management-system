@@ -224,7 +224,7 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
       toast.success("The class has been successfully canceled!");
 
       // TODO: Revalidation should be done directly from a server component or API call
-      await revalidateCustomerCalendar(customerId);
+      await revalidateCustomerCalendar(customerId, isAdminAuthenticated!);
     } catch (error) {
       console.error("Failed to cancel the class:", error);
     }

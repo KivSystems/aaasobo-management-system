@@ -3,8 +3,10 @@ import CancelClassesModalController from "./cancelClassesModalController/CancelC
 
 export default async function CancelClassesActions({
   customerId,
+  isAdminAuthenticated,
 }: {
   customerId: number;
+  isAdminAuthenticated?: boolean;
 }) {
   const classes: ClassForCalendar[] | null = await fetchClassesForCalendar(
     customerId,
@@ -12,6 +14,10 @@ export default async function CancelClassesActions({
   );
 
   return (
-    <CancelClassesModalController customerId={customerId} classes={classes} />
+    <CancelClassesModalController
+      customerId={customerId}
+      classes={classes}
+      isAdminAuthenticated={isAdminAuthenticated}
+    />
   );
 }

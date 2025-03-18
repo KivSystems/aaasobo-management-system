@@ -10,6 +10,12 @@ export async function revalidateClassesForCalendar() {
   revalidateTag("classes-calendar");
 }
 
-export async function revalidateCustomerCalendar(customerId: number) {
-  revalidatePath(`/customers/${customerId}/classes`);
+export async function revalidateCustomerCalendar(
+  customerId: number,
+  isAdminAuthenticated: boolean,
+) {
+  const path = isAdminAuthenticated
+    ? `/admins/customer-list/${customerId}`
+    : `/customers/${customerId}/classes`;
+  revalidatePath(path);
 }

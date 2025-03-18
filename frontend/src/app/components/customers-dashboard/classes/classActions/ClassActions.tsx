@@ -15,7 +15,10 @@ export default async function ClassActions({
     <div className={styles.calendarHeaderContainer}>
       <div className={styles.calendarActions}>
         <div className={styles.calendarActions__container}>
-          <CancelClassesActions customerId={customerId} />
+          <CancelClassesActions
+            customerId={customerId}
+            isAdminAuthenticated={isAdminAuthenticated}
+          />
 
           <BookClassActions
             customerId={customerId}

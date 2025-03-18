@@ -18,11 +18,13 @@ import {
 export type CancelClassesModalControllerProps = {
   classes: ClassForCalendar[] | null;
   customerId: number;
+  isAdminAuthenticated?: boolean;
 };
 
 export default function CancelClassesModalController({
   classes,
   customerId,
+  isAdminAuthenticated,
 }: CancelClassesModalControllerProps) {
   const [selectedClasses, setSelectedClasses] = useState<
     { classId: number; classDateTime: string }[]
@@ -78,7 +80,7 @@ export default function CancelClassesModalController({
         toast.success("The classes have been successfully canceled!");
 
         // TODO: Revalidation should be done directly from a server component or API call
-        await revalidateCustomerCalendar(customerId);
+        await revalidateCustomerCalendar(customerId, isAdminAuthenticated!);
       } catch (error) {
         console.error("Failed to cancel classes:", error);
         // setError("Failed to cancel the classes. Please try again later.");
