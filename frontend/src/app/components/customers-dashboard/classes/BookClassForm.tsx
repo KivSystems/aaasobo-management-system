@@ -13,6 +13,7 @@ import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
 
 function BookClassForm({
   customerId,
@@ -143,6 +144,11 @@ function BookClassForm({
       }
       toast.success("The class has been successfully booked!");
 
+      // TODO: Revalidation should be done directly from a server component or API call
+      await revalidateCustomerCalendar(customerId);
+      // TODO: Revalidate available instructors and classes.
+
+      // TODO: Discuss whether redirect should happen here
       router.push(`/customers/${customerId}/classes`);
     } catch (error) {
       if (error instanceof Error) {
