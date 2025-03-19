@@ -14,5 +14,5 @@ export default function Error({
     console.error(error);
   }, [error]);
 
-  return <ErrorPage reset={reset} />;
+  return <ErrorPage reset={reset} errorMessage={error.message} />;
 }
