@@ -3,6 +3,7 @@ import {
   EMAIL_ALREADY_REGISTERED_ERROR,
   GENERAL_ERROR_MESSAGE,
 } from "../messages/formValidation";
+import { NETWORK_ERROR } from "../messages/generalMessages";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -117,15 +118,23 @@ export const getBookableClasses = async (customerId: number) => {
       },
       // { next: { tags: ["bookable-classes"] } },
     );
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error(
+        `Failed to fetch bookable classes. HTTP Status: ${response.status} ${response.statusText}`,
+      );
+      throw new Error(FAILED_TO_FETCH_BOOKABLE_CLASSES);
     }
+
     const data = await response.json();
     return data;
   } catch (error) {
     console.error("Error in getBookableClasses API call:", error);
-    return {
-      errorMessage: FAILED_TO_FETCH_BOOKABLE_CLASSES,
-    };
+
+    if (error instanceof TypeError) {
+      throw new Error(`${NETWORK_ERROR}: ${FAILED_TO_FETCH_BOOKABLE_CLASSES}`);
+    }
+
+    throw error;
   }
 };
