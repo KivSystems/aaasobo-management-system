@@ -225,7 +225,10 @@ export const getBookableClassesController = async (
     const bookableClasses = await getBookableClasses(customerId);
     res.status(200).json(bookableClasses);
   } catch (error) {
-    console.error("Error getting bookable classes:", error);
-    res.status(500).json({ message: GENERAL_ERROR_MESSAGE });
+    console.error(
+      "Error getting bookable classes in getBookableClassesController:",
+      error,
+    );
+    res.sendStatus(500);
   }
 };
