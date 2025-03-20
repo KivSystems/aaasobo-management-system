@@ -1,23 +1,33 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import styles from "./ErrorPage.module.scss";
-import { ERROR_PAGE_MESSAGE } from "@/app/helper/messages/generalMessages";
+import {
+  ERROR_PAGE_MESSAGE_EN,
+  ERROR_PAGE_MESSAGE_JP,
+} from "@/app/helper/messages/generalMessages";
+import ActionButton from "../buttons/actionButton/ActionButton";
 
 export default function ErrorPage({
   reset,
-  errorMessage,
+  errorMessages,
+  lng,
 }: {
   reset: () => void;
-  errorMessage?: string;
+  errorMessages?: { messageJp: string; messageEn: string };
+  lng: string;
 }) {
   return (
     <main className={styles.errorContainer}>
       <ExclamationTriangleIcon className={styles.errorIcon} />
       <h2 className={styles.errorTitle}>
-        {errorMessage ? errorMessage : ERROR_PAGE_MESSAGE}
+        {lng === "jp"
+          ? errorMessages?.messageJp || ERROR_PAGE_MESSAGE_JP
+          : errorMessages?.messageEn || ERROR_PAGE_MESSAGE_EN}
       </h2>
-      <button className={styles.retryButton} onClick={() => reset()}>
-        Try again
-      </button>
+      <ActionButton
+        className="addBtn"
+        btnText="Try again"
+        onClick={() => reset()}
+      />
     </main>
   );
 }

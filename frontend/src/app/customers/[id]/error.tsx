@@ -10,9 +10,13 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // TODO: Using context, decide which language to use to display error messages
+  const [messageJp, messageEn] = error.message.split(" / ");
+  const errorMessages = { messageJp, messageEn };
+
   useEffect(() => {
     console.error(error);
   }, [error]);
 
-  return <ErrorPage reset={reset} errorMessage={error.message} />;
+  return <ErrorPage reset={reset} errorMessages={errorMessages} lng="jp" />;
 }

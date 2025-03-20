@@ -22,17 +22,3 @@
   font-size: 20px;
   font-weight: bold;
 }
-
-.retryButton {
-  background-color: $blue_primary;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.retryButton:hover {
-  background-color: $blue_primary_hover;
-}
