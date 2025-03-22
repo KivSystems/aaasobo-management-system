@@ -453,37 +453,27 @@ export const checkDoubleBooking = async (
 export const getBookableClasses = async (customerId: number) => {
   const fiveMonthsAgoFirstDay = getFirstDayOfFiveMonthsAgo();
 
-  try {
-    const classes = await prisma.class.findMany({
-      where: {
-        customerId: customerId,
-        isRebookable: true,
-        OR: [
-          {
-            status: "canceledByCustomer",
-            dateTime: {
-              gte: fiveMonthsAgoFirstDay,
-            },
+  const classes = await prisma.class.findMany({
+    where: {
+      customerId: customerId,
+      isRebookable: true,
+      OR: [
+        {
+          status: "canceledByCustomer",
+          dateTime: {
+            gte: fiveMonthsAgoFirstDay,
           },
-          {
-            status: "canceledByInstructor",
-            dateTime: {
-              gte: fiveMonthsAgoFirstDay,
-            },
+        },
+        {
+          status: "canceledByInstructor",
+          dateTime: {
+            gte: fiveMonthsAgoFirstDay,
           },
-        ],
-      },
-    });
+        },
+      ],
+    },
+  });
 
-    // Return only the dateTime property from the class data
-    return classes.map((classItem) => classItem.dateTime);
-  } catch (error) {
-    console.error(
-      `Database error while getting bookable classes (customer ID: ${customerId}):`,
-      error,
-    );
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  // Return only the dateTime property from the class data
+  return classes.map((classItem) => classItem.dateTime);
 };

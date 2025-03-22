@@ -226,7 +226,7 @@ export const getBookableClassesController = async (
     res.status(200).json(bookableClasses);
   } catch (error) {
     console.error(
-      "Error getting bookable classes in getBookableClassesController:",
+      `Error while getting bookable classes (customer ID: ${customerId}):`,
       error,
     );
     res.sendStatus(500);
