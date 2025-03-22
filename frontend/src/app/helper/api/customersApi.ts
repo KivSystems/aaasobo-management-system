@@ -119,15 +119,13 @@ export const getBookableClasses = async (customerId: number) => {
     );
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch bookable classes. HTTP Status: ${response.status} ${response.statusText}`,
-      );
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error in getBookableClasses API call:", error);
+    console.error("Failed to fetch bookable classes:", error);
     throw new Error(FAILED_TO_FETCH_BOOKABLE_CLASSES);
   }
 };
