@@ -152,15 +152,15 @@ export const updateRecurringClassesController = async (
   }
 
   // Convert the local class start date to UTC time.
-  const LocalClassStartDateTime = classStartDate + "T00:00:00"; // In the new Date object, the time will change based on the local date.
+  const localClassStartDateTime = classStartDate + "T00:00:00"; // In the new Date object, the time will change based on the local date.
   const utcClassStartDate =
-    new Date(LocalClassStartDateTime).toISOString().split("T")[0] +
+    new Date(localClassStartDateTime).toISOString().split("T")[0] +
     "T00:00:00.000Z"; // In the new Date object, the time will remain unchanged at 00:00.
   const utcToday = new Date();
 
   // Compare the classStart date and today's date in UTC time.
   // If classStartDate is equal to or shorter than today, it shouldn't be executed.
-  if (new Date(LocalClassStartDateTime) <= new Date(utcToday)) {
+  if (new Date(localClassStartDateTime) <= new Date(utcToday)) {
     return res.status(400).json({ message: "Invalid Start From Date" });
   }
 

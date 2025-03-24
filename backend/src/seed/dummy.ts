@@ -760,7 +760,7 @@ async function insertRecurringClasses() {
       recurringClassAttendance: {
         create: [
           {
-            childrenId: alice.children[0].id,
+            childrenId: bob.children[0].id,
           },
         ],
       },
