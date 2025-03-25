@@ -1,5 +1,5 @@
-import { fetchClassesForCalendar } from "@/app/helper/api/classesApi";
 import CancelClassesModalController from "./cancelClassesModalController/CancelClassesModalController";
+import { getUpcomingClasses } from "@/app/helper/api/customersApi";
 
 export default async function CancelClassesActions({
   customerId,
@@ -8,15 +8,13 @@ export default async function CancelClassesActions({
   customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
-  const classes: ClassForCalendar[] | null = await fetchClassesForCalendar(
-    customerId,
-    "customer",
-  );
+  const upcomingClasses: UpcomingClass[] | null =
+    await getUpcomingClasses(customerId);
 
   return (
     <CancelClassesModalController
       customerId={customerId}
-      classes={classes}
+      upcomingClasses={upcomingClasses}
       isAdminAuthenticated={isAdminAuthenticated}
     />
   );

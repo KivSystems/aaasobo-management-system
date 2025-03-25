@@ -1,4 +1,7 @@
-import { FAILED_TO_FETCH_BOOKABLE_CLASSES } from "../messages/customerDashboard";
+import {
+  FAILED_TO_FETCH_BOOKABLE_CLASSES,
+  FAILED_TO_FETCH_UPCOMING_CLASSES,
+} from "../messages/customerDashboard";
 import {
   EMAIL_ALREADY_REGISTERED_ERROR,
   GENERAL_ERROR_MESSAGE,
@@ -18,6 +21,7 @@ export const getCustomerById = async (customerId: number) => {
     const data = await response.json();
     return data.customer;
   } catch (error) {
+    // TODO: Improve error handling
     console.error("Failed to fetch customer data:", error);
     throw error;
   }
@@ -127,5 +131,27 @@ export const getBookableClasses = async (customerId: number) => {
   } catch (error) {
     console.error("Failed to fetch bookable classes:", error);
     throw new Error(FAILED_TO_FETCH_BOOKABLE_CLASSES);
+  }
+};
+
+export const getUpcomingClasses = async (customerId: number) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`,
+      {
+        cache: "no-store",
+        next: { tags: ["upcoming-classes"] },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch upcoming classes:", error);
+    throw new Error(FAILED_TO_FETCH_UPCOMING_CLASSES);
   }
 };
