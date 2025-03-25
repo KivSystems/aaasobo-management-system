@@ -8,45 +8,88 @@ import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import styles from "./ClassesTable.module.scss";
 import Image from "next/image";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { cancelSelectedClasses } from "@/app/actions/cancelSelectedClasses";
+import {
+  CANCELATION_NOT_ALLOWED_MESSAGE,
+  CONFIRM_CLASS_CANCELLATION,
+  FAILED_TO_CANCEL_CLASSES,
+  SELECTED_CLASSES_CANCELLATION_SUCCESS,
+} from "@/app/helper/messages/customerDashboard";
 
 const ClassesTable = ({
-  classes,
-  timeZone,
+  upcomingClasses,
   selectedClasses,
-  toggleSelectClass,
-  userId,
-  handleBulkCancel,
+  setSelectedClasses,
+  customerId,
   isAdminAuthenticated,
   handleCancelingModalClose,
-}: {
-  classes: ClassForCalendar[] | ClassType[] | null;
-  timeZone: string;
-  selectedClasses: { classId: number; classDateTime: string }[];
-  toggleSelectClass: (classId: number, classDateTime: string) => void;
-  userId: number;
-  handleBulkCancel: () => void;
-  isAdminAuthenticated?: boolean;
-  handleCancelingModalClose: () => void;
-}) => {
-  if (!classes) {
-    return <div>No upcoming classes</div>;
-  }
+}: ClassesTableProps) => {
+  // if (!upcomingClasses) {
+  //   return (
+  //     // TODO: check the padding
+  //     <div className={styles.classesTable__wrapper}>
+  //       <div className={styles.classesTable__container}>
+  //         No upcoming classes
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  const bookedClasses = classes
-    .filter(
-      (eachClass) =>
-        eachClass.status === "booked" &&
-        !isPastClassDateTime(eachClass.dateTime, "Asia/Tokyo"),
-    )
-    .sort(
-      (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
+  const handleBulkCancel = async () => {
+    if (selectedClasses.length === 0) return;
+
+    // Exclude classes that have passed the previous day's cancellation deadline.
+    const pastPrevDayClasses = selectedClasses.filter((eachClass) =>
+      isPastPreviousDayDeadline(eachClass.classDateTime, "Asia/Tokyo"),
     );
 
-  if (bookedClasses.length === 0) {
-    return <div>No upcoming classes</div>;
-  }
+    if (pastPrevDayClasses.length > 0) {
+      alert(CANCELATION_NOT_ALLOWED_MESSAGE);
 
-  const showSameDayCancelNotice = bookedClasses.some(
+      const pastPrevDayClassIds = pastPrevDayClasses.map(
+        (pastClass) => pastClass.classId,
+      );
+      const updatedSelectedClasses = selectedClasses.filter(
+        (eachClass) => !pastPrevDayClassIds.includes(eachClass.classId),
+      );
+      return setSelectedClasses(updatedSelectedClasses);
+    }
+
+    const confirmed = window.confirm(CONFIRM_CLASS_CANCELLATION);
+    if (!confirmed) return handleCancelingModalClose();
+
+    const classesToCancel = selectedClasses.map(
+      (classItem) => classItem.classId,
+    );
+
+    try {
+      await cancelSelectedClasses(
+        classesToCancel,
+        isAdminAuthenticated,
+        customerId,
+      );
+
+      handleCancelingModalClose();
+      toast.success(SELECTED_CLASSES_CANCELLATION_SUCCESS);
+    } catch (error) {
+      // TODO: Using context, decide which language to use to display error message
+      alert(FAILED_TO_CANCEL_CLASSES);
+    }
+  };
+
+  const toggleSelectClass = (classId: number, classDateTime: string) => {
+    setSelectedClasses((prev) => {
+      const updated = prev.filter((item) => item.classId !== classId);
+      if (updated.length === prev.length) {
+        updated.push({ classId, classDateTime });
+      }
+      return updated;
+    });
+  };
+
+  const showSameDayCancelNotice = upcomingClasses.some(
     ({ dateTime }) =>
       isPastPreviousDayDeadline(dateTime, "Asia/Tokyo") &&
       !isPastClassDateTime(dateTime, "Asia/Tokyo"),
@@ -72,7 +115,7 @@ const ClassesTable = ({
               </tr>
             </thead>
             <tbody className={styles.classesTable__body}>
-              {bookedClasses.map((eachClass) => {
+              {upcomingClasses.map((eachClass) => {
                 const classDateTime = new Date(eachClass.dateTime);
                 const classDate = formatShortDate(classDateTime);
                 const classTime = formatTime24Hour(classDateTime);
@@ -157,9 +200,7 @@ const ClassesTable = ({
                     </td>
 
                     <td className={styles.classesTable__td}>
-                      {eachClass.classAttendance.children
-                        .map((child) => child.name)
-                        .join(", ")}
+                      {eachClass.attendingChildren.join(", ")}
                     </td>
                   </tr>
                 );

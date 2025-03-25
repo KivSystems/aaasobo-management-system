@@ -202,3 +202,35 @@ type RegisterFormState = {
   errorMessage?: string;
   successMessage?: string;
 };
+
+type UpcomingClass = {
+  id: number;
+  dateTime: string;
+  instructor: {
+    nickname: string;
+    icon: string;
+  };
+  attendingChildren: string[];
+};
+
+type CancelClassesModalControllerProps = {
+  upcomingClasses: UpcomingClass[] | null;
+  customerId: number;
+  isAdminAuthenticated?: boolean;
+};
+
+type ClassesTableProps = {
+  upcomingClasses: UpcomingClass[] | null;
+  selectedClasses: { classId: number; classDateTime: string }[];
+  setSelectedClasses: Dispatch<
+    SetStateAction<
+      {
+        classId: number;
+        classDateTime: string;
+      }[]
+    >
+  >;
+  customerId: number;
+  isAdminAuthenticated?: boolean;
+  handleCancelingModalClose: () => void;
+};
