@@ -477,3 +477,63 @@ export const getBookableClasses = async (customerId: number) => {
   // Return only the dateTime property from the class data
   return classes.map((classItem) => classItem.dateTime);
 };
+
+export const getUpcomingClasses = async (customerId: number) => {
+  const nowUTC = new Date();
+
+  const classes = await prisma.class.findMany({
+    where: {
+      customerId: customerId,
+      status: "booked",
+      dateTime: {
+        gte: nowUTC,
+      },
+    },
+    orderBy: {
+      dateTime: "asc",
+    },
+    include: {
+      instructor: {
+        select: {
+          nickname: true,
+          icon: true,
+        },
+      },
+      classAttendance: {
+        include: {
+          children: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  const upcomingClasses = classes.map((classItem) => {
+    return {
+      id: classItem.id,
+      dateTime: classItem.dateTime,
+      instructor: classItem.instructor,
+      attendingChildren: classItem.classAttendance.map(
+        (attendance) => attendance.children.name,
+      ),
+    };
+  });
+  return upcomingClasses;
+};
+
+export const cancelClasses = async (classIds: number[]) => {
+  return prisma.$transaction(async (tx) => {
+    await tx.classAttendance.deleteMany({
+      where: { classId: { in: classIds } },
+    });
+
+    await tx.class.updateMany({
+      where: { id: { in: classIds } },
+      data: { status: "canceledByCustomer" },
+    });
+
+    return true;
+  });
+};
