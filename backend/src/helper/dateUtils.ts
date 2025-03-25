@@ -89,6 +89,16 @@ export const formatTime = (date: Date) => {
   }).format(date);
 };
 
+// Function to format UTC time (e.g., 19:00)
+export const formatUTCTime = (date: Date) => {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+  }).format(date);
+};
+
 // Convert local day and time to UTC day and time (e.g., {day: Fri, time: 07:30 } )
 export function convertDayTimeToUTC(day: Day, time: string) {
   const [hour, minute] = time.split(":");

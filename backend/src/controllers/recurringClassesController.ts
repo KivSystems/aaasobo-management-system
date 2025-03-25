@@ -16,6 +16,7 @@ import {
   formatTime,
   getDayNumber,
   convertDayTimeToUTC,
+  formatUTCTime,
 } from "../helper/dateUtils";
 import { prisma } from "../../prisma/prismaClient";
 import { getValidInstructorUnavailabilities } from "../services/instructorsUnavailabilitiesService";
@@ -162,7 +163,7 @@ export const updateRecurringClassesController = async (
     "T00:00:00.000Z"; // In the new Date object, the time will remain unchanged at 00:00.
   const utcToday = new Date();
 
-  // Compare the local classStart date and local today.
+  // Compare the local classStart date and Japan today.
   // If classStartDate is equal to or shorter than today, it shouldn't be executed.
   if (classStartDate <= jstTodayStr) {
     return res.status(400).json({ message: "Invalid Start From Date" });
@@ -178,23 +179,12 @@ export const updateRecurringClassesController = async (
         tx,
         utcToday,
       );
-      // allValidRecurringClasses.find((recurringClass) => {
-      //   const recurringClassDay = recurringClass.startAt?.getDay();
-      //   const recurringClassTime = formatTime(recurringClass.startAt as Date);
-      //   if (
-      //     recurringClass.instructorId === instructorId &&
-      //     recurringClassDay === getDayNumber(utcDay) &&
-      //     recurringClassTime === utcTime
-      //   ) {
-      //     throw new Error("Recurring class is already taken");
-      //   }
-      // });
 
-      // console.log(allValidRecurringClasses);
-
-      const isTaken = allValidRecurringClasses.some((recurringClass) => {
+      const isConflict = allValidRecurringClasses.some((recurringClass) => {
         const recurringClassDay = recurringClass.startAt?.getDay();
-        const recurringClassTime = formatTime(recurringClass.startAt as Date);
+        const recurringClassTime = formatUTCTime(
+          recurringClass.startAt as Date,
+        );
         return (
           recurringClass.instructorId === instructorId &&
           recurringClassDay === getDayNumber(utcDay) &&
@@ -202,8 +192,8 @@ export const updateRecurringClassesController = async (
         );
       });
 
-      if (isTaken) {
-        throw new Error("Recurring class is already taken");
+      if (isConflict) {
+        throw new Error("Regular class is already taken");
       }
 
       // GET the current recurring class by recurring class id
@@ -212,7 +202,7 @@ export const updateRecurringClassesController = async (
         req.id,
       );
       if (!recurringClass) {
-        throw new Error("Recurring class not found");
+        throw new Error("Regular class not found");
       }
       const { endAt, startAt } = recurringClass;
 
@@ -353,7 +343,9 @@ export const updateRecurringClassesController = async (
       updatedRecurringClasses,
     });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    const err =
+      error instanceof Error ? error : new Error("An unknown error occurred");
+    res.status(500).json({ error: err.message });
   }
 };
 

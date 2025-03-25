@@ -155,6 +155,8 @@ function EditRegularClassForm({
         router.push(targetURL);
       }
     } catch (error) {
+      const err = error as Error;
+      toast.error(err.message);
       console.error("Failed to edit a new recurring class data:", error);
     }
   };
