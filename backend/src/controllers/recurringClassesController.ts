@@ -151,9 +151,8 @@ export const updateRecurringClassesController = async (
     return res.status(400).json({ message: "Invalid parameters provided." });
   }
 
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const localTodayStr = new Date().toLocaleDateString("en-CA", {
-    timeZone,
+  const jstTodayStr = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Asia/Tokyo",
   });
 
   // Convert the local class start date to UTC time.
@@ -165,7 +164,7 @@ export const updateRecurringClassesController = async (
 
   // Compare the local classStart date and local today.
   // If classStartDate is equal to or shorter than today, it shouldn't be executed.
-  if (classStartDate <= localTodayStr) {
+  if (classStartDate <= jstTodayStr) {
     return res.status(400).json({ message: "Invalid Start From Date" });
   }
 
@@ -179,19 +178,33 @@ export const updateRecurringClassesController = async (
         tx,
         utcToday,
       );
-      allValidRecurringClasses.find((recurringClass) => {
+      // allValidRecurringClasses.find((recurringClass) => {
+      //   const recurringClassDay = recurringClass.startAt?.getDay();
+      //   const recurringClassTime = formatTime(recurringClass.startAt as Date);
+      //   if (
+      //     recurringClass.instructorId === instructorId &&
+      //     recurringClassDay === getDayNumber(utcDay) &&
+      //     recurringClassTime === utcTime
+      //   ) {
+      //     throw new Error("Recurring class is already taken");
+      //   }
+      // });
+
+      // console.log(allValidRecurringClasses);
+
+      const isTaken = allValidRecurringClasses.some((recurringClass) => {
         const recurringClassDay = recurringClass.startAt?.getDay();
         const recurringClassTime = formatTime(recurringClass.startAt as Date);
-        if (
+        return (
           recurringClass.instructorId === instructorId &&
           recurringClassDay === getDayNumber(utcDay) &&
           recurringClassTime === utcTime
-        ) {
-          throw new Error("Recurring class is already taken");
-        }
+        );
       });
 
-      console.log(allValidRecurringClasses);
+      if (isTaken) {
+        throw new Error("Recurring class is already taken");
+      }
 
       // GET the current recurring class by recurring class id
       const recurringClass = await getRecurringClassByRecurringClassId(

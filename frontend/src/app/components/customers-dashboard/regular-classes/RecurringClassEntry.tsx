@@ -48,12 +48,12 @@ function RecurringClassEntry({
 
   // Get the local tomorrow's date
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const todayStr = new Date().toLocaleDateString("en-US", {
-    timeZone,
+  const jstTodayStr = new Date().toLocaleDateString("en-US", {
+    timeZone: "Asia/Tokyo",
   });
-  const [month, date, year] = todayStr.split("/").map(Number);
-  const tomorrow = new Date(year, month - 1, date + 1);
-  const tomorrowFormatted = tomorrow.toISOString().split("T")[0];
+  const [month, date, year] = jstTodayStr.split("/").map(Number);
+  const jstTomorrow = new Date(year, month - 1, date + 1);
+  const tomorrowFormatted = jstTomorrow.toISOString().split("T")[0];
 
   useEffect(() => {
     if (!instructorId) return;
