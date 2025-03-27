@@ -2,8 +2,8 @@
 
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import Modal from "@/app/components/elements/modal/Modal";
-import ClassesTable from "@/app/components/features/classesTable/ClassesTable";
 import { useState } from "react";
+import CancelClassesModal from "./cancelClassesModal/CancelClassesModal";
 
 export default function CancelClassesModalController({
   upcomingClasses,
@@ -20,6 +20,16 @@ export default function CancelClassesModalController({
     setSelectedClasses([]);
   };
 
+  const toggleSelectClass = (classId: number, classDateTime: string) => {
+    setSelectedClasses((prev) => {
+      const updated = prev.filter((item) => item.classId !== classId);
+      if (updated.length === prev.length) {
+        updated.push({ classId, classDateTime });
+      }
+      return updated;
+    });
+  };
+
   return (
     <>
       <ActionButton
@@ -30,13 +40,14 @@ export default function CancelClassesModalController({
         }}
       />
       <Modal isOpen={isCancelingModalOpen} onClose={handleCancelingModalClose}>
-        <ClassesTable
+        <CancelClassesModal
           upcomingClasses={upcomingClasses}
           selectedClasses={selectedClasses}
           setSelectedClasses={setSelectedClasses}
           customerId={customerId}
           isAdminAuthenticated={isAdminAuthenticated}
           handleCancelingModalClose={handleCancelingModalClose}
+          toggleSelectClass={toggleSelectClass}
         />
       </Modal>
     </>
