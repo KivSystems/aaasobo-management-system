@@ -1,0 +1,17 @@
+@import "../../../variables.module.scss";
+
+.infoBanner {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &__icon {
+    height: 2.3rem;
+    color: $blue-primary;
+  }
+
+  &__notice {
+    font-size: 0.85rem;
+  }
+}

@@ -219,7 +219,7 @@ type CancelClassesModalControllerProps = {
   isAdminAuthenticated?: boolean;
 };
 
-type ClassesTableProps = {
+type CancelClassesModalProps = {
   upcomingClasses: UpcomingClass[] | null;
   selectedClasses: { classId: number; classDateTime: string }[];
   setSelectedClasses: Dispatch<
@@ -233,4 +233,5 @@ type ClassesTableProps = {
   customerId: number;
   isAdminAuthenticated?: boolean;
   handleCancelingModalClose: () => void;
+  toggleSelectClass: (classId: number, classDateTime: string) => void;
 };

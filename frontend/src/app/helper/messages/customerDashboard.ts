@@ -20,3 +20,6 @@ export const SELECTED_CLASSES_CANCELLATION_SUCCESS =
 
 export const FAILED_TO_CANCEL_CLASSES =
   "Failed to cancel the selected classes. Please try again later.";
+
+export const TODAYS_CLASS_CANCELLATION_NOTICE =
+  "If you need to cancel today's classes, please contact our staff via LINE. Please note that make-up classes will not be available in this case.";

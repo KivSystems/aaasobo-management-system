@@ -1,0 +1,66 @@
+@import "../../../../../../../../variables.module.scss";
+
+.upcomingClass {
+  transition: background-color 0.3s ease;
+  display: grid;
+  align-items: center;
+  width: 100%;
+  min-height: 65px;
+  grid-template-columns: 0.26fr 0.9fr 0.56fr 1fr 1fr;
+  background-color: #fafbfe;
+  border-radius: 0.5rem;
+
+  &:hover {
+    background-color: #f0f1fb;
+    cursor: pointer;
+  }
+
+  &--selected {
+    background-color: #e8e9fa;
+    &:hover {
+      background-color: #e8e9fa;
+    }
+  }
+
+  &--disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+.checkbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.item {
+  margin-left: 0.5rem;
+
+  &--date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 0.3rem;
+  
+    p {
+      margin-top: 0.1rem;
+    }
+  }
+  
+  &--instructor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.infoIcon {
+  height: 1.3rem;
+  color: $blue-primary;
+}
+
+.instructorIcon {
+  border-radius: 180px;
+  border: 2px solid $gray-background-hover;
+}
