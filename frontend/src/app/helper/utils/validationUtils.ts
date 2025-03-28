@@ -1,3 +1,7 @@
+import { revalidateUpcomingClasses } from "@/app/actions/revalidate";
+import { CANCELATION_NOT_ALLOWED_MESSAGE } from "../messages/customerDashboard";
+import { isPastPreviousDayDeadline } from "./dateUtils";
+
 type RegisterProps = {
   name: string;
   email: string;
@@ -54,4 +58,33 @@ export const isValidLogin = ({ email, password }: LoginProps) => {
   }
 
   return { isValid: true };
+};
+
+export const validateCancelableClasses = (
+  selectedClasses: { classId: number; classDateTime: string }[],
+  setSelectedClasses: React.Dispatch<
+    React.SetStateAction<{ classId: number; classDateTime: string }[]>
+  >,
+): boolean => {
+  const pastPrevDayClasses = selectedClasses.filter((eachClass) =>
+    isPastPreviousDayDeadline(eachClass.classDateTime),
+  );
+
+  if (pastPrevDayClasses.length > 0) {
+    // TODO: Determine the language (jp or en) for the error message based on context.
+    alert(CANCELATION_NOT_ALLOWED_MESSAGE.en);
+
+    const updatedSelectedClasses = selectedClasses.filter(
+      (eachClass) =>
+        !pastPrevDayClasses.some(
+          (pastClass) => pastClass.classId === eachClass.classId,
+        ),
+    );
+
+    revalidateUpcomingClasses();
+    setSelectedClasses(updatedSelectedClasses);
+    return false; // Indicates that cancellation should stop
+  }
+
+  return true; // Indicates that cancellation can proceed
 };

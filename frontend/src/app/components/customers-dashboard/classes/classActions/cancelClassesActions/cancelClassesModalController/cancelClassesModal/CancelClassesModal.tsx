@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { cancelSelectedClasses } from "@/app/actions/cancelSelectedClasses";
 import {
-  CANCELATION_NOT_ALLOWED_MESSAGE,
   CONFIRM_CLASS_CANCELLATION,
   FAILED_TO_CANCEL_CLASSES,
+  NO_CANCELABLE_CLASSES_MESSAGE,
   SELECTED_CLASSES_CANCELLATION_SUCCESS,
   TODAYS_CLASS_CANCELLATION_NOTICE,
 } from "@/app/helper/messages/customerDashboard";
@@ -14,40 +14,31 @@ import ActionButton from "@/app/components/elements/buttons/actionButton/ActionB
 import Table from "@/app/components/elements/table/Table";
 import UpcomingClasses from "./upcomingClasses/UpcomingClasses";
 import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
+import { useState } from "react";
+import { validateCancelableClasses } from "@/app/helper/utils/validationUtils";
 
 export default function CancelClassesModal({
   upcomingClasses,
-  selectedClasses,
-  setSelectedClasses,
   customerId,
   isAdminAuthenticated,
-  handleCancelingModalClose,
-  toggleSelectClass,
+  isCancelingModalOpen,
+  setIsCancelingModalOpen,
 }: CancelClassesModalProps) {
-  // TODO: useCallback
+  const [selectedClasses, setSelectedClasses] = useState<
+    { classId: number; classDateTime: string }[]
+  >([]);
+
   const handleBulkCancel = async () => {
     if (selectedClasses.length === 0) return;
 
-    // Exclude classes that have passed the previous day's cancellation deadline.
-    const pastPrevDayClasses = selectedClasses.filter((eachClass) =>
-      isPastPreviousDayDeadline(eachClass.classDateTime, "Asia/Tokyo"),
-    );
-
-    if (pastPrevDayClasses.length > 0) {
-      alert(CANCELATION_NOT_ALLOWED_MESSAGE);
-
-      const pastPrevDayClassIds = pastPrevDayClasses.map(
-        (pastClass) => pastClass.classId,
-      );
-      const updatedSelectedClasses = selectedClasses.filter(
-        (eachClass) => !pastPrevDayClassIds.includes(eachClass.classId),
-      );
-      // TODO: Update upcomingClasses and show Loading UI
-      return setSelectedClasses(updatedSelectedClasses);
+    // Validation: exclude classes that have passed the previous day's cancellation deadline.
+    if (!validateCancelableClasses(selectedClasses, setSelectedClasses)) {
+      return;
     }
 
-    const confirmed = window.confirm(CONFIRM_CLASS_CANCELLATION);
-    if (!confirmed) return handleCancelingModalClose();
+    // TODO: Determine the language (jp or en) for the message based on context.
+    const confirmed = window.confirm(CONFIRM_CLASS_CANCELLATION.en);
+    if (!confirmed) return setIsCancelingModalOpen(false);
 
     const classesToCancel = selectedClasses.map(
       (classItem) => classItem.classId,
@@ -60,43 +51,56 @@ export default function CancelClassesModal({
         customerId,
       );
 
-      handleCancelingModalClose();
-      toast.success(SELECTED_CLASSES_CANCELLATION_SUCCESS);
+      setIsCancelingModalOpen(false);
+      // TODO: Determine the language (jp or en) for the message based on context.
+      toast.success(SELECTED_CLASSES_CANCELLATION_SUCCESS.en);
     } catch (error) {
-      // TODO: Using context, decide which language to use to display error message
-      alert(FAILED_TO_CANCEL_CLASSES);
+      // TODO: Determine the language (jp or en) for the message based on context.
+      alert(FAILED_TO_CANCEL_CLASSES.en);
     }
   };
 
-  const showSameDayCancelNotice =
-    upcomingClasses &&
-    upcomingClasses.some(({ dateTime }) =>
-      isPastPreviousDayDeadline(dateTime, "Asia/Tokyo"),
-    );
+  const showSameDayCancelNotice = upcomingClasses.some(({ dateTime }) =>
+    isPastPreviousDayDeadline(dateTime),
+  );
 
   return (
     <div className={styles.modalWrapper}>
       <div className={styles.modalContent}>
-        <Table
-          className="cancelClasses"
-          headItems={["", "Date", "Time", "Instructor", "Children"]}
-        >
-          <UpcomingClasses
-            upcomingClasses={upcomingClasses}
-            selectedClasses={selectedClasses}
-            toggleSelectClass={toggleSelectClass}
-          />
-        </Table>
+        {upcomingClasses.length > 0 ? (
+          <>
+            <Table
+              className="cancelClasses"
+              // TODO: Determine the language (jp or en) for headItems based on context.
+              // headItems={["", "日付", "時間", "インストラクター", "お子様"]}
+              headItems={["", "Date", "Time", "Instructor", "Children"]}
+            >
+              <UpcomingClasses
+                upcomingClasses={upcomingClasses}
+                selectedClasses={selectedClasses}
+                setSelectedClasses={setSelectedClasses}
+                isCancelingModalOpen={isCancelingModalOpen}
+              />
+            </Table>
 
-        {showSameDayCancelNotice && (
-          <InfoBanner info={TODAYS_CLASS_CANCELLATION_NOTICE} />
+            {showSameDayCancelNotice && (
+              // TODO: Determine the language (jp or en) for the message based on context.
+              <InfoBanner info={TODAYS_CLASS_CANCELLATION_NOTICE.en} />
+            )}
+          </>
+        ) : (
+          <h3 style={{ textAlign: "center" }}>
+            {/* TODO: Determine the language (jp or en) for the message based on context. */}
+            {NO_CANCELABLE_CLASSES_MESSAGE.en}
+          </h3>
         )}
 
+        {/* TODO: Determine the language (jp or en) for the btnText based on context. */}
         <div className={styles.classesTable__buttons}>
           <ActionButton
             btnText="Back"
             className="back"
-            onClick={handleCancelingModalClose}
+            onClick={() => setIsCancelingModalOpen(false)}
           />
           <ActionButton
             onClick={handleBulkCancel}

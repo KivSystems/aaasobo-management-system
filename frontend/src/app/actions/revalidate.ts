@@ -19,3 +19,7 @@ export async function revalidateCustomerCalendar(
     : `/customers/${customerId}/classes`;
   revalidatePath(path);
 }
+
+export async function revalidateUpcomingClasses() {
+  revalidateTag("upcoming-classes");
+}
