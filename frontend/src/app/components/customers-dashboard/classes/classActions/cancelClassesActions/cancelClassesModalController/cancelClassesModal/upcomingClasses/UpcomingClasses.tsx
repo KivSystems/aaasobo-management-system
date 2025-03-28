@@ -16,7 +16,7 @@ export default function UpcomingClasses({
 }: UpcomingClassesProps) {
   useEffect(() => {
     if (!isCancelingModalOpen) setSelectedClasses([]);
-  }, [isCancelingModalOpen]);
+  }, [isCancelingModalOpen, setSelectedClasses]);
 
   const toggleSelectClass = (classId: number, classDateTime: string) => {
     setSelectedClasses((prev: SelectedClass[]) => {
