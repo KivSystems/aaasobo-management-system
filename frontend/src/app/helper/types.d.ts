@@ -214,24 +214,27 @@ type UpcomingClass = {
 };
 
 type CancelClassesModalControllerProps = {
-  upcomingClasses: UpcomingClass[] | null;
+  upcomingClasses: UpcomingClass[] | [];
   customerId: number;
   isAdminAuthenticated?: boolean;
 };
 
 type CancelClassesModalProps = {
-  upcomingClasses: UpcomingClass[] | null;
-  selectedClasses: { classId: number; classDateTime: string }[];
-  setSelectedClasses: Dispatch<
-    SetStateAction<
-      {
-        classId: number;
-        classDateTime: string;
-      }[]
-    >
-  >;
+  upcomingClasses: UpcomingClass[] | [];
   customerId: number;
   isAdminAuthenticated?: boolean;
-  handleCancelingModalClose: () => void;
-  toggleSelectClass: (classId: number, classDateTime: string) => void;
+  isCancelingModalOpen: boolean;
+  setIsCancelingModalOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+type SelectedClass = {
+  classId: number;
+  classDateTime: string;
+};
+
+type UpcomingClassesProps = {
+  upcomingClasses: UpcomingClass[] | [];
+  selectedClasses: SelectedClass[] | [];
+  setSelectedClasses: Dispatch<SetStateAction<SelectedClass>>;
+  isCancelingModalOpen: boolean;
 };

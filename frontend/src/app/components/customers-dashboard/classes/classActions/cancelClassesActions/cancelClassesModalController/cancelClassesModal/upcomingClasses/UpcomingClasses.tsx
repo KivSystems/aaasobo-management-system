@@ -6,26 +6,39 @@ import {
 import styles from "./UpcomingClasses.module.scss";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
+import { useEffect } from "react";
 
 export default function UpcomingClasses({
   upcomingClasses,
   selectedClasses,
-  toggleSelectClass,
-}: {
-  upcomingClasses: UpcomingClass[] | null;
-  selectedClasses: { classId: number; classDateTime: string }[];
-  toggleSelectClass: (classId: number, classDateTime: string) => void;
-}) {
+  setSelectedClasses,
+  isCancelingModalOpen,
+}: UpcomingClassesProps) {
+  useEffect(() => {
+    if (!isCancelingModalOpen) setSelectedClasses([]);
+  }, [isCancelingModalOpen]);
+
+  const toggleSelectClass = (classId: number, classDateTime: string) => {
+    setSelectedClasses((prev: SelectedClass[]) => {
+      const updated = prev.filter((item) => item.classId !== classId);
+      if (updated.length === prev.length) {
+        updated.push({ classId, classDateTime });
+      }
+      return updated;
+    });
+  };
+
   return (
     <>
-      {upcomingClasses?.map((eachClass) => {
+      {upcomingClasses.map((eachClass) => {
         const classDateTime = new Date(eachClass.dateTime);
+        // TODO: Determine the language (jp or en) for classDate based on context.
+        // const classDate = formatShortDate(classDateTime, "ja-JP");
         const classDate = formatShortDate(classDateTime);
         const classTime = formatTime24Hour(classDateTime);
 
         const pastPrevDayDeadline = isPastPreviousDayDeadline(
           eachClass.dateTime,
-          "Asia/Tokyo",
         );
 
         // Check if the current class is selected

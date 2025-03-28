@@ -8,7 +8,7 @@ export default async function CancelClassesActions({
   customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
-  const upcomingClasses: UpcomingClass[] | null =
+  const upcomingClasses: UpcomingClass[] | [] =
     await getUpcomingClasses(customerId);
 
   return (

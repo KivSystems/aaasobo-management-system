@@ -10,28 +10,11 @@ export default function CancelClassesModalController({
   customerId,
   isAdminAuthenticated,
 }: CancelClassesModalControllerProps) {
-  const [selectedClasses, setSelectedClasses] = useState<
-    { classId: number; classDateTime: string }[]
-  >([]);
   const [isCancelingModalOpen, setIsCancelingModalOpen] = useState(false);
-
-  const handleCancelingModalClose = () => {
-    setIsCancelingModalOpen(false);
-    setSelectedClasses([]);
-  };
-
-  const toggleSelectClass = (classId: number, classDateTime: string) => {
-    setSelectedClasses((prev) => {
-      const updated = prev.filter((item) => item.classId !== classId);
-      if (updated.length === prev.length) {
-        updated.push({ classId, classDateTime });
-      }
-      return updated;
-    });
-  };
 
   return (
     <>
+      {/* TODO: Determine the language (jp or en) for the btnText based on context. */}
       <ActionButton
         btnText="Cancel Classes"
         className="cancelClasses"
@@ -39,15 +22,16 @@ export default function CancelClassesModalController({
           setIsCancelingModalOpen(true);
         }}
       />
-      <Modal isOpen={isCancelingModalOpen} onClose={handleCancelingModalClose}>
+      <Modal
+        isOpen={isCancelingModalOpen}
+        onClose={() => setIsCancelingModalOpen(false)}
+      >
         <CancelClassesModal
           upcomingClasses={upcomingClasses}
-          selectedClasses={selectedClasses}
-          setSelectedClasses={setSelectedClasses}
           customerId={customerId}
           isAdminAuthenticated={isAdminAuthenticated}
-          handleCancelingModalClose={handleCancelingModalClose}
-          toggleSelectClass={toggleSelectClass}
+          isCancelingModalOpen={isCancelingModalOpen}
+          setIsCancelingModalOpen={setIsCancelingModalOpen}
         />
       </Modal>
     </>

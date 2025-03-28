@@ -1,13 +1,19 @@
 @import "../../../variables.module.scss";
 
 .infoBanner {
-  margin-top: 10px;
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   gap: 10px;
 
+  &__iconWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   &__icon {
-    height: 2.3rem;
+    width: 1.5rem;
     color: $blue-primary;
   }
 

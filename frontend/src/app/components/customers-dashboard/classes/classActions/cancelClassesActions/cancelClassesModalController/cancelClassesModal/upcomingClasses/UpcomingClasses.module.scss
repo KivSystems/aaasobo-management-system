@@ -6,7 +6,7 @@
   align-items: center;
   width: 100%;
   min-height: 65px;
-  grid-template-columns: 0.26fr 0.9fr 0.56fr 1fr 1fr;
+  grid-template-columns: 0.25fr 1fr 0.45fr 1fr 1fr;
   background-color: #fafbfe;
   border-radius: 0.5rem;
 
@@ -40,7 +40,7 @@
   &--date {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 2px;
     margin-left: 0.3rem;
   
     p {

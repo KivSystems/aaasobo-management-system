@@ -16,7 +16,9 @@
     color: white;
 
     h3 {
-      font-weight: 600;
+      font-weight: 500;
+      margin-left: 0.5rem;
+      font-size: 1rem;
     }
   }
 
@@ -34,6 +36,6 @@
 // Individual styles for each class
 .cancelClasses {
   .table__head {
-    grid-template-columns: 0.26fr 0.9fr 0.56fr 1fr 1fr;
+    grid-template-columns: 0.25fr 1fr 0.45fr 1fr 1fr;
   }
 }

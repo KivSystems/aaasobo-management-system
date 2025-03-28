@@ -12,7 +12,9 @@ const InfoBanner: React.FC<InfoBannerProps> = ({ className, info }) => {
     <div
       className={`${styles.infoBanner} ${className ? styles[className] : ""}`}
     >
-      <InformationCircleIcon className={styles.infoBanner__icon} />
+      <div className={styles.infoBanner__iconWrapper}>
+        <InformationCircleIcon className={styles.infoBanner__icon} />
+      </div>
       <p className={styles.infoBanner__notice}>{info}</p>
     </div>
   );

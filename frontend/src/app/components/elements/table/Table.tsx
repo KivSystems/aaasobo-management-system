@@ -11,8 +11,8 @@ const Table: React.FC<TableProps> = ({ className, headItems, children }) => {
   return (
     <div className={`${styles.table} ${className ? styles[className] : ""}`}>
       <div className={styles.table__head}>
-        {headItems.map((item) => (
-          <h3>{item}</h3>
+        {headItems.map((item, index) => (
+          <h3 key={index}>{item}</h3>
         ))}
       </div>
 
