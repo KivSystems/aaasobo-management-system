@@ -175,7 +175,7 @@ const ClassDetail = ({
       {
         // condition: class status: booked, current date&time: before the day of the class
         classDetail.status === "booked" &&
-        !isPastPreviousDayDeadline(classDetail.dateTime, "Asia/Tokyo") ? (
+        !isPastPreviousDayDeadline(classDetail.dateTime) ? (
           <div className={styles.buttons}>
             <ActionButton
               btnText="Back"
@@ -221,7 +221,7 @@ const ClassDetail = ({
       {
         // condition 1: class status: booked, current date&time: before the day of the class
         classDetail.status === "booked" &&
-        !isPastPreviousDayDeadline(classDetail.dateTime, "Asia/Tokyo") ? (
+        !isPastPreviousDayDeadline(classDetail.dateTime) ? (
           <div className={styles.notification}>
             <div className={styles.notification__iconContainer}>
               <InformationCircleIcon className={styles.notification__icon} />
@@ -240,7 +240,7 @@ const ClassDetail = ({
           </div>
         ) : // condition 2: class status: booked, current date&time: on the same day of the class, but before the start of the class
         classDetail.status === "booked" &&
-          isPastPreviousDayDeadline(classDetail.dateTime, "Asia/Tokyo") &&
+          isPastPreviousDayDeadline(classDetail.dateTime) &&
           !isPastClassDateTime(classDetail.dateTime, "Asia/Tokyo") ? (
           <div className={styles.notification}>
             <div className={styles.notification__iconContainer}>
