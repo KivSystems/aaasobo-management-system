@@ -53,7 +53,6 @@ export default function InstructorSchedule({
 
   return (
     <>
-      <ToastContainer />
       <div className={styles.dateInput}>
         <label className={styles.label}>
           Display Schedule on

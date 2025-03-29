@@ -61,7 +61,6 @@ function Login() {
 
   return (
     <div>
-      <ToastContainer />
       <div className={styles.outsideContainer}>
         <div className={styles.container}>
           <Image

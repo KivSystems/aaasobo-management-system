@@ -17,7 +17,6 @@ export default function Layout({
 
   return (
     <div className={styles.container}>
-      <ToastContainer />
       <div className={styles.sidebar}>
         <SideNav userId={instructorId} userType="instructor" />
       </div>
