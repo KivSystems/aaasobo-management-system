@@ -1,4 +1,13 @@
-import { addMinutes, startOfDay, isAfter } from "date-fns";
+import {
+  addMinutes,
+  startOfDay,
+  isAfter,
+  endOfMonth,
+  addMonths,
+  setHours,
+  setMinutes,
+  setSeconds,
+} from "date-fns";
 import { format, toZonedTime } from "date-fns-tz";
 
 // Function to format time for a given time zone(e.g., 19:00)
@@ -97,6 +106,36 @@ export const formatFiveMonthsLaterEndOfMonth = (
     day: "2-digit",
     timeZone,
   }).format(endOfMonth);
+};
+
+// TODO: Eventually, replace this function with the above formatFiveMonthsLaterEndOfMonth()
+export const formatEndOfMonthFiveMonthsLater = (
+  dateTimeUTC: string,
+  locale?: string,
+): { date: string; time: string } => {
+  // Step 1: Convert UTC time to Japan Time (Asia/Tokyo)
+  const japanTime = toZonedTime(dateTimeUTC, "Asia/Tokyo");
+
+  // Step 2: Get the last day and time of the month, five months later (still in Japan time)
+  const fiveMonthsLaterEndOfMonth = setSeconds(
+    setMinutes(setHours(endOfMonth(addMonths(japanTime, 5)), 23), 59),
+    59,
+  );
+
+  // Step 3: Convert Japan time to UTC timestamp
+  const utcTime = new Date(
+    fiveMonthsLaterEndOfMonth.getTime() - japanTime.getTimezoneOffset() * 60000,
+  );
+
+  // Step 4: Convert UTC timestamp to the user's local time zone
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const localTime = toZonedTime(new Date(utcTime), userTimeZone);
+
+  // Step 5: Format the date and time
+  const date = formatShortDate(localTime, locale);
+  const time = formatTime24Hour(localTime);
+
+  return { date, time };
 };
 
 // Function to check if the current date in a particular time zone is past the previous day of the class date
