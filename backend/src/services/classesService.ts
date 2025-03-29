@@ -472,6 +472,9 @@ export const getBookableClasses = async (customerId: number) => {
         },
       ],
     },
+    orderBy: {
+      dateTime: "asc",
+    },
   });
 
   // Return only the dateTime property from the class data
