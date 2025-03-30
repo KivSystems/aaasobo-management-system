@@ -1,0 +1,30 @@
+.languageSwitcher {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background: #ddd;
+  border-radius: 20px;
+  width: 60px;
+  padding: 5px;
+  position: relative;
+
+.switch {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: 5px;
+  transition: all 0.3s ease;
+}
+
+.active {
+  left: 35px;
+}
+
+span {
+  margin-left: 30px;
+  font-size: 14px;
+  font-weight: bold;
+}
+}
