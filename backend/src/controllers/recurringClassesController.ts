@@ -155,12 +155,6 @@ export const updateRecurringClassesController = async (
   const jstTodayStr = new Date().toLocaleDateString("en-CA", {
     timeZone: "Asia/Tokyo",
   });
-
-  // Convert the local class start date to UTC time.
-  const localClassStartDateTime = classStartDate + "T00:00:00"; // In the new Date object, the time will change based on the local date.
-  const utcClassStartDate =
-    new Date(localClassStartDateTime).toISOString().split("T")[0] +
-    "T00:00:00.000Z"; // In the new Date object, the time will remain unchanged at 00:00.
   const utcToday = new Date();
 
   // Compare the local classStart date and Japan today.
@@ -207,14 +201,14 @@ export const updateRecurringClassesController = async (
       const { endAt, startAt } = recurringClass;
 
       const firstClassDate = calculateFirstDate(
-        new Date(utcClassStartDate),
+        new Date(classStartDate),
         utcDay,
         utcTime,
       );
 
       let dateTimes: Date[] = [];
       const newStartAt = calculateFirstDate(
-        new Date(utcClassStartDate),
+        new Date(classStartDate),
         utcDay,
         utcTime,
       );
@@ -232,9 +226,9 @@ export const updateRecurringClassesController = async (
       // -> All upcoming classes are deleted and recreated new recurring ones until the end of the next two months.
 
       const condition1 =
-        endAt !== null && new Date(endAt) <= new Date(utcClassStartDate);
+        endAt !== null && new Date(endAt) <= new Date(classStartDate);
       const condition2 =
-        endAt !== null && new Date(utcClassStartDate) < new Date(endAt);
+        endAt !== null && new Date(classStartDate) < new Date(endAt);
       const condition3 = endAt === null;
 
       // Condition1
@@ -243,12 +237,12 @@ export const updateRecurringClassesController = async (
       }
 
       // Terminate the current recurring class.
-      await terminateRecurringClass(tx, req.id, new Date(utcClassStartDate));
+      await terminateRecurringClass(tx, req.id, new Date(classStartDate));
 
       // Delete unnecessary future recurring class.
       if (
         startAt === null ||
-        (startAt !== null && new Date(utcClassStartDate) < new Date(startAt))
+        (startAt !== null && new Date(classStartDate) < new Date(startAt))
       ) {
         await deleteRecurringClass(tx, req.id);
       }
