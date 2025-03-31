@@ -26,6 +26,7 @@ function InstructorsSchedule() {
     Sat: [],
     Sun: [],
   });
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   useEffect(() => {
     const fetchInstructorAvailabilities = async () => {
@@ -47,9 +48,9 @@ function InstructorsSchedule() {
         data.forEach((availability: RecurringAvailability) => {
           const day = getWeekday(
             new Date(availability.startAt),
-            "Asia/Tokyo",
+            timeZone,
           ) as Day;
-          const time = formatTime(new Date(availability.startAt), "Asia/Tokyo");
+          const time = formatTime(new Date(availability.startAt), timeZone);
 
           setSlots((prevSlots) => ({
             ...prevSlots,

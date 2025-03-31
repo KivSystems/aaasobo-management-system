@@ -76,13 +76,14 @@ export const editRecurringClass = async (
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to an edit regular class");
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Failed to edit recurring classes:", error);
+    console.error("Failed to an edit regular class:", error);
     throw error;
   }
 };
