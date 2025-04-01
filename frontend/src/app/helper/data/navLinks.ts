@@ -11,25 +11,26 @@ import {
 export function getLinks(
   userId: number | null,
   userType: "admin" | "customer" | "instructor",
+  language?: "ja" | "en",
 ): LinkType[] {
   const customerLinks: LinkType[] = [
     {
-      name: "Class Calendar",
+      name: language === "ja" ? "クラスカレンダー" : "Class Calendar",
       href: `/customers/${userId}/classes`,
       icon: CalendarDaysIcon,
     },
     {
-      name: "Customer Profile",
+      name: language === "ja" ? "プロフィール" : "Customer Profile",
       href: `/customers/${userId}/profile`,
       icon: UserIcon,
     },
     {
-      name: "Children's Profiles",
+      name: language === "ja" ? "お子様プロフィール" : "Children's Profiles",
       href: `/customers/${userId}/children-profiles`,
       icon: UsersIcon,
     },
     {
-      name: "Regular Classes",
+      name: language === "ja" ? "レギュラークラス" : "Regular Classes",
       href: `/customers/${userId}/regular-classes`,
       icon: ClipboardDocumentListIcon,
     },

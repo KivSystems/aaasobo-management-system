@@ -1,3 +1,5 @@
+"use client";
+
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import styles from "./LanguageSwitcher.module.scss";
 

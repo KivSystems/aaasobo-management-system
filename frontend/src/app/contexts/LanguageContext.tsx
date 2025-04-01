@@ -18,7 +18,15 @@ export const LanguageProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [language, setLanguage] = useState<Language>("en");
+  const getDefaultLanguage = (): Language => {
+    if (typeof window !== "undefined") {
+      const browserLang = navigator.language.startsWith("ja") ? "ja" : "en";
+      return browserLang;
+    }
+    return "en";
+  };
+
+  const [language, setLanguage] = useState<Language>(getDefaultLanguage());
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "ja" : "en"));

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { logoutInstructor } from "@/app/helper/api/instructorsApi";
 import { toast } from "react-toastify";
 import { logoutAdmin } from "@/app/helper/api/adminsApi";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function LogOut({
   userType,
@@ -14,6 +15,7 @@ export default function LogOut({
   userType: "admin" | "customer" | "instructor";
 }) {
   const router = useRouter();
+  const { language } = useLanguage();
 
   const logoutActions = {
     admin: { logoutFn: logoutAdmin, redirectUrl: "/admins/login" },
@@ -44,7 +46,11 @@ export default function LogOut({
   return (
     <div className={`${styles.link} ${styles.logout}`} onClick={handleLogout}>
       <ArrowLeftStartOnRectangleIcon className={styles.icon} />
-      <p className={styles.linkText}>Log Out</p>
+      <p className={styles.linkText}>
+        {userType === "customer" && language === "ja"
+          ? "ログアウト"
+          : "Log Out"}
+      </p>
     </div>
   );
 }
