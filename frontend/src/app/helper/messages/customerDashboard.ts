@@ -1,10 +1,14 @@
 export const FAILED_TO_FETCH_BOOKABLE_CLASSES =
-  "予約可能クラスの取得に失敗しました。 / Failed to fetch bookable classes.";
+  "We couldn't load the available classes. Please try again later. / 利用可能なクラスを読み込めませんでした。後ほどもう一度お試しください。";
 
-export const INVALID_ID = "無効なユーザーIDです。 / Invalid ID.";
+export const INVALID_CUSTOMER_ID =
+  "We encountered an issue while processing the customer ID. Please try again later. / カスタマーIDの処理中に問題が発生しました。後ほどもう一度お試しください。";
 
 export const FAILED_TO_FETCH_UPCOMING_CLASSES =
-  "予約済みクラスの取得に失敗しました。 / Failed to fetch upcoming classes.";
+  "We couldn't load the upcoming classes. Please try again later. / 予約済みクラスを読み込めませんでした。後ほどもう一度お試しください。";
+
+export const FAILED_TO_FETCH_CUSTOMER_PROFILE =
+  "We couldn't load the customer's profile. Please try again later. / プロフィールを読み込めませんでした。後ほどもう一度お試しください。";
 
 export const CANCELATION_NOT_ALLOWED_MESSAGE = {
   jp: "日本時間を基準とし、クラスは予定日の当日以降、キャンセルできません。",

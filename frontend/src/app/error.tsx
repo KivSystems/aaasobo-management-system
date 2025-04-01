@@ -11,8 +11,8 @@ export default function Error({
   reset: () => void;
 }) {
   const { language } = useLanguage();
-  const [messageJp, messageEn] = error.message.split(" / ");
-  const errorMessages = { messageJp, messageEn };
+  const [messageEn, messageJa] = error.message.split(" / ");
+  const errorMessages = { messageEn, messageJa: messageJa || messageEn };
 
   return (
     <ErrorPage reset={reset} errorMessages={errorMessages} lng={language} />

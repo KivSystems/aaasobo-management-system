@@ -12,15 +12,15 @@ export default function ErrorPage({
   lng,
 }: {
   reset: () => void;
-  errorMessages?: { messageJp: string; messageEn: string };
-  lng: string;
+  errorMessages?: { messageEn: string; messageJa: string };
+  lng: "en" | "ja";
 }) {
   return (
     <main className={styles.errorContainer}>
       <ExclamationTriangleIcon className={styles.errorIcon} />
       <h2 className={styles.errorTitle}>
-        {lng === "jp"
-          ? errorMessages?.messageJp || ERROR_PAGE_MESSAGE_JP
+        {lng === "ja"
+          ? errorMessages?.messageJa || ERROR_PAGE_MESSAGE_JP
           : errorMessages?.messageEn || ERROR_PAGE_MESSAGE_EN}
       </h2>
       <ActionButton

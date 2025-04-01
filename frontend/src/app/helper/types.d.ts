@@ -238,3 +238,16 @@ type UpcomingClassesProps = {
   setSelectedClasses: Dispatch<SetStateAction<SelectedClass>>;
   isCancelingModalOpen: boolean;
 };
+
+type CustomerProfile = {
+  id: number;
+  name: string;
+  email: string;
+  prefecture: string;
+};
+
+type InstructorProfile = {
+  id: number;
+  name: string;
+  nickname: string;
+};

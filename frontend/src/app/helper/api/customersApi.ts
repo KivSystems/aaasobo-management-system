@@ -1,5 +1,6 @@
 import {
   FAILED_TO_FETCH_BOOKABLE_CLASSES,
+  FAILED_TO_FETCH_CUSTOMER_PROFILE,
   FAILED_TO_FETCH_UPCOMING_CLASSES,
 } from "../messages/customerDashboard";
 import {
@@ -10,20 +11,29 @@ import {
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
-export const getCustomerById = async (customerId: number) => {
+export const getCustomerById = async (
+  customerId: number,
+): Promise<CustomerProfile> => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/customer`,
+      {
+        cache: "no-store",
+        next: { tags: ["customer-profile"] },
+      },
     );
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const { error } = await response.json();
+
+      throw new Error(`HTTP Status: ${response.status} ${error}`);
     }
-    const data = await response.json();
-    return data.customer;
+
+    const customerData = await response.json();
+    return customerData;
   } catch (error) {
-    // TODO: Improve error handling
-    console.error("Failed to fetch customer data:", error);
-    throw error;
+    console.error("Failed to fetch the customer profile:", error);
+    throw new Error(FAILED_TO_FETCH_CUSTOMER_PROFILE);
   }
 };
 
