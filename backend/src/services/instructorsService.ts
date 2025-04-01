@@ -323,7 +323,7 @@ export async function getInstructorProfile(instructorId: number) {
   });
 
   if (!instructorProfile) {
-    throw new Error("Instructor not found.");
+    return null;
   }
 
   return instructorProfile;

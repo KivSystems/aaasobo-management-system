@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
-  fetchCustomerById,
   getCustomerByEmail,
+  getCustomerById,
   registerCustomer,
   updateCustomer,
 } from "../services/customersService";
@@ -132,21 +132,20 @@ export const getSubscriptionsByIdController = async (
   }
 };
 
-export const getCustomerById = async (req: Request, res: Response) => {
-  const customerId = parseInt(req.params.id);
-
-  if (isNaN(customerId)) {
-    return res.status(400).json({ error: "Invalid customer ID." });
-  }
+export const getCustomerByIdController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
 
   try {
-    const customer = await fetchCustomerById(customerId);
+    const customer = await getCustomerById(customerId);
 
     if (!customer) {
       return res.status(404).json({ error: "Customer not found." });
     }
 
-    res.json({ customer });
+    res.json(customer);
   } catch (error) {
     console.error("Error fetching customer:", error);
     res.status(500).json({
