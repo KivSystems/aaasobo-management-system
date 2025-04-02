@@ -11,7 +11,16 @@ const LanguageSwitcher = () => {
       <div
         className={`${styles.switch} ${language === "ja" ? styles.active : ""}`}
       ></div>
-      <span>{language === "en" ? "EN" : "JA"}</span>
+      <span
+        className={`${styles.language} ${language === "ja" && styles["language--active"]}`}
+      >
+        JP
+      </span>
+      <span
+        className={`${styles.language} ${language === "en" && styles["language--active"]}`}
+      >
+        EN
+      </span>
     </div>
   );
 };
