@@ -251,3 +251,5 @@ type InstructorProfile = {
   name: string;
   nickname: string;
 };
+
+type LanguageType = "ja" | "en";

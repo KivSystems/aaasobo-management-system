@@ -65,14 +65,18 @@ export const validateCancelableClasses = (
   setSelectedClasses: React.Dispatch<
     React.SetStateAction<{ classId: number; classDateTime: string }[]>
   >,
+  language: LanguageType,
 ): boolean => {
   const pastPrevDayClasses = selectedClasses.filter((eachClass) =>
     isPastPreviousDayDeadline(eachClass.classDateTime),
   );
 
   if (pastPrevDayClasses.length > 0) {
-    // TODO: Determine the language (jp or en) for the error message based on context.
-    alert(CANCELATION_NOT_ALLOWED_MESSAGE.en);
+    alert(
+      language === "ja"
+        ? CANCELATION_NOT_ALLOWED_MESSAGE.ja
+        : CANCELATION_NOT_ALLOWED_MESSAGE.en,
+    );
 
     const updatedSelectedClasses = selectedClasses.filter(
       (eachClass) =>

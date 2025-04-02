@@ -11,7 +11,7 @@ import {
 export function getLinks(
   userId: number | null,
   userType: "admin" | "customer" | "instructor",
-  language?: "ja" | "en",
+  language?: LanguageType,
 ): LinkType[] {
   const customerLinks: LinkType[] = [
     {
