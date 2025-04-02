@@ -1,6 +1,6 @@
 "use client";
 
-import ErrorPage from "@/app/components/elements/erroPage/ErrorPage";
+import ErrorPage from "@/app/components/elements/errorPage/ErrorPage";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function Error({
@@ -15,6 +15,10 @@ export default function Error({
   const errorMessages = { messageEn, messageJa: messageJa || messageEn };
 
   return (
-    <ErrorPage reset={reset} errorMessages={errorMessages} lng={language} />
+    <ErrorPage
+      reset={reset}
+      errorMessages={errorMessages}
+      language={language}
+    />
   );
 }

@@ -9,23 +9,23 @@ import ActionButton from "../buttons/actionButton/ActionButton";
 export default function ErrorPage({
   reset,
   errorMessages,
-  lng,
+  language,
 }: {
   reset: () => void;
   errorMessages?: { messageEn: string; messageJa: string };
-  lng: "en" | "ja";
+  language: LanguageType;
 }) {
   return (
     <main className={styles.errorContainer}>
       <ExclamationTriangleIcon className={styles.errorIcon} />
       <h2 className={styles.errorTitle}>
-        {lng === "ja"
+        {language === "ja"
           ? errorMessages?.messageJa || ERROR_PAGE_MESSAGE_JP
           : errorMessages?.messageEn || ERROR_PAGE_MESSAGE_EN}
       </h2>
       <ActionButton
         className="addBtn"
-        btnText="Try again"
+        btnText={language === "ja" ? "もう一度試す" : "Try again"}
         onClick={() => reset()}
       />
     </main>
