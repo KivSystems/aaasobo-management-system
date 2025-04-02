@@ -138,6 +138,7 @@
   padding: 0.5rem 0;
   border-radius: 10px;
   width: 140px;
+  height: 40px;
 
   &:hover {
     background-color: $back-btn-bc-hover;
@@ -152,12 +153,14 @@
 .cancelClasses {
   background-color: $gray-background;
   height: 39px;
+  width: 135px;
   transition:
-    background-color 0.3s ease,
-    transform 0.3s ease;
+  background-color 0.3s ease,
+  transform 0.3s ease;
   border: 1px solid transparent;
   color: #333333;
-  padding: 0.5rem 1rem;
+  // padding: 0.5rem 1rem;
+  padding: 0.5rem 0;
   border-radius: 100px;
   box-shadow:
     rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
@@ -180,9 +183,10 @@
     transform 0.3s ease;
   border: 1px solid transparent;
   color: #ffffff;
-  padding: 0.5rem;
+  padding: 0.5rem 0;
   border-radius: 10px;
-  width: 140px;
+  width: 150px;
+  height: 40px;
 
   &:hover {
     background-color: $red-alert-hover;
