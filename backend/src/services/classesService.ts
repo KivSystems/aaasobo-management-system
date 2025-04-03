@@ -479,8 +479,8 @@ export const getBookableClasses = async (customerId: number) => {
 
   // Return only the dateTime property from the class data
   return classes.map((classItem) => classItem.dateTime);
-}
-  
+};
+
 // Fetch valid classes by instructor id.
 export const getValidClassesByInstructorId = async (
   tx: Prisma.TransactionClient,
