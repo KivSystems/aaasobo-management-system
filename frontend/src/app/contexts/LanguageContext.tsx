@@ -1,16 +1,19 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-
-type Language = "en" | "ja";
+import dynamic from "next/dynamic";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface LanguageContextProps {
-  language: Language;
+  language: LanguageType;
   toggleLanguage: () => void;
 }
 
 const LanguageContext = createContext<LanguageContextProps | undefined>(
   undefined,
+);
+const Loading = dynamic(
+  () => import("../components/elements/loading/Loading"),
+  { ssr: false },
 );
 
 export const LanguageProvider = ({
@@ -18,19 +21,20 @@ export const LanguageProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const getDefaultLanguage = (): Language => {
-    if (typeof window !== "undefined") {
-      const browserLang = navigator.language.startsWith("ja") ? "ja" : "en";
-      return browserLang;
-    }
-    return "en";
-  };
+  const [language, setLanguage] = useState<LanguageType | null>(null);
 
-  const [language, setLanguage] = useState<Language>(getDefaultLanguage());
+  useEffect(() => {
+    const browserLang = navigator.language.startsWith("ja") ? "ja" : "en";
+    setLanguage(browserLang);
+  }, []);
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "ja" : "en"));
   };
+
+  if (language === null) {
+    return <Loading />;
+  }
 
   return (
     <LanguageContext.Provider value={{ language, toggleLanguage }}>
@@ -42,7 +46,11 @@ export const LanguageProvider = ({
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
+    console.error(
+      "Warning: useLanguage was called outside of a LanguageProvider.",
+    );
+    return { language: "en" as LanguageType, toggleLanguage: () => {} };
   }
+
   return context;
 };

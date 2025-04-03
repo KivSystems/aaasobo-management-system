@@ -14,30 +14,30 @@
 
   margin: 1rem auto;
 
-.switch {
-  width: 30px;
-  height: 20px;
-  background: white;
-  border-radius: 20px;
-  position: absolute;
-  right: 7px;
-  transition: all 0.3s ease;
-}
-
-.active {
-  right: 42px;
-}
-
-.language {
-  z-index: 1000;
-  color: white;
-  font-size: 14px;
-  font-weight: 200;
-  transition: all 0.3s ease;
-
-  &--active {
-    color: $blue_primary;
-    font-weight: 700;
+  .switch {
+    width: 30px;
+    height: 20px;
+    background: white;
+    border-radius: 20px;
+    position: absolute;
+    right: 7px;
+    transition: all 0.3s ease;
   }
-}
+
+  .active {
+    right: 42px;
+  }
+
+  .language {
+    z-index: 1000;
+    color: white;
+    font-size: 14px;
+    font-weight: 200;
+    transition: all 0.3s ease;
+
+    &--active {
+      color: $blue_primary;
+      font-weight: 700;
+    }
+  }
 }
