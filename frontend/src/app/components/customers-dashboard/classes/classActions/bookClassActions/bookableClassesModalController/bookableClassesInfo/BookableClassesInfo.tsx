@@ -17,7 +17,7 @@ export function BookableClassesInfo({
         bookableClasses && bookableClasses.length > 0 ? styles.clickable : ""
       }`}
     >
-      {language === "ja" ? "予約可能クラス" : "Bookable Classes"}:{" "}
+      {language === "ja" ? "振替可能クラス" : "Bookable Classes"}:{" "}
       {bookableClasses?.length ?? 0}
     </p>
   );

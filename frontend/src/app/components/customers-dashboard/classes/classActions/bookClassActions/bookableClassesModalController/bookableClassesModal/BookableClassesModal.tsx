@@ -11,7 +11,7 @@ export default function BookableClassesModal({
 
   return (
     <div className={styles.modal}>
-      <h3>{language === "ja" ? "予約可能クラス" : "Bookable Classes"}</h3>
+      <h3>{language === "ja" ? "振替可能クラス" : "Bookable Classes"}</h3>
 
       <ul className={styles.modal__list}>
         {bookableClasses?.map((classDateTime, index) => {
@@ -25,7 +25,7 @@ export default function BookableClassesModal({
               {language === "ja" ? (
                 <>
                   <span>{`${fiveMonthLaterDateTime.date} ${fiveMonthLaterDateTime.time}`}</span>
-                  まで予約可能。
+                  まで振替可能。
                 </>
               ) : (
                 <>

@@ -24,8 +24,7 @@ export default async function BookClassActions({
         <RedirectButton
           linkURL={bookingURL}
           btnText="Book Class"
-          btnTextJa="クラスを予約"
-          iconType="plus"
+          btnTextJa="振替クラスを予約"
           className="bookClass"
           disabled={bookableClasses?.length === 0}
         />
