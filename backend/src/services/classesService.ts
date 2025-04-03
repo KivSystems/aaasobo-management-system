@@ -479,4 +479,70 @@ export const getBookableClasses = async (customerId: number) => {
 
   // Return only the dateTime property from the class data
   return classes.map((classItem) => classItem.dateTime);
+}
+  
+// Fetch valid classes by instructor id.
+export const getValidClassesByInstructorId = async (
+  tx: Prisma.TransactionClient,
+  instructorId: number,
+  date: Date,
+) => {
+  try {
+    const classes = await tx.class.findMany({
+      where: { instructorId, dateTime: { gte: date } },
+    });
+
+    return classes;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch classes.");
+  }
+};
+
+// Create new canceled classes
+export const createCanceledClasses = async ({
+  tx,
+  dateTimes,
+  instructorId,
+  customerId,
+  subscriptionId,
+  recurringClassId,
+  childrenIds,
+}: {
+  tx: Prisma.TransactionClient;
+  dateTimes: Date[];
+  instructorId: number;
+  customerId: number;
+  subscriptionId: number;
+  recurringClassId: number;
+  childrenIds: number[];
+}) => {
+  try {
+    const createdClasses = await tx.class.createManyAndReturn({
+      data: dateTimes.map((dateTime) => ({
+        instructorId,
+        customerId,
+        recurringClassId,
+        subscriptionId,
+        dateTime,
+        status: "canceledByInstructor",
+      })),
+    });
+    // Add the Class Attendance to the ClassAttendance Table based on the Class ID.
+    await tx.classAttendance.createMany({
+      data: createdClasses
+        .map((createdClass) => {
+          return childrenIds.map((childrenId) => ({
+            classId: createdClass.id,
+            childrenId,
+          }));
+        })
+        .flat(),
+    });
+
+    return createdClasses;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to add class.");
+  }
 };

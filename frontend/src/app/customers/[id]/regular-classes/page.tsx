@@ -18,9 +18,15 @@ function Page({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (toastDisplayed.current) return; // Prevent duplicate toasts
 
-    const message = searchParams.get("message");
-    if (message) {
-      toast.success(message);
+    const successMessage = searchParams.get("successMessage");
+    if (successMessage) {
+      toast.success(successMessage);
+      toastDisplayed.current = true; // Mark toast as displayed
+    }
+
+    const warningMessage = searchParams.get("warningMessage");
+    if (warningMessage) {
+      toast.warning(warningMessage);
       toastDisplayed.current = true; // Mark toast as displayed
     }
 

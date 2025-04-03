@@ -11,6 +11,7 @@ import {
   loginInstructorController,
   logoutInstructorController,
   getInstructorProfileController,
+  updateInstructorProfile,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -36,6 +37,8 @@ instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
 );
+instructorsRouter.patch("/:id", updateInstructorProfile);
+
 instructorsRouter.get("/:id/recurringAvailability", parseId, (req, res) =>
   RecurringAvailability.get(req as RequestWithId, res),
 );
