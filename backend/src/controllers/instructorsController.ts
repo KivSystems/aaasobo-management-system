@@ -26,6 +26,7 @@ import {
   updateRecurringAvailabilityInterval,
   getUnavailabilities,
   getInstructorProfile,
+  updateInstructor,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import bcrypt from "bcrypt";
@@ -143,6 +144,42 @@ export const getInstructor = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return setErrorResponse(res, error);
+  }
+};
+
+// Update the applicable instructor data
+export const updateInstructorProfile = async (req: Request, res: Response) => {
+  const instructorId = parseInt(req.params.id);
+  const {
+    name,
+    email,
+    classURL,
+    icon,
+    nickname,
+    meetingId,
+    passcode,
+    introductionURL,
+  } = req.body;
+
+  try {
+    const instructor = await updateInstructor(
+      instructorId,
+      name,
+      email,
+      classURL,
+      icon,
+      nickname,
+      meetingId,
+      passcode,
+      introductionURL,
+    );
+
+    res.status(200).json({
+      message: "Instructor is updated successfully",
+      instructor,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
   }
 };
 
