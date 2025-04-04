@@ -92,8 +92,8 @@ export function getFirstDayOfFiveMonthsAgo(): Date {
   const firstDayUTC = new Date(firstDayJST.getTime() - 9 * 60 * 60 * 1000);
 
   return firstDayUTC;
-};
-  
+}
+
 // Function to format time (e.g., 19:00)
 export const formatTime = (date: Date) => {
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;

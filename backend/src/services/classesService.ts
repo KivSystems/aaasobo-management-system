@@ -540,7 +540,7 @@ export const cancelClasses = async (classIds: number[]) => {
     return true;
   });
 };
-  
+
 // Fetch valid classes by instructor id.
 export const getValidClassesByInstructorId = async (
   tx: Prisma.TransactionClient,
