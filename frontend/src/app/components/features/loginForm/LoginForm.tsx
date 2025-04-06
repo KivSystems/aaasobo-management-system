@@ -44,7 +44,7 @@ export default function LoginForm({ userType }: { userType: UserType }) {
       <input type="hidden" name="userType" value={userType} />
 
       <div className={styles.buttonWrapper}>
-        <ActionButton btnText="Log in" className="bookBtn" type="submit" />
+        <ActionButton btnText="Login" className="bookBtn" type="submit" />
       </div>
 
       <div className={styles.errorWrapper}>
