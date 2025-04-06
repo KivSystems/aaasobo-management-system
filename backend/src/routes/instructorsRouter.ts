@@ -8,8 +8,6 @@ import {
   getInstructorAvailabilities,
   getAllInstructorsController,
   getRecurringAvailabilityById,
-  loginInstructorController,
-  logoutInstructorController,
   getInstructorProfileController,
   updateInstructorProfile,
 } from "../../src/controllers/instructorsController";
@@ -72,8 +70,6 @@ instructorsRouter.get("/:id/authentication", authenticateInstructorSession);
 instructorsRouter.get("/:id/classes", parseId, (req, res) => {
   getInstructorClasses(req as RequestWithId, res);
 });
-instructorsRouter.post("/login", loginInstructorController);
-instructorsRouter.post("/logout", logoutInstructorController);
 
 instructorsRouter.get(
   "/:id/availabilities/after-today",

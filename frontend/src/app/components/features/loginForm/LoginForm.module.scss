@@ -1,0 +1,33 @@
+@import "../../../variables.module.scss";
+
+.buttonWrapper {
+  display: flex;
+  justify-content: center;
+  margin: 1rem;
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.form {
+  width: 100%;
+}
+
+.errorWrapper {
+  height: 1.2rem;
+  color: $red-alert;
+  display: flex;
+  gap: 0.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.errorIcon {
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+.errorText {
+  font-size: 0.8rem;
+}

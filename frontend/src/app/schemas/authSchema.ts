@@ -27,3 +27,16 @@ export const customerRegisterSchema = z
       "Your password is too weak. Try using a longer passphrase or a password manager.",
     path: ["password"],
   });
+
+export const userLoginSchema = z.object({
+  email: z
+    .string()
+    .email("Please enter a valid email address.")
+    .min(1, "Email is required."),
+  password: z.string().min(8, "At least 8 characters long."),
+  userType: z.enum(["admin", "customer", "instructor"], {
+    message: "Invalid user type.",
+  }),
+});
+
+export const userTypeSchema = z.enum(["admin", "customer", "instructor"]);

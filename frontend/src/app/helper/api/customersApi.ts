@@ -6,15 +6,20 @@ import {
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
-export const getCustomerById = async (customerId: number) => {
+export const getCustomerById = async (
+  customerId: number,
+): Promise<Customer> => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/customer`,
+      {
+        cache: "no-store",
+      },
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const data: { customer: Customer } = await response.json();
     return data.customer;
   } catch (error) {
     console.error("Failed to fetch customer data:", error);
@@ -61,16 +66,6 @@ type Response<E> =
       ok: false;
       error: E;
     };
-
-export const logoutCustomer = async (): Promise<Response<string>> => {
-  const response = await fetch(`${BACKEND_ORIGIN}/customers/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
-  return response.ok
-    ? { ok: true }
-    : { ok: false, error: (await response.json()).message };
-};
 
 export const registerCustomer = async (userData: {
   name: string;
