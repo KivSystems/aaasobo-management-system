@@ -67,16 +67,6 @@ type Response<E> =
       error: E;
     };
 
-export const logoutCustomer = async (): Promise<Response<string>> => {
-  const response = await fetch(`${BACKEND_ORIGIN}/customers/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
-  return response.ok
-    ? { ok: true }
-    : { ok: false, error: (await response.json()).message };
-};
-
 export const registerCustomer = async (userData: {
   name: string;
   email: string;

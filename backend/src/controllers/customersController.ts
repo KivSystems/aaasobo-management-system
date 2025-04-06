@@ -12,7 +12,6 @@ import {
 } from "../services/subscriptionsService";
 import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
-import { logout } from "../helper/logout";
 import {
   EMAIL_ALREADY_REGISTERED_ERROR,
   GENERAL_ERROR_MESSAGE,
@@ -52,45 +51,6 @@ export const registerCustomerController = async (
     console.error("Error registering customer:", error);
     res.status(500).json({ message: GENERAL_ERROR_MESSAGE });
   }
-};
-
-export const loginCustomer = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { email },
-    });
-
-    if (!customer) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    // TODO: Check if the password is correct or not.
-
-    // Exclude the password from the response.
-    const { password: _, ...customerWithoutPassword } = customer;
-
-    // Set the session.
-    req.session = {
-      userId: customer.id,
-      userType: "customer",
-    };
-
-    res.status(200).json({
-      redirectUrl: `/customers/${customer.id}/classes`,
-      message: "Customer logged in successfully",
-      customer: customerWithoutPassword,
-    });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-};
-
-export const logoutCustomer = async (req: Request, res: Response) => {
-  return logout(req, res, "customer");
 };
 
 export const getCustomersClasses = async (req: Request, res: Response) => {

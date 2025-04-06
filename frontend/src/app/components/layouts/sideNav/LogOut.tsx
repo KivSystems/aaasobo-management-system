@@ -5,7 +5,6 @@ import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 export default function LogOut({ userType }: { userType: UserType }) {
   return (
     <form
-      // className={`${styles.link} ${styles.logout}`}
       className={styles.logout}
       action={async () => {
         "use server";
