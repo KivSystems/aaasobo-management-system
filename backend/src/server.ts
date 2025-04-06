@@ -14,6 +14,7 @@ import { recurringClassesRouter } from "./routes/recurringClassesRouter";
 import { plansRouter } from "./routes/plansRouter";
 import { subscriptionsRouter } from "./routes/subscriptionsRouter";
 import { indexRouter } from "./routes/indexRouter";
+import { usersRouter } from "./routes/usersRouter";
 
 export const server = express();
 
@@ -90,3 +91,4 @@ server.use("/children", childrenRouter);
 server.use("/recurring-classes", recurringClassesRouter);
 server.use("/plans", plansRouter);
 server.use("/subscriptions", subscriptionsRouter);
+server.use("/users", usersRouter);

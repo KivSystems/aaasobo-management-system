@@ -58,7 +58,9 @@ export const getAllCustomers = async () => {
   }
 };
 
-export const getCustomerByEmail = async (email: string) => {
+export const getCustomerByEmail = async (
+  email: string,
+): Promise<Customer | null> => {
   try {
     return await prisma.customer.findUnique({
       where: { email },

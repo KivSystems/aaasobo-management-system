@@ -4,6 +4,7 @@ import styles from "./InstructorProfile.module.scss";
 import { getInstructor, editInstructor } from "@/app/helper/api/instructorsApi";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import {
@@ -13,7 +14,7 @@ import {
   UserCircleIcon,
   VideoCameraIcon,
 } from "@heroicons/react/24/outline";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 
@@ -33,13 +34,11 @@ function InstructorProfile({
   useEffect(() => {
     const fetchInstructorById = async (instructorId: number) => {
       try {
-        const id = instructorId;
-        const response = await getInstructor(id);
+        const response = await getInstructor(instructorId);
         if ("message" in response) {
           alert(response.message);
           return;
         }
-        // console.log("response", response);
         setInstructor(response.instructor);
         setLatestInstructor(response.instructor);
       } catch (error) {
@@ -100,6 +99,15 @@ function InstructorProfile({
     }
   };
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof Instructor,
+  ) => {
+    if (instructor) {
+      setInstructor({ ...instructor, [field]: e.target.value });
+    }
+  };
+
   const handleCancelClick = () => {
     if (latestInstructor) {
       setInstructor(latestInstructor);
@@ -126,16 +134,11 @@ function InstructorProfile({
             <div className={styles.instructorName__nameSection}>
               <p className={styles.instructorName__text}>Name</p>
               {isEditing ? (
-                <input
-                  className={`${styles.instructorName__inputField} ${isEditing ? styles.editable : ""}`}
-                  type="text"
+                <InputField
+                  name="name"
                   value={instructor.name}
-                  onChange={(e) => {
-                    if (isEditing && isAdminAuthenticated) {
-                      setInstructor({ ...instructor, name: e.target.value });
-                    }
-                  }}
-                  required
+                  onChange={(e) => handleInputChange(e, "name")}
+                  className={`${styles.instructorName__inputField} ${isEditing ? styles.editable : ""}`}
                 />
               ) : (
                 <h3 className={styles.instructorName__name}>
@@ -150,19 +153,11 @@ function InstructorProfile({
               <div>
                 <p>Nickname</p>
                 {isEditing ? (
-                  <input
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                    type="text"
+                  <InputField
+                    name="nickname"
                     value={instructor.nickname}
-                    onChange={(e) => {
-                      if (isEditing && isAdminAuthenticated) {
-                        setInstructor({
-                          ...instructor,
-                          nickname: e.target.value,
-                        });
-                      }
-                    }}
-                    required
+                    onChange={(e) => handleInputChange(e, "nickname")}
+                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
                   <h4>{instructor.nickname}</h4>
@@ -176,16 +171,12 @@ function InstructorProfile({
               <div>
                 <p>Email</p>
                 {isEditing ? (
-                  <input
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                  <InputField
+                    name="email"
                     type="email"
                     value={instructor.email}
-                    onChange={(e) => {
-                      if (isEditing) {
-                        setInstructor({ ...instructor, email: e.target.value });
-                      }
-                    }}
-                    required
+                    onChange={(e) => handleInputChange(e, "email")}
+                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
                   <h4>{instructor.email}</h4>
@@ -199,19 +190,11 @@ function InstructorProfile({
               <div>
                 <p>Class URL</p>
                 {isEditing ? (
-                  <input
-                    className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
-                    type="text"
+                  <InputField
+                    name="classURL"
                     value={instructor.classURL}
-                    onChange={(e) => {
-                      if (isEditing) {
-                        setInstructor({
-                          ...instructor,
-                          classURL: e.target.value,
-                        });
-                      }
-                    }}
-                    required
+                    onChange={(e) => handleInputChange(e, "classURL")}
+                    className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
                   <h4>
@@ -229,19 +212,11 @@ function InstructorProfile({
                 <div className={styles.urlInfo}>
                   <p>Meeting ID&nbsp;:&nbsp;</p>
                   {isEditing ? (
-                    <input
-                      className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
-                      type="text"
+                    <InputField
+                      name="meetingId"
                       value={instructor.meetingId}
-                      onChange={(e) => {
-                        if (isEditing) {
-                          setInstructor({
-                            ...instructor,
-                            meetingId: e.target.value,
-                          });
-                        }
-                      }}
-                      required
+                      onChange={(e) => handleInputChange(e, "meetingId")}
+                      className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
                     <p>{instructor.meetingId}</p>
@@ -250,19 +225,11 @@ function InstructorProfile({
                 <div className={styles.urlInfo}>
                   <p>Passcode&nbsp;&nbsp;:&nbsp;</p>
                   {isEditing ? (
-                    <input
-                      className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
-                      type="text"
+                    <InputField
+                      name="passcode"
                       value={instructor.passcode}
-                      onChange={(e) => {
-                        if (isEditing) {
-                          setInstructor({
-                            ...instructor,
-                            passcode: e.target.value,
-                          });
-                        }
-                      }}
-                      required
+                      onChange={(e) => handleInputChange(e, "passcode")}
+                      className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
                     <p>{instructor.passcode}</p>
@@ -277,19 +244,11 @@ function InstructorProfile({
               <div>
                 <p>Self Introduction URL</p>
                 {isEditing ? (
-                  <input
-                    className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
-                    type="text"
+                  <InputField
+                    name="introductionURL"
                     value={instructor.introductionURL}
-                    onChange={(e) => {
-                      if (isEditing) {
-                        setInstructor({
-                          ...instructor,
-                          introductionURL: e.target.value,
-                        });
-                      }
-                    }}
-                    required
+                    onChange={(e) => handleInputChange(e, "introductionURL")}
+                    className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
                   <h4>

@@ -22,6 +22,12 @@ type Instructor = {
   introductionURL: string;
 };
 
+type InstructorProfile = {
+  id: number;
+  name: string;
+  nickname: string;
+};
+
 type Availability = { dateTime: string };
 
 type ClassType = {
@@ -56,7 +62,7 @@ type Customer = {
   id: number;
   name: string;
   email: string;
-  class: CustomersClass[];
+  class?: CustomersClass[];
   prefecture: string;
 };
 

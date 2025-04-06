@@ -15,7 +15,7 @@ const PrefectureSelect = ({
 }) => {
   return (
     <label className={styles.label}>
-      Prefecture of Residence <span className={styles.required}>*</span>
+      Prefecture of Residence<span className={styles.required}>*</span>
       <div className={styles.selectWrapper}>
         <HomeIcon className={styles.icon} />
         <select

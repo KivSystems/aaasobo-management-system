@@ -3,11 +3,9 @@ import {
   getCustomerById,
   getCustomersClasses,
   getSubscriptionsByIdController,
-  loginCustomer,
   registerCustomerController,
   updateCustomerProfile,
   registerSubscriptionController,
-  logoutCustomer,
   getBookableClassesController,
 } from "../../src/controllers/customersController";
 import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
@@ -21,8 +19,6 @@ export const customersRouter = express.Router();
 // http://localhost:4000/customers
 
 customersRouter.post("/register", registerCustomerController);
-customersRouter.post("/login", loginCustomer);
-customersRouter.post("/logout", logoutCustomer);
 
 customersRouter.get("/:id", getCustomersClasses);
 customersRouter.get("/:id/subscriptions", getSubscriptionsByIdController);

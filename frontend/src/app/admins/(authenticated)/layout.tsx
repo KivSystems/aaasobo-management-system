@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import styles from "./layout.module.scss";
 import {
+  UserIcon,
   UsersIcon,
   CalendarDaysIcon,
   ClipboardDocumentListIcon,
@@ -31,6 +32,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       name: "Class Calendar",
       href: "/admins/calendar",
       icon: CalendarDaysIcon,
+    },
+    {
+      name: "Admin List",
+      href: "/admins/admin-list",
+      icon: UserIcon,
     },
     {
       name: "Instructor List",
