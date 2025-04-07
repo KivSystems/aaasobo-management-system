@@ -167,7 +167,6 @@ function EditRegularClassForm({
 
   return (
     <div>
-      <ToastContainer />
       <table className={styles.table}>
         <thead className={styles.header}>
           <tr>

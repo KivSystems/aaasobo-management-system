@@ -1,5 +1,8 @@
 import { ZodIssue } from "zod";
-import { GENERAL_ERROR_MESSAGE, LOGIN_FAILED_MESSAGE } from "./messages";
+import {
+  GENERAL_ERROR_MESSAGE,
+  LOGIN_FAILED_MESSAGE,
+} from "../messages/formValidation";
 
 export function extractRegisterValidationErrors(
   validationErrors: ZodIssue[],

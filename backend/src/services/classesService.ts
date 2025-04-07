@@ -1,5 +1,6 @@
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
+import { getFirstDayOfFiveMonthsAgo } from "../helper/dateUtils";
 
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
@@ -447,6 +448,37 @@ export const checkDoubleBooking = async (
     console.error("Service Error:", error);
     throw new Error("Failed to check class booking.");
   }
+};
+
+export const getBookableClasses = async (customerId: number) => {
+  const fiveMonthsAgoFirstDay = getFirstDayOfFiveMonthsAgo();
+
+  const classes = await prisma.class.findMany({
+    where: {
+      customerId: customerId,
+      isRebookable: true,
+      OR: [
+        {
+          status: "canceledByCustomer",
+          dateTime: {
+            gte: fiveMonthsAgoFirstDay,
+          },
+        },
+        {
+          status: "canceledByInstructor",
+          dateTime: {
+            gte: fiveMonthsAgoFirstDay,
+          },
+        },
+      ],
+    },
+    orderBy: {
+      dateTime: "asc",
+    },
+  });
+
+  // Return only the dateTime property from the class data
+  return classes.map((classItem) => classItem.dateTime);
 };
 
 // Fetch valid classes by instructor id.

@@ -1,4 +1,7 @@
-import { GENERAL_ERROR_MESSAGE, LOGIN_FAILED_MESSAGE } from "../utils/messages";
+import {
+  GENERAL_ERROR_MESSAGE,
+  LOGIN_FAILED_MESSAGE,
+} from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";

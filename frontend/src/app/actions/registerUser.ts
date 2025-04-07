@@ -1,7 +1,7 @@
 "use server";
 
 import { registerCustomer } from "../helper/api/customersApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/utils/messages";
+import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractRegisterValidationErrors } from "../helper/utils/validationErrorUtils";
 import { customerRegisterSchema } from "../schemas/authSchema";
 

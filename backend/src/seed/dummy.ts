@@ -27,7 +27,7 @@ async function insertInstructors() {
       classURL: "https://zoom.us/j/67890?pwd=FGHij",
       meetingId: "234 567 8901",
       passcode: "elian",
-      password: "$2b$12$Oe8qdMedbkuqhY31pgkH7OaMukvbUawE63inMCoDSeY5CHRS3Gc.u", // password: elian
+      password: "$2b$12$pNrLSRYlTIwTl//Tz3KMA.K2gdqRWA2/aikJ9ilr0ItQZWe1bJoay", // password: AaasoBo!Elian
       introductionURL:
         "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=127929",
     },
@@ -256,7 +256,8 @@ async function insertCustomers() {
       {
         name: "Bob",
         email: "bob@example.com",
-        password: "bob",
+        password:
+          "$2b$12$txZ49345mBu/RNVfnKFw9.VahiO1wj4z.6aeKckM50LYkd2Upz3eC", // AaasoBo!Bob
         prefecture: "Hokkaido",
       },
     ],
@@ -284,9 +285,9 @@ async function insertAdmins() {
 
 async function insertClasses() {
   const alice = await getCustomer("Alice");
-  // const bob = await getCustomer("Bob");
+  const bob = await getCustomer("Bob");
   const helen = await getInstructor("Helen");
-  // const elian = await getInstructor("Elian");
+  const elian = await getInstructor("Elian");
 
   await prisma.class.createMany({
     data: [
@@ -718,7 +719,7 @@ async function insertRecurringClasses() {
   const alice = await getCustomer("Alice");
   const bob = await getCustomer("Bob");
   const helen = await getInstructor("Helen");
-  // const elian = await getInstructor("Elian");
+  const elian = await getInstructor("Elian");
 
   await prisma.recurringClass.create({
     data: {

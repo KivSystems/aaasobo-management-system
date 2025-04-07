@@ -33,7 +33,11 @@ const ClassDetail = ({
   customerId: number;
   classDetail: ClassType | null;
   timeZone: string;
-  handleCancel: (classId: number, classDateTime: string) => void;
+  handleCancel: (
+    classId: number,
+    classDateTime: string,
+    customerId: number,
+  ) => void;
   isAdminAuthenticated?: boolean;
   handleModalClose: () => void;
 }) => {
@@ -179,7 +183,9 @@ const ClassDetail = ({
               onClick={handleModalClose}
             />
             <ActionButton
-              onClick={() => handleCancel(classDetail.id, classDetail.dateTime)}
+              onClick={() =>
+                handleCancel(classDetail.id, classDetail.dateTime, customerId)
+              }
               btnText="Cancel Booking"
               className="cancelBooking"
             />

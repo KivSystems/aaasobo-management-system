@@ -178,7 +178,6 @@ const InstructorClassesTable = ({
   return (
     <div className={styles.instructorClasses}>
       <div className={styles.instructorClasses__classDate}>{classDate}</div>
-      <ToastContainer />
 
       {classes &&
         classes
