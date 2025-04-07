@@ -20,16 +20,14 @@ import {
   fetchInstructorAvailabilities,
   getAllInstructors,
   getValidRecurringAvailabilities,
-  getInstructorByEmail,
   terminateRecurringAvailability,
   getInstructorWithRecurringAvailabilityDay,
   updateRecurringAvailabilityInterval,
   getUnavailabilities,
   getInstructorProfile,
+  updateInstructor,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
-import bcrypt from "bcrypt";
-import { logout } from "../helper/logout";
 
 // Fetch all the instructors and their availabilities
 export const getAllInstructorsAvailabilitiesController = async (
@@ -143,6 +141,42 @@ export const getInstructor = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return setErrorResponse(res, error);
+  }
+};
+
+// Update the applicable instructor data
+export const updateInstructorProfile = async (req: Request, res: Response) => {
+  const instructorId = parseInt(req.params.id);
+  const {
+    name,
+    email,
+    classURL,
+    icon,
+    nickname,
+    meetingId,
+    passcode,
+    introductionURL,
+  } = req.body;
+
+  try {
+    const instructor = await updateInstructor(
+      instructorId,
+      name,
+      email,
+      classURL,
+      icon,
+      nickname,
+      meetingId,
+      passcode,
+      introductionURL,
+    );
+
+    res.status(200).json({
+      message: "Instructor is updated successfully",
+      instructor,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
   }
 };
 
@@ -461,57 +495,6 @@ export const getRecurringAvailabilityById = async (
   } catch (error) {
     res.status(500).json({ error: `${error}` });
   }
-};
-
-// Login Instructor
-export const loginInstructorController = async (
-  req: Request,
-  res: Response,
-) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ message: "Invalid email or password." });
-  }
-
-  try {
-    // Fetch the instructor by the email.
-    const instructor = await getInstructorByEmail(email);
-
-    if (!instructor) {
-      return res.status(401).json({
-        message: "Instructor not found.",
-      });
-    }
-
-    // Check if the password is correct or not.
-    const result = await bcrypt.compare(password, instructor.password);
-
-    if (!result) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    // Set the session.
-    req.session = {
-      userId: instructor.id,
-      userType: "instructor",
-    };
-
-    res.status(200).json({
-      instructorId: instructor.id,
-      message: "Instructor logged in successfully",
-    });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-};
-
-export const logoutInstructorController = async (
-  req: Request,
-  res: Response,
-) => {
-  return logout(req, res, "instructor");
 };
 
 export const getInstructorProfileController = async (

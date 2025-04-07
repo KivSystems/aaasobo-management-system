@@ -101,7 +101,6 @@ function Register() {
 
   return (
     <div>
-      <ToastContainer />
       <h2>Instructor Registration</h2>
       <form className={styles.formContainer}>
         <TextInput

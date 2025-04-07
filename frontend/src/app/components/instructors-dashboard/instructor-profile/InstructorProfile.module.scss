@@ -51,3 +51,95 @@
 .info {
   font-size: 0.8rem;
 }
+
+// name
+.instructorName {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 66px;
+  margin-bottom: 24px;
+
+  &__nameSection {
+    width: 100%;
+    margin-right: 10px;
+  }
+  &__text {
+    font-size: 16px;
+    font-weight: 300;
+    width: 100%;
+  }
+  &__inputField {
+    margin: 0px 50px 0px 0px;
+    font-size: 20px;
+    font-weight: 500;
+    padding: 3px 6px;
+    border-radius: 6px;
+    width: 50%;
+  }
+
+  &__name {
+    font-size: 24px;
+    font-weight: 500;
+  }
+}
+
+// email
+.email {
+  &__inputField {
+    margin: 0px 50px 0px 0px;
+    padding: 3px 6px;
+    font-size: 20px;
+    font-weight: 400;
+    border-radius: 6px;
+    width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+}
+
+// Class URL and Self Introduction
+.classUrl,
+.selfIntroduction {
+  &__inputField {
+    margin: 0px 50px 5px 0px;
+    padding: 3px 6px;
+    font-size: 20px;
+    font-weight: 400;
+    border-radius: 6px;
+    width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+}
+
+.meetingId,
+.passcode {
+  &__inputField {
+    margin: 1px 0px 5px 6px;
+    padding: 1px 1px;
+    font-size: 14px;
+    font-weight: 400;
+    border-radius: 6px;
+    width: 60%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+}
+
+// buttons
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.addBtn {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}

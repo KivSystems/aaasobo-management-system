@@ -1,3 +1,9 @@
+import { FAILED_TO_FETCH_BOOKABLE_CLASSES } from "../messages/customerDashboard";
+import {
+  EMAIL_ALREADY_REGISTERED_ERROR,
+  GENERAL_ERROR_MESSAGE,
+} from "../messages/formValidation";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
@@ -62,22 +68,12 @@ type Response<E> =
       error: E;
     };
 
-export const logoutCustomer = async (): Promise<Response<string>> => {
-  const response = await fetch(`${BACKEND_ORIGIN}/customers/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
-  return response.ok
-    ? { ok: true }
-    : { ok: false, error: (await response.json()).message };
-};
-
 export const registerCustomer = async (userData: {
   name: string;
   email: string;
   password: string;
   prefecture: string;
-}) => {
+}): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/customers/register`;
 
@@ -90,14 +86,41 @@ export const registerCustomer = async (userData: {
     const data = await response.json();
 
     if (!response.ok) {
-      return {
-        status: response.status,
-        message: data.message || "Something went wrong",
-      };
+      return response.status === 409
+        ? { email: data.message || EMAIL_ALREADY_REGISTERED_ERROR }
+        : { errorMessage: data.message || GENERAL_ERROR_MESSAGE };
     }
 
-    return { status: response.status, ...data };
+    return {
+      successMessage: data.message || "Registration successful!",
+    };
   } catch (error) {
-    return { status: 500, message: "An unexpected error occurred." };
+    console.error("Error in registerCustomer API call:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+export const getBookableClasses = async (customerId: number) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_ORIGIN}/customers/${customerId}/bookable-classes`,
+      {
+        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
+        cache: "no-store",
+      },
+      // { next: { tags: ["bookable-classes"] } },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch bookable classes:", error);
+    throw new Error(FAILED_TO_FETCH_BOOKABLE_CLASSES);
   }
 };

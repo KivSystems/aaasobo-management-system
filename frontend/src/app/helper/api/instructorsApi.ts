@@ -55,6 +55,47 @@ export const getInstructor = async (
   return data;
 };
 
+// PATCH instructor data
+export const editInstructor = async (
+  instructorId: number,
+  instructorName: string,
+  instructorEmail: string,
+  instructorClassURL: string,
+  instructorIcon: string,
+  instructorNickname: string,
+  instructorMeetingId: string,
+  instructorPasscode: string,
+  instructorIntroductionURL: string,
+) => {
+  // Define the data to be sent to the server side.
+  const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}`;
+  const headers = { "Content-Type": "application/json" };
+  const body = JSON.stringify({
+    name: instructorName,
+    email: instructorEmail,
+    classURL: instructorClassURL,
+    icon: instructorIcon,
+    nickname: instructorNickname,
+    meetingId: instructorMeetingId,
+    passcode: instructorPasscode,
+    introductionURL: instructorIntroductionURL,
+  });
+
+  const response = await fetch(instructorURL, {
+    method: "PATCH",
+    headers,
+    body,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return data;
+};
+
 export const getInstructorRecurringAvailability = async (
   id: number,
   date: string,
@@ -223,19 +264,6 @@ export const fetchInstructorAvailabilitiesForTomorrowAndAfter = async (
     );
     throw error;
   }
-};
-
-export const logoutInstructor = async (): Promise<{
-  ok: boolean;
-  error?: string;
-}> => {
-  const response = await fetch(`${BASE_URL}/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
-  return response.ok
-    ? { ok: true }
-    : { ok: false, error: (await response.json()).message };
 };
 
 export const getInstructorProfile = async (

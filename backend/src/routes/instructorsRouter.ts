@@ -8,9 +8,8 @@ import {
   getInstructorAvailabilities,
   getAllInstructorsController,
   getRecurringAvailabilityById,
-  loginInstructorController,
-  logoutInstructorController,
   getInstructorProfileController,
+  updateInstructorProfile,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -36,6 +35,8 @@ instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
 );
+instructorsRouter.patch("/:id", updateInstructorProfile);
+
 instructorsRouter.get("/:id/recurringAvailability", parseId, (req, res) =>
   RecurringAvailability.get(req as RequestWithId, res),
 );
@@ -69,8 +70,6 @@ instructorsRouter.get("/:id/authentication", authenticateInstructorSession);
 instructorsRouter.get("/:id/classes", parseId, (req, res) => {
   getInstructorClasses(req as RequestWithId, res);
 });
-instructorsRouter.post("/login", loginInstructorController);
-instructorsRouter.post("/logout", logoutInstructorController);
 
 instructorsRouter.get(
   "/:id/availabilities/after-today",

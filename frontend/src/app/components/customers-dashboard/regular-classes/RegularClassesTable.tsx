@@ -34,18 +34,14 @@ function RegularClassesTable({
       try {
         const data = await getRecurringClassesBySubscriptionId(subscriptionId);
 
-        // Get the local date and the begging of its time.
-        const date = new Date();
-        date.setHours(0, 0, 0, 0);
-        const today = date.toISOString().split("T")[0];
-
         const curr: RecurringClass[] = [];
         const upcoming: RecurringClass[] = [];
 
         // Set the current Regular Classes and the up coming Regular Class separately.
         data.recurringClasses.forEach((recurringClass: RecurringClass) => {
           const { dateTime } = recurringClass;
-          if (new Date(today + "T00:00:00Z") < new Date(dateTime)) {
+          // Compare the date in UTC time.
+          if (new Date() < new Date(dateTime)) {
             upcoming.push(recurringClass);
           } else {
             curr.push(recurringClass);
@@ -107,6 +103,7 @@ function RegularClassesTable({
 export default RegularClassesTable;
 
 function Table({ recurringClasses }: { recurringClasses: RecurringClass[] }) {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return (
     <table className={styles.table}>
       <thead className={styles.header}>
@@ -129,15 +126,12 @@ function Table({ recurringClasses }: { recurringClasses: RecurringClass[] }) {
           let day = null;
 
           if (recurringClass.dateTime) {
-            startTime = formatTime(
-              new Date(recurringClass.dateTime),
-              "Asia/Tokyo",
-            );
+            startTime = formatTime(new Date(recurringClass.dateTime), timeZone);
             endTime = formatTime(
               getEndTime(new Date(recurringClass.dateTime)),
-              "Asia/Tokyo",
+              timeZone,
             );
-            day = getWeekday(new Date(recurringClass.dateTime), "Asia/Tokyo");
+            day = getWeekday(new Date(recurringClass.dateTime), timeZone);
           }
 
           return (
@@ -171,12 +165,19 @@ function Table({ recurringClasses }: { recurringClasses: RecurringClass[] }) {
               </td>
               <td className={styles.bodyText}>
                 {recurringClass.dateTime
-                  ? recurringClass.dateTime.toString().split("T")[0]
+                  ? new Date(recurringClass.dateTime).toLocaleDateString(
+                      "en-CA",
+                      {
+                        timeZone,
+                      },
+                    )
                   : ""}
               </td>
               <td className={styles.bodyText}>
                 {recurringClass.endAt
-                  ? recurringClass.endAt.toString().split("T")[0]
+                  ? new Date(recurringClass.endAt).toLocaleDateString("en-CA", {
+                      timeZone,
+                    })
                   : ""}
               </td>
             </tr>

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -15,6 +17,7 @@ import {
 import Modal from "../../elements/modal/Modal";
 import {
   cancelClass,
+  fetchClassesForCalendar,
   getClassesByCustomerId,
 } from "../../../helper/api/classesApi";
 import ClassDetail from "../classDetail/ClassDetail";
@@ -29,9 +32,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
 
 type InstructorCalendarViewProps = {
-  events: Array<{
+  events?: Array<{
     classId?: number;
     title: string;
     start: string;
@@ -193,7 +197,11 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
     setIsClassDetailModalOpen(false);
   };
 
-  const handleCancel = async (classId: number, classDateTime: string) => {
+  const handleCancel = async (
+    classId: number,
+    classDateTime: string,
+    customerId: number,
+  ) => {
     const isPastPreviousDay = isPastPreviousDayDeadline(
       classDateTime,
       "Asia/Tokyo",
@@ -210,10 +218,13 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
     if (!confirmed) return;
     try {
       await cancelClass(classId);
-      fetchData?.();
+      // fetchData?.();
       fetchClasses();
       handleModalClose();
       toast.success("The class has been successfully canceled!");
+
+      // TODO: Revalidation should be done directly from a server component or API call
+      await revalidateCustomerCalendar(customerId, isAdminAuthenticated!);
     } catch (error) {
       console.error("Failed to cancel the class:", error);
     }
@@ -221,7 +232,6 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
 
   return (
     <>
-      <ToastContainer />
       <FullCalendar
         plugins={[
           dayGridPlugin,

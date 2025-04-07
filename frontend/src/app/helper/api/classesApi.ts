@@ -130,6 +130,11 @@ export const fetchClassesForCalendar = async (
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/classes/calendar/${userType}/${userId}`,
+      {
+        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
+        cache: "no-store",
+      },
+      // { next: { tags: ["classes-calendar"] } },
     );
 
     if (!response.ok) {

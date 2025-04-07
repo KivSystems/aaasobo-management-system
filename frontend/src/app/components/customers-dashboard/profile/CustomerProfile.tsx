@@ -3,11 +3,12 @@
 import styles from "./CustomerProfile.module.scss";
 import { useEffect, useState } from "react";
 import { getCustomerById, editCustomer } from "@/app/helper/api/customersApi";
+import InputField from "../../elements/inputField/InputField";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { prefectures } from "@/app/helper/data/data";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 
@@ -72,6 +73,15 @@ function CustomerProfile({ customerId }: { customerId: number }) {
     }
   };
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof Customer,
+  ) => {
+    if (customer) {
+      setCustomer({ ...customer, [field]: e.target.value });
+    }
+  };
+
   const handleCancelClick = () => {
     if (latestCustomerData) {
       setCustomer(latestCustomerData);
@@ -81,7 +91,6 @@ function CustomerProfile({ customerId }: { customerId: number }) {
 
   return (
     <>
-      <ToastContainer />
       {customer ? (
         <form className={styles.profileCard} onSubmit={handleFormSubmit}>
           {/* Customer Name */}
@@ -93,16 +102,11 @@ function CustomerProfile({ customerId }: { customerId: number }) {
             <div className={styles.customerName__nameSection}>
               <p className={styles.customerName__text}>Name</p>
               {isEditing ? (
-                <input
-                  className={`${styles.customerName__inputField} ${isEditing ? styles.editable : ""}`}
-                  type="text"
+                <InputField
+                  name="name"
                   value={customer.name}
-                  onChange={(e) => {
-                    if (isEditing) {
-                      setCustomer({ ...customer, name: e.target.value });
-                    }
-                  }}
-                  required
+                  onChange={(e) => handleInputChange(e, "name")}
+                  className={`${styles.customerName__inputField} ${isEditing ? styles.editable : ""}`}
                 />
               ) : (
                 <div className={styles.customerName__name}>{customer.name}</div>
@@ -114,16 +118,12 @@ function CustomerProfile({ customerId }: { customerId: number }) {
           <label className={styles.email}>
             <div className={styles.email__title}>e-mail</div>
             {isEditing ? (
-              <input
-                className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+              <InputField
+                name="email"
                 type="email"
                 value={customer.email}
-                onChange={(e) => {
-                  if (isEditing) {
-                    setCustomer({ ...customer, email: e.target.value });
-                  }
-                }}
-                required
+                onChange={(e) => handleInputChange(e, "email")}
+                className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
               />
             ) : (
               <div className={styles.email__name}>{customer.email}</div>

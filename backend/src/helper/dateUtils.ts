@@ -50,7 +50,9 @@ export function createDatesBetween(start: Date, end: Date): Date[] {
   }
   return dates;
 }
-const getDayNumber = (day: Day): number => {
+
+// Return the number of the week day (e.g., Sun: 0, Mon: 1...)
+export const getDayNumber = (day: Day): number => {
   return days.indexOf(day);
 };
 
@@ -66,7 +68,8 @@ export function calculateFirstDate(from: Date, day: Day, time: string): Date {
   );
 
   const [hour, minute] = time.split(":");
-  date.setUTCHours(parseInt(hour) - JAPAN_TIME_DIFF);
+  // TODO: Consider the affected part.
+  date.setUTCHours(parseInt(hour));
   date.setUTCMinutes(parseInt(minute));
   return date;
 }
@@ -74,3 +77,68 @@ export function calculateFirstDate(from: Date, day: Day, time: string): Date {
 export const getMonthNumber = (month: Month): number => {
   return months.indexOf(month);
 };
+
+export function getFirstDayOfFiveMonthsAgo(): Date {
+  // Step 1: Get the current date in Japan time
+  const nowUTC = new Date();
+  const nowJST = new Date(nowUTC.getTime() + 9 * 60 * 60 * 1000);
+
+  // Step 2: Calculate the first day of the month, 5 months ago, at 00:00:00 JST
+  const firstDayJST = new Date(
+    Date.UTC(nowJST.getFullYear(), nowJST.getMonth() - 5, 1, 0, 0, 0, 0),
+  );
+
+  // Step 3: Convert JST to UTC (subtract 9 hours)
+  const firstDayUTC = new Date(firstDayJST.getTime() - 9 * 60 * 60 * 1000);
+
+  return firstDayUTC;
+}
+
+// Function to format time (e.g., 19:00)
+export const formatTime = (date: Date) => {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone,
+  }).format(date);
+};
+
+// Function to format UTC time (e.g., 19:00)
+export const formatUTCTime = (date: Date) => {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+  }).format(date);
+};
+
+// Convert local day and time to UTC day and time (e.g., {day: Fri, time: 07:30 } )
+export function convertDayTimeToUTC(day: Day, time: string) {
+  const [hour, minute] = time.split(":");
+
+  // Get current date
+  const now = new Date();
+  const utcTodayIndex = now.getDay();
+  const localDayIndex = days.indexOf(day);
+
+  // Calculate the date difference between today and the local day
+  let dayDifference = localDayIndex - utcTodayIndex;
+  if (dayDifference < 0) dayDifference += 7; // Adjust the week if needed
+
+  // Adjust the date based on the day difference and set the time.
+  const adjustedDate = new Date();
+  adjustedDate.setDate(now.getDate() + dayDifference);
+  adjustedDate.setHours(Number(hour), Number(minute), 0, 0);
+
+  // Convert to UTC
+  const utcDayIndex = adjustedDate.getUTCDay();
+  const utcTime = `${adjustedDate.getUTCHours().toString().padStart(2, "0")}:${adjustedDate.getUTCMinutes().toString().padStart(2, "0")}`;
+
+  return {
+    utcDay: days[utcDayIndex],
+    utcTime,
+  };
+}

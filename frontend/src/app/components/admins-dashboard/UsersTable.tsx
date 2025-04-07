@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import Link from "next/link";
 import {
+  getAllAdmins,
   getAllInstructors,
   getAllCustomers,
   getAllChildren,
@@ -46,6 +47,9 @@ function UsersTable({
       try {
         let usersData;
         switch (userType) {
+          case "Admin List":
+            usersData = await getAllAdmins();
+            break;
           case "Instructor List":
             usersData = await getAllInstructors();
             // Set the active tab to the instructor calendar tab.

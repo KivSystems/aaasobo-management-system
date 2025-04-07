@@ -141,7 +141,6 @@ function ChildrenProfiles({
 
   return (
     <div className={styles.container}>
-      <ToastContainer />
       <div className={styles.addBtn}>
         {isAdminAuthenticated ? (
           <RedirectButton
