@@ -57,7 +57,6 @@ export async function authenticate(
       };
     }
     // Re-throw non-auth errors so that Next.js can handle redirects properly.
-    // TODO: Check if 'error.tsx' file catches an error thrown here. If it does, don't thrown an error here
     throw error;
   }
 }
