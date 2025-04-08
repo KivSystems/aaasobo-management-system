@@ -3,4 +3,9 @@ import { authConfig } from "../auth.config";
 
 export default NextAuth(authConfig).auth;
 
-// TODO: Define which URLs the middleware should run on with config.matcher
+export const config = {
+  matcher: [
+    "/customers/:path((?!login|register).*)", // Match all customer routes except /customers/login and /customers/register
+    "/instructors/:path((?!login).*)", // Match all instructor routes except /instructors/login
+  ],
+};
