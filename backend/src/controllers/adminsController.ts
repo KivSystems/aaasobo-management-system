@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { kv } from "@vercel/kv";
 import { createAdmin, getAdmin } from "../services/adminsService";
+import { getAllAdmins } from "../services/adminsService";
 import {
   getAllInstructors,
   createInstructor,
@@ -128,6 +129,30 @@ interface SingleChildSubscription extends Omit<Subscription, "customer"> {
   };
 }
 
+// Admin dashboard for displaying admins' information
+export const getAllAdminsController = async (_: Request, res: Response) => {
+  try {
+    // Fetch the admin data using the email.
+    const admins = await getAllAdmins();
+
+    // Transform the data structure.
+    const data = admins.map((admin, number) => {
+      const { id, name, email } = admin;
+
+      return {
+        No: number + 1,
+        ID: id,
+        Name: name,
+        Email: email,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
 // Admin dashboard for displaying customers' information
 export const getAllCustomersController = async (_: Request, res: Response) => {
   try {
@@ -159,7 +184,7 @@ export const getAllInstructorsController = async (
   res: Response,
 ) => {
   try {
-    // Fetch the admin data using the email.
+    // Fetch the instructors data using the email.
     const instructors = await getAllInstructors();
 
     // Transform the data structure.
@@ -237,7 +262,7 @@ export const registerInstructorController = async (
   }
 };
 
-// Admin dashboard for displaying instructors' information
+// Admin dashboard for displaying children's information
 export const getAllChildrenController = async (_: Request, res: Response) => {
   try {
     // Fetch all children data using the email.

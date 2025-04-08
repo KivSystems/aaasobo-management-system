@@ -61,10 +61,8 @@ export const isValidLogin = ({ email, password }: LoginProps) => {
 };
 
 export const validateCancelableClasses = (
-  selectedClasses: { classId: number; classDateTime: string }[],
-  setSelectedClasses: React.Dispatch<
-    React.SetStateAction<{ classId: number; classDateTime: string }[]>
-  >,
+  selectedClasses: ClassInfoList,
+  setSelectedClasses: SetClassInfoList,
   language: LanguageType,
 ): boolean => {
   const pastPrevDayClasses = selectedClasses.filter((eachClass) =>

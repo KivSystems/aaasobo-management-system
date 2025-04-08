@@ -36,7 +36,6 @@ export async function registerUser(
 
     if (!parsedForm.success) {
       const validationErrors = parsedForm.error.errors;
-      console.error("Register validation failed:", validationErrors);
       return extractRegisterValidationErrors(validationErrors);
     }
 

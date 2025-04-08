@@ -13,7 +13,7 @@ async function insertInstructors() {
       classURL: "https://zoom.us/j/12345?pwd=ABCde",
       meetingId: "123 456 7890",
       passcode: "helen",
-      password: "$2b$12$lzg9z2HDTl/dwd8DSnGHJOdPIYiFvn40fwEzRtimoty5VtOugaTfa", // password: helen
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
       introductionURL:
         "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=129259",
     },
@@ -27,7 +27,7 @@ async function insertInstructors() {
       classURL: "https://zoom.us/j/67890?pwd=FGHij",
       meetingId: "234 567 8901",
       passcode: "elian",
-      password: "$2b$12$Oe8qdMedbkuqhY31pgkH7OaMukvbUawE63inMCoDSeY5CHRS3Gc.u", // password: elian
+      password: "$2b$12$pNrLSRYlTIwTl//Tz3KMA.K2gdqRWA2/aikJ9ilr0ItQZWe1bJoay", // password: AaasoBo!Elian
       introductionURL:
         "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=127929",
     },
@@ -249,13 +249,15 @@ async function insertCustomers() {
       {
         name: "Alice",
         email: "alice@example.com",
-        password: "alice",
+        password:
+          "$2b$12$GFM.a0hEjl/0/U3IjO057esEr7l.NMKZSeRC7c1he6wzDvoIW4oxy", // AaasoBo!Alice
         prefecture: "Aomori",
       },
       {
         name: "Bob",
         email: "bob@example.com",
-        password: "bob",
+        password:
+          "$2b$12$txZ49345mBu/RNVfnKFw9.VahiO1wj4z.6aeKckM50LYkd2Upz3eC", // AaasoBo!Bob
         prefecture: "Hokkaido",
       },
     ],
@@ -283,9 +285,9 @@ async function insertAdmins() {
 
 async function insertClasses() {
   const alice = await getCustomer("Alice");
-  // const bob = await getCustomer("Bob");
+  const bob = await getCustomer("Bob");
   const helen = await getInstructor("Helen");
-  // const elian = await getInstructor("Elian");
+  const elian = await getInstructor("Elian");
 
   await prisma.class.createMany({
     data: [
@@ -717,7 +719,7 @@ async function insertRecurringClasses() {
   const alice = await getCustomer("Alice");
   const bob = await getCustomer("Bob");
   const helen = await getInstructor("Helen");
-  // const elian = await getInstructor("Elian");
+  const elian = await getInstructor("Elian");
 
   await prisma.recurringClass.create({
     data: {

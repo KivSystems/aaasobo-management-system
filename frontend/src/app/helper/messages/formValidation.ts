@@ -3,3 +3,5 @@ export const GENERAL_ERROR_MESSAGE =
 
 export const EMAIL_ALREADY_REGISTERED_ERROR =
   "This email address is already registered. Try a different one.";
+
+export const LOGIN_FAILED_MESSAGE = "Invalid email or password.";

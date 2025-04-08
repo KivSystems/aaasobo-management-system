@@ -8,7 +8,7 @@ export default function UserName({
   userType,
   userName,
 }: {
-  userType: "admin" | "customer" | "instructor";
+  userType: UserType;
   userName: string;
 }) {
   const { language } = useLanguage();

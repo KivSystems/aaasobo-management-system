@@ -2,6 +2,21 @@ const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/admins`;
 
+// GET all admins data
+export const getAllAdmins = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/admin-list`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const { data } = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch admins:", error);
+    throw error;
+  }
+};
+
 // GET all instructors data
 export const getAllInstructors = async () => {
   try {

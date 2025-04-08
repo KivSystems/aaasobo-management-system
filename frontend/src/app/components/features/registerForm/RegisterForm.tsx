@@ -79,6 +79,12 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
         passwordStrength={passwordStrength}
         passwordFeedback={passwordFeedback}
       />
+      <input
+        type="hidden"
+        id="passwordStrength"
+        name="passwordStrength"
+        value={passwordStrength}
+      />
       <TextInput
         id="passConfirmation"
         label="Password Confirmation"

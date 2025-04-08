@@ -1,6 +1,7 @@
 import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
 import { saltRounds } from "../controllers/adminsController";
+import { Customer } from "@prisma/client";
 
 export const getCustomerById = async (customerId: number) => {
   const customer = await prisma.customer.findUnique({
@@ -51,7 +52,9 @@ export const getAllCustomers = async () => {
   }
 };
 
-export const getCustomerByEmail = async (email: string) => {
+export const getCustomerByEmail = async (
+  email: string,
+): Promise<Customer | null> => {
   try {
     return await prisma.customer.findUnique({
       where: { email },

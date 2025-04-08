@@ -266,19 +266,6 @@ export const fetchInstructorAvailabilitiesForTomorrowAndAfter = async (
   }
 };
 
-export const logoutInstructor = async (): Promise<{
-  ok: boolean;
-  error?: string;
-}> => {
-  const response = await fetch(`${BASE_URL}/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
-  return response.ok
-    ? { ok: true }
-    : { ok: false, error: (await response.json()).message };
-};
-
 export const getInstructorProfile = async (
   instructorId: number,
 ): Promise<InstructorProfile> => {
