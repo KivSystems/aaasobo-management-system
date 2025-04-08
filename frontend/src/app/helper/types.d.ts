@@ -244,3 +244,7 @@ type UpcomingClassesProps = {
   setSelectedClasses: Dispatch<SetStateAction<SelectedClass>>;
   isCancelingModalOpen: boolean;
 };
+
+type ClassInfo = { classId: number; classDateTime: string };
+type ClassInfoList = ClassInfo[];
+type SetClassInfoList = React.Dispatch<React.SetStateAction<ClassInfoList>>;
