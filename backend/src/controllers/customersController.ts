@@ -18,7 +18,10 @@ import {
   REGISTRATION_SUCCESS_MESSAGE,
 } from "../helper/messages";
 import { RequestWithId } from "../middlewares/parseId.middleware";
-import { getBookableClasses } from "../services/classesService";
+import {
+  getBookableClasses,
+  getUpcomingClasses,
+} from "../services/classesService";
 
 export const registerCustomerController = async (
   req: Request,
@@ -192,6 +195,24 @@ export const getBookableClassesController = async (
   } catch (error) {
     console.error(
       `Error while getting bookable classes (customer ID: ${customerId}):`,
+      error,
+    );
+    res.sendStatus(500);
+  }
+};
+
+export const getUpcomingClassesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    const upcomingClasses = await getUpcomingClasses(customerId);
+    res.status(200).json(upcomingClasses);
+  } catch (error) {
+    console.error(
+      `Error while getting upcoming classes (customer ID: ${customerId}):`,
       error,
     );
     res.sendStatus(500);

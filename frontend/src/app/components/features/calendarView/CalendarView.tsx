@@ -202,10 +202,7 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
     classDateTime: string,
     customerId: number,
   ) => {
-    const isPastPreviousDay = isPastPreviousDayDeadline(
-      classDateTime,
-      "Asia/Tokyo",
-    );
+    const isPastPreviousDay = isPastPreviousDayDeadline(classDateTime);
 
     if (isPastPreviousDay)
       return alert(

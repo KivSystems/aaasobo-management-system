@@ -156,33 +156,18 @@ export const formatEndOfMonthFiveMonthsLater = (
   return { date, time };
 };
 
-// Function to check if the current date in a particular time zone is past the previous day of the class date
-export const isPastPreviousDayDeadline = (
-  classDate: string,
-  timeZone: string,
-): boolean => {
-  try {
-    // Convert class date to the specified time zone and get the start of the day
-    const classDateInTimeZone = toZonedTime(classDate, timeZone);
-    const classDateStartOfDay = startOfDay(classDateInTimeZone);
+export const isPastPreviousDayDeadline = (classDateUTC: string): boolean => {
+  // Convert class date from UTC to Japan time
+  const classDateInJapan = toZonedTime(classDateUTC, "Asia/Tokyo");
 
-    // Get the previous day from the class date
-    const previousDayStart = new Date(classDateStartOfDay);
-    previousDayStart.setDate(previousDayStart.getDate() - 1);
+  // Get the start of the class day in Japan time (00:00:00)
+  const classDayStart = startOfDay(classDateInJapan);
 
-    // Get the current date in the specified time zone and get the start of the day
-    const currentDateInTimeZone = toZonedTime(
-      new Date().toISOString(),
-      timeZone,
-    );
-    const currentDateStartOfDay = startOfDay(currentDateInTimeZone);
+  // Get the current date in Japan time (00:00:00 today)
+  const todayInJapan = startOfDay(toZonedTime(new Date(), "Asia/Tokyo"));
 
-    // Check if the current date is past the previous day of the class date
-    return isAfter(currentDateStartOfDay, previousDayStart);
-  } catch (error) {
-    console.error("Error in isCurrentDatePastPreviousDayOfClassDate:", error);
-    return false;
-  }
+  // If class date is today or in the past, return true (deadline has passed)
+  return !isAfter(classDayStart, todayInJapan);
 };
 
 // Function to check if the current date & time in a particular time zone is past the target class date & time

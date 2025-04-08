@@ -7,6 +7,7 @@ import {
   updateCustomerProfile,
   registerSubscriptionController,
   getBookableClassesController,
+  getUpcomingClassesController,
 } from "../../src/controllers/customersController";
 import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
 import {
@@ -25,6 +26,9 @@ customersRouter.get("/:id/subscriptions", getSubscriptionsByIdController);
 customersRouter.get("/:id/customer", getCustomerById);
 customersRouter.get("/:id/bookable-classes", parseId, (req, res) =>
   getBookableClassesController(req as RequestWithId, res),
+);
+customersRouter.get("/:id/upcoming-classes", parseId, (req, res) =>
+  getUpcomingClassesController(req as RequestWithId, res),
 );
 
 customersRouter.patch("/:id", updateCustomerProfile);
