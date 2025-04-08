@@ -9,6 +9,12 @@
   }
 }
 
+.required {
+  color: $red-alert;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+
 .selectWrapper {
   display: flex;
   align-items: center;

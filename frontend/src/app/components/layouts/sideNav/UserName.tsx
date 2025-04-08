@@ -8,7 +8,7 @@ export default async function UserName({
   userType,
 }: {
   userId: number;
-  userType: "admin" | "customer" | "instructor";
+  userType: UserType;
 }) {
   async function fetchUserName(
     userId: number,

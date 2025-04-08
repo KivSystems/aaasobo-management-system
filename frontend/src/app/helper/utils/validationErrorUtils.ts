@@ -1,5 +1,8 @@
 import { ZodIssue } from "zod";
-import { GENERAL_ERROR_MESSAGE } from "../messages/formValidation";
+import {
+  GENERAL_ERROR_MESSAGE,
+  LOGIN_FAILED_MESSAGE,
+} from "../messages/formValidation";
 
 export function extractRegisterValidationErrors(
   validationErrors: ZodIssue[],
@@ -20,4 +23,17 @@ export function extractRegisterValidationErrors(
     }
   });
   return errors;
+}
+
+export function extractLoginValidationErrors(validationErrors: ZodIssue[]): {
+  errorMessage: string;
+} {
+  const unexpectedError = validationErrors.some(
+    (error) => error.path[0] === "userType",
+  );
+
+  if (unexpectedError) {
+    return { errorMessage: GENERAL_ERROR_MESSAGE };
+  }
+  return { errorMessage: LOGIN_FAILED_MESSAGE };
 }

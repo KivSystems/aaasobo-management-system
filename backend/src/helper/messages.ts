@@ -5,3 +5,5 @@ export const EMAIL_ALREADY_REGISTERED_ERROR =
   "This email address is already registered. Try a different one.";
 
 export const REGISTRATION_SUCCESS_MESSAGE = "Registration successful!";
+
+export const LOGIN_FAILED_MESSAGE = "Invalid email or password.";
