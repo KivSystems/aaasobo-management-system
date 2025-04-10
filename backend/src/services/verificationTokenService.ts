@@ -1,35 +1,29 @@
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../../prisma/prismaClient";
+import { Prisma } from "@prisma/client";
 
-export const generateVerificationToken = async (email: string) => {
+export const generateVerificationToken = async (
+  email: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const db = tx ?? prisma;
   const token = uuidv4();
   const expires = new Date(new Date().getTime() + 60 * 60 * 1000);
 
-  try {
-    // Delete an existing token to make only the latest one valid
-    const existingToken = await getVerificationTokenByEmail(email);
+  // Delete an existing token to make only the latest one valid
+  const existingToken = await db.verificationToken.findFirst({
+    where: { email },
+  });
 
-    if (existingToken) {
-      await prisma.verificationToken.delete({
-        where: {
-          id: existingToken.id,
-        },
-      });
-    }
-
-    const verificationToken = await prisma.verificationToken.create({
-      data: {
-        email,
-        token,
-        expires,
-      },
+  if (existingToken) {
+    await db.verificationToken.delete({
+      where: { id: existingToken.id },
     });
-
-    return verificationToken;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to create a verification token.");
   }
+
+  return db.verificationToken.create({
+    data: { email, token, expires },
+  });
 };
 
 export const getVerificationTokenByToken = async (token: string) => {
@@ -44,18 +38,5 @@ export const getVerificationTokenByToken = async (token: string) => {
     throw new Error(
       `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
-  }
-};
-
-export const getVerificationTokenByEmail = async (email: string) => {
-  try {
-    const verificationToken = await prisma.verificationToken.findFirst({
-      where: { email },
-    });
-
-    return verificationToken;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to get a verification token by email.");
   }
 };

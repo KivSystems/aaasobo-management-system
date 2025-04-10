@@ -98,7 +98,6 @@ function AddSubscription({
     <>
       {isOpenForm && (
         <>
-          <ToastContainer />
           <div className={styles.container}>
             <div className={styles.filterContainer}>
               <div>

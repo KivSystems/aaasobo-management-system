@@ -15,6 +15,10 @@ import {
   getVerificationTokenByToken,
 } from "../services/verificationTokenService";
 import { sendVerificationEmail, UserType } from "../helper/mail";
+import {
+  GENERAL_ERROR_MESSAGE,
+  LOGIN_FAILED_MESSAGE,
+} from "../helper/messages";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {
@@ -34,17 +38,24 @@ export const authenticateUserController = async (
 ) => {
   const { email, password, userType } = req.body;
 
+  if (!email || !password || !userType) {
+    return res.status(400).json({ message: GENERAL_ERROR_MESSAGE });
+  }
+
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+
   try {
-    const user = await getUserByEmail(userType, email);
+    const user = await getUserByEmail(userType, normalizedEmail);
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: LOGIN_FAILED_MESSAGE });
     }
 
     const passwordsMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordsMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: LOGIN_FAILED_MESSAGE });
     }
 
     if (!user.emailVerified) {

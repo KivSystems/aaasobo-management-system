@@ -3,6 +3,7 @@ import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
 import { generateVerificationToken } from "./verificationTokenService";
 import { sendVerificationEmail } from "../helper/mail";
+import { saltRounds } from "../controllers/adminsController";
 
 export const fetchCustomerById = async (
   customerId: number,
@@ -62,16 +63,9 @@ export const getAllCustomers = async () => {
 export const getCustomerByEmail = async (
   email: string,
 ): Promise<Customer | null> => {
-  try {
-    return await prisma.customer.findUnique({
-      where: { email },
-    });
-  } catch (error) {
-    console.error("Database error while fetching customer by email:", error);
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  return await prisma.customer.findUnique({
+    where: { email },
+  });
 };
 
 export const registerCustomer = async ({
@@ -85,51 +79,40 @@ export const registerCustomer = async ({
   password: string;
   prefecture: string;
 }) => {
-  // Check if customer already exists
-  const existingCustomer = await prisma.customer.findUnique({
-    where: { email },
-  });
-
-  if (existingCustomer) {
-    const error = new Error(
-      "This email address is already registered. Try a different one.",
-    );
-    (error as any).statusCode = 409;
-    throw error;
-  }
-
   // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   // Use a Prisma transaction to ensure all customer register operations succeed together, or none should be applied
-  try {
-    const result = await prisma.$transaction(async (tx) => {
-      // Insert the customer data into the DB
-      await tx.customer.create({
-        data: { name, email, password: hashedPassword, prefecture },
-      });
-
-      // Generate verification token
-      const verificationToken = await generateVerificationToken(email);
-
-      // Send verification email
-      const sendResult = await sendVerificationEmail(
-        verificationToken.email,
-        verificationToken.token,
-        "customer",
-      );
-
-      if (!sendResult.success) {
-        throw new Error("Failed to send the confirmation email.");
-      }
-
-      return "We have sent a confirmation email. Please click the link in the email to activate your account.";
+  const result = await prisma.$transaction(async (tx) => {
+    // Insert the customer data into the DB
+    const customer = await tx.customer.create({
+      data: { name, email, password: hashedPassword, prefecture },
     });
 
-    return result;
-  } catch (error) {
-    console.error("Error during registration:", error);
-    throw new Error("Registration failed. Please try again later.");
+    // Generate email verification token
+    const verificationToken = await generateVerificationToken(email, tx);
+
+    return { customerId: customer.id, verificationToken };
+  });
+
+  // Send verification email
+  const sendResult = await sendVerificationEmail(
+    result.verificationToken.email,
+    result.verificationToken.token,
+    "customer",
+  );
+
+  if (!sendResult.success) {
+    await prisma.$transaction([
+      prisma.verificationToken.deleteMany({
+        where: { email },
+      }),
+      prisma.customer.delete({
+        where: { id: result.customerId },
+      }),
+    ]);
+
+    throw new Error("Failed to send the confirmation email.");
   }
 };
 

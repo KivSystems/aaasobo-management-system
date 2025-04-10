@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
   fetchCustomerById,
+  getCustomerByEmail,
   registerCustomer,
   updateCustomer,
 } from "../services/customersService";
@@ -11,74 +12,48 @@ import {
 } from "../services/subscriptionsService";
 import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
-import { logout } from "../helper/logout";
+import {
+  EMAIL_ALREADY_REGISTERED_ERROR,
+  GENERAL_ERROR_MESSAGE,
+  REGISTRATION_SUCCESS_MESSAGE,
+} from "../helper/messages";
+import { RequestWithId } from "../middlewares/parseId.middleware";
+import {
+  getBookableClasses,
+  getUpcomingClasses,
+} from "../services/classesService";
 
 export const registerCustomerController = async (
   req: Request,
   res: Response,
 ) => {
-  const { name, password, prefecture } = req.body ?? {};
-  let { email } = req.body ?? {};
+  const { name, email, password, prefecture } = req.body;
 
   if (!name || !email || !password || !prefecture) {
-    return res.status(400).json({ message: "All fields are required." });
+    return res.sendStatus(400);
   }
 
   // Normalize email
-  email = email.trim().toLowerCase();
+  const normalizedEmail = email.trim().toLowerCase();
 
   try {
-    const resultMessage = await registerCustomer({
+    const existingCustomer = await getCustomerByEmail(normalizedEmail);
+    if (existingCustomer) {
+      return res.sendStatus(409);
+    }
+
+    await registerCustomer({
       name,
-      email,
+      email: normalizedEmail,
       password,
       prefecture,
     });
 
-    res.status(201).json({ message: resultMessage });
-  } catch (error: any) {
-    console.error("Registration Error:", error);
-    return res.status(error.statusCode || 500).json({ message: error.message });
-  }
-};
-
-export const loginCustomer = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { email },
-    });
-
-    if (!customer) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    // TODO: Check if the password is correct or not.
-
-    // Exclude the password from the response.
-    const { password: _, ...customerWithoutPassword } = customer;
-
-    // Set the session.
-    req.session = {
-      userId: customer.id,
-      userType: "customer",
-    };
-
-    res.status(200).json({
-      redirectUrl: `/customers/${customer.id}/classes`,
-      message: "Customer logged in successfully",
-      customer: customerWithoutPassword,
-    });
+    res.sendStatus(201);
   } catch (error) {
-    res.status(500).json({ error });
+    console.error("Error registering customer:", error);
+    res.sendStatus(500);
   }
-};
-
-export const logoutCustomer = async (req: Request, res: Response) => {
-  return logout(req, res, "customer");
 };
 
 export const getCustomersClasses = async (req: Request, res: Response) => {
@@ -203,5 +178,41 @@ export const registerSubscriptionController = async (
     res.status(200).json({ newSubscription });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+export const getBookableClassesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    const bookableClasses = await getBookableClasses(customerId);
+    res.status(200).json(bookableClasses);
+  } catch (error) {
+    console.error(
+      `Error while getting bookable classes (customer ID: ${customerId}):`,
+      error,
+    );
+    res.sendStatus(500);
+  }
+};
+
+export const getUpcomingClassesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    const upcomingClasses = await getUpcomingClasses(customerId);
+    res.status(200).json(upcomingClasses);
+  } catch (error) {
+    console.error(
+      `Error while getting upcoming classes (customer ID: ${customerId}):`,
+      error,
+    );
+    res.sendStatus(500);
   }
 };

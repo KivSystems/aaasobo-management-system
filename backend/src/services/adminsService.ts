@@ -24,6 +24,16 @@ export const createAdmin = async (adminData: {
   }
 };
 
+// Fetch all admins information
+export const getAllAdmins = async () => {
+  try {
+    return await prisma.admins.findMany();
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch admins.");
+  }
+};
+
 // Fetch the admin using the email
 export const getAdmin = async (email: string) => {
   try {

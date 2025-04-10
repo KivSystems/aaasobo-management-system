@@ -1,0 +1,21 @@
+.calendarHeaderContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.calendarActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  position: absolute;
+  right: 0;
+  top: -15px;
+
+  &__container {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+}

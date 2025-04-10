@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { useInput } from "@/app/hooks/useInput";
-import { prefectures } from "@/app/helper/data/data";
 import styles from "./RegisterForm.module.scss";
 import {
   EnvelopeIcon,
-  HomeIcon,
   LockClosedIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -17,7 +15,9 @@ import { useFormState } from "react-dom";
 import { registerUser } from "@/app/actions/registerUser";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
-import CheckboxInput from "../../elements/checkboxInput/CheckboxInput";
+import PrefectureSelect from "./prefectureSelect/PrefectureSelect";
+import PrivacyPolicyAgreement from "./privacyPolicyAgreement/PrivacyPolicyAgreement";
+import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 const RegisterForm = ({ userType }: { userType: UserType }) => {
   const [registerResultState, formAction] = useFormState(
@@ -99,53 +99,25 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
         onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
       />
 
-      {/* TODO: If this component supports multiple user types, render the appropriate UI for each. */}
-      <label className={styles.label}>
-        Prefecture of Residence <span className={styles.required}>*</span>
-        <div className={styles.selectWrapper}>
-          <HomeIcon className={styles.icon} />
-          <select
-            className={styles.select}
-            id="prefecture"
-            name="prefecture"
-            value={selectedPrefecture}
-            onChange={(e) => {
-              setSelectedPrefecture(e.target.value);
-              clearErrorMessage("prefecture");
-            }}
-            required
-            style={{ color: selectedPrefecture ? "black" : "gray" }}
-          >
-            <option value="" disabled>
-              Select a prefecture
-            </option>
-            {prefectures.map((prefecture) => (
-              <option key={prefecture} value={prefecture}>
-                {prefecture}
-              </option>
-            ))}
-          </select>
-        </div>
-        {localMessages.prefecture && (
-          <p className={styles.errorText}>{localMessages.prefecture}</p>
-        )}
-      </label>
-
-      <label className={styles.label}>
-        Privacy Policy
-        <span className={styles.required}>*</span>
-        <p className={styles.privacyPolicy}>
-          We will take a screenshot as a record that the class was conducted.
-          Additionally, we may record the session for the purpose of improving
-          the instructor&apos;s skills.
-        </p>
-      </label>
-
-      <CheckboxInput
-        name="isAgreed"
-        label="I agree."
-        error={localMessages.isAgreed}
+      <input
+        type="hidden"
+        name="passwordStrength"
+        value={passwordStrength ?? ""}
       />
+      <input type="hidden" name="userType" value={userType ?? ""} />
+
+      {/* TODO: If this component supports multiple user types, render the appropriate UI for each. */}
+      {userType === "customer" && (
+        <>
+          <PrefectureSelect
+            selectedPrefecture={selectedPrefecture}
+            setSelectedPrefecture={setSelectedPrefecture}
+            clearErrorMessage={clearErrorMessage}
+            localMessages={localMessages}
+          />
+          <PrivacyPolicyAgreement localMessages={localMessages} />
+        </>
+      )}
 
       <div className={styles.buttonWrapper}>
         <ActionButton
@@ -154,11 +126,18 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
           type="submit"
         />
       </div>
-      {localMessages.unexpectedError && (
-        <p className={styles.errorText}>{localMessages.unexpectedError}</p>
+
+      {localMessages.errorMessage && (
+        <FormValidationMessage
+          type="error"
+          message={localMessages.errorMessage}
+        />
       )}
-      {localMessages.success && (
-        <p className={styles.successText}>{localMessages.success}</p>
+      {localMessages.successMessage && (
+        <FormValidationMessage
+          type="success"
+          message={localMessages.successMessage}
+        />
       )}
     </form>
   );

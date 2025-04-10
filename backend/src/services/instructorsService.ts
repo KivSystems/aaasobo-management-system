@@ -66,6 +66,42 @@ export async function getInstructorById(id: number) {
   }
 }
 
+export const updateInstructor = async (
+  id: number,
+  name: string,
+  email: string,
+  classURL: string,
+  icon: string,
+  nickname: string,
+  meetingId: string,
+  passcode: string,
+  introductionURL: string,
+) => {
+  try {
+    // Update the instructor data.
+    const instructor = await prisma.instructor.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        email,
+        classURL,
+        icon,
+        nickname,
+        meetingId,
+        passcode,
+        introductionURL,
+      },
+    });
+
+    return instructor;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to update the instructor data.");
+  }
+};
+
 export async function addInstructorRecurringAvailability(
   instructorId: number,
   startAt: Date,

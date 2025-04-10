@@ -1,0 +1,12 @@
+.bookableClasses {
+  cursor: default;
+  color: gray;
+  text-decoration: none;
+  font-size: 0.8rem;
+
+  &.clickable {
+    cursor: pointer;
+    color: black;
+    text-decoration: underline;
+  }
+}

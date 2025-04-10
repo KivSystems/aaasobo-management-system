@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./LoginForm.module.scss";
 import { authenticate } from "@/app/actions/authActions";
 import { useFormState } from "react-dom";
 import TextInput from "../../elements/textInput/TextInput";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
+import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 export default function LoginForm({ userType }: { userType: UserType }) {
   const [errorState, formAction] = useFormState(authenticate, undefined);
@@ -44,15 +44,15 @@ export default function LoginForm({ userType }: { userType: UserType }) {
       <input type="hidden" name="userType" value={userType} />
 
       <div className={styles.buttonWrapper}>
-        <ActionButton btnText="Log in" className="bookBtn" type="submit" />
+        <ActionButton btnText="Login" className="bookBtn" type="submit" />
       </div>
 
       <div className={styles.errorWrapper}>
-        {localMessages.message && (
-          <>
-            <ExclamationTriangleIcon className={styles.errorIcon} />{" "}
-            <p className={styles.errorText}>{localMessages.message}</p>
-          </>
+        {localMessages.errorMessage && (
+          <FormValidationMessage
+            type="error"
+            message={localMessages.errorMessage}
+          />
         )}
       </div>
     </form>

@@ -130,6 +130,11 @@ export const fetchClassesForCalendar = async (
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/classes/calendar/${userType}/${userId}`,
+      {
+        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
+        cache: "no-store",
+      },
+      // { next: { tags: ["classes-calendar"] } },
     );
 
     if (!response.ok) {
@@ -286,5 +291,26 @@ export const checkChildrenAvailability = async (
     } else {
       return { error: "An unknown error occurred." };
     }
+  }
+};
+
+export const cancelClasses = async (classIds: number[]) => {
+  try {
+    const response = await fetch(`${BACKEND_ORIGIN}/classes/cancel-classes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ classIds }),
+    });
+
+    if (!response.ok) {
+      const { error } = await response.json();
+
+      throw new Error(`HTTP Status: ${response.status} ${error}`);
+    }
+  } catch (error) {
+    console.error("Failed to cancel classes:", error);
+    throw new Error("Failed to cancel classes.");
   }
 };

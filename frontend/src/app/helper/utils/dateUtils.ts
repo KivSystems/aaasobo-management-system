@@ -76,7 +76,7 @@ export const formatPreviousDay = (date: Date, timeZone: string) => {
   }).format(previousDay);
 };
 
-// Function to format the last day of the month, 5 months after a given date
+// TODO: Remove this function once the deadline calculation for class rebooking is implemented.
 export const formatFiveMonthsLaterEndOfMonth = (
   date: Date | string,
   timeZone: string,
@@ -99,33 +99,75 @@ export const formatFiveMonthsLaterEndOfMonth = (
   }).format(endOfMonth);
 };
 
-// Function to check if the current date in a particular time zone is past the previous day of the class date
-export const isPastPreviousDayDeadline = (
-  classDate: string,
-  timeZone: string,
-): boolean => {
-  try {
-    // Convert class date to the specified time zone and get the start of the day
-    const classDateInTimeZone = toZonedTime(classDate, timeZone);
-    const classDateStartOfDay = startOfDay(classDateInTimeZone);
+// TODO: Remove this function once the deadline calculation for class rebooking is implemented.
+const getEndOfNMonthsLaterInISO = (isoString: string, n: number): string => {
+  const date = new Date(isoString);
 
-    // Get the previous day from the class date
-    const previousDayStart = new Date(classDateStartOfDay);
-    previousDayStart.setDate(previousDayStart.getDate() - 1);
+  // Step 1: Get the current UTC year and month
+  let year = date.getUTCFullYear();
+  let month = date.getUTCMonth() + n;
 
-    // Get the current date in the specified time zone and get the start of the day
-    const currentDateInTimeZone = toZonedTime(
-      new Date().toISOString(),
-      timeZone,
-    );
-    const currentDateStartOfDay = startOfDay(currentDateInTimeZone);
-
-    // Check if the current date is past the previous day of the class date
-    return isAfter(currentDateStartOfDay, previousDayStart);
-  } catch (error) {
-    console.error("Error in isCurrentDatePastPreviousDayOfClassDate:", error);
-    return false;
+  // Step 2: Adjust year and month if month overflows
+  if (month > 11) {
+    year += Math.floor(month / 12);
+    month = month % 12;
   }
+
+  // Step 3: Create a new Date object for the **first day of the next month**
+  const firstOfNextMonth = new Date(Date.UTC(year, month + 1, 1));
+
+  // Step 4: Subtract 1 ms to get the last moment of the previous month (end of the target month)
+  const endOfMonth = new Date(firstOfNextMonth.getTime() - 1);
+
+  // Step 5: Return as ISO string
+  return endOfMonth.toISOString();
+};
+
+// TODO: Remove this function once the deadline calculation for class rebooking is implemented.
+export const formatEndOfMonthFiveMonthsLater = (
+  isoString: string,
+  locale?: string,
+): { date: string; time: string } => {
+  // Step 1: Convert UTC → JST manually (+9 hours) e.g., "2025-04-12T09:00:00.000Z" => "2025-04-12T18:00:00.000Z"
+  const utcDate = new Date(isoString);
+  const jstDateISOString = new Date(
+    utcDate.getTime() + 9 * 60 * 60 * 1000,
+  ).toISOString();
+
+  // Step 2: Get the last day and time of the month, five months later (still in Japan time) e.g., "2025-04-12T18:00:00.000Z" => "2025-09-30T23:59:59.999Z"
+  const jstEndOfTargetMonthISOString = getEndOfNMonthsLaterInISO(
+    jstDateISOString,
+    5,
+  );
+
+  // Step 3: Convert JST → UTC manually (-9 hours) e.g., "2025-09-30T23:59:59.999Z" => "2025-09-30T14:59:59.999Z"
+  const jstEndDate = new Date(jstEndOfTargetMonthISOString);
+  const utcEndOfTargetMonthISOString = new Date(
+    jstEndDate.getTime() - 9 * 60 * 60 * 1000,
+  ).toISOString();
+
+  // Step 4: Convert UTC ISO String to the user's local time
+  const localTime = new Date(utcEndOfTargetMonthISOString);
+
+  // Step 5: Format the date and time
+  const date = formatShortDate(localTime, locale);
+  const time = formatTime24Hour(localTime);
+
+  return { date, time };
+};
+
+export const isPastPreviousDayDeadline = (classDateUTC: string): boolean => {
+  // Convert class date from UTC to Japan time
+  const classDateInJapan = toZonedTime(classDateUTC, "Asia/Tokyo");
+
+  // Get the start of the class day in Japan time (00:00:00)
+  const classDayStart = startOfDay(classDateInJapan);
+
+  // Get the current date in Japan time (00:00:00 today)
+  const todayInJapan = startOfDay(toZonedTime(new Date(), "Asia/Tokyo"));
+
+  // If class date is today or in the past, return true (deadline has passed)
+  return !isAfter(classDayStart, todayInJapan);
 };
 
 // Function to check if the current date & time in a particular time zone is past the target class date & time
