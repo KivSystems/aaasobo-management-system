@@ -1,4 +1,4 @@
-import InstructorTabs from "@/app/components/admins-dashboard/instructors-dashboard/InstructorTabs";
+import InstructorTabs from "@/app/components/admins-dashboard/instructors-dashboard/InstructorDashboardClient";
 import { getInstructor } from "@/app/helper/api/instructorsApi";
 
 export default async function InstructorDashboardForAdmin({
