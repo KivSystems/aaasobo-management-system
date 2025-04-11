@@ -23,14 +23,16 @@ function InstructorProfile({
   instructor,
   isAdminAuthenticated,
 }: {
-  instructor: Instructor | null;
+  instructor: Instructor | string;
   isAdminAuthenticated?: boolean;
 }) {
   const [updateResultState, formAction] = useFormState(updateUser, {});
   const [previousInstructor, setPreviousInstructor] =
-    useState<Instructor | null>(instructor);
+    useState<Instructor | null>(
+      typeof instructor !== "string" ? instructor : null,
+    );
   const [latestInstructor, setLatestInstructor] = useState<Instructor | null>(
-    instructor,
+    typeof instructor !== "string" ? instructor : null,
   );
   const [isEditing, setIsEditing] = useState(false);
 
@@ -68,6 +70,10 @@ function InstructorProfile({
       }
     }
   }, [updateResultState]);
+
+  if (typeof instructor === "string") {
+    return <p>{instructor}</p>;
+  }
 
   return (
     <>
@@ -265,8 +271,6 @@ function InstructorProfile({
               </>
             ) : null}
           </form>
-        ) : latestInstructor === null ? (
-          <p>Instructor not found.</p>
         ) : (
           <Loading />
         )}

@@ -11,7 +11,7 @@ export default async function InstructorDashboardForAdmin({
   const data = await getInstructor(instructorId);
   let instructor = null;
   if ("message" in data) {
-    console.warn("Failed to fetch instructor:", data.message);
+    instructor = data.message;
   } else {
     instructor = data.instructor;
   }

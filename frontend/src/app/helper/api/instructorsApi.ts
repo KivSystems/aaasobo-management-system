@@ -1,3 +1,5 @@
+import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/instructors`;
@@ -43,16 +45,17 @@ export const getInstructors = async () => {
 export const getInstructor = async (
   id: number,
 ): Promise<Response<{ instructor: Instructor }>> => {
-  const data: Response<{ instructor: Instructor }> = await fetch(
-    `${BASE_URL}/${id}`,
-    { cache: "no-store" },
-  ).then((res) => res.json());
+  const apiUrl = `${BASE_URL}/${id}`;
+  const data: Response<{ instructor: Instructor }> = await fetch(apiUrl, {
+    cache: "no-store",
+  }).then((res) => res.json());
 
   if ("instructor" in data) {
     data.instructor.availabilities = data.instructor.availabilities.sort(
       (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
     );
   }
+
   return data;
 };
 
@@ -90,8 +93,8 @@ export const updateInstructor = async (
 
   const data = await response.json();
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  if (response.status !== 200) {
+    return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
   }
 
   return data;

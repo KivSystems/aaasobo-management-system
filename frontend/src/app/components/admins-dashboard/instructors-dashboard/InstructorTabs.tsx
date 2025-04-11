@@ -15,7 +15,7 @@ export default function InstructorTabs({
   instructor,
 }: {
   instructorId: number;
-  instructor: Instructor | null;
+  instructor: Instructor | string;
 }) {
   const breadcrumb = [
     "Instructor List",
