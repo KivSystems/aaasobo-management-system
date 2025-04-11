@@ -45,6 +45,7 @@ export const getInstructor = async (
 ): Promise<Response<{ instructor: Instructor }>> => {
   const data: Response<{ instructor: Instructor }> = await fetch(
     `${BASE_URL}/${id}`,
+    { cache: "no-store" },
   ).then((res) => res.json());
 
   if ("instructor" in data) {
@@ -56,7 +57,7 @@ export const getInstructor = async (
 };
 
 // PATCH instructor data
-export const editInstructor = async (
+export const updateInstructor = async (
   instructorId: number,
   instructorName: string,
   instructorEmail: string,

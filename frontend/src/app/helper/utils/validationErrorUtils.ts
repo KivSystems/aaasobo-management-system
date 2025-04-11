@@ -25,6 +25,26 @@ export function extractRegisterValidationErrors(
   return errors;
 }
 
+export function extractUpdateValidationErrors(
+  validationErrors: ZodIssue[],
+): UpdateFormState {
+  const unexpectedError = validationErrors.some(
+    (error) => error.path[0] === "userType",
+  );
+
+  if (unexpectedError) {
+    return { errorMessage: GENERAL_ERROR_MESSAGE };
+  }
+
+  const errors: Record<string, string> = {};
+  validationErrors.forEach((err) => {
+    if (err.path[0]) {
+      errors[err.path[0]] = err.message;
+    }
+  });
+  return errors;
+}
+
 export function extractLoginValidationErrors(validationErrors: ZodIssue[]): {
   errorMessage: string;
 } {
