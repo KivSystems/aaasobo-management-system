@@ -3,7 +3,7 @@
 import ListTable from "@/app/components/admins-dashboard/ListTable";
 
 function Page() {
-  const listType = "Lesson List";
+  const listType = "Class List";
   const omitItems = [""]; // Omit the item from the table
   const linkItems = [""]; // Set the item to be a link
   const replaceItems = [""]; // Replace the item with the value(e.g., ID -> 1,2,3...)

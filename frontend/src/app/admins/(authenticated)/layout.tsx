@@ -36,8 +36,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       icon: CalendarDaysIcon,
     },
     {
-      name: "Lesson List",
-      href: "/admins/lesson-list",
+      name: "Class List",
+      href: "/admins/class-list",
       icon: ChatBubbleLeftRightIcon,
     },
     {

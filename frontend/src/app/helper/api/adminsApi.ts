@@ -80,10 +80,10 @@ export const getAllPlans = async () => {
   }
 };
 
-// GET all lessons data
-export const getAllLessons = async () => {
+// GET all class data
+export const getAllClasses = async () => {
   try {
-    const apiUrl = `${BASE_URL}/lesson-list`;
+    const apiUrl = `${BASE_URL}/class-list`;
     const response = await fetch(apiUrl, {
       cache: "no-store",
     });
@@ -93,7 +93,7 @@ export const getAllLessons = async () => {
     const { data } = await response.json();
     return data;
   } catch (error) {
-    console.error("Failed to fetch lessons:", error);
+    console.error("Failed to fetch classes:", error);
     throw error;
   }
 };

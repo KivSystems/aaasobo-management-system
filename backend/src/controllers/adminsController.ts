@@ -316,21 +316,19 @@ export const getAllPlansController = async (_: Request, res: Response) => {
   }
 };
 
-// Get all lesson information for Admin lesson list page
-export const getAllLessonsController = async (_: Request, res: Response) => {
+// Get all class information for Admin lesson list page
+export const getAllClassesController = async (_: Request, res: Response) => {
   try {
-    // Fetch all lesson data.
-    const lessons = await getAllClasses();
-
-    console.log("lessons", lessons);
+    // Fetch all class data.
+    const classes = await getAllClasses();
 
     // Transform the data structure.
-    const data = lessons.map((lesson, number) => {
-      const { id, instructor, customer, dateTime, status } = lesson;
+    const data = classes.map((classItem, number) => {
+      const { id, instructor, customer, dateTime, status } = classItem;
       const instructorName = instructor.name;
       const customerName = customer.name;
 
-      // Format the dispalying status.
+      // Format the displayed status.
       let statusText = "";
       switch (status) {
         case "booked":
