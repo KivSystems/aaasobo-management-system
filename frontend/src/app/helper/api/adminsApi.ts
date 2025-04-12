@@ -80,6 +80,24 @@ export const getAllPlans = async () => {
   }
 };
 
+// GET all lessons data
+export const getAllLessons = async () => {
+  try {
+    const apiUrl = `${BASE_URL}/lesson-list`;
+    const response = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const { data } = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch lessons:", error);
+    throw error;
+  }
+};
+
 export const logoutAdmin = async () => {
   try {
     const response = await fetch(`${BASE_URL}/logout`, {

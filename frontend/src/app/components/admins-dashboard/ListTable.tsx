@@ -16,6 +16,7 @@ import {
   getAllCustomers,
   getAllChildren,
   getAllPlans,
+  getAllLessons,
 } from "@/app/helper/api/adminsApi";
 import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
 
@@ -68,6 +69,9 @@ function ListTable({
             break;
           case "Plan List":
             fetchData = await getAllPlans();
+            break;
+          case "Lesson List":
+            fetchData = await getAllLessons();
             break;
           default:
             fetchData = [];

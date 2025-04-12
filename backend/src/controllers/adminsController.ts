@@ -6,6 +6,7 @@ import {
   getAllInstructors,
   createInstructor,
 } from "../services/instructorsService";
+import { getAllClasses } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
@@ -306,6 +307,54 @@ export const getAllPlansController = async (_: Request, res: Response) => {
         Name: name,
         "Weekly class times": weeklyClassTimes,
         Description: description,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Get all lesson information for Admin lesson list page
+export const getAllLessonsController = async (_: Request, res: Response) => {
+  try {
+    // Fetch all lesson data.
+    const lessons = await getAllClasses();
+
+    console.log("lessons", lessons);
+
+    // Transform the data structure.
+    const data = lessons.map((lesson, number) => {
+      const { id, instructor, customer, dateTime, status } = lesson;
+      const instructorName = instructor.name;
+      const customerName = customer.name;
+
+      // Format the dispalying status.
+      let statusText = "";
+      switch (status) {
+        case "booked":
+          statusText = "Booked";
+          break;
+        case "completed":
+          statusText = "Completed";
+          break;
+        case "canceledByCustomer":
+          statusText = "Canceled(Customer)";
+          break;
+        case "canceledByInstructor":
+          statusText = "Canceled(Instructor)";
+          break;
+      }
+
+      return {
+        No: number + 1,
+        ID: id,
+        Instructor: instructorName,
+        Customer: customerName,
+        Date: dateTime.toISOString().slice(0, 10),
+        Time: dateTime.toISOString().slice(11, 16),
+        Status: statusText,
       };
     });
 

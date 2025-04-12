@@ -9,6 +9,7 @@ import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
   AcademicCapIcon,
+  ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import { FC, SVGProps } from "react";
 import { AdminAuthentication } from "@/app/helper/utils/authenticationUtils";
@@ -33,6 +34,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       name: "Class Calendar",
       href: "/admins/calendar",
       icon: CalendarDaysIcon,
+    },
+    {
+      name: "Lesson List",
+      href: "/admins/lesson-list",
+      icon: ChatBubbleLeftRightIcon,
     },
     {
       name: "Admin List",
