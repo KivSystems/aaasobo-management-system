@@ -1,4 +1,10 @@
 import {
+  CONFIRMATION_EMAIL_RESEND_FAILURE,
+  EMAIL_VERIFICATION_FAILED_MESSAGE,
+  EMAIL_VERIFICATION_RESENT_NOTICE,
+  EMAIL_VERIFICATION_SUCCESS_MESSAGE,
+  EMAIL_VERIFICATION_TOKEN_EXPIRED,
+  EMAIL_VERIFICATION_UNEXPECTED_ERROR,
   GENERAL_ERROR_MESSAGE,
   LOGIN_FAILED_MESSAGE,
 } from "../messages/formValidation";
@@ -15,6 +21,12 @@ export const authenticateUser = async (
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({ email, password, userType });
 
+  const statusErrorMessages: Record<number, string> = {
+    401: LOGIN_FAILED_MESSAGE,
+    503: CONFIRMATION_EMAIL_RESEND_FAILURE,
+    403: EMAIL_VERIFICATION_RESENT_NOTICE,
+  };
+
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -22,17 +34,19 @@ export const authenticateUser = async (
       body,
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      return response.status === 401
-        ? { errorMessage: data.message || LOGIN_FAILED_MESSAGE }
-        : { errorMessage: data.message || GENERAL_ERROR_MESSAGE };
+    const errorMessage = statusErrorMessages[response.status];
+    if (errorMessage) {
+      return { errorMessage };
     }
 
-    return { userId: data.userId };
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return { userId: data.id };
   } catch (error) {
-    console.error("Error during authentication:", error);
+    console.error("API error while authenticating[logging in] user:", error);
     return { errorMessage: GENERAL_ERROR_MESSAGE };
   }
 };
@@ -48,6 +62,12 @@ export const verifyUserEmail = async (
     userType,
   });
 
+  const statusErrorMessages: Record<number, string> = {
+    400: EMAIL_VERIFICATION_FAILED_MESSAGE,
+    404: EMAIL_VERIFICATION_FAILED_MESSAGE,
+    410: EMAIL_VERIFICATION_TOKEN_EXPIRED,
+  };
+
   try {
     const response = await fetch(apiUrl, {
       method: "PATCH",
@@ -55,22 +75,20 @@ export const verifyUserEmail = async (
       body,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error(
-        `Failed to fetch user. Status: ${response.status}, Message: ${errorData.error}`,
-      );
-      return {
-        error: errorData.error || "An error occurred.",
-      };
+    const errorMessage = statusErrorMessages[response.status];
+    if (errorMessage) {
+      return { error: errorMessage };
     }
 
-    const successData = await response.json();
-    return { success: successData.success || "Success" };
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return { success: EMAIL_VERIFICATION_SUCCESS_MESSAGE };
   } catch (error) {
-    console.error("Network or unexpected error:", error);
+    console.error("API error while verifying user email:", error);
     return {
-      error: "Network error occurred.",
+      error: EMAIL_VERIFICATION_UNEXPECTED_ERROR,
     };
   }
 };

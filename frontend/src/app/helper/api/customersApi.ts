@@ -3,9 +3,10 @@ import {
   FAILED_TO_FETCH_UPCOMING_CLASSES,
 } from "../messages/customerDashboard";
 import {
+  ACCOUNT_REGISTRATION_FAILURE_MESSAGE,
+  CONFIRMATION_EMAIL_SEND_FAILURE,
   CONFIRMATION_EMAIL_SENT,
   EMAIL_ALREADY_REGISTERED_ERROR,
-  GENERAL_ERROR_MESSAGE,
 } from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
@@ -92,6 +93,10 @@ export const registerCustomer = async (userData: {
       return { email: EMAIL_ALREADY_REGISTERED_ERROR };
     }
 
+    if (response.status === 503) {
+      return { errorMessage: CONFIRMATION_EMAIL_SEND_FAILURE };
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
@@ -100,9 +105,9 @@ export const registerCustomer = async (userData: {
       successMessage: CONFIRMATION_EMAIL_SENT,
     };
   } catch (error) {
-    console.error("Error in registerCustomer API call:", error);
+    console.error("API error while registering customer:", error);
     return {
-      errorMessage: GENERAL_ERROR_MESSAGE,
+      errorMessage: ACCOUNT_REGISTRATION_FAILURE_MESSAGE,
     };
   }
 };

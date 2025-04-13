@@ -1,5 +1,3 @@
-import { validate as isUUID } from "uuid";
-
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import {
@@ -11,14 +9,11 @@ import {
   verifyInstructorEmail,
 } from "../services/instructorsService";
 import {
+  deleteVerificationToken,
   generateVerificationToken,
   getVerificationTokenByToken,
-} from "../services/verificationTokenService";
+} from "../services/verificationTokensService";
 import { sendVerificationEmail, UserType } from "../helper/mail";
-import {
-  GENERAL_ERROR_MESSAGE,
-  LOGIN_FAILED_MESSAGE,
-} from "../helper/messages";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {
@@ -27,9 +22,6 @@ const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "instructor") {
     return getInstructorByEmail(email);
   }
-
-  console.warn(`Invalid userType received: ${userType}`);
-  return null;
 };
 
 export const authenticateUserController = async (
@@ -39,7 +31,7 @@ export const authenticateUserController = async (
   const { email, password, userType } = req.body;
 
   if (!email || !password || !userType) {
-    return res.status(400).json({ message: GENERAL_ERROR_MESSAGE });
+    return res.sendStatus(400);
   }
 
   // Normalize email
@@ -49,44 +41,60 @@ export const authenticateUserController = async (
     const user = await getUserByEmail(userType, normalizedEmail);
 
     if (!user) {
-      return res.status(401).json({ message: LOGIN_FAILED_MESSAGE });
+      return res.sendStatus(401);
     }
 
     const passwordsMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordsMatch) {
-      return res.status(401).json({ message: LOGIN_FAILED_MESSAGE });
+      return res.sendStatus(401);
     }
 
-    if (!user.emailVerified) {
-      const verificationToken = await generateVerificationToken(user.email);
-      const sendResult = await sendVerificationEmail(
-        verificationToken.email,
-        verificationToken.token,
-        userType,
-      );
-      if (!sendResult.success) {
-        throw new Error(
-          "Failed to send the confirmation email. Try again later.",
+    // TODO: Remove the 'userType === "customer"' condition if email verification is required for instructors too.
+    if (userType === "customer" && !user.emailVerified) {
+      try {
+        const verificationToken = await generateVerificationToken(user.email);
+
+        const sendResult = await sendVerificationEmail(
+          verificationToken.email,
+          user.name,
+          verificationToken.token,
+          userType,
         );
+
+        if (!sendResult.success) {
+          await deleteVerificationToken(email);
+          return res.sendStatus(503); // Failed to send verification email. 503 Service Unavailable
+        }
+
+        return res.sendStatus(403); // Email is not verified yet. 403 Forbidden
+      } catch (emailError) {
+        console.error(
+          "Email verification step failed while registering customer",
+          {
+            error: emailError,
+            context: {
+              email: normalizedEmail,
+              time: new Date().toISOString(),
+            },
+          },
+        );
+        return res.sendStatus(503);
       }
-      return res.status(403).json({
-        message:
-          "Your email address is not verified. We have resent the verification link via email.",
-      });
     }
 
     res.status(200).json({ id: user.id });
   } catch (error) {
-    console.error("Authentication error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Invalid email or password";
-    res.status(500).json({ message: errorMessage });
+    console.error("Error authenticating user", {
+      error,
+      context: {
+        email: normalizedEmail,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
-
-const EMAIL_VERIFICATION_SUCCESS_MESSAGE =
-  "Your email address has been verified. Please log in from the login page.";
 
 export const verifyUserEmailController = async (
   req: Request,
@@ -94,58 +102,51 @@ export const verifyUserEmailController = async (
 ) => {
   const { token, userType } = req.body;
 
-  if (!token || typeof token !== "string" || !isUUID(token)) {
-    return res.status(400).json({ error: "Invalid token." });
-  }
-
-  if (!userType || !["customer", "instructor"].includes(userType)) {
-    return res.status(400).json({ error: "Invalid user type." });
+  if (!token || !userType) {
+    return res.sendStatus(400);
   }
 
   try {
     const existingToken = await getVerificationTokenByToken(token);
 
     if (!existingToken) {
-      return res.status(404).json({ error: "Token not found." });
+      return res.sendStatus(404);
     }
 
     const existingUser = await getUserByEmail(userType, existingToken.email);
 
     if (!existingUser) {
-      return res.status(404).json({
-        error: "The email address does not exist.",
-      });
+      return res.sendStatus(404);
     }
 
     // This is for cases where a user who has already been verified clicks the email link again.
     if (existingUser.emailVerified) {
-      return res
-        .status(200)
-        .json({ success: EMAIL_VERIFICATION_SUCCESS_MESSAGE });
+      return res.sendStatus(200);
     }
 
     const isTokenExpired = new Date(existingToken.expires) < new Date();
 
     if (isTokenExpired) {
-      return res.status(400).json({
-        error:
-          "The token has expired. Please log in using the link below to request a new one.",
-      });
+      return res.sendStatus(410); // 410 Gone
     }
 
     if (userType === "customer") {
       await verifyCustomerEmail(existingUser.id, existingToken.email);
+      // TODO: Remove this section if we decide not to require email verification for instructors
     } else if (userType === "instructor") {
       await verifyInstructorEmail(existingUser.id, existingToken.email);
     }
 
-    return res
-      .status(200)
-      .json({ success: EMAIL_VERIFICATION_SUCCESS_MESSAGE });
+    return res.sendStatus(200);
   } catch (error) {
-    console.error("Error verifying user email:", error);
-    return res.status(500).json({
-      error: "Internal server error.",
+    console.error("Error verifying user email", {
+      error,
+      context: {
+        token,
+        userType,
+        time: new Date().toISOString(),
+      },
     });
+    res.sendStatus(500);
   }
 };

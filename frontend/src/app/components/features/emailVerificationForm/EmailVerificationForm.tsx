@@ -6,6 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import Loading from "../../elements/loading/Loading";
 import Link from "next/link";
 import styles from "./EmailVerificationForm.module.scss";
+import {
+  EMAIL_VERIFICATION_TOKEN_NOT_FOUND,
+  EMAIL_VERIFICATION_USER_TYPE_ERROR,
+} from "@/app/helper/messages/formValidation";
+import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 export const EmailVerificationForm = () => {
   const [message, setMessage] = useState<{
@@ -24,15 +29,17 @@ export const EmailVerificationForm = () => {
     if (!token) {
       setMessage({
         type: "error",
-        text: "Token not found.",
+        // TODO: Determine the language (jp or en) for the message based on context.
+        text: EMAIL_VERIFICATION_TOKEN_NOT_FOUND,
       });
       return;
     }
 
-    if (!userType) {
+    if (!userType || !["customer", "instructor"].includes(userType)) {
       setMessage({
         type: "error",
-        text: "User type not found.",
+        // TODO: Determine the language (jp or en) for the message based on context.
+        text: EMAIL_VERIFICATION_USER_TYPE_ERROR,
       });
       return;
     }
@@ -60,9 +67,13 @@ export const EmailVerificationForm = () => {
         </div>
       ) : (
         <>
-          {message?.type === "success" && <p>{message.text}</p>}
+          {/* {message?.type === "success" && <p>{message.text}</p>} */}
+          {message?.type === "success" && (
+            <FormValidationMessage type="success" message={message.text} />
+          )}
+
           {message?.type === "error" && (
-            <p style={{ color: "red" }}>{message.text}</p>
+            <FormValidationMessage type="error" message={message.text} />
           )}
           <Link
             className={styles.verificationForm__loginLink}

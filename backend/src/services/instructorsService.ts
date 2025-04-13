@@ -246,16 +246,9 @@ export const getValidRecurringAvailabilities = async (
 export const getInstructorByEmail = async (
   email: string,
 ): Promise<Instructor | null> => {
-  try {
-    return await prisma.instructor.findUnique({
-      where: { email },
-    });
-  } catch (error) {
-    console.error("Database error while fetching instructor by email:", error);
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  return await prisma.instructor.findUnique({
+    where: { email },
+  });
 };
 
 export async function getInstructorWithRecurringAvailabilityDay(
@@ -373,23 +366,13 @@ export const verifyInstructorEmail = async (
   id: number,
   email: string,
 ): Promise<void> => {
-  try {
-    await prisma.instructor.update({
-      where: {
-        id,
-      },
-      data: {
-        emailVerified: new Date(),
-        email,
-      },
-    });
-  } catch (error) {
-    console.error(
-      `Database error while verifying instructor email (ID: ${id}):`,
-      error,
-    );
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  await prisma.instructor.update({
+    where: {
+      id,
+    },
+    data: {
+      emailVerified: new Date(),
+      email,
+    },
+  });
 };

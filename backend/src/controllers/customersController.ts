@@ -12,16 +12,16 @@ import {
 } from "../services/subscriptionsService";
 import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
-import {
-  EMAIL_ALREADY_REGISTERED_ERROR,
-  GENERAL_ERROR_MESSAGE,
-  REGISTRATION_SUCCESS_MESSAGE,
-} from "../helper/messages";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import {
   getBookableClasses,
   getUpcomingClasses,
 } from "../services/classesService";
+import {
+  deleteVerificationToken,
+  generateVerificationToken,
+} from "../services/verificationTokensService";
+import { sendVerificationEmail } from "../helper/mail";
 
 export const registerCustomerController = async (
   req: Request,
@@ -42,16 +42,51 @@ export const registerCustomerController = async (
       return res.sendStatus(409);
     }
 
-    await registerCustomer({
+    const customer = await registerCustomer({
       name,
       email: normalizedEmail,
       password,
       prefecture,
     });
 
+    try {
+      const verificationToken =
+        await generateVerificationToken(normalizedEmail);
+
+      const sendResult = await sendVerificationEmail(
+        verificationToken.email,
+        customer.name,
+        verificationToken.token,
+        "customer",
+      );
+
+      if (!sendResult.success) {
+        await deleteVerificationToken(verificationToken.email);
+        return res.sendStatus(503); // Failed to send verification email. 503 Service Unavailable
+      }
+    } catch (emailError) {
+      console.error(
+        "Email verification step failed while registering customer",
+        {
+          error: emailError,
+          context: {
+            email: normalizedEmail,
+            time: new Date().toISOString(),
+          },
+        },
+      );
+      return res.sendStatus(503);
+    }
+
     res.sendStatus(201);
   } catch (error) {
-    console.error("Error registering customer:", error);
+    console.error("Error registering customer", {
+      error,
+      context: {
+        email: normalizedEmail,
+        time: new Date().toISOString(),
+      },
+    });
     res.sendStatus(500);
   }
 };
