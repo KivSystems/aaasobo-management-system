@@ -129,17 +129,18 @@
 }
 
 .bookClass {
+  width: 135px;
   background-color: $green-success;
   transition:
     background-color 0.3s ease,
     transform 0.3s ease;
   border: 1px solid transparent;
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0;
   border-radius: 100px;
   box-shadow:
     rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; // width: 140px;
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
   &:hover {
     background-color: $green-success-hover;

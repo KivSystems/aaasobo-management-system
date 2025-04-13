@@ -1,14 +1,15 @@
+import { useLanguage } from "@/app/contexts/LanguageContext";
 import styles from "./BookableClassesInfo.module.scss";
-
-type BookableClassesInfoProps = {
-  bookableClasses: string[] | null;
-  onClick: () => void;
-};
 
 export function BookableClassesInfo({
   bookableClasses,
   onClick,
-}: BookableClassesInfoProps) {
+}: {
+  bookableClasses: string[] | null;
+  onClick: () => void;
+}) {
+  const { language } = useLanguage();
+
   return (
     <p
       onClick={() => bookableClasses && bookableClasses.length > 0 && onClick()}
@@ -16,7 +17,8 @@ export function BookableClassesInfo({
         bookableClasses && bookableClasses.length > 0 ? styles.clickable : ""
       }`}
     >
-      Bookable Classes: {bookableClasses?.length ?? 0}
+      {language === "ja" ? "振替可能クラス" : "Bookable Classes"}:{" "}
+      {bookableClasses?.length ?? 0}
     </p>
   );
 }

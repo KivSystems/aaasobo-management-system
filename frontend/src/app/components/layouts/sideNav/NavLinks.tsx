@@ -5,6 +5,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { getLinks } from "@/app/helper/data/navLinks";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function NavLinks({
   userId,
@@ -13,8 +14,9 @@ export default function NavLinks({
   userId: number;
   userType: "admin" | "customer" | "instructor";
 }) {
+  const { language } = useLanguage();
   const pathname = usePathname();
-  const links = getLinks(userId, userType);
+  const links = getLinks(userId, userType, language);
 
   return (
     <>

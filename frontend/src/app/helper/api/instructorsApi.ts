@@ -271,15 +271,20 @@ export const getInstructorProfile = async (
 ): Promise<InstructorProfile> => {
   try {
     const response = await fetch(`${BASE_URL}/${instructorId}/profile`, {
+      // TODO: Remove this line before production to use cached data
       cache: "no-store",
+      next: { tags: ["instructor-profile"] },
     });
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const { error } = await response.json();
+      throw new Error(`HTTP Status: ${response.status} ${error}`);
     }
-    const data: InstructorProfile = await response.json();
-    return data;
+
+    const instructorProfile = await response.json();
+    return instructorProfile;
   } catch (error) {
     console.error("Failed to fetch instructor profile:", error);
-    throw error;
+    throw new Error("We couldn't load your profile. Please try again later.");
   }
 };

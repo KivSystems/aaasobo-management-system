@@ -7,6 +7,7 @@ import styles from "./UpcomingClasses.module.scss";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import { useEffect } from "react";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function UpcomingClasses({
   upcomingClasses,
@@ -14,6 +15,7 @@ export default function UpcomingClasses({
   setSelectedClasses,
   isCancelingModalOpen,
 }: UpcomingClassesProps) {
+  const { language } = useLanguage();
   useEffect(() => {
     if (!isCancelingModalOpen) setSelectedClasses([]);
   }, [isCancelingModalOpen, setSelectedClasses]);
@@ -32,9 +34,10 @@ export default function UpcomingClasses({
     <>
       {upcomingClasses.map((eachClass) => {
         const classDateTime = new Date(eachClass.dateTime);
-        // TODO: Determine the language (jp or en) for classDate based on context.
-        // const classDate = formatShortDate(classDateTime, "ja-JP");
-        const classDate = formatShortDate(classDateTime);
+        const classDate =
+          language === "ja"
+            ? formatShortDate(classDateTime, "ja-JP")
+            : formatShortDate(classDateTime);
         const classTime = formatTime24Hour(classDateTime);
 
         const pastPrevDayDeadline = isPastPreviousDayDeadline(
