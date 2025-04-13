@@ -18,6 +18,7 @@ export const getCustomerById = async (
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/customer`,
       {
+        // TODO: Remove this line before production to use cached data
         cache: "no-store",
         next: { tags: ["customer-profile"] },
       },
@@ -139,6 +140,7 @@ export const getUpcomingClasses = async (customerId: number) => {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`,
       {
+        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
         cache: "no-store",
         next: { tags: ["upcoming-classes"] },
       },

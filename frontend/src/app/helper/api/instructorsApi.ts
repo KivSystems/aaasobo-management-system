@@ -271,6 +271,7 @@ export const getInstructorProfile = async (
 ): Promise<InstructorProfile> => {
   try {
     const response = await fetch(`${BASE_URL}/${instructorId}/profile`, {
+      // TODO: Remove this line before production to use cached data
       cache: "no-store",
       next: { tags: ["instructor-profile"] },
     });
