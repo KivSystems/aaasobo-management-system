@@ -5,7 +5,7 @@ import {
 } from "@/app/helper/utils/dateUtils";
 import styles from "./InstructorClassesTable.module.scss";
 import Link from "next/link";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { editClass } from "@/app/helper/api/classesApi";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
@@ -178,7 +178,6 @@ const InstructorClassesTable = ({
   return (
     <div className={styles.instructorClasses}>
       <div className={styles.instructorClasses__classDate}>{classDate}</div>
-      <ToastContainer />
 
       {classes &&
         classes

@@ -1,7 +1,15 @@
+// TODO: Combine this message to "../messages/formValidation"
+import { PASSWORD_RESET_REQUEST_ERROR } from "../utils/messages";
 import {
+  CONFIRMATION_EMAIL_RESEND_FAILURE,
+  EMAIL_VERIFICATION_FAILED_MESSAGE,
+  EMAIL_VERIFICATION_RESENT_NOTICE,
+  EMAIL_VERIFICATION_SUCCESS_MESSAGE,
+  EMAIL_VERIFICATION_TOKEN_EXPIRED,
+  EMAIL_VERIFICATION_UNEXPECTED_ERROR,
   GENERAL_ERROR_MESSAGE,
-  PASSWORD_RESET_REQUEST_ERROR,
-} from "../utils/messages";
+  LOGIN_FAILED_MESSAGE,
+} from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -10,10 +18,16 @@ export const authenticateUser = async (
   email: string,
   password: string,
   userType: UserType,
-) => {
+): Promise<{ userId: number } | { errorMessage: string }> => {
   const apiUrl = `${BACKEND_ORIGIN}/users/authenticate`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({ email, password, userType });
+
+  const statusErrorMessages: Record<number, string> = {
+    401: LOGIN_FAILED_MESSAGE,
+    503: CONFIRMATION_EMAIL_RESEND_FAILURE,
+    403: EMAIL_VERIFICATION_RESENT_NOTICE,
+  };
 
   try {
     const response = await fetch(apiUrl, {
@@ -22,42 +36,20 @@ export const authenticateUser = async (
       body,
     });
 
+    const errorMessage = statusErrorMessages[response.status];
+    if (errorMessage) {
+      return { errorMessage };
+    }
+
     if (!response.ok) {
-      try {
-        const errorDetails = await response.json();
-        console.error(
-          `Authentication failed: ${response.status} - ${errorDetails.message}`,
-        );
-        return {
-          success: false,
-          message:
-            errorDetails.message ||
-            "Unable to sign in. Please check your details and try again.",
-        };
-      } catch {
-        console.error("Error parsing error response from server.");
-        return {
-          success: false,
-          message: "Something went wrong. Please try again later.",
-        };
-      }
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    const data: { id?: number } = await response.json();
-
-    if (!data.id || typeof data.id !== "number") {
-      console.error("Unexpected API response:", data);
-      return {
-        success: false,
-        message:
-          "We're experiencing some issues. Please try again in a moment.",
-      };
-    }
-
-    return { success: true, userId: data.id };
+    const data = await response.json();
+    return { userId: data.id };
   } catch (error) {
-    console.error("Error during authentication:", error);
-    return { success: false, message: "An unexpected error occurred." };
+    console.error("API error while authenticating[logging in] user:", error);
+    return { errorMessage: GENERAL_ERROR_MESSAGE };
   }
 };
 
@@ -72,6 +64,12 @@ export const verifyUserEmail = async (
     userType,
   });
 
+  const statusErrorMessages: Record<number, string> = {
+    400: EMAIL_VERIFICATION_FAILED_MESSAGE,
+    404: EMAIL_VERIFICATION_FAILED_MESSAGE,
+    410: EMAIL_VERIFICATION_TOKEN_EXPIRED,
+  };
+
   try {
     const response = await fetch(apiUrl, {
       method: "PATCH",
@@ -79,22 +77,20 @@ export const verifyUserEmail = async (
       body,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error(
-        `Failed to fetch user. Status: ${response.status}, Message: ${errorData.error}`,
-      );
-      return {
-        error: errorData.error || "An error occurred.",
-      };
+    const errorMessage = statusErrorMessages[response.status];
+    if (errorMessage) {
+      return { error: errorMessage };
     }
 
-    const successData = await response.json();
-    return { success: successData.success || "Success" };
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return { success: EMAIL_VERIFICATION_SUCCESS_MESSAGE };
   } catch (error) {
-    console.error("Network or unexpected error:", error);
+    console.error("API error while verifying user email:", error);
     return {
-      error: "Network error occurred.",
+      error: EMAIL_VERIFICATION_UNEXPECTED_ERROR,
     };
   }
 };

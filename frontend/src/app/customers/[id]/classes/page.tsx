@@ -1,14 +1,15 @@
-"use client";
-
 import ClassCalendar from "@/app/components/customers-dashboard/classes/ClassCalendar";
+import { INVALID_ID } from "@/app/helper/messages/customerDashboard";
 
-const Page = ({ params }: { params: { id: string } }) => {
+const ClassesPage = ({ params }: { params: { id: string } }) => {
   const customerId = parseInt(params.id);
+
   if (isNaN(customerId)) {
-    throw new Error("Invalid customerId");
+    console.error(`Invalid customer ID: ID = ${customerId}`);
+    throw new Error(INVALID_ID);
   }
 
   return <ClassCalendar customerId={customerId} />;
 };
 
-export default Page;
+export default ClassesPage;

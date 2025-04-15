@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { formatTime, getWeekday } from "@/app/helper/utils/dateUtils";
 import styles from "./EditRegularClassForm.module.scss";
 import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 
@@ -68,8 +68,9 @@ function EditRegularClassForm({
             let time = null;
 
             if (dateTime) {
-              day = getWeekday(new Date(dateTime), "Asia/Tokyo");
-              time = formatTime(new Date(dateTime), "Asia/Tokyo");
+              const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+              day = getWeekday(new Date(dateTime), timeZone);
+              time = formatTime(new Date(dateTime), timeZone);
             }
 
             return {
@@ -142,12 +143,20 @@ function EditRegularClassForm({
       );
 
       // Set the URL depending on authenticated admin or not.
-      const targetURL = isAdminAuthenticated
-        ? `/admins/customer-list/${customerId}?message=${encodeURIComponent(data.message)}`
-        : `/customers/${customerId}/regular-classes?message=${encodeURIComponent(data.message)}`;
-
-      router.push(targetURL);
+      if (data.messages[1]) {
+        const targetURL = isAdminAuthenticated
+          ? `/admins/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`
+          : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`;
+        router.push(targetURL);
+      } else {
+        const targetURL = isAdminAuthenticated
+          ? `/admins/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}`
+          : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}`;
+        router.push(targetURL);
+      }
     } catch (error) {
+      const err = error as Error;
+      toast.error(err.message);
       console.error("Failed to edit a new recurring class data:", error);
     }
   };
@@ -158,7 +167,6 @@ function EditRegularClassForm({
 
   return (
     <div>
-      <ToastContainer />
       <table className={styles.table}>
         <thead className={styles.header}>
           <tr>

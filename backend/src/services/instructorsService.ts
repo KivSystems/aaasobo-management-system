@@ -66,6 +66,42 @@ export async function getInstructorById(id: number) {
   }
 }
 
+export const updateInstructor = async (
+  id: number,
+  name: string,
+  email: string,
+  classURL: string,
+  icon: string,
+  nickname: string,
+  meetingId: string,
+  passcode: string,
+  introductionURL: string,
+) => {
+  try {
+    // Update the instructor data.
+    const instructor = await prisma.instructor.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        email,
+        classURL,
+        icon,
+        nickname,
+        meetingId,
+        passcode,
+        introductionURL,
+      },
+    });
+
+    return instructor;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to update the instructor data.");
+  }
+};
+
 export async function addInstructorRecurringAvailability(
   instructorId: number,
   startAt: Date,
@@ -210,16 +246,9 @@ export const getValidRecurringAvailabilities = async (
 export const getInstructorByEmail = async (
   email: string,
 ): Promise<Instructor | null> => {
-  try {
-    return await prisma.instructor.findUnique({
-      where: { email },
-    });
-  } catch (error) {
-    console.error("Database error while fetching instructor by email:", error);
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  return await prisma.instructor.findUnique({
+    where: { email },
+  });
 };
 
 export async function getInstructorWithRecurringAvailabilityDay(
@@ -337,25 +366,15 @@ export const verifyInstructorEmail = async (
   id: number,
   email: string,
 ): Promise<void> => {
-  try {
-    await prisma.instructor.update({
-      where: {
-        id,
-      },
-      data: {
-        emailVerified: new Date(),
-        email,
-      },
-    });
-  } catch (error) {
-    console.error(
-      `Database error while verifying instructor email (ID: ${id}):`,
-      error,
-    );
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  await prisma.instructor.update({
+    where: {
+      id,
+    },
+    data: {
+      emailVerified: new Date(),
+      email,
+    },
+  });
 };
 
 export const updateInstructorPassword = async (

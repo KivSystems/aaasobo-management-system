@@ -1,6 +1,7 @@
 import express from "express";
 import {
   cancelClassController,
+  cancelClassesController,
   checkChildrenAvailabilityController,
   checkDoubleBookingController,
   createClassController,
@@ -37,6 +38,7 @@ classesRouter.post(
   "/check-children-availability",
   checkChildrenAvailabilityController,
 );
+classesRouter.post("/cancel-classes", cancelClassesController);
 
 classesRouter.delete("/:id", deleteClassController);
 

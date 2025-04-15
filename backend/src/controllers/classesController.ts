@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   cancelClassById,
+  cancelClasses,
   checkDoubleBooking,
   checkForChildrenWithConflictingClasses,
   createClass,
@@ -684,5 +685,25 @@ export const checkChildrenAvailabilityController = async (
   } catch (error) {
     console.error("Controller Error:", error);
     res.status(500).json({ error: "Failed to check children availability." });
+  }
+};
+
+export const cancelClassesController = async (req: Request, res: Response) => {
+  try {
+    const { classIds } = req.body;
+
+    if (!Array.isArray(classIds) || classIds.length === 0) {
+      return res.status(400).json({ error: "Invalid class IDs provided." });
+    }
+
+    await cancelClasses(classIds);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error canceling classes:", error);
+    res.status(500).json({
+      error:
+        error instanceof Error ? error.message : "Unexpected server failure.",
+    });
   }
 };

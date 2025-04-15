@@ -1,7 +1,7 @@
 import styles from "./InstructorSchedule.module.scss";
 
 import { useEffect, useState, useCallback } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   getInstructorRecurringAvailability,
   addRecurringAvailabilities,
@@ -53,7 +53,6 @@ export default function InstructorSchedule({
 
   return (
     <>
-      <ToastContainer />
       <div className={styles.dateInput}>
         <label className={styles.label}>
           Display Schedule on

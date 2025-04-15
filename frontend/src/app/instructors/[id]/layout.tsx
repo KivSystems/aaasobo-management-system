@@ -1,6 +1,4 @@
 import styles from "./layout.module.scss";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
 
 export default function Layout({
@@ -17,7 +15,6 @@ export default function Layout({
 
   return (
     <div className={styles.container}>
-      <ToastContainer />
       <div className={styles.sidebar}>
         <SideNav userId={instructorId} userType="instructor" />
       </div>

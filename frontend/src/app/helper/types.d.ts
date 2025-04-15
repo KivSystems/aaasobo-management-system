@@ -203,6 +203,17 @@ type ForgotPasswordFormState = {
   successMessage?: string;
 };
 
+type RegisterFormState = {
+  password?: string;
+  name?: string;
+  email?: string;
+  passConfirmation?: string;
+  prefecture?: string;
+  isAgreed?: string;
+  errorMessage?: string;
+  successMessage?: string;
+};
+
 type ResetPasswordFormState = {
   queryError?: string;
   password?: string;
@@ -210,3 +221,42 @@ type ResetPasswordFormState = {
   errorMessage?: string;
   successMessage?: string;
 };
+type UpcomingClass = {
+  id: number;
+  dateTime: string;
+  instructor: {
+    nickname: string;
+    icon: string;
+  };
+  attendingChildren: string[];
+};
+
+type CancelClassesModalControllerProps = {
+  upcomingClasses: UpcomingClass[] | [];
+  customerId: number;
+  isAdminAuthenticated?: boolean;
+};
+
+type CancelClassesModalProps = {
+  upcomingClasses: UpcomingClass[] | [];
+  customerId: number;
+  isAdminAuthenticated?: boolean;
+  isCancelingModalOpen: boolean;
+  setIsCancelingModalOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+type SelectedClass = {
+  classId: number;
+  classDateTime: string;
+};
+
+type UpcomingClassesProps = {
+  upcomingClasses: UpcomingClass[] | [];
+  selectedClasses: SelectedClass[] | [];
+  setSelectedClasses: Dispatch<SetStateAction<SelectedClass>>;
+  isCancelingModalOpen: boolean;
+};
+
+type ClassInfo = { classId: number; classDateTime: string };
+type ClassInfoList = ClassInfo[];
+type SetClassInfoList = React.Dispatch<React.SetStateAction<ClassInfoList>>;

@@ -13,6 +13,7 @@ import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
 
 function BookClassForm({
   customerId,
@@ -84,6 +85,10 @@ function BookClassForm({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const pathToPush = isAdminAuthenticated
+      ? `/admins/customer-list/${customerId}`
+      : `/customers/${customerId}/classes`;
+
     if (!selectedInstructorId || !selectedDateTime || !classToRebook) return;
 
     if (selectedChildrenIds.size === 0) {
@@ -137,13 +142,14 @@ function BookClassForm({
         recurringClassId: classToRebook.recurringClassId,
       });
 
-      if (isAdminAuthenticated) {
-        router.push(`/admins/customer-list/${customerId}`);
-        return;
-      }
       toast.success("The class has been successfully booked!");
 
-      router.push(`/customers/${customerId}/classes`);
+      // TODO: Revalidation should be done directly from a server component or API call
+      await revalidateCustomerCalendar(customerId, isAdminAuthenticated!);
+      // TODO: Revalidate available instructors and classes.
+
+      // TODO: Discuss whether redirect should happen here
+      router.push(pathToPush);
     } catch (error) {
       if (error instanceof Error) {
         alert(`${error.message}`);
