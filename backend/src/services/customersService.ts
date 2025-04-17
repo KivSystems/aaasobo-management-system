@@ -55,19 +55,9 @@ export const getAllCustomers = async () => {
 export const getCustomerByEmail = async (
   email: string,
 ): Promise<Customer | null> => {
-  try {
-    return await prisma.customer.findUnique({
-      where: { email },
-    });
-  } catch (error) {
-    console.error(
-      `Database error while getting customer by email (email: ${email}):`,
-      error,
-    );
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  return await prisma.customer.findUnique({
+    where: { email },
+  });
 };
 
 export const registerCustomer = async ({
@@ -81,19 +71,30 @@ export const registerCustomer = async ({
   password: string;
   prefecture: string;
 }) => {
-  try {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    await prisma.customer.create({
-      data: { name, email, password: hashedPassword, prefecture },
-    });
-  } catch (error) {
-    console.error(
-      `Database error while registering customer (email: ${email}):`,
-      error,
-    );
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  const customer = await prisma.customer.create({
+    data: { name, email, password: hashedPassword, prefecture },
+  });
+
+  return {
+    id: customer.id,
+    name: customer.name,
+  };
+};
+
+export const verifyCustomerEmail = async (
+  id: number,
+  email: string,
+): Promise<void> => {
+  await prisma.customer.update({
+    where: {
+      id,
+    },
+    data: {
+      emailVerified: new Date(),
+      email,
+    },
+  });
 };
