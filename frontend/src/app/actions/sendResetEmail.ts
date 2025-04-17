@@ -1,7 +1,7 @@
 "use server";
 
 import { sendUserResetEmail } from "../helper/api/usersApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/utils/messages";
+import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractResetRequestValidationErrors } from "../helper/utils/validationErrorUtils";
 import { forgotPasswordFormSchema } from "../schemas/authSchema";
 
@@ -20,11 +20,6 @@ export async function sendResetEmail(
 
     if (!parsedForm.success) {
       const formattedErrors = parsedForm.error.format();
-      console.error(
-        "Password reset link request validation failed:",
-        formattedErrors,
-      );
-
       return extractResetRequestValidationErrors(formattedErrors);
     }
 

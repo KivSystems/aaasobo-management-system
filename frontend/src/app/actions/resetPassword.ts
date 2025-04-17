@@ -1,7 +1,7 @@
 "use server";
 
 import { updateUserPassword } from "../helper/api/usersApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/utils/messages";
+import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractPasswordResetValidationErrors } from "../helper/utils/validationErrorUtils";
 import { resetPasswordFormSchema } from "../schemas/authSchema";
 
@@ -29,8 +29,6 @@ export async function resetPassword(
 
     if (!parsedForm.success) {
       const formattedErrors = parsedForm.error.format();
-      console.error("Password reset validation failed:", formattedErrors);
-
       return extractPasswordResetValidationErrors(formattedErrors);
     }
 

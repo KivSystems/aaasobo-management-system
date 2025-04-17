@@ -381,18 +381,8 @@ export const updateInstructorPassword = async (
   id: number,
   newPassword: string,
 ) => {
-  try {
-    return await prisma.instructor.update({
-      where: { id },
-      data: { password: newPassword },
-    });
-  } catch (error) {
-    console.error(
-      `Database error while updating instructor password (ID: ${id}):`,
-      error,
-    );
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  return await prisma.instructor.update({
+    where: { id },
+    data: { password: newPassword },
+  });
 };

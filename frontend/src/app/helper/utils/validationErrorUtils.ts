@@ -1,9 +1,9 @@
 import { ZodFormattedError } from "zod";
-import { PASSWORD_RESET_REQUEST_ERROR } from "./messages";
 import { ZodIssue } from "zod";
 import {
   GENERAL_ERROR_MESSAGE,
   LOGIN_FAILED_MESSAGE,
+  PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR,
 } from "../messages/formValidation";
 
 export function extractRegisterValidationErrors(
@@ -77,7 +77,7 @@ export function extractPasswordResetValidationErrors(
   const errors: ResetPasswordFormState = {};
 
   if (formattedErrors.token || formattedErrors.userType) {
-    errors.queryError = PASSWORD_RESET_REQUEST_ERROR;
+    errors.errorMessage = PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR;
   }
 
   if (formattedErrors.password) {

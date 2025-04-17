@@ -10,7 +10,6 @@ function Loading() {
         width={100}
         height={100}
         alt="spinner"
-        priority
       />
     </div>
   );

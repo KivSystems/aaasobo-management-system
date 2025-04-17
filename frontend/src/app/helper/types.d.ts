@@ -215,12 +215,13 @@ type RegisterFormState = {
 };
 
 type ResetPasswordFormState = {
-  queryError?: string;
+  unexpectedErrorMessage?: string;
   password?: string;
   passwordConfirmation?: string;
   errorMessage?: string;
   successMessage?: string;
 };
+
 type UpcomingClass = {
   id: number;
   dateTime: string;

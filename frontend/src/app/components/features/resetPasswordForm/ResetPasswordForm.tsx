@@ -81,10 +81,10 @@ export default function ResetPasswordForm() {
       </div>
 
       <div className={styles.messageWrapper}>
-        {localMessages.queryError && (
+        {localMessages.unexpectedErrorMessage && (
           <FormValidationMessage
             type="error"
-            message={localMessages.queryError}
+            message={localMessages.unexpectedErrorMessage}
           />
         )}
         {localMessages.errorMessage && (
@@ -101,7 +101,7 @@ export default function ResetPasswordForm() {
         )}
       </div>
 
-      {localMessages.queryError ? (
+      {localMessages.unexpectedErrorMessage ? (
         <Link
           className={styles.passResetLink}
           href={

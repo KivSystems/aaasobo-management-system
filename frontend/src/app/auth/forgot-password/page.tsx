@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Suspense } from "react";
 import Loading from "@/app/components/elements/loading/Loading";
 import ForgotPasswordForm from "@/app/components/features/forgotPasswordForm/ForgotPasswordForm";
+import { PASSWORD_RESET_INSTRUCTION } from "@/app/helper/messages/formValidation";
 
 export default function ForgotPasswordPage() {
   return (
@@ -17,10 +18,7 @@ export default function ForgotPasswordPage() {
           priority={true}
         />
         <h2>Forgot Password?</h2>
-        <p className={styles.instruction}>
-          Enter your registered email address and press Submit to receive a
-          password reset link.
-        </p>
+        <p className={styles.instruction}>{PASSWORD_RESET_INSTRUCTION}</p>
         <Suspense
           fallback={
             <div className={styles.loaderWrapper}>
