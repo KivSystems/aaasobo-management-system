@@ -328,6 +328,10 @@ export const getAllClassesController = async (_: Request, res: Response) => {
       const instructorName = instructor.name;
       const customerName = customer.name;
 
+      // Convert dateTime from UTC to JST (Add 9 hours).
+      const dateTimeUTC = new Date(dateTime);
+      const dateTimeJST = new Date(dateTimeUTC.getTime() + 9 * 60 * 60 * 1000);
+
       // Format the displayed status.
       let statusText = "";
       switch (status) {
@@ -350,8 +354,8 @@ export const getAllClassesController = async (_: Request, res: Response) => {
         ID: id,
         Instructor: instructorName,
         Customer: customerName,
-        Date: dateTime.toISOString().slice(0, 10),
-        Time: dateTime.toISOString().slice(11, 16),
+        Date: dateTimeJST.toISOString().slice(0, 10),
+        Time: dateTimeJST.toISOString().slice(11, 16),
         Status: statusText,
       };
     });
