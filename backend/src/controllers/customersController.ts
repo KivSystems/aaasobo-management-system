@@ -17,11 +17,7 @@ import {
   getBookableClasses,
   getUpcomingClasses,
 } from "../services/classesService";
-import {
-  deleteVerificationToken,
-  generateVerificationToken,
-} from "../services/verificationTokensService";
-import { sendVerificationEmail } from "../helper/mail";
+import { sendVerificationEmailHandler } from "../helper/emailHandlers";
 
 export const registerCustomerController = async (
   req: Request,
@@ -49,33 +45,15 @@ export const registerCustomerController = async (
       prefecture,
     });
 
-    try {
-      const verificationToken =
-        await generateVerificationToken(normalizedEmail);
-
-      const sendResult = await sendVerificationEmail(
-        verificationToken.email,
-        customer.name,
-        verificationToken.token,
-        "customer",
-      );
-
-      if (!sendResult.success) {
-        await deleteVerificationToken(verificationToken.email);
-        return res.sendStatus(503); // Failed to send verification email. 503 Service Unavailable
-      }
-    } catch (emailError) {
-      console.error(
-        "Email verification step failed while registering customer",
-        {
-          error: emailError,
-          context: {
-            email: normalizedEmail,
-            time: new Date().toISOString(),
-          },
-        },
-      );
-      return res.sendStatus(503);
+    // Send email to verify the registered email address
+    const emailSent = await sendVerificationEmailHandler(
+      normalizedEmail,
+      customer.name,
+      "customer",
+      "registering customer",
+    );
+    if (!emailSent) {
+      return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
     }
 
     res.sendStatus(201);

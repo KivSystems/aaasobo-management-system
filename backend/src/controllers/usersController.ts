@@ -8,12 +8,9 @@ import {
   getInstructorByEmail,
   verifyInstructorEmail,
 } from "../services/instructorsService";
-import {
-  deleteVerificationToken,
-  generateVerificationToken,
-  getVerificationTokenByToken,
-} from "../services/verificationTokensService";
-import { sendVerificationEmail, UserType } from "../helper/mail";
+import { getVerificationTokenByToken } from "../services/verificationTokensService";
+import { UserType } from "../helper/mail";
+import { sendVerificationEmailHandler } from "../helper/emailHandlers";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {
@@ -52,35 +49,17 @@ export const authenticateUserController = async (
 
     // TODO: Remove the 'userType === "customer"' condition if email verification is required for instructors too.
     if (userType === "customer" && !user.emailVerified) {
-      try {
-        const verificationToken = await generateVerificationToken(user.email);
-
-        const sendResult = await sendVerificationEmail(
-          verificationToken.email,
-          user.name,
-          verificationToken.token,
-          userType,
-        );
-
-        if (!sendResult.success) {
-          await deleteVerificationToken(email);
-          return res.sendStatus(503); // Failed to send verification email. 503 Service Unavailable
-        }
-
-        return res.sendStatus(403); // Email is not verified yet. 403 Forbidden
-      } catch (emailError) {
-        console.error(
-          "Email verification step failed while registering customer",
-          {
-            error: emailError,
-            context: {
-              email: normalizedEmail,
-              time: new Date().toISOString(),
-            },
-          },
-        );
-        return res.sendStatus(503);
+      // Resend email to verify the registered email address
+      const emailSent = await sendVerificationEmailHandler(
+        user.email,
+        user.name,
+        userType,
+        "authenticating user",
+      );
+      if (!emailSent) {
+        return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
       }
+      return res.sendStatus(403); // Email is not verified yet. 403 Forbidden
     }
 
     res.status(200).json({ id: user.id });
