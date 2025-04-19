@@ -67,7 +67,7 @@ export const getAllPlans = async () => {
   try {
     const apiUrl = `${BASE_URL}/plan-list`;
     const response = await fetch(apiUrl, {
-      cache: "no-store",
+      next: { tags: ["plans"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
