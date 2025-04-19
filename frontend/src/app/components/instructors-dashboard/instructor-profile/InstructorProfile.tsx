@@ -152,6 +152,7 @@ function InstructorProfile({
                 {isEditing ? (
                   <InputField
                     name="classURL"
+                    type="url"
                     value={latestInstructor.classURL}
                     onChange={(e) => handleInputChange(e, "classURL")}
                     className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
@@ -206,6 +207,7 @@ function InstructorProfile({
                 {isEditing ? (
                   <InputField
                     name="introductionURL"
+                    type="url"
                     value={latestInstructor.introductionURL}
                     onChange={(e) => handleInputChange(e, "introductionURL")}
                     className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
