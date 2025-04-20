@@ -30,6 +30,12 @@ type InstructorProfile = {
 
 type Availability = { dateTime: string };
 
+type ClassStatus =
+  | "booked"
+  | "completed"
+  | "canceledByCustomer"
+  | "canceledByInstructor";
+
 type ClassType = {
   id: number;
   dateTime: string;
@@ -49,33 +55,19 @@ type ClassType = {
   };
   classAttendance: { children: { id: number; name: string }[] };
 
-  status:
-    | "booked"
-    | "completed"
-    | "canceledByCustomer"
-    | "canceledByInstructor";
+  status: ClassStatus;
   isRebookable: boolean;
   recurringClassId: number;
 };
 
-type Customer = {
-  id: number;
-  name: string;
-  email: string;
-  class?: CustomersClass[];
-  prefecture: string;
-};
-
-type CustomersClass = {
-  id: number;
-  instructorId: number;
-  customerId: number;
-  dateTime: string;
-  status:
-    | "booked"
-    | "completed"
-    | "canceledByCustomer"
-    | "canceledByInstructor";
+type CustomerClass = EventType & {
+  instructorIcon: string;
+  instructorNickname: string;
+  instructorName: string;
+  instructorClassURL: string;
+  instructorMeetingId: string;
+  instructorPasscode: string;
+  classStatus: ClassStatus;
 };
 
 type Child = {
@@ -132,7 +124,7 @@ type Attendance = {
 };
 
 type EventType = {
-  classId?: number;
+  classId: number;
   start: string;
   end: string;
   title: string;
@@ -146,11 +138,7 @@ type ClassForCalendar = {
   classAttendance: {
     children: Child[];
   };
-  status:
-    | "booked"
-    | "completed"
-    | "canceledByCustomer"
-    | "canceledByInstructor";
+  status: ClassStatus;
   isRebookable: boolean;
 };
 
@@ -171,11 +159,7 @@ type InstructorClassDetail = {
   passcode: string;
   attendingChildren: Child[];
   customerChildren: Child[];
-  status:
-    | "booked"
-    | "completed"
-    | "canceledByCustomer"
-    | "canceledByInstructor";
+  status: ClassForCalendar;
   isRebookable: boolean;
 };
 
@@ -250,6 +234,7 @@ type CustomerProfile = {
   name: string;
   email: string;
   prefecture: string;
+  createdAt: string;
 };
 
 type InstructorProfile = {
@@ -263,3 +248,10 @@ type LanguageType = "ja" | "en";
 type ClassInfo = { classId: number; classDateTime: string };
 type ClassInfoList = ClassInfo[];
 type SetClassInfoList = React.Dispatch<React.SetStateAction<ClassInfoList>>;
+
+type CustomerCalendarProps = {
+  isAdminAuthenticated?: boolean;
+  customerId: number;
+  classes: CustomerClass[] | [];
+  createdAt: string;
+};

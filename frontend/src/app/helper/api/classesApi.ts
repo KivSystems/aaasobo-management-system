@@ -122,7 +122,7 @@ export const editClass = async (editedClass: {
   return data;
 };
 
-// Fetch classes data for displaying on a calendar using userId
+// TODO: Delete the API below after finishing refactoring the customer & instructor calendar pages
 export const fetchClassesForCalendar = async (
   userId: number,
   userType: "instructor" | "customer",

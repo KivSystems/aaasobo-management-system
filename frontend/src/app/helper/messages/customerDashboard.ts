@@ -7,6 +7,9 @@ export const INVALID_CUSTOMER_ID =
 export const FAILED_TO_FETCH_UPCOMING_CLASSES =
   "We couldn't load the upcoming classes. Please try again later. / 予約済みクラスを読み込めませんでした。後ほどもう一度お試しください。";
 
+export const FAILED_TO_FETCH_CUSTOMER_CLASSES =
+  "We couldn't load the classes. Please try again later. / クラスを読み込めませんでした。後ほどもう一度お試しください。";
+
 export const FAILED_TO_FETCH_CUSTOMER_PROFILE =
   "We couldn't load the customer's profile. Please try again later. / プロフィールを読み込めませんでした。後ほどもう一度お試しください。";
 

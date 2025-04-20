@@ -10,7 +10,6 @@ import {
   getAllClassesController,
   getClassByIdController,
   getClassesByCustomerIdController,
-  getClassesForCustomerCalendar,
   getClassesForInstructorCalendar,
   nonRebookableCancelController,
   updateClassController,
@@ -23,13 +22,11 @@ export const classesRouter = express.Router();
 classesRouter.get("/", getAllClassesController);
 classesRouter.get("/:id", getClassesByCustomerIdController);
 classesRouter.get("/class/:id", getClassByIdController);
+
+// TODO: Delete the route below after finishing refactoring the instructor calendar page
 classesRouter.get(
   "/calendar/instructor/:instructorId",
   getClassesForInstructorCalendar,
-);
-classesRouter.get(
-  "/calendar/customer/:customerId",
-  getClassesForCustomerCalendar,
 );
 classesRouter.post("/create-classes", createClassesForMonthController);
 classesRouter.post("/", createClassController);

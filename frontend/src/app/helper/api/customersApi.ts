@@ -1,5 +1,6 @@
 import {
   FAILED_TO_FETCH_BOOKABLE_CLASSES,
+  FAILED_TO_FETCH_CUSTOMER_CLASSES,
   FAILED_TO_FETCH_CUSTOMER_PROFILE,
   FAILED_TO_FETCH_UPCOMING_CLASSES,
 } from "../messages/customerDashboard";
@@ -155,5 +156,28 @@ export const getUpcomingClasses = async (customerId: number) => {
   } catch (error) {
     console.error("Failed to fetch upcoming classes:", error);
     throw new Error(FAILED_TO_FETCH_UPCOMING_CLASSES);
+  }
+};
+
+export const getClasses = async (customerId: number) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_ORIGIN}/customers/${customerId}/classes`,
+      {
+        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
+        cache: "no-store",
+        next: { tags: ["customer-classes"] },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch customer classes:", error);
+    throw new Error(FAILED_TO_FETCH_CUSTOMER_CLASSES);
   }
 };

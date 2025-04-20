@@ -266,7 +266,7 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
         allDaySlot={false}
       />
 
-      <Modal isOpen={isClassDetailModalOpen} onClose={handleModalClose}>
+      {/* <Modal isOpen={isClassDetailModalOpen} onClose={handleModalClose}>
         <div className={styles.modal}>
           {customerId ? (
             <ClassDetail
@@ -281,7 +281,7 @@ const CalendarView: React.FC<InstructorCalendarViewProps> = ({
             <p>No customer ID available</p>
           )}
         </div>
-      </Modal>
+      </Modal> */}
     </>
   );
 };
