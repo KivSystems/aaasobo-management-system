@@ -8,6 +8,7 @@ import {
   CalendarDaysIcon,
   ClipboardDocumentListIcon,
   UserGroupIcon,
+  AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import { FC, SVGProps } from "react";
 import { AdminAuthentication } from "@/app/helper/utils/authenticationUtils";
@@ -52,6 +53,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       name: "Child List",
       href: "/admins/child-list",
       icon: UserGroupIcon,
+    },
+    {
+      name: "Plan List",
+      href: "/admins/plan-list",
+      icon: AcademicCapIcon,
     },
   ];
 

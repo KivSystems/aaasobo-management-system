@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import styles from "./UsersTable.module.scss";
+import styles from "./ListTable.module.scss";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   useReactTable,
@@ -15,11 +15,12 @@ import {
   getAllInstructors,
   getAllCustomers,
   getAllChildren,
+  getAllPlans,
 } from "@/app/helper/api/adminsApi";
 import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
 
-type UsersTableProps = {
-  userType: string;
+type ListTableProps = {
+  listType: string;
   omitItems: string[];
   linkItems: string[];
   linkUrls: string[];
@@ -27,55 +28,58 @@ type UsersTableProps = {
   addUserLink?: string[];
 };
 
-function UsersTable({
-  userType,
+function ListTable({
+  listType,
   omitItems,
   linkItems,
   linkUrls,
   replaceItems,
   addUserLink,
-}: UsersTableProps) {
-  const [users, setUsers] = useState<any[]>([]);
+}: ListTableProps) {
+  const [data, setData] = useState<any[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterColumn, setFilterColumn] = useState<string>("0");
   const [filterValue, setFilterValue] = useState<string>("");
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch the users based on the user type
-    const fetchUsers = async () => {
+    // Fetch the applicable based on the list type
+    const fetchData = async () => {
       try {
-        let usersData;
-        switch (userType) {
+        let fetchData;
+        switch (listType) {
           case "Admin List":
-            usersData = await getAllAdmins();
+            fetchData = await getAllAdmins();
             break;
           case "Instructor List":
-            usersData = await getAllInstructors();
+            fetchData = await getAllInstructors();
             // Set the active tab to the instructor calendar tab.
             localStorage.setItem("activeInstructorTab", "0");
             break;
           case "Customer List":
-            usersData = await getAllCustomers();
+            fetchData = await getAllCustomers();
             // Set the active tab to the customer calendar tab.
             localStorage.setItem("activeCustomerTab", "0");
             break;
           case "Child List":
-            usersData = await getAllChildren();
+            fetchData = await getAllChildren();
             // Set the active tab to the children profiles tab.
             localStorage.setItem("activeCustomerTab", "2");
             break;
+          case "Plan List":
+            fetchData = await getAllPlans();
+            break;
           default:
-            usersData = [];
+            fetchData = [];
         }
-        setUsers(usersData);
+        setData(fetchData);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchUsers();
-  }, [userType]);
+    fetchData();
+  }, [listType]);
 
   useEffect(() => {
     // Handle the click event on the table cell
@@ -94,13 +98,13 @@ function UsersTable({
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, [users]);
+  }, [data]);
 
   // Define the displays of the table
   const columns = useMemo<ColumnDef<any>[]>(
     () =>
-      users.length > 0
-        ? Object.keys(users[0])
+      data.length > 0
+        ? Object.keys(data[0])
             // Omit the item from the table
             .filter((key) => !omitItems.includes(key))
             // Set the item to be a link
@@ -126,7 +130,7 @@ function UsersTable({
               },
             }))
         : [],
-    [users, omitItems, linkItems, linkUrls, replaceItems],
+    [data, omitItems, linkItems, linkUrls, replaceItems],
   );
 
   // Handle cell click to toggle the expanded state
@@ -137,14 +141,14 @@ function UsersTable({
   // Configure the filter
   const filteredData = useMemo(
     () =>
-      users.filter((user) =>
+      data.filter((eachData) =>
         filterColumn && filterValue
-          ? String(user[filterColumn])
+          ? String(eachData[filterColumn])
               .toLowerCase()
               .includes(filterValue.toLowerCase())
           : true,
       ),
-    [users, filterColumn, filterValue],
+    [data, filterColumn, filterValue],
   );
 
   // Define the table configuration
@@ -177,12 +181,12 @@ function UsersTable({
     // TODO: Delete the selected user
     if (rowId === null) return alert("Something went wrong. Please try again.");
     const deleteId = parseInt(rowId);
-    console.log("Delete the selected user:", users[deleteId]);
+    console.log("Delete the selected user:", data[deleteId]);
   };
 
   return (
     <>
-      <h1 className={styles.title}>{userType}</h1>
+      <h1 className={styles.title}>{listType}</h1>
       <div className={styles.container}>
         <div className={styles.topContainer}>
           <div className={styles.filterContainer}>
@@ -190,8 +194,8 @@ function UsersTable({
               <option disabled value="0">
                 Select a column
               </option>
-              {users.length > 0 &&
-                Object.keys(users[0])
+              {data.length > 0 &&
+                Object.keys(data[0])
                   .filter((key) => !omitItems.includes(key))
                   .map((key) => (
                     <option key={key} value={key}>
@@ -274,4 +278,4 @@ function UsersTable({
   );
 }
 
-export default UsersTable;
+export default ListTable;

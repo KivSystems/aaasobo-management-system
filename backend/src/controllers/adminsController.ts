@@ -8,6 +8,7 @@ import {
 } from "../services/instructorsService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
+import { getAllPlans } from "../services/plansService";
 import bcrypt from "bcrypt";
 import { logout } from "../helper/logout";
 
@@ -280,6 +281,31 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
         "Customer name": customer.name,
         Birthdate: birthdate?.toISOString().slice(0, 10),
         "Personal info": personalInfo,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Admin dashboard for displaying all plans' information
+export const getAllPlansController = async (_: Request, res: Response) => {
+  try {
+    // Fetch all plans data.
+    const plans = await getAllPlans();
+
+    // Transform the data structure.
+    const data = plans.map((plan, number) => {
+      const { id, name, weeklyClassTimes, description } = plan;
+
+      return {
+        No: number + 1,
+        ID: id,
+        Name: name,
+        "Weekly class times": weeklyClassTimes,
+        Description: description,
       };
     });
 
