@@ -245,6 +245,21 @@ type UpcomingClassesProps = {
   isCancelingModalOpen: boolean;
 };
 
+type CustomerProfile = {
+  id: number;
+  name: string;
+  email: string;
+  prefecture: string;
+};
+
+type InstructorProfile = {
+  id: number;
+  name: string;
+  nickname: string;
+};
+
+type LanguageType = "ja" | "en";
+
 type ClassInfo = { classId: number; classDateTime: string };
 type ClassInfoList = ClassInfo[];
 type SetClassInfoList = React.Dispatch<React.SetStateAction<ClassInfoList>>;

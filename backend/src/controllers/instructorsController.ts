@@ -505,8 +505,19 @@ export const getInstructorProfileController = async (
 
   try {
     const profile = await getInstructorProfile(instructorId);
+
+    if (!profile) {
+      return res.status(404).json({ error: "Instructor profile not found." });
+    }
+
     res.status(200).json(profile);
   } catch (error) {
-    return setErrorResponse(res, error);
+    console.error("Error fetching instructor profile:", error);
+    res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.",
+    });
   }
 };

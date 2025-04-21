@@ -2,24 +2,19 @@ import { Customer, Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
 import { saltRounds } from "../controllers/adminsController";
+import { Customer } from "@prisma/client";
 
-export const fetchCustomerById = async (
-  customerId: number,
-): Promise<Customer | null> => {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId },
-    });
+export const getCustomerById = async (customerId: number) => {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+  });
 
-    if (!customer) {
-      throw new Error("Customer not found.");
-    }
-
-    return customer;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch customer.");
+  if (!customer) {
+    return null;
   }
+
+  const { password, ...customerWithoutPassword } = customer;
+  return customerWithoutPassword;
 };
 
 export const updateCustomer = async (

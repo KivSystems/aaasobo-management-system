@@ -4,6 +4,7 @@ import ActionButton from "@/app/components/elements/buttons/actionButton/ActionB
 import Modal from "@/app/components/elements/modal/Modal";
 import { useState } from "react";
 import CancelClassesModal from "./cancelClassesModal/CancelClassesModal";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function CancelClassesModalController({
   upcomingClasses,
@@ -11,12 +12,12 @@ export default function CancelClassesModalController({
   isAdminAuthenticated,
 }: CancelClassesModalControllerProps) {
   const [isCancelingModalOpen, setIsCancelingModalOpen] = useState(false);
+  const { language } = useLanguage();
 
   return (
     <>
-      {/* TODO: Determine the language (jp or en) for the btnText based on context. */}
       <ActionButton
-        btnText="Cancel Classes"
+        btnText={language === "ja" ? "予約をキャンセル" : "Cancel Classes"}
         className="cancelClasses"
         onClick={() => {
           setIsCancelingModalOpen(true);
