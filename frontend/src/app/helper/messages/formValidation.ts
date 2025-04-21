@@ -1,10 +1,7 @@
 export const GENERAL_ERROR_MESSAGE =
-  "Something went wrong. We apologize for the inconvenience. Please try again shortly.";
+  "Something went wrong. Please try again shortly. If the problem persists, contact our staff. We apologize for the inconvenience.";
 
 // RegisterForm
-export const ACCOUNT_REGISTRATION_FAILURE_MESSAGE =
-  "An error occurred. We apologize for the inconvenience. Please try registering your account again.";
-
 export const EMAIL_ALREADY_REGISTERED_ERROR =
   "This email address is already registered. Try a different one.";
 
@@ -12,7 +9,7 @@ export const CONFIRMATION_EMAIL_SENT =
   "We have sent a confirmation email. Please click the link in the email to activate your account.";
 
 export const CONFIRMATION_EMAIL_SEND_FAILURE =
-  "We couldn't send the confirmation email. Please try logging in using the link above to request a new one. We apologize for the inconvenience.";
+  "We couldn't send the confirmation email. Please check your email address and try again. If the problem persists, contact our staff. We apologize for the inconvenience.";
 
 // LoginForm
 export const LOGIN_FAILED_MESSAGE = "Invalid email or password.";

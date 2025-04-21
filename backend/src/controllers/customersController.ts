@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
+  deleteCustomer,
   fetchCustomerById,
   getCustomerByEmail,
   registerCustomer,
@@ -17,7 +18,11 @@ import {
   getBookableClasses,
   getUpcomingClasses,
 } from "../services/classesService";
-import { sendVerificationEmailHandler } from "../helper/emailHandlers";
+import {
+  deleteVerificationToken,
+  generateVerificationToken,
+} from "../services/verificationTokensService";
+import { sendVerificationEmail } from "../helper/mail";
 
 export const registerCustomerController = async (
   req: Request,
@@ -38,21 +43,34 @@ export const registerCustomerController = async (
       return res.sendStatus(409);
     }
 
-    const customer = await registerCustomer({
-      name,
-      email: normalizedEmail,
-      password,
-      prefecture,
-    });
+    const { customer, verificationToken } = await prisma.$transaction(
+      async (tx) => {
+        const customer = await registerCustomer(
+          { name, email: normalizedEmail, password, prefecture },
+          tx,
+        );
 
-    // Send email to verify the registered email address
-    const emailSent = await sendVerificationEmailHandler(
-      normalizedEmail,
-      customer.name,
-      "customer",
-      "registering customer",
+        const verificationToken = await generateVerificationToken(
+          normalizedEmail,
+          tx,
+        );
+
+        return { customer, verificationToken };
+      },
     );
-    if (!emailSent) {
+
+    const sendResult = await sendVerificationEmail(
+      verificationToken.email,
+      name,
+      verificationToken.token,
+      "customer",
+    );
+
+    if (!sendResult.success) {
+      await prisma.$transaction(async (tx) => {
+        await deleteCustomer(customer.id, tx);
+        await deleteVerificationToken(normalizedEmail, tx);
+      });
       return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
     }
 
