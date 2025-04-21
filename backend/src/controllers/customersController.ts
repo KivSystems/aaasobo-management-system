@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
   deleteCustomer,
-  fetchCustomerById,
   getCustomerByEmail,
   getCustomerById,
   registerCustomer,

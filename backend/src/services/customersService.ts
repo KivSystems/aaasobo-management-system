@@ -2,7 +2,6 @@ import { Customer, Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
 import { saltRounds } from "../controllers/adminsController";
-import { Customer } from "@prisma/client";
 
 export const getCustomerById = async (customerId: number) => {
   const customer = await prisma.customer.findUnique({
