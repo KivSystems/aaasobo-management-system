@@ -209,6 +209,18 @@ type RegisterFormState = {
   successMessage?: string;
 };
 
+type UpdateFormState = {
+  name?: string;
+  nickname?: string;
+  email?: string;
+  classURL?: string;
+  meetingId?: string;
+  passcode?: string;
+  introductionURL?: string;
+  errorMessage?: string;
+  successMessage?: string;
+};
+
 type UpcomingClass = {
   id: number;
   dateTime: string;
