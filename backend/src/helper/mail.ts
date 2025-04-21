@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+import { CreateEmailResponse, Resend } from "resend";
 
 // Initialize Resend with API key
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -13,7 +13,7 @@ export const sendVerificationEmail = async (
   const confirmLink = `${process.env.FRONTEND_ORIGIN}/auth/new-verification?token=${token}&type=${userType}`;
 
   try {
-    await resend.emails.send({
+    const response: CreateEmailResponse = await resend.emails.send({
       // TODO: Replace 'onboarding@resend.dev' with KIV's verified email address before going live.
       from: "onboarding@resend.dev", // Resend-provided email
       to: email,
@@ -74,9 +74,26 @@ export const sendVerificationEmail = async (
     `,
     });
 
+    if ("error" in response && response.error) {
+      console.error("Error sending verification email with Resend", {
+        error: response.error,
+        context: {
+          email: email,
+          time: new Date().toISOString(),
+        },
+      });
+      return { success: false };
+    }
+
     return { success: true };
-  } catch (err) {
-    console.error(err);
+  } catch (error: any) {
+    console.error("Unexpected error sending verification email with Resend", {
+      error,
+      context: {
+        email: email,
+        time: new Date().toISOString(),
+      },
+    });
     return { success: false };
   }
 };

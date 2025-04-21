@@ -16,6 +16,7 @@ import UpcomingClasses from "./upcomingClasses/UpcomingClasses";
 import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
 import { useState } from "react";
 import { validateCancelableClasses } from "@/app/helper/utils/validationUtils";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function CancelClassesModal({
   upcomingClasses,
@@ -27,17 +28,23 @@ export default function CancelClassesModal({
   const [selectedClasses, setSelectedClasses] = useState<
     { classId: number; classDateTime: string }[]
   >([]);
+  const { language } = useLanguage();
 
   const handleBulkCancel = async () => {
     if (selectedClasses.length === 0) return;
 
     // Validation: exclude classes that have passed the previous day's cancellation deadline.
-    if (!validateCancelableClasses(selectedClasses, setSelectedClasses)) {
+    if (
+      !validateCancelableClasses(selectedClasses, setSelectedClasses, language)
+    ) {
       return;
     }
 
-    // TODO: Determine the language (jp or en) for the message based on context.
-    const confirmed = window.confirm(CONFIRM_CLASS_CANCELLATION.en);
+    const confirmed = window.confirm(
+      language === "ja"
+        ? CONFIRM_CLASS_CANCELLATION.ja
+        : CONFIRM_CLASS_CANCELLATION.en,
+    );
     if (!confirmed) return setIsCancelingModalOpen(false);
 
     const classesToCancel = selectedClasses.map(
@@ -52,11 +59,17 @@ export default function CancelClassesModal({
       );
 
       setIsCancelingModalOpen(false);
-      // TODO: Determine the language (jp or en) for the message based on context.
-      toast.success(SELECTED_CLASSES_CANCELLATION_SUCCESS.en);
+      toast.success(
+        language === "ja"
+          ? SELECTED_CLASSES_CANCELLATION_SUCCESS.ja
+          : SELECTED_CLASSES_CANCELLATION_SUCCESS.en,
+      );
     } catch (error) {
-      // TODO: Determine the language (jp or en) for the message based on context.
-      alert(FAILED_TO_CANCEL_CLASSES.en);
+      alert(
+        language === "ja"
+          ? FAILED_TO_CANCEL_CLASSES.ja
+          : FAILED_TO_CANCEL_CLASSES.en,
+      );
     }
   };
 
@@ -71,9 +84,11 @@ export default function CancelClassesModal({
           <>
             <Table
               className="cancelClasses"
-              // TODO: Determine the language (jp or en) for headItems based on context.
-              // headItems={["", "日付", "時間", "インストラクター", "お子様"]}
-              headItems={["", "Date", "Time", "Instructor", "Children"]}
+              headItems={
+                language === "ja"
+                  ? ["", "日付", "時間", "インストラクター", "お子様"]
+                  : ["", "Date", "Time", "Instructor", "Children"]
+              }
             >
               <UpcomingClasses
                 upcomingClasses={upcomingClasses}
@@ -84,28 +99,33 @@ export default function CancelClassesModal({
             </Table>
 
             {showSameDayCancelNotice && (
-              // TODO: Determine the language (jp or en) for the message based on context.
-              <InfoBanner info={TODAYS_CLASS_CANCELLATION_NOTICE.en} />
+              <InfoBanner
+                info={
+                  language === "ja"
+                    ? TODAYS_CLASS_CANCELLATION_NOTICE.ja
+                    : TODAYS_CLASS_CANCELLATION_NOTICE.en
+                }
+              />
             )}
           </>
         ) : (
           <h3 style={{ textAlign: "center" }}>
-            {/* TODO: Determine the language (jp or en) for the message based on context. */}
-            {NO_CANCELABLE_CLASSES_MESSAGE.en}
+            {language === "ja"
+              ? NO_CANCELABLE_CLASSES_MESSAGE.ja
+              : NO_CANCELABLE_CLASSES_MESSAGE.en}
           </h3>
         )}
 
-        {/* TODO: Determine the language (jp or en) for the btnText based on context. */}
         <div className={styles.classesTable__buttons}>
           <ActionButton
-            btnText="Back"
+            btnText={language === "ja" ? "戻る" : "Back"}
             className="back"
             onClick={() => setIsCancelingModalOpen(false)}
           />
           <ActionButton
             onClick={handleBulkCancel}
             disabled={selectedClasses.length === 0}
-            btnText={`Cancel Classes ${selectedClasses.length > 0 ? `(${selectedClasses.length})` : ""}`}
+            btnText={`${language === "ja" ? "予約をキャンセル" : "Cancel Classes"}${selectedClasses.length > 0 ? ` (${selectedClasses.length})` : ""}`}
             className="cancelSelectedClasses"
           />
         </div>

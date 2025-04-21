@@ -222,6 +222,18 @@ type ResetPasswordFormState = {
   successMessage?: string;
 };
 
+type UpdateFormState = {
+  name?: string;
+  nickname?: string;
+  email?: string;
+  classURL?: string;
+  meetingId?: string;
+  passcode?: string;
+  introductionURL?: string;
+  errorMessage?: string;
+  successMessage?: string;
+};
+
 type UpcomingClass = {
   id: number;
   dateTime: string;
@@ -257,6 +269,21 @@ type UpcomingClassesProps = {
   setSelectedClasses: Dispatch<SetStateAction<SelectedClass>>;
   isCancelingModalOpen: boolean;
 };
+
+type CustomerProfile = {
+  id: number;
+  name: string;
+  email: string;
+  prefecture: string;
+};
+
+type InstructorProfile = {
+  id: number;
+  name: string;
+  nickname: string;
+};
+
+type LanguageType = "ja" | "en";
 
 type ClassInfo = { classId: number; classDateTime: string };
 type ClassInfoList = ClassInfo[];

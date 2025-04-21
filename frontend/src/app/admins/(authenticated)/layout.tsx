@@ -8,6 +8,8 @@ import {
   CalendarDaysIcon,
   ClipboardDocumentListIcon,
   UserGroupIcon,
+  AcademicCapIcon,
+  ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import { FC, SVGProps } from "react";
 import { AdminAuthentication } from "@/app/helper/utils/authenticationUtils";
@@ -34,6 +36,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       icon: CalendarDaysIcon,
     },
     {
+      name: "Class List",
+      href: "/admins/class-list",
+      icon: ChatBubbleLeftRightIcon,
+    },
+    {
       name: "Admin List",
       href: "/admins/admin-list",
       icon: UserIcon,
@@ -52,6 +59,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       name: "Child List",
       href: "/admins/child-list",
       icon: UserGroupIcon,
+    },
+    {
+      name: "Plan List",
+      href: "/admins/plan-list",
+      icon: AcademicCapIcon,
     },
   ];
 

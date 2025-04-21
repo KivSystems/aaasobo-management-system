@@ -62,6 +62,42 @@ export const getAllChildren = async () => {
   }
 };
 
+// GET all plans data
+export const getAllPlans = async () => {
+  try {
+    const apiUrl = `${BASE_URL}/plan-list`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["plans"] },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const { data } = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch plans:", error);
+    throw error;
+  }
+};
+
+// GET all class data
+export const getAllClasses = async () => {
+  try {
+    const apiUrl = `${BASE_URL}/class-list`;
+    const response = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const { data } = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch classes:", error);
+    throw error;
+  }
+};
+
 export const logoutAdmin = async () => {
   try {
     const response = await fetch(`${BASE_URL}/logout`, {

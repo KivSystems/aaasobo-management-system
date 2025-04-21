@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
-  fetchCustomerById,
+  deleteCustomer,
   getCustomerByEmail,
+  getCustomerById,
   registerCustomer,
   updateCustomer,
 } from "../services/customersService";
@@ -42,40 +43,35 @@ export const registerCustomerController = async (
       return res.sendStatus(409);
     }
 
-    const customer = await registerCustomer({
+    const { customer, verificationToken } = await prisma.$transaction(
+      async (tx) => {
+        const customer = await registerCustomer(
+          { name, email: normalizedEmail, password, prefecture },
+          tx,
+        );
+
+        const verificationToken = await generateVerificationToken(
+          normalizedEmail,
+          tx,
+        );
+
+        return { customer, verificationToken };
+      },
+    );
+
+    const sendResult = await sendVerificationEmail(
+      verificationToken.email,
       name,
-      email: normalizedEmail,
-      password,
-      prefecture,
-    });
+      verificationToken.token,
+      "customer",
+    );
 
-    try {
-      const verificationToken =
-        await generateVerificationToken(normalizedEmail);
-
-      const sendResult = await sendVerificationEmail(
-        verificationToken.email,
-        customer.name,
-        verificationToken.token,
-        "customer",
-      );
-
-      if (!sendResult.success) {
-        await deleteVerificationToken(verificationToken.email);
-        return res.sendStatus(503); // Failed to send verification email. 503 Service Unavailable
-      }
-    } catch (emailError) {
-      console.error(
-        "Email verification step failed while registering customer",
-        {
-          error: emailError,
-          context: {
-            email: normalizedEmail,
-            time: new Date().toISOString(),
-          },
-        },
-      );
-      return res.sendStatus(503);
+    if (!sendResult.success) {
+      await prisma.$transaction(async (tx) => {
+        await deleteCustomer(customer.id, tx);
+        await deleteVerificationToken(normalizedEmail, tx);
+      });
+      return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
     }
 
     res.sendStatus(201);
@@ -129,22 +125,20 @@ export const getSubscriptionsByIdController = async (
   }
 };
 
-export const getCustomerById = async (req: Request, res: Response) => {
-  const customerId = parseInt(req.params.id);
-
-  if (isNaN(customerId)) {
-    return res.status(400).json({ error: "Invalid customer ID." });
-  }
+export const getCustomerByIdController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
 
   try {
-    const customer = await fetchCustomerById(customerId);
+    const customer = await getCustomerById(customerId);
 
     if (!customer) {
       return res.status(404).json({ error: "Customer not found." });
     }
 
-    const { password, ...customerWithoutPassword } = customer;
-    res.json({ customer: customerWithoutPassword });
+    res.json(customer);
   } catch (error) {
     console.error("Error fetching customer:", error);
     res.status(500).json({

@@ -1,12 +1,13 @@
 import {
   FAILED_TO_FETCH_BOOKABLE_CLASSES,
+  FAILED_TO_FETCH_CUSTOMER_PROFILE,
   FAILED_TO_FETCH_UPCOMING_CLASSES,
 } from "../messages/customerDashboard";
 import {
-  ACCOUNT_REGISTRATION_FAILURE_MESSAGE,
   CONFIRMATION_EMAIL_SEND_FAILURE,
   CONFIRMATION_EMAIL_SENT,
   EMAIL_ALREADY_REGISTERED_ERROR,
+  GENERAL_ERROR_MESSAGE,
 } from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
@@ -14,23 +15,28 @@ const BACKEND_ORIGIN =
 
 export const getCustomerById = async (
   customerId: number,
-): Promise<Customer> => {
+): Promise<CustomerProfile> => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/customer`,
       {
+        // TODO: Remove this line before production to use cached data
         cache: "no-store",
+        next: { tags: ["customer-profile"] },
       },
     );
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const { error } = await response.json();
+
+      throw new Error(`HTTP Status: ${response.status} ${error}`);
     }
-    const data: { customer: Customer } = await response.json();
-    return data.customer;
+
+    const customerData = await response.json();
+    return customerData;
   } catch (error) {
-    // TODO: Improve error handling
-    console.error("Failed to fetch customer data:", error);
-    throw error;
+    console.error("Failed to fetch the customer profile:", error);
+    throw new Error(FAILED_TO_FETCH_CUSTOMER_PROFILE);
   }
 };
 
@@ -107,7 +113,7 @@ export const registerCustomer = async (userData: {
   } catch (error) {
     console.error("API error while registering customer:", error);
     return {
-      errorMessage: ACCOUNT_REGISTRATION_FAILURE_MESSAGE,
+      errorMessage: GENERAL_ERROR_MESSAGE,
     };
   }
 };
@@ -140,6 +146,7 @@ export const getUpcomingClasses = async (customerId: number) => {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`,
       {
+        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
         cache: "no-store",
         next: { tags: ["upcoming-classes"] },
       },

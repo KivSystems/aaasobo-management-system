@@ -1,7 +1,7 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { signIn } from "../../../auth.config";
+import { signIn, signOut } from "../../../auth.config";
 import { userLoginSchema } from "../schemas/authSchema";
 import { extractLoginValidationErrors } from "../helper/utils/validationErrorUtils";
 import { authenticateUser } from "../helper/api/usersApi";
@@ -59,4 +59,8 @@ export async function authenticate(
     // Re-throw non-auth errors so that Next.js can handle redirects properly.
     throw error;
   }
+}
+
+export async function logout(userType: UserType) {
+  await signOut({ redirectTo: `/${userType}s/login` });
 }

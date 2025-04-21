@@ -1,3 +1,5 @@
+import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/instructors`;
@@ -43,20 +45,22 @@ export const getInstructors = async () => {
 export const getInstructor = async (
   id: number,
 ): Promise<Response<{ instructor: Instructor }>> => {
-  const data: Response<{ instructor: Instructor }> = await fetch(
-    `${BASE_URL}/${id}`,
-  ).then((res) => res.json());
+  const apiUrl = `${BASE_URL}/${id}`;
+  const data: Response<{ instructor: Instructor }> = await fetch(apiUrl, {
+    cache: "no-store",
+  }).then((res) => res.json());
 
   if ("instructor" in data) {
     data.instructor.availabilities = data.instructor.availabilities.sort(
       (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
     );
   }
+
   return data;
 };
 
 // PATCH instructor data
-export const editInstructor = async (
+export const updateInstructor = async (
   instructorId: number,
   instructorName: string,
   instructorEmail: string,
@@ -89,8 +93,8 @@ export const editInstructor = async (
 
   const data = await response.json();
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  if (response.status !== 200) {
+    return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
   }
 
   return data;
@@ -271,15 +275,20 @@ export const getInstructorProfile = async (
 ): Promise<InstructorProfile> => {
   try {
     const response = await fetch(`${BASE_URL}/${instructorId}/profile`, {
+      // TODO: Remove this line before production to use cached data
       cache: "no-store",
+      next: { tags: ["instructor-profile"] },
     });
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const { error } = await response.json();
+      throw new Error(`HTTP Status: ${response.status} ${error}`);
     }
-    const data: InstructorProfile = await response.json();
-    return data;
+
+    const instructorProfile = await response.json();
+    return instructorProfile;
   } catch (error) {
     console.error("Failed to fetch instructor profile:", error);
-    throw error;
+    throw new Error("We couldn't load your profile. Please try again later.");
   }
 };

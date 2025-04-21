@@ -5,7 +5,7 @@
   gap: 0.5rem;
   align-items: center;
   border-radius: 8px;
-  padding: 8px 15px 8px 12px;
+  padding: 8px 12px 8px 10px;
   &--error {
     background-color: #fdecea;
   }
@@ -28,17 +28,15 @@
 }
 
 .errorText {
-  font-size: 0.9rem;
+  font-size: 13px;
   color: #d93025;
   margin-bottom: unset !important;
-  text-align: justify;
 }
 
 .successText {
-  font-size: 0.9rem;
+  font-size: 13px;
   color: #188038;
   margin-bottom: unset !important;
-  text-align: justify;
 }
 
 // Custom styling for error messages in text inputs

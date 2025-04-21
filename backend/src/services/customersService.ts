@@ -1,25 +1,19 @@
-import { Customer } from "@prisma/client";
+import { Customer, Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
 import { saltRounds } from "../controllers/adminsController";
 
-export const fetchCustomerById = async (
-  customerId: number,
-): Promise<Customer | null> => {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId },
-    });
+export const getCustomerById = async (customerId: number) => {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+  });
 
-    if (!customer) {
-      throw new Error("Customer not found.");
-    }
-
-    return customer;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch customer.");
+  if (!customer) {
+    return null;
   }
+
+  const { password, ...customerWithoutPassword } = customer;
+  return customerWithoutPassword;
 };
 
 export const updateCustomer = async (
@@ -66,22 +60,25 @@ export const getCustomerByEmail = async (
   });
 };
 
-export const registerCustomer = async ({
-  name,
-  email,
-  password,
-  prefecture,
-}: {
-  name: string;
-  email: string;
-  password: string;
-  prefecture: string;
-}) => {
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+export const registerCustomer = async (
+  data: {
+    name: string;
+    email: string;
+    password: string;
+    prefecture: string;
+  },
+  tx?: Prisma.TransactionClient,
+) => {
+  const db = tx ?? prisma;
+  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
-  const customer = await prisma.customer.create({
-    data: { name, email, password: hashedPassword, prefecture },
+  const customer = await db.customer.create({
+    data: {
+      name: data.name,
+      email: data.email,
+      password: hashedPassword,
+      prefecture: data.prefecture,
+    },
   });
 
   return {
@@ -112,5 +109,17 @@ export const updateCustomerPassword = async (
   return await prisma.customer.update({
     where: { id },
     data: { password: newPassword },
+  });
+};
+
+export const deleteCustomer = async (
+  id: number,
+  tx?: Prisma.TransactionClient,
+) => {
+  const db = tx ?? prisma;
+  await db.customer.delete({
+    where: {
+      id,
+    },
   });
 };
