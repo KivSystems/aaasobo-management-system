@@ -9,6 +9,7 @@ import {
   getAllCustomersController,
   getAllChildrenController,
   getAllPlansController,
+  getAllClassesController,
 } from "../../src/controllers/adminsController";
 import {
   requireAuthentication,
@@ -33,3 +34,4 @@ adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
+adminsRouter.get("/class-list", getAllClassesController);

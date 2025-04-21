@@ -6,6 +6,7 @@ import {
   getAllInstructors,
   createInstructor,
 } from "../services/instructorsService";
+import { getAllClasses } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
@@ -306,6 +307,56 @@ export const getAllPlansController = async (_: Request, res: Response) => {
         Name: name,
         "Weekly class times": weeklyClassTimes,
         Description: description,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Get all class information for Admin lesson list page
+export const getAllClassesController = async (_: Request, res: Response) => {
+  try {
+    // Fetch all class data.
+    const classes = await getAllClasses();
+
+    // Transform the data structure.
+    const data = classes.map((classItem, number) => {
+      const { id, instructor, customer, dateTime, status } = classItem;
+      const instructorName = instructor.name;
+      const customerName = customer.name;
+
+      // Convert dateTime from UTC to JST (Add 9 hours).
+      const dateTimeUTC = new Date(dateTime);
+      const dateTimeJST = new Date(dateTimeUTC.getTime() + 9 * 60 * 60 * 1000);
+
+      // Format the displayed status.
+      let statusText = "";
+      switch (status) {
+        case "booked":
+          statusText = "Booked";
+          break;
+        case "completed":
+          statusText = "Completed";
+          break;
+        case "canceledByCustomer":
+          statusText = "Canceled(Customer)";
+          break;
+        case "canceledByInstructor":
+          statusText = "Canceled(Instructor)";
+          break;
+      }
+
+      return {
+        No: number + 1,
+        ID: id,
+        Instructor: instructorName,
+        Customer: customerName,
+        Date: dateTimeJST.toISOString().slice(0, 10),
+        Time: dateTimeJST.toISOString().slice(11, 16),
+        Status: statusText,
       };
     });
 
