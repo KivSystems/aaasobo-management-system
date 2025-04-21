@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
+  deleteCustomer,
   getCustomerByEmail,
   getCustomerById,
   registerCustomer,
@@ -12,16 +13,16 @@ import {
 } from "../services/subscriptionsService";
 import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
-import {
-  EMAIL_ALREADY_REGISTERED_ERROR,
-  GENERAL_ERROR_MESSAGE,
-  REGISTRATION_SUCCESS_MESSAGE,
-} from "../helper/messages";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import {
   getBookableClasses,
   getUpcomingClasses,
 } from "../services/classesService";
+import {
+  deleteVerificationToken,
+  generateVerificationToken,
+} from "../services/verificationTokensService";
+import { sendVerificationEmail } from "../helper/mail";
 
 export const registerCustomerController = async (
   req: Request,
@@ -30,7 +31,7 @@ export const registerCustomerController = async (
   const { name, email, password, prefecture } = req.body;
 
   if (!name || !email || !password || !prefecture) {
-    return res.status(400).json({ message: GENERAL_ERROR_MESSAGE });
+    return res.sendStatus(400);
   }
 
   // Normalize email
@@ -39,22 +40,50 @@ export const registerCustomerController = async (
   try {
     const existingCustomer = await getCustomerByEmail(normalizedEmail);
     if (existingCustomer) {
-      return res.status(409).json({ message: EMAIL_ALREADY_REGISTERED_ERROR });
+      return res.sendStatus(409);
     }
 
-    await registerCustomer({
-      name,
-      email: normalizedEmail,
-      password,
-      prefecture,
-    });
+    const { customer, verificationToken } = await prisma.$transaction(
+      async (tx) => {
+        const customer = await registerCustomer(
+          { name, email: normalizedEmail, password, prefecture },
+          tx,
+        );
 
-    res.status(201).json({
-      message: REGISTRATION_SUCCESS_MESSAGE,
-    });
+        const verificationToken = await generateVerificationToken(
+          normalizedEmail,
+          tx,
+        );
+
+        return { customer, verificationToken };
+      },
+    );
+
+    const sendResult = await sendVerificationEmail(
+      verificationToken.email,
+      name,
+      verificationToken.token,
+      "customer",
+    );
+
+    if (!sendResult.success) {
+      await prisma.$transaction(async (tx) => {
+        await deleteCustomer(customer.id, tx);
+        await deleteVerificationToken(normalizedEmail, tx);
+      });
+      return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
+    }
+
+    res.sendStatus(201);
   } catch (error) {
-    console.error("Error registering customer:", error);
-    res.status(500).json({ message: GENERAL_ERROR_MESSAGE });
+    console.error("Error registering customer", {
+      error,
+      context: {
+        email: normalizedEmail,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 

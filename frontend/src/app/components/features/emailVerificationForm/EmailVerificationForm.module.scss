@@ -1,0 +1,22 @@
+.verificationForm {
+  height: 10rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+
+  &__loaderWrapper {
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__loaderWrapper > * {
+    height: 100%;
+  }
+
+  &__loginLink {
+    margin: 0 auto;
+  }
+}

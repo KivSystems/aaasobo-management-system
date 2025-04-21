@@ -252,6 +252,7 @@ async function insertCustomers() {
         password:
           "$2b$12$GFM.a0hEjl/0/U3IjO057esEr7l.NMKZSeRC7c1he6wzDvoIW4oxy", // AaasoBo!Alice
         prefecture: "Aomori",
+        emailVerified: "2025-04-11T01:26:02.736Z",
       },
       {
         name: "Bob",
@@ -259,6 +260,7 @@ async function insertCustomers() {
         password:
           "$2b$12$txZ49345mBu/RNVfnKFw9.VahiO1wj4z.6aeKckM50LYkd2Upz3eC", // AaasoBo!Bob
         prefecture: "Hokkaido",
+        emailVerified: "2025-04-11T01:26:02.736Z",
       },
     ],
   });

@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/prismaClient";
-import { Prisma } from "@prisma/client";
+import { Instructor, Prisma } from "@prisma/client";
 
 // Create a new instructor account in the DB
 export const createInstructor = async (instructorData: {
@@ -243,15 +243,12 @@ export const getValidRecurringAvailabilities = async (
 };
 
 // Fetch the instructor by the email
-export const getInstructorByEmail = async (email: string) => {
-  try {
-    return await prisma.instructor.findUnique({
-      where: { email },
-    });
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch instructor.");
-  }
+export const getInstructorByEmail = async (
+  email: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { email },
+  });
 };
 
 export async function getInstructorWithRecurringAvailabilityDay(
@@ -364,3 +361,18 @@ export async function getInstructorProfile(instructorId: number) {
 
   return instructorProfile;
 }
+
+export const verifyInstructorEmail = async (
+  id: number,
+  email: string,
+): Promise<void> => {
+  await prisma.instructor.update({
+    where: {
+      id,
+    },
+    data: {
+      emailVerified: new Date(),
+      email,
+    },
+  });
+};

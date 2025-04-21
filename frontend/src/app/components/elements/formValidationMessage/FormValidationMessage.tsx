@@ -1,7 +1,7 @@
 import {
-  ExclamationTriangleIcon,
   CheckCircleIcon,
-} from "@heroicons/react/24/solid";
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 import styles from "./FormValidationMessage.module.scss";
 
 type MessageProps = {
@@ -19,7 +19,9 @@ export default function FormValidationMessage({
   const Icon = isError ? ExclamationTriangleIcon : CheckCircleIcon;
 
   return (
-    <div className={`${styles.message} ${className ? styles[className] : ""}`}>
+    <div
+      className={`${styles.message}  ${isError ? styles["message--error"] : styles["message--success"]} ${className ? styles[className] : ""}`}
+    >
       <Icon
         className={`${styles.icon} ${isError ? styles["icon--error"] : styles["icon--success"]}`}
       />
