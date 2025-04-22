@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 async function insertInstructors() {
   await prisma.instructor.create({
     data: {
+      // TODO: After the PR is approved, reset the email to "helen@example.com"
       email: "kiv-developers@googlegroups.com",
       emailVerified: "2025-03-08T14:31:26.816Z",
       name: "Helene Gay Santos",
@@ -250,6 +251,7 @@ async function insertCustomers() {
     data: [
       {
         name: "Alice",
+        // TODO: After the PR is approved, reset the email to "alice@example.com"
         email: "kiv-developers@googlegroups.com",
         emailVerified: "2025-03-08T14:31:26.816Z",
         password:

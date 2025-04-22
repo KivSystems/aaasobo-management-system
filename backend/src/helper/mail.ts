@@ -107,7 +107,7 @@ export const sendPasswordResetEmail = async (
   const resetLink = `${process.env.FRONTEND_ORIGIN}/auth/reset-password?token=${token}&type=${userType}`;
 
   try {
-    await resend.emails.send({
+    const response: CreateEmailResponse = await resend.emails.send({
       // TODO: Replace 'onboarding@resend.dev' with KIV's verified email address before going live.
       from: "onboarding@resend.dev", // Resend-provided email
       to: email,
@@ -164,9 +164,26 @@ export const sendPasswordResetEmail = async (
   `,
     });
 
+    if ("error" in response && response.error) {
+      console.error("Error sending password reset email with Resend", {
+        error: response.error,
+        context: {
+          email: email,
+          time: new Date().toISOString(),
+        },
+      });
+      return { success: false };
+    }
+
     return { success: true };
-  } catch (err) {
-    console.error(err);
+  } catch (error: any) {
+    console.error("Unexpected error sending password reset email with Resend", {
+      error,
+      context: {
+        email: email,
+        time: new Date().toISOString(),
+      },
+    });
     return { success: false };
   }
 };

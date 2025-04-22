@@ -149,39 +149,6 @@ export const verifyUserEmailController = async (
   }
 };
 
-const handlePasswordResetEmail = async (
-  email: string,
-  name: string,
-  userType: UserType,
-): Promise<boolean> => {
-  try {
-    const passwordResetToken = await generatePasswordResetToken(email);
-
-    const sendResult = await sendPasswordResetEmail(
-      passwordResetToken.email,
-      name,
-      passwordResetToken.token,
-      userType,
-    );
-
-    if (!sendResult.success) {
-      await deletePasswordResetToken(passwordResetToken.email);
-      return false;
-    }
-
-    return true;
-  } catch (emailError) {
-    console.error("Failed to send email during the password reset process.", {
-      error: emailError,
-      context: {
-        email,
-        time: new Date().toISOString(),
-      },
-    });
-    return false;
-  }
-};
-
 export const sendUserResetEmailController = async (
   req: Request,
   res: Response,
@@ -201,12 +168,17 @@ export const sendUserResetEmailController = async (
       return res.sendStatus(404);
     }
 
-    const emailSent = await handlePasswordResetEmail(
-      user.email,
+    const passwordResetToken = await generatePasswordResetToken(user.email);
+
+    const sendResult = await sendPasswordResetEmail(
+      passwordResetToken.email,
       user.name,
+      passwordResetToken.token,
       userType,
     );
-    if (!emailSent) {
+
+    if (!sendResult.success) {
+      await deletePasswordResetToken(passwordResetToken.email);
       return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
     }
 
@@ -215,7 +187,7 @@ export const sendUserResetEmailController = async (
     console.error("Error sending password reset email", {
       error,
       context: {
-        email,
+        email: normalizedEmail,
         userType,
         time: new Date().toISOString(),
       },
@@ -245,12 +217,17 @@ export const updatePasswordController = async (req: Request, res: Response) => {
     const isTokenExpired = new Date(existingToken.expires) < new Date();
 
     if (isTokenExpired) {
-      const emailSent = await handlePasswordResetEmail(
-        existingToken.email,
+      const passwordResetToken = await generatePasswordResetToken(user.email);
+
+      const sendResult = await sendPasswordResetEmail(
+        passwordResetToken.email,
         user.name,
+        passwordResetToken.token,
         userType,
       );
-      if (!emailSent) {
+
+      if (!sendResult.success) {
+        await deletePasswordResetToken(passwordResetToken.email);
         return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
       }
       return res.sendStatus(410); // Token is expired. 410 Gone

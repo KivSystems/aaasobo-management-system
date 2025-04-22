@@ -50,14 +50,14 @@ export const PASSWORD_RESET_EMAIL_SENT_MESSAGE =
   "We've sent you a password reset email. Please check your inbox and spam folder.";
 
 export const PASSWORD_RESET_EMAIL_SEND_FAILURE =
-  "Something went wrong while sending the password reset email. Please try again shortly.";
+  "We couldn't send a password reset email. Please try again shortly. If the problem persists, contact our staff. We apologize for the inconvenience.";
 
 // ResetPasswordForm
 export const PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR =
   "We couldn't verify your request. Please click the reset button in the email again.";
 
 export const PASSWORD_RESET_RESEND_FAILURE =
-  "Your password reset link has expired. We tried to send a new one but couldn't. Please request a new link using the link below. We're sorry for the inconvenience.";
+  "Your password reset link has expired. We tried to send a new one but couldn't. Please request a new link using the link below. If the problem persists, contact our staff.";
 
 export const PASSWORD_RESET_EXPIRED_AND_RESENT =
   "Your password reset link has expired. We've sent you a new one. Please check your inbox and spam folder.";
