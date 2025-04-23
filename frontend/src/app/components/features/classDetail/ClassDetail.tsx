@@ -21,23 +21,20 @@ import {
   VideoCameraIcon,
   XCircleIcon,
 } from "@heroicons/react/24/solid";
+import { cancelClass } from "@/app/helper/api/classesApi";
+import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
+import { toast } from "react-toastify";
 
 const ClassDetail = ({
   customerId, // Necessary when implementing the Rescheduling functionality
   classDetail,
   timeZone,
-  handleCancel,
   isAdminAuthenticated, // Necessary when implementing the Rescheduling functionality
   handleModalClose,
 }: {
   customerId: number;
   classDetail: CustomerClass | null;
   timeZone: string;
-  handleCancel: (
-    classId: number,
-    classDateTime: string,
-    customerId: number,
-  ) => void;
   isAdminAuthenticated?: boolean;
   handleModalClose: () => void;
 }) => {
@@ -52,8 +49,33 @@ const ClassDetail = ({
   const classStartTime = formatTime24Hour(classDateTime);
   const classEndTime = formatTimeWithAddedMinutes(classDateTime, 25);
 
-  const formatChildren = (children: Child[]) =>
-    children.map((child) => child.name).join(", ");
+  const handleCancel = async (
+    classId: number,
+    classDateTime: string,
+    customerId: number,
+  ) => {
+    const isPastPreviousDay = isPastPreviousDayDeadline(classDateTime);
+
+    if (isPastPreviousDay)
+      return alert(
+        "Classes cannot be canceled on or after the scheduled day of the class.",
+      );
+
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this class?",
+    );
+    if (!confirmed) return;
+    try {
+      await cancelClass(classId);
+
+      // TODO: Revalidation should be done directly from a server component or API call
+      await revalidateCustomerCalendar(customerId, isAdminAuthenticated!);
+      handleModalClose();
+      toast.success("The class has been successfully canceled!");
+    } catch (error) {
+      console.error("Failed to cancel the class:", error);
+    }
+  };
 
   const statusClass =
     classDetail.classStatus === "booked"
