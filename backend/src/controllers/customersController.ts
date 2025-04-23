@@ -58,30 +58,6 @@ export const registerCustomerController = async (
   }
 };
 
-// TODO: Delete the controller below
-// export const getCustomersClasses = async (req: Request, res: Response) => {
-//   const id = Number(req.params.id);
-
-//   try {
-//     // Fetch the Customer data from the DB
-//     const customer = await prisma.customer.findUnique({
-//       where: { id },
-//       include: { classes: true },
-//     });
-
-//     if (!customer) {
-//       return res.status(404).json({ error: "Customer not found" });
-//     }
-
-//     // Exclude the password from the response.
-//     const { password, ...customerWithoutPassword } = customer;
-
-//     res.json({ customer: customerWithoutPassword });
-//   } catch (error) {
-//     res.status(500).json({ error });
-//   }
-// };
-
 export const getSubscriptionsByIdController = async (
   req: Request,
   res: Response,
