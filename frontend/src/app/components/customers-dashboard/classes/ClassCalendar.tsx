@@ -24,7 +24,6 @@ export default async function ClassCalendar({
 
       <CustomerCalendar
         customerId={customerId}
-        isAdminAuthenticated={isAdminAuthenticated}
         classes={classes}
         createdAt={createdAt}
         // TODO: Fetch holidays from the backend

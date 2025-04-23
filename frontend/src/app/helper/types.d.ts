@@ -60,7 +60,20 @@ type ClassType = {
   recurringClassId: number;
 };
 
-type CustomerClass = EventType & {
+type Customer = {
+  id: number;
+  name: string;
+  email: string;
+  class?: CustomersClass[];
+  prefecture: string;
+};
+
+type CustomerClass = {
+  classId: number;
+  start: string;
+  end: string;
+  title: string;
+  color: string;
   instructorIcon: string;
   instructorNickname: string;
   instructorName: string;
@@ -124,7 +137,7 @@ type Attendance = {
 };
 
 type EventType = {
-  classId: number;
+  classId?: number;
   start: string;
   end: string;
   title: string;
@@ -159,7 +172,7 @@ type InstructorClassDetail = {
   passcode: string;
   attendingChildren: Child[];
   customerChildren: Child[];
-  status: ClassForCalendar;
+  status: ClassStatus;
   isRebookable: boolean;
 };
 
