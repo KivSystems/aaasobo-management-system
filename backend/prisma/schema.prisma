@@ -18,6 +18,7 @@ model Instructor {
   id                              Int                               @id @default(autoincrement())
   name                            String
   email                           String                            @unique
+  emailVerified                   DateTime?
   password                        String
   instructorAvailability          InstructorAvailability[]
   classes                         Class[]
@@ -61,14 +62,15 @@ model InstructorUnavailability {
 }
 
 model Customer {
-  id           Int            @id @default(autoincrement())
-  name         String
-  email        String         @unique
-  password     String
-  classes      Class[]
-  children     Children[]
-  subscription Subscription[]
-  prefecture   String
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  emailVerified DateTime?
+  password      String
+  classes       Class[]
+  children      Children[]
+  subscription  Subscription[]
+  prefecture    String
   createdAt    DateTime       @default(now())
 }
 
@@ -161,4 +163,13 @@ model RecurringClassAttendance {
   children         Children       @relation(fields: [childrenId], references: [id])
 
   @@id([recurringClassId, childrenId])
+}
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
 }

@@ -23,3 +23,7 @@ export async function revalidateCustomerCalendar(
 export async function revalidateUpcomingClasses() {
   revalidateTag("upcoming-classes");
 }
+
+export async function revalidatePlans() {
+  revalidateTag("plans");
+}

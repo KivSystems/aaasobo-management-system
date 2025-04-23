@@ -1,7 +1,7 @@
+import { Customer, Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import bcrypt from "bcrypt";
 import { saltRounds } from "../controllers/adminsController";
-import { Customer } from "@prisma/client";
 
 export const getCustomerById = async (customerId: number) => {
   const customer = await prisma.customer.findUnique({
@@ -55,45 +55,61 @@ export const getAllCustomers = async () => {
 export const getCustomerByEmail = async (
   email: string,
 ): Promise<Customer | null> => {
-  try {
-    return await prisma.customer.findUnique({
-      where: { email },
-    });
-  } catch (error) {
-    console.error(
-      `Database error while getting customer by email (email: ${email}):`,
-      error,
-    );
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  return await prisma.customer.findUnique({
+    where: { email },
+  });
 };
 
-export const registerCustomer = async ({
-  name,
-  email,
-  password,
-  prefecture,
-}: {
-  name: string;
-  email: string;
-  password: string;
-  prefecture: string;
-}) => {
-  try {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+export const registerCustomer = async (
+  data: {
+    name: string;
+    email: string;
+    password: string;
+    prefecture: string;
+  },
+  tx?: Prisma.TransactionClient,
+) => {
+  const db = tx ?? prisma;
+  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
-    await prisma.customer.create({
-      data: { name, email, password: hashedPassword, prefecture },
-    });
-  } catch (error) {
-    console.error(
-      `Database error while registering customer (email: ${email}):`,
-      error,
-    );
-    throw new Error(
-      `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+  const customer = await db.customer.create({
+    data: {
+      name: data.name,
+      email: data.email,
+      password: hashedPassword,
+      prefecture: data.prefecture,
+    },
+  });
+
+  return {
+    id: customer.id,
+    name: customer.name,
+  };
+};
+
+export const verifyCustomerEmail = async (
+  id: number,
+  email: string,
+): Promise<void> => {
+  await prisma.customer.update({
+    where: {
+      id,
+    },
+    data: {
+      emailVerified: new Date(),
+      email,
+    },
+  });
+};
+
+export const deleteCustomer = async (
+  id: number,
+  tx?: Prisma.TransactionClient,
+) => {
+  const db = tx ?? prisma;
+  await db.customer.delete({
+    where: {
+      id,
+    },
+  });
 };

@@ -1,9 +1,9 @@
 "use client";
 
-import UsersTable from "@/app/components/admins-dashboard/UsersTable";
+import ListTable from "@/app/components/admins-dashboard/ListTable";
 
 export default function Page() {
-  const userType = "Instructor List";
+  const listType = "Instructor List";
   const omitItems = [""]; // Omit the item from the table
   const linkItems = ["ID"]; // Set the item to be a link
   const replaceItems = ["ID"]; // Replace the item with the value(e.g., ID -> 1,2,3...)
@@ -12,8 +12,8 @@ export default function Page() {
 
   return (
     <div>
-      <UsersTable
-        userType={userType}
+      <ListTable
+        listType={listType}
         omitItems={omitItems}
         linkItems={linkItems}
         linkUrls={linkUrls}

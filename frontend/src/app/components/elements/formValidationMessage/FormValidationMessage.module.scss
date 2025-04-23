@@ -4,35 +4,46 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  border-radius: 8px;
+  padding: 8px 12px 8px 10px;
+  &--error {
+    background-color: #fdecea;
+  }
+  &--success {
+    background-color: #e6f4ea;
+  }
 }
 
 .icon {
-  width: 1.2rem;
-  height: 1.2rem;
-  min-width: 1.2rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  min-width: 1.3rem;
+  stroke-width: 2px;
   &--error {
-    color: $red-alert;
+    color: #d93025;
   }
   &--success {
-    color: $green-success;
+    color: #188038;
   }
 }
 
 .errorText {
-  font-size: 0.9rem;
-  color: $red-alert;
+  font-size: 13px;
+  color: #d93025;
   margin-bottom: unset !important;
 }
 
 .successText {
-  font-size: 0.9rem;
-  color: $green-success;
+  font-size: 13px;
+  color: #188038;
   margin-bottom: unset !important;
 }
 
 // Custom styling for error messages in text inputs
 .textInputError {
   margin-top: 0.3rem;
+  background-color: unset;
+  padding: unset;
 
   .errorText {
     font-size: 0.8rem;
