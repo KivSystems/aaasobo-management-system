@@ -1,6 +1,21 @@
+// TODO: Combine this message to "../messages/formValidation"
 import {
+  CONFIRMATION_EMAIL_RESEND_FAILURE,
+  EMAIL_NOT_REGISTERED_MESSAGE,
+  EMAIL_VERIFICATION_FAILED_MESSAGE,
+  EMAIL_VERIFICATION_RESENT_NOTICE,
+  EMAIL_VERIFICATION_SUCCESS_MESSAGE,
+  EMAIL_VERIFICATION_TOKEN_EXPIRED,
+  EMAIL_VERIFICATION_UNEXPECTED_ERROR,
   GENERAL_ERROR_MESSAGE,
   LOGIN_FAILED_MESSAGE,
+  PASSWORD_RESET_EMAIL_SEND_FAILURE,
+  PASSWORD_RESET_EMAIL_SENT_MESSAGE,
+  PASSWORD_RESET_EXPIRED_AND_RESENT,
+  PASSWORD_RESET_FAILED_MESSAGE,
+  PASSWORD_RESET_RESEND_FAILURE,
+  PASSWORD_RESET_SUCCESS_MESSAGE,
+  TOKEN_OR_USER_NOT_FOUND_ERROR,
 } from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
@@ -15,6 +30,12 @@ export const authenticateUser = async (
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({ email, password, userType });
 
+  const statusErrorMessages: Record<number, string> = {
+    401: LOGIN_FAILED_MESSAGE,
+    503: CONFIRMATION_EMAIL_RESEND_FAILURE,
+    403: EMAIL_VERIFICATION_RESENT_NOTICE,
+  };
+
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -22,17 +43,137 @@ export const authenticateUser = async (
       body,
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      return response.status === 401
-        ? { errorMessage: data.message || LOGIN_FAILED_MESSAGE }
-        : { errorMessage: data.message || GENERAL_ERROR_MESSAGE };
+    const errorMessage = statusErrorMessages[response.status];
+    if (errorMessage) {
+      return { errorMessage };
     }
 
-    return { userId: data.userId };
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return { userId: data.id };
   } catch (error) {
-    console.error("Error during authentication:", error);
+    console.error("API error while authenticating[logging in] user:", error);
     return { errorMessage: GENERAL_ERROR_MESSAGE };
+  }
+};
+
+export const verifyUserEmail = async (
+  token: string,
+  userType: UserType,
+): Promise<{ success?: string; error?: string }> => {
+  const apiUrl = `${BACKEND_ORIGIN}/users/verify-email`;
+  const headers = { "Content-Type": "application/json" };
+  const body = JSON.stringify({
+    token,
+    userType,
+  });
+
+  const statusErrorMessages: Record<number, string> = {
+    400: EMAIL_VERIFICATION_FAILED_MESSAGE,
+    404: EMAIL_VERIFICATION_FAILED_MESSAGE,
+    410: EMAIL_VERIFICATION_TOKEN_EXPIRED,
+  };
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "PATCH",
+      headers,
+      body,
+    });
+
+    const errorMessage = statusErrorMessages[response.status];
+    if (errorMessage) {
+      return { error: errorMessage };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return { success: EMAIL_VERIFICATION_SUCCESS_MESSAGE };
+  } catch (error) {
+    console.error("API error while verifying user email:", error);
+    return {
+      error: EMAIL_VERIFICATION_UNEXPECTED_ERROR,
+    };
+  }
+};
+
+export const sendUserResetEmail = async (
+  email: string,
+  userType: UserType,
+): Promise<ForgotPasswordFormState> => {
+  try {
+    const apiURL = `${BACKEND_ORIGIN}/users/send-password-reset`;
+    const response = await fetch(apiURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, userType }),
+    });
+    const statusErrorMessages: Record<number, string> = {
+      404: EMAIL_NOT_REGISTERED_MESSAGE,
+      503: PASSWORD_RESET_EMAIL_SEND_FAILURE,
+    };
+
+    const errorMessage = statusErrorMessages[response.status];
+    if (errorMessage) {
+      return { errorMessage };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      successMessage: PASSWORD_RESET_EMAIL_SENT_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while sending password reset email:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+export const updateUserPassword = async (
+  token: string,
+  userType: UserType,
+  password: string,
+): Promise<ResetPasswordFormState> => {
+  try {
+    const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
+    const response = await fetch(apiURL, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, userType, password }),
+    });
+
+    if (response.status === 410) {
+      return { errorMessage: PASSWORD_RESET_EXPIRED_AND_RESENT };
+    }
+
+    if (response.status === 503) {
+      return { unexpectedErrorMessage: PASSWORD_RESET_RESEND_FAILURE };
+    }
+
+    if (response.status === 404) {
+      return { errorMessage: TOKEN_OR_USER_NOT_FOUND_ERROR };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      successMessage: PASSWORD_RESET_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while updating password:", error);
+    return {
+      unexpectedErrorMessage: PASSWORD_RESET_FAILED_MESSAGE,
+    };
   }
 };

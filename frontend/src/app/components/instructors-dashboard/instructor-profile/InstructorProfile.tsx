@@ -1,9 +1,10 @@
 "use client";
 
-import styles from "./InstructorProfile.module.scss";
-import { getInstructor, editInstructor } from "@/app/helper/api/instructorsApi";
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import styles from "./InstructorProfile.module.scss";
+import { useState, useEffect } from "react";
+import { useFormState } from "react-dom";
+import { updateUser } from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
@@ -19,111 +20,70 @@ import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 
 function InstructorProfile({
-  instructorId,
+  instructor,
   isAdminAuthenticated,
 }: {
-  instructorId: number;
+  instructor: Instructor | string;
   isAdminAuthenticated?: boolean;
 }) {
-  const [instructor, setInstructor] = useState<Instructor | null>();
-  const [latestInstructor, setLatestInstructor] = useState<
-    Instructor | undefined
-  >();
+  const [updateResultState, formAction] = useFormState(updateUser, {});
+  const [previousInstructor, setPreviousInstructor] =
+    useState<Instructor | null>(
+      typeof instructor !== "string" ? instructor : null,
+    );
+  const [latestInstructor, setLatestInstructor] = useState<Instructor | null>(
+    typeof instructor !== "string" ? instructor : null,
+  );
   const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    const fetchInstructorById = async (instructorId: number) => {
-      try {
-        const response = await getInstructor(instructorId);
-        if ("message" in response) {
-          alert(response.message);
-          return;
-        }
-        setInstructor(response.instructor);
-        setLatestInstructor(response.instructor);
-      } catch (error) {
-        console.error("Failed to fetch instructor:", error);
-      }
-    };
-    fetchInstructorById(instructorId);
-  }, [instructorId]);
 
   const handleEditClick = () => {
     setIsEditing(true);
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!instructor) return;
-
-    // Check if there are any changes
-    if (
-      instructor.name === latestInstructor?.name &&
-      instructor.email === latestInstructor?.email &&
-      instructor.classURL === latestInstructor?.classURL &&
-      instructor.icon === latestInstructor?.icon &&
-      instructor.nickname === latestInstructor?.nickname &&
-      instructor.meetingId === latestInstructor?.meetingId &&
-      instructor.passcode === latestInstructor?.passcode &&
-      instructor.introductionURL === latestInstructor?.introductionURL
-    ) {
-      return alert("No changes were made.");
-    }
-
-    // Validate email format
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(instructor.email)) {
-      return alert("Please enter a valid email address.");
-    }
-
-    try {
-      const data = await editInstructor(
-        instructorId,
-        instructor.name,
-        instructor.email,
-        instructor.classURL,
-        instructor.icon,
-        instructor.nickname,
-        instructor.meetingId,
-        instructor.passcode,
-        instructor.introductionURL,
-      );
-      toast.success("Profile edited successfully!");
-
-      setIsEditing(false);
-      setInstructor(data.instructor);
-      setLatestInstructor(data.instructor);
-    } catch (error) {
-      console.error("Failed to edit instructor data:", error);
-    }
   };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: keyof Instructor,
   ) => {
-    if (instructor) {
-      setInstructor({ ...instructor, [field]: e.target.value });
+    if (latestInstructor) {
+      setLatestInstructor({ ...latestInstructor, [field]: e.target.value });
     }
   };
 
   const handleCancelClick = () => {
     if (latestInstructor) {
-      setInstructor(latestInstructor);
+      setLatestInstructor(previousInstructor);
       setIsEditing(false);
     }
   };
+
+  useEffect(() => {
+    if (updateResultState !== undefined) {
+      if ("instructor" in updateResultState) {
+        const result = updateResultState as { instructor: Instructor };
+        toast.success("Profile updated successfully!");
+        setIsEditing(false);
+        setPreviousInstructor(result.instructor);
+        setLatestInstructor(result.instructor);
+      } else {
+        const result = updateResultState as { errorMessage: string };
+        toast.error(result.errorMessage);
+      }
+    }
+  }, [updateResultState]);
+
+  if (typeof instructor === "string") {
+    return <p>{instructor}</p>;
+  }
 
   return (
     <>
       <h2>Profile Page</h2>
       <div className={styles.container}>
-        {instructor ? (
-          <form className={styles.profileCard} onSubmit={handleFormSubmit}>
+        {latestInstructor ? (
+          <form action={formAction} className={styles.profileCard}>
             <Image
-              src={`/instructors/${instructor.icon}`}
-              alt={instructor.name}
+              src={`/instructors/${latestInstructor.icon}`}
+              alt={latestInstructor.name}
               width={100}
               height={100}
               priority
@@ -136,13 +96,13 @@ function InstructorProfile({
               {isEditing ? (
                 <InputField
                   name="name"
-                  value={instructor.name}
+                  value={latestInstructor.name}
                   onChange={(e) => handleInputChange(e, "name")}
                   className={`${styles.instructorName__inputField} ${isEditing ? styles.editable : ""}`}
                 />
               ) : (
                 <h3 className={styles.instructorName__name}>
-                  {instructor.name}
+                  {latestInstructor.name}
                 </h3>
               )}
             </div>
@@ -155,12 +115,12 @@ function InstructorProfile({
                 {isEditing ? (
                   <InputField
                     name="nickname"
-                    value={instructor.nickname}
+                    value={latestInstructor.nickname}
                     onChange={(e) => handleInputChange(e, "nickname")}
                     className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
-                  <h4>{instructor.nickname}</h4>
+                  <h4>{latestInstructor.nickname}</h4>
                 )}
               </div>
             </div>
@@ -174,12 +134,12 @@ function InstructorProfile({
                   <InputField
                     name="email"
                     type="email"
-                    value={instructor.email}
+                    value={latestInstructor.email}
                     onChange={(e) => handleInputChange(e, "email")}
                     className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
-                  <h4>{instructor.email}</h4>
+                  <h4>{latestInstructor.email}</h4>
                 )}
               </div>
             </div>
@@ -192,19 +152,20 @@ function InstructorProfile({
                 {isEditing ? (
                   <InputField
                     name="classURL"
-                    value={instructor.classURL}
+                    type="url"
+                    value={latestInstructor.classURL}
                     onChange={(e) => handleInputChange(e, "classURL")}
                     className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
                   <h4>
                     <a
-                      href={instructor.classURL}
+                      href={latestInstructor.classURL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.url}
                     >
-                      {instructor.classURL}
+                      {latestInstructor.classURL}
                     </a>
                   </h4>
                 )}
@@ -214,12 +175,12 @@ function InstructorProfile({
                   {isEditing ? (
                     <InputField
                       name="meetingId"
-                      value={instructor.meetingId}
+                      value={latestInstructor.meetingId}
                       onChange={(e) => handleInputChange(e, "meetingId")}
                       className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
-                    <p>{instructor.meetingId}</p>
+                    <p>{latestInstructor.meetingId}</p>
                   )}
                 </div>
                 <div className={styles.urlInfo}>
@@ -227,12 +188,12 @@ function InstructorProfile({
                   {isEditing ? (
                     <InputField
                       name="passcode"
-                      value={instructor.passcode}
+                      value={latestInstructor.passcode}
                       onChange={(e) => handleInputChange(e, "passcode")}
                       className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
-                    <p>{instructor.passcode}</p>
+                    <p>{latestInstructor.passcode}</p>
                   )}
                 </div>
               </div>
@@ -246,19 +207,20 @@ function InstructorProfile({
                 {isEditing ? (
                   <InputField
                     name="introductionURL"
-                    value={instructor.introductionURL}
+                    type="url"
+                    value={latestInstructor.introductionURL}
                     onChange={(e) => handleInputChange(e, "introductionURL")}
                     className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
                   <h4>
                     <a
-                      href={instructor.introductionURL}
+                      href={latestInstructor.introductionURL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.url}
                     >
-                      {instructor.introductionURL}
+                      {latestInstructor.introductionURL}
                     </a>
                   </h4>
                 )}
@@ -272,6 +234,12 @@ function InstructorProfile({
               </p>
             </div>
 
+            {/* Hidden input fields */}
+            <input type="hidden" name="userType" value="instructor" />
+            <input type="hidden" name="id" value={latestInstructor.id} />
+            <input type="hidden" name="icon" value={latestInstructor.icon} />
+
+            {/* Action buttons for only admin */}
             {isAdminAuthenticated ? (
               <>
                 {isEditing ? (

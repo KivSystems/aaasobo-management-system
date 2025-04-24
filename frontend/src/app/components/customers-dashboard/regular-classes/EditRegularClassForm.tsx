@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { formatTime, getWeekday } from "@/app/helper/utils/dateUtils";
 import styles from "./EditRegularClassForm.module.scss";
 import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 
