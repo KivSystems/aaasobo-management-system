@@ -4,7 +4,7 @@ import RegularClasses from "@/app/components/customers-dashboard/regular-classes
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import styles from "./page.module.scss";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Page({ params }: { params: { id: string } }) {

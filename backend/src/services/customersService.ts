@@ -102,6 +102,16 @@ export const verifyCustomerEmail = async (
   });
 };
 
+export const updateCustomerPassword = async (
+  id: number,
+  newPassword: string,
+) => {
+  return await prisma.customer.update({
+    where: { id },
+    data: { password: newPassword },
+  });
+};
+
 export const deleteCustomer = async (
   id: number,
   tx?: Prisma.TransactionClient,

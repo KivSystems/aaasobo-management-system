@@ -1,6 +1,4 @@
 import styles from "./layout.module.scss";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
 
 export default function Layout({

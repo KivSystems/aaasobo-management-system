@@ -1,5 +1,3 @@
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import styles from "./layout.module.scss";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
 
