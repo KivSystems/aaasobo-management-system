@@ -5,7 +5,10 @@ const BASE_URL = `${BACKEND_ORIGIN}/admins`;
 // GET all admins data
 export const getAllAdmins = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/admin-list`);
+    const apiUrl = `${BASE_URL}/admin-list`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["admin-list"] },
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -20,7 +23,10 @@ export const getAllAdmins = async () => {
 // GET all instructors data
 export const getAllInstructors = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/instructor-list`);
+    const apiUrl = `${BASE_URL}/instructor-list`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["instructor-list"] },
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -35,7 +41,10 @@ export const getAllInstructors = async () => {
 // GET all customers data
 export const getAllCustomers = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/customer-list`);
+    const apiUrl = `${BASE_URL}/customer-list`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["customer-list"] },
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -50,7 +59,10 @@ export const getAllCustomers = async () => {
 // GET all children data
 export const getAllChildren = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/child-list`);
+    const apiUrl = `${BASE_URL}/child-list`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["child-list"] },
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -67,7 +79,7 @@ export const getAllPlans = async () => {
   try {
     const apiUrl = `${BASE_URL}/plan-list`;
     const response = await fetch(apiUrl, {
-      next: { tags: ["plans"] },
+      next: { tags: ["plan-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
