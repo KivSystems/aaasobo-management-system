@@ -23,6 +23,7 @@ import {
   generateVerificationToken,
 } from "../services/verificationTokensService";
 import { sendVerificationEmail } from "../helper/mail";
+import { prisma } from "../../prisma/prismaClient";
 
 export const registerCustomerController = async (
   req: Request,
