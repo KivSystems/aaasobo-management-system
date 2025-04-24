@@ -31,6 +31,7 @@ model Instructor {
   passcode                        String                            @unique
   instructorUnavailability        InstructorUnavailability[]
   introductionURL                 String                            @unique
+  createdAt                       DateTime                          @default(now())
 }
 
 model InstructorRecurringAvailability {
@@ -70,6 +71,7 @@ model Customer {
   children      Children[]
   subscription  Subscription[]
   prefecture    String
+  createdAt    DateTime       @default(now())
 }
 
 model Class {

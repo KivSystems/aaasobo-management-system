@@ -211,7 +211,7 @@ export async function countClassesOfSubscription(
   }
 }
 
-// Fetches class data for the calendar based on user type (instructor or customer), including/excluding related details as needed.
+// TODO: Delete the service below after finishing refactoring the customer & instructor calendar pages
 export const getClassesForCalendar = async (
   userId: number,
   userType: "instructor" | "customer",
@@ -605,4 +605,67 @@ export const createCanceledClasses = async ({
     console.error("Database Error:", error);
     throw new Error("Failed to add class.");
   }
+};
+
+export const getCustomerClasses = async (customerId: number) => {
+  const classes = await prisma.class.findMany({
+    where: {
+      customerId: customerId,
+    },
+    orderBy: {
+      dateTime: "desc",
+    },
+    include: {
+      instructor: {
+        select: {
+          name: true,
+          nickname: true,
+          icon: true,
+          classURL: true,
+          meetingId: true,
+          passcode: true,
+        },
+      },
+      classAttendance: {
+        include: {
+          children: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  const customerClasses = classes.map((classItem) => {
+    const start = classItem.dateTime;
+    const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
+
+    const color =
+      classItem.status === "booked"
+        ? "#E7FBD9"
+        : classItem.status === "completed"
+          ? "#B5C4AB"
+          : "#FFEBE0";
+
+    const childrenNames = classItem.classAttendance
+      .map((attendance) => attendance.children.name)
+      .join(", ");
+
+    return {
+      classId: classItem.id,
+      start,
+      end,
+      title: childrenNames,
+      color,
+      instructorIcon: classItem.instructor.icon,
+      instructorNickname: classItem.instructor.nickname,
+      instructorName: classItem.instructor.name,
+      instructorClassURL: classItem.instructor.classURL,
+      instructorMeetingId: classItem.instructor.meetingId,
+      instructorPasscode: classItem.instructor.passcode,
+      classStatus: classItem.status,
+    };
+  });
+  return customerClasses;
 };

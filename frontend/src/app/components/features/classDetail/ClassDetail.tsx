@@ -21,23 +21,20 @@ import {
   VideoCameraIcon,
   XCircleIcon,
 } from "@heroicons/react/24/solid";
+import { cancelClass } from "@/app/helper/api/classesApi";
+import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
+import { toast } from "react-toastify";
 
 const ClassDetail = ({
   customerId, // Necessary when implementing the Rescheduling functionality
   classDetail,
   timeZone,
-  handleCancel,
   isAdminAuthenticated, // Necessary when implementing the Rescheduling functionality
   handleModalClose,
 }: {
   customerId: number;
-  classDetail: ClassType | null;
+  classDetail: CustomerClass | null;
   timeZone: string;
-  handleCancel: (
-    classId: number,
-    classDateTime: string,
-    customerId: number,
-  ) => void;
   isAdminAuthenticated?: boolean;
   handleModalClose: () => void;
 }) => {
@@ -45,22 +42,47 @@ const ClassDetail = ({
     return <div>No class details available</div>;
   }
 
-  const classDateTime = new Date(classDetail.dateTime);
+  const classDateTime = new Date(classDetail.start);
   const classMonth = getShortMonth(classDateTime);
   const classDay = classDateTime.getDate();
   const classDayOfWeek = getDayOfWeek(classDateTime);
   const classStartTime = formatTime24Hour(classDateTime);
   const classEndTime = formatTimeWithAddedMinutes(classDateTime, 25);
 
-  const formatChildren = (children: Child[]) =>
-    children.map((child) => child.name).join(", ");
+  const handleCancel = async (
+    classId: number,
+    classDateTime: string,
+    customerId: number,
+  ) => {
+    const isPastPreviousDay = isPastPreviousDayDeadline(classDateTime);
+
+    if (isPastPreviousDay)
+      return alert(
+        "Classes cannot be canceled on or after the scheduled day of the class.",
+      );
+
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this class?",
+    );
+    if (!confirmed) return;
+    try {
+      await cancelClass(classId);
+
+      // TODO: Revalidation should be done directly from a server component or API call
+      await revalidateCustomerCalendar(customerId, isAdminAuthenticated!);
+      handleModalClose();
+      toast.success("The class has been successfully canceled!");
+    } catch (error) {
+      console.error("Failed to cancel the class:", error);
+    }
+  };
 
   const statusClass =
-    classDetail.status === "booked"
+    classDetail.classStatus === "booked"
       ? styles.statusBooked
-      : classDetail.status === "completed"
+      : classDetail.classStatus === "completed"
         ? styles.statusCompleted
-        : classDetail.status === "canceledByInstructor"
+        : classDetail.classStatus === "canceledByInstructor"
           ? styles.statusCanceledByInstructor
           : styles.statusCanceled;
 
@@ -68,12 +90,12 @@ const ClassDetail = ({
     <div className={`${styles.classCard} ${statusClass}`}>
       {/* Class Status */}
       <div className={styles.classStatus}>
-        {classDetail.status === "booked" ||
-        classDetail.status === "completed" ? (
+        {classDetail.classStatus === "booked" ||
+        classDetail.classStatus === "completed" ? (
           <CheckCircleIcon
             className={`${styles.classStatus__icon} ${statusClass}`}
           />
-        ) : classDetail.status === "canceledByInstructor" ? (
+        ) : classDetail.classStatus === "canceledByInstructor" ? (
           <ExclamationTriangleIcon
             className={`${styles.classStatus__icon} ${statusClass}`}
           />
@@ -84,13 +106,13 @@ const ClassDetail = ({
         )}
 
         <div className={styles.classStatus__name}>
-          {classDetail.status === "booked"
+          {classDetail.classStatus === "booked"
             ? "Booked"
-            : classDetail.status === "completed"
+            : classDetail.classStatus === "completed"
               ? "Completed"
-              : classDetail.status === "canceledByCustomer"
+              : classDetail.classStatus === "canceledByCustomer"
                 ? "Canceled by Customer"
-                : classDetail.status === "canceledByInstructor"
+                : classDetail.classStatus === "canceledByInstructor"
                   ? "Canceled by Instructor"
                   : "Unknown Status"}
         </div>
@@ -99,15 +121,15 @@ const ClassDetail = ({
       {/* Instructor */}
       <div className={styles.instructor}>
         <Image
-          src={`/instructors/${classDetail.instructor.icon}`}
-          alt={classDetail.instructor.name}
+          src={`/instructors/${classDetail.instructorIcon}`}
+          alt={classDetail.instructorName}
           width={135}
           height={135}
           priority
           className={`${styles.instructor__icon} ${statusClass}`}
         />
         <div className={styles.instructor__name}>
-          {classDetail.instructor.name}
+          {classDetail.instructorName}
         </div>
       </div>
 
@@ -137,14 +159,12 @@ const ClassDetail = ({
         <div className={styles.children__iconContainer}>
           <UsersIcon className={styles.children__icon} />
         </div>
-        <div className={styles.children__names}>
-          {formatChildren(classDetail.classAttendance.children)}
-        </div>
+        <div className={styles.children__names}>{classDetail.title}</div>
       </div>
 
       {/* Class URL */}
-      {classDetail.status === "booked" &&
-      !isPastClassEndTime(classDetail.dateTime, "Asia/Tokyo") ? (
+      {classDetail.classStatus === "booked" &&
+      !isPastClassEndTime(classDetail.start, "Asia/Tokyo") ? (
         <div className={styles.classURL}>
           <div className={styles.classURL__iconContainer}>
             <VideoCameraIcon className={styles.classURL__icon} />
@@ -152,18 +172,18 @@ const ClassDetail = ({
           <div className={styles.classURL__details}>
             <div className={styles.classURL__url}>
               <a
-                href={classDetail.instructor.classURL}
+                href={classDetail.instructorClassURL}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {classDetail.instructor.classURL}
+                {classDetail.instructorClassURL}
               </a>
             </div>
             <div className={styles.classURL__password}>
-              Meeting ID: {classDetail.instructor.meetingId}
+              Meeting ID: {classDetail.instructorMeetingId}
             </div>
             <div className={styles.classURL__password}>
-              Passcode: {classDetail.instructor.passcode}
+              Passcode: {classDetail.instructorPasscode}
             </div>
           </div>
         </div>
@@ -174,8 +194,8 @@ const ClassDetail = ({
       {/* Buttons */}
       {
         // condition: class status: booked, current date&time: before the day of the class
-        classDetail.status === "booked" &&
-        !isPastPreviousDayDeadline(classDetail.dateTime) ? (
+        classDetail.classStatus === "booked" &&
+        !isPastPreviousDayDeadline(classDetail.start) ? (
           <div className={styles.buttons}>
             <ActionButton
               btnText="Back"
@@ -184,7 +204,7 @@ const ClassDetail = ({
             />
             <ActionButton
               onClick={() =>
-                handleCancel(classDetail.id, classDetail.dateTime, customerId)
+                handleCancel(classDetail.classId, classDetail.start, customerId)
               }
               btnText="Cancel Booking"
               className="cancelBooking"
@@ -220,8 +240,8 @@ const ClassDetail = ({
       {/* Notification */}
       {
         // condition 1: class status: booked, current date&time: before the day of the class
-        classDetail.status === "booked" &&
-        !isPastPreviousDayDeadline(classDetail.dateTime) ? (
+        classDetail.classStatus === "booked" &&
+        !isPastPreviousDayDeadline(classDetail.start) ? (
           <div className={styles.notification}>
             <div className={styles.notification__iconContainer}>
               <InformationCircleIcon className={styles.notification__icon} />
@@ -229,19 +249,19 @@ const ClassDetail = ({
             <p>
               If cancelled by{" "}
               <span className={styles.notification__span}>
-                {`${formatPreviousDay(new Date(classDetail.dateTime), timeZone)}`}
+                {`${formatPreviousDay(new Date(classDetail.start), timeZone)}`}
               </span>
               , this class can be rescheduled until{" "}
               <span className={styles.notification__span}>
-                {`${formatFiveMonthsLaterEndOfMonth(new Date(classDetail.dateTime), timeZone)}`}
+                {`${formatFiveMonthsLaterEndOfMonth(new Date(classDetail.start), timeZone)}`}
               </span>
               .
             </p>
           </div>
         ) : // condition 2: class status: booked, current date&time: on the same day of the class, but before the start of the class
-        classDetail.status === "booked" &&
-          isPastPreviousDayDeadline(classDetail.dateTime) &&
-          !isPastClassDateTime(classDetail.dateTime, "Asia/Tokyo") ? (
+        classDetail.classStatus === "booked" &&
+          isPastPreviousDayDeadline(classDetail.start) &&
+          !isPastClassDateTime(classDetail.start, "Asia/Tokyo") ? (
           <div className={styles.notification}>
             <div className={styles.notification__iconContainer}>
               <InformationCircleIcon className={styles.notification__icon} />
@@ -259,7 +279,7 @@ const ClassDetail = ({
               </p>
             </div>
           </div>
-        ) : classDetail.status === "canceledByCustomer" ? (
+        ) : classDetail.classStatus === "canceledByCustomer" ? (
           <div className={styles.notification}>
             <div className={styles.notification__iconContainer}>
               <InformationCircleIcon className={styles.notification__icon} />
@@ -271,7 +291,7 @@ const ClassDetail = ({
               </p>
             </div>
           </div>
-        ) : classDetail.status === "canceledByInstructor" ? (
+        ) : classDetail.classStatus === "canceledByInstructor" ? (
           <div className={styles.notification}>
             <div className={styles.notification__iconContainer}>
               <InformationCircleIcon className={styles.notification__icon} />

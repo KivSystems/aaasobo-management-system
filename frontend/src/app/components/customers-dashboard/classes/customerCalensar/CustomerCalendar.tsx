@@ -1,80 +1,87 @@
 "use client";
 
-import Loading from "@/app/components/elements/loading/Loading";
-import CalendarView from "@/app/components/features/calendarView/CalendarView";
-import { useCallback, useEffect, useState } from "react";
-
-export type CustomerCalendarProps = {
-  isAdminAuthenticated?: boolean;
-  customerId: number;
-  classes: ClassForCalendar[] | null;
-};
+import React, { useState } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import momentTimezonePlugin from "@fullcalendar/moment-timezone";
+import { EventClickArg } from "@fullcalendar/core";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import Modal from "@/app/components/elements/modal/Modal";
+import ClassDetail from "@/app/components/features/classDetail/ClassDetail";
+import {
+  getValidRange,
+  renderEventContent,
+} from "@/app/helper/utils/calendarUtils";
 
 export default function CustomerCalendar({
-  isAdminAuthenticated,
   customerId,
   classes,
+  createdAt,
 }: CustomerCalendarProps) {
-  const [classesAsEvents, setClassesAsEvents] = useState<EventType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isClassDetailModalOpen, setIsClassDetailModalOpen] = useState(false);
+  const [classDetail, setClassDetail] = useState<CustomerClass | null>(null);
+  const { language } = useLanguage();
 
-  // Fetch and format classes as calendar events, then set them in state.
-  const fetchData = useCallback(async () => {
-    if (!customerId) return;
-    try {
-      if (!classes) return;
-      const formattedClasses = classes.map((eachClass) => {
-        const start = eachClass.dateTime;
-        const end = new Date(
-          new Date(start).getTime() + 25 * 60000,
-        ).toISOString();
+  const handleEventClick = (clickInfo: EventClickArg) => {
+    const classId = clickInfo.event.extendedProps.classId;
+    const selectedClassDetail = classes.find(
+      (classItem) => classItem.classId === classId,
+    );
+    selectedClassDetail && setClassDetail(selectedClassDetail);
+    setIsClassDetailModalOpen(true);
+  };
 
-        const color =
-          eachClass.status === "booked"
-            ? "#E7FBD9"
-            : eachClass.status === "completed"
-              ? "#B5C4AB"
-              : "#FFEBE0";
+  const validRange = () => getValidRange(createdAt);
 
-        const childrenNames = eachClass.classAttendance.children
-          .map((child) => child.name)
-          .join(", ");
+  const handleModalClose = () => {
+    setClassDetail(null);
+    setIsClassDetailModalOpen(false);
+  };
 
-        return {
-          classId: eachClass.id,
-          start,
-          end,
-          title: childrenNames,
-          color,
-          instructorIcon: eachClass.instructor?.icon,
-          instructorNickname: eachClass.instructor?.nickname,
-          classStatus: eachClass.status,
-        };
-      });
+  return (
+    <>
+      <FullCalendar
+        plugins={[
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin,
+          momentTimezonePlugin,
+        ]}
+        initialView={"dayGridMonth"}
+        headerToolbar={{
+          left: "prev,next today",
+          center: "title",
+          right: "",
+        }}
+        events={classes}
+        eventClick={handleEventClick}
+        eventContent={renderEventContent}
+        validRange={validRange}
+        // TODO: After the 'Holiday' table is created, apply the styling to them
+        // dayCellDidMount={dayCellDidMount}
+        locale={language === "ja" ? "ja" : "en"}
+        dayCellContent={(arg) => {
+          return { html: String(arg.date.getDate()) };
+        }}
+        contentHeight="auto"
+        dayMaxEvents={true}
+        editable={false}
+        selectable={false}
+        eventDisplay="block"
+        allDaySlot={false}
+      />
 
-      setClassesAsEvents(formattedClasses);
-    } catch (error) {
-      console.error("Failed to fetch classes:", error);
-      alert("Failed to get classes. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [customerId, classes]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  return isLoading ? (
-    <Loading />
-  ) : (
-    <CalendarView
-      // TODO: Fetch holidays from the backend
-      // holidays={["2024-07-29", "2024-07-30", "2024-07-31"]}
-      customerId={customerId}
-      isAdminAuthenticated={isAdminAuthenticated}
-      events={classesAsEvents}
-      fetchData={fetchData}
-    />
+      <Modal isOpen={isClassDetailModalOpen} onClose={handleModalClose}>
+        <ClassDetail
+          classDetail={classDetail}
+          customerId={customerId}
+          timeZone="Asia/Tokyo"
+          isAdminAuthenticated
+          handleModalClose={handleModalClose}
+        />
+      </Modal>
+    </>
   );
 }

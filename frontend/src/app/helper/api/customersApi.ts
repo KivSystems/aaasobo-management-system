@@ -1,5 +1,6 @@
 import {
   FAILED_TO_FETCH_BOOKABLE_CLASSES,
+  FAILED_TO_FETCH_CUSTOMER_CLASSES,
   FAILED_TO_FETCH_CUSTOMER_PROFILE,
   FAILED_TO_FETCH_UPCOMING_CLASSES,
 } from "../messages/customerDashboard";
@@ -17,14 +18,12 @@ export const getCustomerById = async (
   customerId: number,
 ): Promise<CustomerProfile> => {
   try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/customers/${customerId}/customer`,
-      {
-        // TODO: Remove this line before production to use cached data
-        cache: "no-store",
-        next: { tags: ["customer-profile"] },
-      },
-    );
+    const customerProfileURL = `${BACKEND_ORIGIN}/customers/${customerId}/customer`;
+    const response = await fetch(customerProfileURL, {
+      // TODO: Remove this line before production to use cached data
+      cache: "no-store",
+      next: { tags: ["customer-profile"] },
+    });
 
     if (!response.ok) {
       const { error } = await response.json();
@@ -88,7 +87,6 @@ export const registerCustomer = async (userData: {
 }): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/customers/register`;
-
     const response = await fetch(registerURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -120,8 +118,9 @@ export const registerCustomer = async (userData: {
 
 export const getBookableClasses = async (customerId: number) => {
   try {
+    const bookableClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/bookable-classes`;
     const response = await fetch(
-      `${BACKEND_ORIGIN}/customers/${customerId}/bookable-classes`,
+      bookableClassesURL,
       {
         // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
         cache: "no-store",
@@ -143,14 +142,12 @@ export const getBookableClasses = async (customerId: number) => {
 
 export const getUpcomingClasses = async (customerId: number) => {
   try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`,
-      {
-        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
-        cache: "no-store",
-        next: { tags: ["upcoming-classes"] },
-      },
-    );
+    const upcomingClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`;
+    const response = await fetch(upcomingClassesURL, {
+      // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
+      cache: "no-store",
+      next: { tags: ["upcoming-classes"] },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -161,5 +158,26 @@ export const getUpcomingClasses = async (customerId: number) => {
   } catch (error) {
     console.error("Failed to fetch upcoming classes:", error);
     throw new Error(FAILED_TO_FETCH_UPCOMING_CLASSES);
+  }
+};
+
+export const getClasses = async (customerId: number) => {
+  try {
+    const customerClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/classes`;
+    const response = await fetch(customerClassesURL, {
+      // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
+      cache: "no-store",
+      next: { tags: ["customer-classes"] },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch customer classes:", error);
+    throw new Error(FAILED_TO_FETCH_CUSTOMER_CLASSES);
   }
 };

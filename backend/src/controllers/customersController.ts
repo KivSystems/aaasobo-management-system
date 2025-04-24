@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { prisma } from "../../prisma/prismaClient";
 import {
   deleteCustomer,
   getCustomerByEmail,
@@ -16,6 +15,7 @@ import { createNewRecurringClass } from "../services/recurringClassesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import {
   getBookableClasses,
+  getCustomerClasses,
   getUpcomingClasses,
 } from "../services/classesService";
 import {
@@ -23,6 +23,7 @@ import {
   generateVerificationToken,
 } from "../services/verificationTokensService";
 import { sendVerificationEmail } from "../helper/mail";
+import { prisma } from "../../prisma/prismaClient";
 
 export const registerCustomerController = async (
   req: Request,
@@ -84,29 +85,6 @@ export const registerCustomerController = async (
       },
     });
     res.sendStatus(500);
-  }
-};
-
-export const getCustomersClasses = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-
-  try {
-    // Fetch the Customer data from the DB
-    const customer = await prisma.customer.findUnique({
-      where: { id },
-      include: { classes: true },
-    });
-
-    if (!customer) {
-      return res.status(404).json({ error: "Customer not found" });
-    }
-
-    // Exclude the password from the response.
-    const { password, ...customerWithoutPassword } = customer;
-
-    res.json({ customer: customerWithoutPassword });
-  } catch (error) {
-    res.status(500).json({ error });
   }
 };
 
@@ -240,6 +218,24 @@ export const getUpcomingClassesController = async (
   } catch (error) {
     console.error(
       `Error while getting upcoming classes (customer ID: ${customerId}):`,
+      error,
+    );
+    res.sendStatus(500);
+  }
+};
+
+export const getClassesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    const classes = await getCustomerClasses(customerId);
+    res.status(200).json(classes);
+  } catch (error) {
+    console.error(
+      `Error while getting customer classes (customer ID: ${customerId}):`,
       error,
     );
     res.sendStatus(500);

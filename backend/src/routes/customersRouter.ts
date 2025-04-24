@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  getCustomersClasses,
   getSubscriptionsByIdController,
   registerCustomerController,
   updateCustomerProfile,
@@ -8,6 +7,7 @@ import {
   getBookableClassesController,
   getUpcomingClassesController,
   getCustomerByIdController,
+  getClassesController,
 } from "../../src/controllers/customersController";
 import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
 import {
@@ -21,7 +21,6 @@ export const customersRouter = express.Router();
 
 customersRouter.post("/register", registerCustomerController);
 
-customersRouter.get("/:id", getCustomersClasses);
 customersRouter.get("/:id/subscriptions", getSubscriptionsByIdController);
 customersRouter.get("/:id/customer", parseId, (req, res) =>
   getCustomerByIdController(req as RequestWithId, res),
@@ -31,6 +30,9 @@ customersRouter.get("/:id/bookable-classes", parseId, (req, res) =>
 );
 customersRouter.get("/:id/upcoming-classes", parseId, (req, res) =>
   getUpcomingClassesController(req as RequestWithId, res),
+);
+customersRouter.get("/:id/classes", parseId, (req, res) =>
+  getClassesController(req as RequestWithId, res),
 );
 
 customersRouter.patch("/:id", updateCustomerProfile);

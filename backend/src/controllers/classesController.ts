@@ -327,7 +327,7 @@ export const updateClassController = async (req: Request, res: Response) => {
   }
 };
 
-// GET class data for the calendar by an instructor id
+// TODO: Delete the controller below after finishing refactoring the instructor calendar page
 export const getClassesForInstructorCalendar = async (
   req: Request,
   res: Response,
@@ -354,57 +354,6 @@ export const getClassesForInstructorCalendar = async (
           })),
         },
         status,
-      };
-    });
-
-    res.json({ classes: classesData });
-  } catch (error) {
-    console.error("Error fetching classes:", error);
-    res.status(500).json({ error: "Failed to fetch classes" });
-  }
-};
-
-// GET class data for the calendar by a customer id
-export const getClassesForCustomerCalendar = async (
-  req: Request,
-  res: Response,
-) => {
-  const customerId = parseInt(req.params.customerId);
-
-  if (!customerId) {
-    return res.status(400).json({ error: "customerIdId is required" });
-  }
-
-  try {
-    const classes = await getClassesForCalendar(customerId, "customer");
-
-    const classesData = classes.map((eachClass) => {
-      const {
-        id,
-        dateTime,
-        instructor,
-        status,
-        classAttendance,
-        isRebookable,
-      } = eachClass;
-
-      return {
-        id,
-        dateTime,
-        instructor: {
-          id: instructor.id,
-          name: instructor.name,
-          nickname: instructor.nickname,
-          icon: instructor.icon,
-        },
-        classAttendance: {
-          children: classAttendance.map((classAttendance) => ({
-            id: classAttendance.children.id,
-            name: classAttendance.children.name,
-          })),
-        },
-        status,
-        isRebookable,
       };
     });
 
