@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useInput } from "@/app/hooks/useInput";
 import { isValidLogin } from "@/app/helper/utils/validationUtils";
 import styles from "./page.module.scss";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
 import TextInput from "@/app/components/elements/textInput/TextInput";

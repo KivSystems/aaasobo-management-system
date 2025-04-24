@@ -195,6 +195,11 @@ type LinkType = {
 
 type UserType = "admin" | "customer" | "instructor";
 
+type ForgotPasswordFormState = {
+  errorMessage?: string;
+  successMessage?: string;
+};
+
 type RegisterFormState = {
   password?: string;
   name?: string;
@@ -202,6 +207,14 @@ type RegisterFormState = {
   passConfirmation?: string;
   prefecture?: string;
   isAgreed?: string;
+  errorMessage?: string;
+  successMessage?: string;
+};
+
+type ResetPasswordFormState = {
+  unexpectedErrorMessage?: string;
+  password?: string;
+  passwordConfirmation?: string;
   errorMessage?: string;
   successMessage?: string;
 };

@@ -22,7 +22,7 @@
   width: 100%;
 
   h2 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.3rem;
   }
 }
 
@@ -32,8 +32,15 @@
   left: 1rem;
 }
 
+.instruction {
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
 .loaderWrapper {
-  height: 10rem;
+  height: 11rem;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -67,3 +67,36 @@ export const userLoginSchema = z.object({
 });
 
 export const userTypeSchema = z.enum(["admin", "customer", "instructor"]);
+
+export const forgotPasswordFormSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Invalid email format" }),
+  userType: z.enum(["admin", "customer", "instructor"], {
+    message: "Invalid user type.",
+  }),
+});
+
+export const resetPasswordFormSchema = z
+  .object({
+    token: z
+      .string()
+      .min(1, { message: "Token not found." })
+      .uuid({ message: "Invalid token." }),
+    userType: z.enum(["admin", "customer", "instructor"], {
+      message: "Invalid user type.",
+    }),
+    password: z.string().min(8, { message: "At least 8 characters long." }),
+    passwordConfirmation: z.string(),
+    passwordStrength: z.number(),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Passwords do not match.",
+    path: ["passwordConfirmation"],
+  })
+  .refine((data) => data.passwordStrength >= 3, {
+    message:
+      "Your password is too weak. Try using a longer passphrase or a password manager.",
+    path: ["password"],
+  });

@@ -8,6 +8,7 @@ import TextInput from "../../elements/textInput/TextInput";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
+import Link from "next/link";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 export default function LoginForm({ userType }: { userType: UserType }) {
@@ -41,7 +42,15 @@ export default function LoginForm({ userType }: { userType: UserType }) {
         onChange={() => clearErrorMessage("message")}
       />
 
-      <input type="hidden" name="userType" value={userType} />
+      {/* Hidden input to send necessary data with form submission. */}
+      <input type="hidden" name="userType" value={userType ?? ""} />
+
+      <Link
+        className={styles.resetLink}
+        href={`/auth/forgot-password?type=${userType}`}
+      >
+        Forgot Password?
+      </Link>
 
       <div className={styles.buttonWrapper}>
         <ActionButton btnText="Login" className="bookBtn" type="submit" />

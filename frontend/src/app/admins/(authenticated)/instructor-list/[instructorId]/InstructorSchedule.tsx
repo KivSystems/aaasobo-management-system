@@ -1,7 +1,7 @@
 import styles from "./InstructorSchedule.module.scss";
 
 import { useEffect, useState, useCallback } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   getInstructorRecurringAvailability,
   addRecurringAvailabilities,

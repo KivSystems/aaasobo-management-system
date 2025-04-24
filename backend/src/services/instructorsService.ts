@@ -376,3 +376,13 @@ export const verifyInstructorEmail = async (
     },
   });
 };
+
+export const updateInstructorPassword = async (
+  id: number,
+  newPassword: string,
+) => {
+  return await prisma.instructor.update({
+    where: { id },
+    data: { password: newPassword },
+  });
+};

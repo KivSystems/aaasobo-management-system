@@ -16,7 +16,7 @@ import {
   formatBirthdateToISO,
   formatDateToISO,
 } from "@/app/helper/utils/dateUtils";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
 import Loading from "../../elements/loading/Loading";

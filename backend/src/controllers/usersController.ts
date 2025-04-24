@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import {
   getCustomerByEmail,
+  updateCustomerPassword,
   verifyCustomerEmail,
 } from "../services/customersService";
 import {
   getInstructorByEmail,
+  updateInstructorPassword,
   verifyInstructorEmail,
 } from "../services/instructorsService";
 import {
@@ -13,7 +15,17 @@ import {
   generateVerificationToken,
   getVerificationTokenByToken,
 } from "../services/verificationTokensService";
-import { sendVerificationEmail, UserType } from "../helper/mail";
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+  UserType,
+} from "../helper/mail";
+import {
+  deletePasswordResetToken,
+  generatePasswordResetToken,
+  getPasswordResetTokenByToken,
+} from "../services/passwordResetTokensService";
+import { saltRounds } from "./adminsController";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {
@@ -126,6 +138,112 @@ export const verifyUserEmailController = async (
     return res.sendStatus(200);
   } catch (error) {
     console.error("Error verifying user email", {
+      error,
+      context: {
+        token,
+        userType,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const sendUserResetEmailController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { email, userType } = req.body;
+
+  if (!email || !userType) {
+    return res.sendStatus(400);
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  try {
+    const user = await getUserByEmail(userType, normalizedEmail);
+
+    if (!user) {
+      return res.sendStatus(404);
+    }
+
+    const passwordResetToken = await generatePasswordResetToken(user.email);
+
+    const sendResult = await sendPasswordResetEmail(
+      passwordResetToken.email,
+      user.name,
+      passwordResetToken.token,
+      userType,
+    );
+
+    if (!sendResult.success) {
+      await deletePasswordResetToken(passwordResetToken.email);
+      return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
+    }
+
+    return res.sendStatus(201);
+  } catch (error) {
+    console.error("Error sending password reset email", {
+      error,
+      context: {
+        email: normalizedEmail,
+        userType,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const updatePasswordController = async (req: Request, res: Response) => {
+  const { token, userType, password } = req.body;
+
+  if (!token || !userType || !password) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const existingToken = await getPasswordResetTokenByToken(token);
+    if (!existingToken) {
+      return res.sendStatus(404);
+    }
+
+    const user = await getUserByEmail(userType, existingToken.email);
+    if (!user) {
+      return res.sendStatus(404);
+    }
+
+    const isTokenExpired = new Date(existingToken.expires) < new Date();
+
+    if (isTokenExpired) {
+      const passwordResetToken = await generatePasswordResetToken(user.email);
+
+      const sendResult = await sendPasswordResetEmail(
+        passwordResetToken.email,
+        user.name,
+        passwordResetToken.token,
+        userType,
+      );
+
+      if (!sendResult.success) {
+        await deletePasswordResetToken(passwordResetToken.email);
+        return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
+      }
+      return res.sendStatus(410); // Token is expired. 410 Gone
+    }
+
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    if (userType === "customer") {
+      updateCustomerPassword(user.id, hashedPassword);
+    } else if (userType === "instructor") {
+      updateInstructorPassword(user.id, hashedPassword);
+    }
+
+    return res.sendStatus(201);
+  } catch (error) {
+    console.error("Error updating password", {
       error,
       context: {
         token,
