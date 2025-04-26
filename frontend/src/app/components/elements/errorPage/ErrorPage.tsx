@@ -13,7 +13,7 @@ export default function ErrorPage({
 }: {
   reset: () => void;
   errorMessages?: { messageEn: string; messageJa: string };
-  language: LanguageType;
+  language?: LanguageType;
 }) {
   return (
     <main className={styles.errorContainer}>

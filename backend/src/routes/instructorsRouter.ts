@@ -10,6 +10,7 @@ import {
   getRecurringAvailabilityById,
   getInstructorProfileController,
   updateInstructorProfile,
+  getCalendarClassesController,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -67,6 +68,7 @@ instructorsRouter.get("/", getAllInstructorsController);
 
 instructorsRouter.get("/:id/authentication", authenticateInstructorSession);
 
+// TODO: Delete this route after finishing refactoring instructor class details page
 instructorsRouter.get("/:id/classes", parseId, (req, res) => {
   getInstructorClasses(req as RequestWithId, res);
 });
@@ -85,3 +87,7 @@ instructorsRouter.get(
     getInstructorAvailabilitiesTomorrowAndAfter(req as RequestWithId, res);
   },
 );
+
+instructorsRouter.get("/:id/calendar-classes", parseId, (req, res) => {
+  getCalendarClassesController(req as RequestWithId, res);
+});

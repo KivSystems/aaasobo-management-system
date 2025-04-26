@@ -174,6 +174,7 @@ export const cancelClass = async (classId: number) => {
   }
 };
 
+// TODO: Delete this api call function after finishing refactoring the instructor class details page
 export const getClassesByInstructorId = async (instructorId: number) => {
   try {
     const response = await fetch(

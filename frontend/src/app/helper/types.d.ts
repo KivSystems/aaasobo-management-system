@@ -26,6 +26,7 @@ type InstructorProfile = {
   id: number;
   name: string;
   nickname: string;
+  createdAt: string;
 };
 
 type Availability = { dateTime: string };
@@ -273,12 +274,6 @@ type CustomerProfile = {
   email: string;
   prefecture: string;
   createdAt: string;
-};
-
-type InstructorProfile = {
-  id: number;
-  name: string;
-  nickname: string;
 };
 
 type LanguageType = "ja" | "en";

@@ -352,7 +352,7 @@ export async function getUnavailabilities(instructorId: number) {
 export async function getInstructorProfile(instructorId: number) {
   const instructorProfile = await prisma.instructor.findUnique({
     where: { id: instructorId },
-    select: { id: true, name: true, nickname: true },
+    select: { id: true, name: true, nickname: true, createdAt: true },
   });
 
   if (!instructorProfile) {
