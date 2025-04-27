@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { kv } from "@vercel/kv";
 import { createAdmin, getAdmin } from "../services/adminsService";
-import { getAllAdmins } from "../services/adminsService";
+import { getAllAdmins, getAdminById } from "../services/adminsService";
 import {
   getAllInstructors,
   createInstructor,
@@ -130,6 +130,34 @@ interface SingleChildSubscription extends Omit<Subscription, "customer"> {
     };
   };
 }
+
+function setErrorResponse(res: Response, error: unknown) {
+  return res
+    .status(500)
+    .json({ message: error instanceof Error ? error.message : `${error}` });
+}
+
+export const getAdminController = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "Invalid ID provided." });
+  }
+  try {
+    const admin = await getAdminById(id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found." });
+    }
+    return res.status(200).json({
+      admin: {
+        id: admin.id,
+        name: admin.name,
+        email: admin.email,
+      },
+    });
+  } catch (error) {
+    return setErrorResponse(res, error);
+  }
+};
 
 // Admin dashboard for displaying admins' information
 export const getAllAdminsController = async (_: Request, res: Response) => {
