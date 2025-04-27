@@ -11,6 +11,9 @@ export const CONFIRMATION_EMAIL_SENT =
 export const CONFIRMATION_EMAIL_SEND_FAILURE =
   "We couldn't send the confirmation email. Please check your email address and try again. If the problem persists, contact our staff. We apologize for the inconvenience.";
 
+export const REGISTRATION_SUCCESS_MESSAGE =
+  "Your account has been created successfully.";
+
 // LoginForm
 export const LOGIN_FAILED_MESSAGE = "Invalid email or password.";
 

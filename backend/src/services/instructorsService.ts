@@ -1,35 +1,41 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
+import bcrypt from "bcrypt";
+import { saltRounds } from "../controllers/adminsController";
 
-// Create a new instructor account in the DB
-export const createInstructor = async (instructorData: {
+// Register a new instructor account in the DB
+export const registerInstructor = async (data: {
   name: string;
+  nickname: string;
   email: string;
   password: string;
-  nickname: string;
   icon: string;
   classURL: string;
   meetingId: string;
   passcode: string;
   introductionURL: string;
 }) => {
-  try {
-    return await prisma.instructor.create({
-      data: instructorData,
-    });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // P2002: Unique Constraint Violation
-      if (error.code === "P2002") {
-        throw new Error("Email is already registered");
-      } else {
-        console.error("Database Error:", error);
-        throw new Error("Failed to register instructor");
-      }
-    } else {
-      throw error;
-    }
-  }
+  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+
+  const instructor = await prisma.instructor.create({
+    data: {
+      name: data.name,
+      email: data.email,
+      password: hashedPassword,
+      icon: data.icon,
+      classURL: data.classURL,
+      meetingId: data.meetingId,
+      passcode: data.passcode,
+      introductionURL: data.introductionURL,
+      nickname: data.nickname,
+      emailVerified: new Date(),
+    },
+  });
+
+  return {
+    id: instructor.id,
+    name: instructor.name,
+  };
 };
 
 // Fetch all instructors information
@@ -94,7 +100,6 @@ export const updateInstructor = async (
         introductionURL,
       },
     });
-
     return instructor;
   } catch (error) {
     console.error("Database Error:", error);

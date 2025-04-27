@@ -1,3 +1,8 @@
+import {
+  REGISTRATION_SUCCESS_MESSAGE,
+  EMAIL_ALREADY_REGISTERED_ERROR,
+  GENERAL_ERROR_MESSAGE,
+} from "../messages/formValidation";
 import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
 
 const BACKEND_ORIGIN =
@@ -57,6 +62,45 @@ export const getInstructor = async (
   }
 
   return data;
+};
+
+// Register instructor data
+export const registerInstructor = async (userData: {
+  name: string;
+  nickname: string;
+  email: string;
+  password: string;
+  icon: string;
+  classURL: string;
+  meetingId: string;
+  passcode: string;
+  introductionURL: string;
+}): Promise<RegisterFormState> => {
+  try {
+    const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
+    const response = await fetch(registerURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    if (response.status === 409) {
+      return { email: EMAIL_ALREADY_REGISTERED_ERROR };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      successMessage: REGISTRATION_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while registering instructor:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
 };
 
 // PATCH instructor data

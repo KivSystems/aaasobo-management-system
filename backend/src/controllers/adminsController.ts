@@ -4,7 +4,8 @@ import { createAdmin, getAdmin } from "../services/adminsService";
 import { getAllAdmins } from "../services/adminsService";
 import {
   getAllInstructors,
-  createInstructor,
+  getInstructorByEmail,
+  registerInstructor,
 } from "../services/instructorsService";
 import { getAllClasses } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
@@ -215,9 +216,9 @@ export const registerInstructorController = async (
 ) => {
   const {
     name,
+    nickname,
     email,
     password,
-    nickname,
     icon,
     classURL,
     meetingId,
@@ -225,42 +226,49 @@ export const registerInstructorController = async (
     introductionURL,
   } = req.body;
 
-  try {
-    // Hash the password.
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+  if (
+    !name ||
+    !email ||
+    !password ||
+    !nickname ||
+    !icon ||
+    !classURL ||
+    !meetingId ||
+    !passcode ||
+    !introductionURL
+  ) {
+    return res.sendStatus(400);
+  }
 
-    // Insert the instructor data into the DB.
-    const instructor = await createInstructor({
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+
+  try {
+    const existingInstructor = await getInstructorByEmail(normalizedEmail);
+    if (existingInstructor) {
+      return res.sendStatus(409);
+    }
+    await registerInstructor({
       name,
-      email,
-      password: hashedPassword,
       nickname,
+      email: normalizedEmail,
+      password,
       icon,
       classURL,
       meetingId,
       passcode,
       introductionURL,
     });
-
-    // Exclude the password from the response.
-    if (instructor) {
-      const { password: _, ...instructorWithoutPassword } = instructor;
-      res.status(200).json({
-        message: "Instructor is registered successfully",
-        admin: instructorWithoutPassword,
-      });
-    }
+    res.sendStatus(201);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({
-        message: error.message,
-      });
-    } else {
-      res.status(500).json({
-        message: "Failed to register instructor",
-        error,
-      });
-    }
+    console.error("Error registering instructor", {
+      error,
+      context: {
+        email: normalizedEmail,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
