@@ -7,3 +7,6 @@ export const FAILED_TO_FETCH_INSTRUCTOR_PROFILE =
 
 export const FAILED_TO_FETCH_INSTRUCTOR_CLASSES =
   "We couldn't load the classes. Please try again later.";
+
+export const FAILED_TO_FETCH_INSTRUCTOR_AVAILABILITIES =
+  "We couldn't load your available teaching schedule. Please try again later.";

@@ -288,3 +288,13 @@ type CustomerCalendarProps = {
   classes: CustomerClass[] | [];
   createdAt: string;
 };
+
+type InstructorCalendarClientProps = {
+  instructorId: number;
+  isAdminAuthenticated?: boolean;
+  instructorCalendarEvents: EventType[];
+  validRange: {
+    start: string;
+    end: string;
+  };
+};

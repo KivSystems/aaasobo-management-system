@@ -1,5 +1,6 @@
 import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
 import {
+  FAILED_TO_FETCH_INSTRUCTOR_AVAILABILITIES,
   FAILED_TO_FETCH_INSTRUCTOR_CLASSES,
   FAILED_TO_FETCH_INSTRUCTOR_PROFILE,
 } from "../messages/instructorDashboard";
@@ -211,24 +212,27 @@ export const registerUnavailability = async (
   }).then((res) => res.json());
 };
 
-export const fetchInstructorAvailabilitiesForTodayAndAfter = async (
+export const getCalendarAvailabilities = async (
   instructorId: number,
-) => {
+): Promise<EventType[] | []> => {
   try {
-    const response = await fetch(
-      `${BASE_URL}/${instructorId}/availabilities/after-today`,
-    );
+    const calendarAvailabilitiesURL = `${BASE_URL}/${instructorId}/calendar-availabilities`;
+    const response = await fetch(calendarAvailabilitiesURL, {
+      cache: "no-store",
+    });
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
-    const instructorAvailabilities = await response.json();
-    return instructorAvailabilities.data;
+
+    const calendarAvailabilities = await response.json();
+    return calendarAvailabilities;
   } catch (error) {
     console.error(
-      "Failed to fetch instructor availability date and times:",
+      "API error while fetching instructor calendar availabilities:",
       error,
     );
-    throw error;
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_AVAILABILITIES);
   }
 };
 

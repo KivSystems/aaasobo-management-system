@@ -23,7 +23,7 @@ import {
 import { authenticateInstructorSession } from "../../src/middlewares/auth.middleware";
 import { getInstructorClasses } from "../../src/controllers/classesController";
 import {
-  getInstructorAvailabilitiesTodayAndAfter,
+  getCalendarAvailabilitiesController,
   getInstructorAvailabilitiesTomorrowAndAfter,
 } from "../../src/controllers/instructorsAvailabilityController";
 
@@ -73,13 +73,9 @@ instructorsRouter.get("/:id/classes", parseId, (req, res) => {
   getInstructorClasses(req as RequestWithId, res);
 });
 
-instructorsRouter.get(
-  "/:id/availabilities/after-today",
-  parseId,
-  (req, res) => {
-    getInstructorAvailabilitiesTodayAndAfter(req as RequestWithId, res);
-  },
-);
+instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
+  getCalendarAvailabilitiesController(req as RequestWithId, res);
+});
 instructorsRouter.get(
   "/:id/availabilities/after-tomorrow",
   parseId,
