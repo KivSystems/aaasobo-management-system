@@ -1,7 +1,7 @@
 "use client";
 
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
-import InstructorCalendar from "@/app/components/instructors-dashboard/class-schedule/InstructorCalendar";
+import InstructorCalendar from "@/app/components/instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendar";
 import InstructorProfile from "@/app/components/instructors-dashboard/instructor-profile/InstructorProfile";
 import { useContext } from "react";
 import { AuthContext } from "@/app/admins/(authenticated)/authContext";
@@ -13,9 +13,11 @@ import Loading from "@/app/components/elements/loading/Loading";
 export default function InstructorTabs({
   instructorId,
   instructor,
+  classScheduleComponent,
 }: {
   instructorId: number;
   instructor: Instructor | string;
+  classScheduleComponent: React.ReactNode;
 }) {
   const breadcrumb = [
     "Instructor List",
@@ -36,12 +38,7 @@ export default function InstructorTabs({
   const tabs = [
     {
       label: "Class Schedule",
-      content: (
-        <InstructorCalendar
-          id={instructorId}
-          isAdminAuthenticated={isAuthenticated}
-        />
-      ),
+      content: classScheduleComponent,
     },
     {
       label: "Instructor's Profile",
