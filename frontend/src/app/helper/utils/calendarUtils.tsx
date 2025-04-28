@@ -9,7 +9,7 @@ import {
 import { formatTime24Hour } from "./dateUtils";
 
 export const createRenderEventContent = (userType: UserType) => {
-  return (eventInfo: EventContentArg) => {
+  const RenderEventContent = (eventInfo: EventContentArg) => {
     const classDateTime = new Date(eventInfo.event.startStr);
     const classTime = formatTime24Hour(classDateTime);
 
@@ -70,6 +70,8 @@ export const createRenderEventContent = (userType: UserType) => {
       </div>
     );
   };
+
+  return RenderEventContent;
 };
 
 export const getValidRange = (createdAt: string) => {
@@ -86,7 +88,7 @@ export const createDayCellDidMount = (
   holidays: string[],
   styles: { [key: string]: string },
 ) => {
-  return (info: DayCellContentArg) => {
+  const DayCellDidMount = (info: DayCellContentArg) => {
     const date = new Date(info.date);
     const formattedDate = date.toISOString().split("T")[0];
 
@@ -99,4 +101,6 @@ export const createDayCellDidMount = (
       dayNumber.classList.add(styles.holidayDateNumber);
     }
   };
+
+  return DayCellDidMount;
 };
