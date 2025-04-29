@@ -257,7 +257,6 @@ async function insertCustomers() {
         password:
           "$2b$12$GFM.a0hEjl/0/U3IjO057esEr7l.NMKZSeRC7c1he6wzDvoIW4oxy", // AaasoBo!Alice
         prefecture: "Aomori",
-        emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2024-08-01T00:00:00.000Z",
       },
       {
