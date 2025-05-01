@@ -17,6 +17,30 @@ export const getAllClasses = async () => {
   }
 };
 
+// Fetch classes with designated dateTime range
+export const getClassesWithinPeriod = async (
+  startDate: Date,
+  endDate: Date,
+) => {
+  try {
+    const classes = await prisma.class.findMany({
+      where: {
+        dateTime: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: { instructor: true, customer: true },
+      orderBy: { dateTime: "asc" },
+    });
+
+    return classes;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch classes.");
+  }
+};
+
 // Fetch classes by customer id along with related instructors and customers data
 export const getClassesByCustomerId = async (customerId: number) => {
   try {

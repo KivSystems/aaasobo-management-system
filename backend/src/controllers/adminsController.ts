@@ -6,7 +6,7 @@ import {
   getAllInstructors,
   createInstructor,
 } from "../services/instructorsService";
-import { getAllClasses } from "../services/classesService";
+import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
@@ -316,16 +316,33 @@ export const getAllPlansController = async (_: Request, res: Response) => {
   }
 };
 
-// Get all class information for Admin lesson list page
-export const getAllClassesController = async (_: Request, res: Response) => {
+// Get class information within designated period
+export const getClassesWithinPeriodController = async (
+  _: Request,
+  res: Response,
+) => {
   try {
-    // Fetch all class data.
-    const classes = await getAllClasses();
+    // Fetch class data within designated period.
+    const designatedPeriod = 30;
+    const designatedPeriodBefore = new Date(
+      Date.now() - designatedPeriod * (24 * 60 * 60 * 1000),
+    );
+    const designatedPeriodAfter = new Date(
+      Date.now() + (designatedPeriod + 1) * (24 * 60 * 60 * 1000),
+    );
+    // Set the designated period to 30 days converted to "T00:00:00.000Z".
+    designatedPeriodBefore.setUTCHours(0, 0, 0, 0);
+    designatedPeriodAfter.setUTCHours(0, 0, 0, 0);
+
+    const classes = await getClassesWithinPeriod(
+      designatedPeriodBefore,
+      designatedPeriodAfter,
+    );
 
     // Transform the data structure.
     const data = classes.map((classItem, number) => {
       const { id, instructor, customer, dateTime, status } = classItem;
-      const instructorName = instructor.name;
+      const instructorName = instructor.nickname;
       const customerName = customer.name;
 
       // Convert dateTime from UTC to JST (Add 9 hours).
