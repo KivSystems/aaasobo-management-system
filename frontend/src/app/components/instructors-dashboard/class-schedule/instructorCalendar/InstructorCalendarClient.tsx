@@ -7,8 +7,10 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 import { EventClickArg } from "@fullcalendar/core";
-import { createRenderEventContent } from "@/app/helper/utils/calendarUtils";
-import { getClassSlotTimesForCalendar } from "@/app/helper/utils/dateUtils";
+import {
+  createRenderEventContent,
+  getClassSlotTimesForCalendar,
+} from "@/app/helper/utils/calendarUtils";
 
 const InstructorCalendarClient = ({
   instructorId,

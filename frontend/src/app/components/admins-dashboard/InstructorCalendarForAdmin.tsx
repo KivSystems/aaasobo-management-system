@@ -17,9 +17,9 @@ import Loading from "../elements/loading/Loading";
 import { useRouter } from "next/navigation";
 import {
   createRenderEventContent,
+  getClassSlotTimesForCalendar,
   getValidRange,
 } from "@/app/helper/utils/calendarUtils";
-import { getClassSlotTimesForCalendar } from "@/app/helper/utils/dateUtils";
 
 function InstructorCalendarForAdmin({
   instructorId,
