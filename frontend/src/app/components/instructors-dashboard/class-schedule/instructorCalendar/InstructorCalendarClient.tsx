@@ -33,7 +33,7 @@ const InstructorCalendarClient = ({
 
   const renderInstructorEventContent = createRenderEventContent("instructor");
 
-  const { slotMinTime, slotMaxTime } = getClassSlotTimesForCalendar();
+  const classSlotTimes = getClassSlotTimesForCalendar();
 
   return (
     <FullCalendar
@@ -62,8 +62,15 @@ const InstructorCalendarClient = ({
       selectable={false}
       eventDisplay="block"
       allDaySlot={false}
-      slotMinTime={slotMinTime}
-      slotMaxTime={slotMaxTime}
+      {...(classSlotTimes && {
+        slotMinTime: classSlotTimes.start,
+        slotMaxTime: classSlotTimes.end,
+      })}
+      slotLabelFormat={{
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: false,
+      }}
     />
   );
 };

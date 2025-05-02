@@ -75,10 +75,10 @@ export const createRenderEventContent = (userType: UserType) => {
 };
 
 export const getValidRange = (createdAt: string) => {
-  // The valid range starts from the account creation date and ends at the end of the month, three months later.
   const now = new Date();
-  const end = new Date(now.getFullYear(), now.getMonth() + 4, 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + 3, 1);
 
+  // Valid range: from account creation to the end of the month, three months later.
   return {
     start: createdAt.split("T")[0],
     end: end.toISOString().split("T")[0],
@@ -111,37 +111,37 @@ export const getClassSlotTimesForCalendar = () => {
   // Step 1: Get the user's timezone offset from UTC in minutes
   const timezoneOffsetMinutes = new Date().getTimezoneOffset();
 
-  // Step 2: Calculate class start and end times, which are UTC midnight and noon (in Japan time: start at 09:00 and end at 21:00)
-  const utcClassesStartTime = new Date(Date.UTC(1970, 0, 1, 0, 0, 0)); // 00:00 UTC
-  const utcClassesEndTime = new Date(Date.UTC(1970, 0, 1, 12, 0, 0)); // 12:00 UTC
+  // Step 2: Define class start and end times in UTC (23:00 and 13:00 UTC / 08:00 and 22:00 in Japan).
+  // To account for possible daylight saving time shifts in some time zones, subtract one hour from the start time and add one hour to the end time.
+  // The year (1970) and date (January 1st & 2nd) are arbitrary and used just to construct the Date objects.
+  const utcClassesStart = new Date(Date.UTC(1970, 0, 1, 23, 0, 0)); // 23:00 UTC / 08:00 JST
+  const utcClassesEnd = new Date(Date.UTC(1970, 0, 2, 13, 0, 0)); // 13:00 UTC / 22:00 JST
 
   // Step 3: Adjust UTC times to the user's local time by subtracting the timezone offset
-  const localClassesStartTime = new Date(
-    utcClassesStartTime.getTime() - timezoneOffsetMinutes * 60 * 1000,
+  const localClassesStart = new Date(
+    utcClassesStart.getTime() - timezoneOffsetMinutes * 60 * 1000,
   );
-  const localClassesEndTime = new Date(
-    utcClassesEndTime.getTime() - timezoneOffsetMinutes * 60 * 1000,
+  const localClassesEnd = new Date(
+    utcClassesEnd.getTime() - timezoneOffsetMinutes * 60 * 1000,
   );
 
-  // Step 4: Format times to "HH:mm:ss"
+  // Step 4: Format the local times to "HH:mm:ss" for the calendar
   const formatTime = (date: Date) => date.toISOString().substring(11, 19);
-  const formattedLocalClassesStartTime = formatTime(localClassesStartTime);
-  const formattedLocalClassesEndTime = formatTime(localClassesEndTime);
+  const classesStartTime = formatTime(localClassesStart);
+  const classesEndTime = formatTime(localClassesEnd);
 
-  // Step 5: Compare and set correct min and max times
-  // In some time zones (e.g., Vancouver), the local class start time (17:00) is later than the end time (05:00).
-  // In such cases, the min and max times need to be reversed.
-  const slotMinTime =
-    formattedLocalClassesStartTime < formattedLocalClassesEndTime
-      ? formattedLocalClassesStartTime
-      : formattedLocalClassesEndTime;
-  const slotMaxTime =
-    formattedLocalClassesEndTime > formattedLocalClassesStartTime
-      ? formattedLocalClassesEndTime
-      : formattedLocalClassesStartTime;
+  // Step 5: Compare classes start time and end time
+  // In some time zones (e.g., Vancouver), class crosses midnight (e.g., start at 16:00, end at 06:00).
+  // In such cases, return null to display the full range of time slots (00:00–24:00) on the weekly calendar.
+  const classesStartHour = parseInt(classesStartTime.substring(0, 2), 10); // e.g.,"16:00" -> 16
+  const classesEndHour = parseInt(classesEndTime.substring(0, 2), 10);
+
+  if (classesStartHour > classesEndHour) {
+    return null;
+  }
 
   return {
-    slotMinTime,
-    slotMaxTime,
+    start: classesStartTime,
+    end: classesEndTime,
   };
 };

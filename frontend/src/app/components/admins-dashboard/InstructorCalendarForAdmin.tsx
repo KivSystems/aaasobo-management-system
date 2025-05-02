@@ -2,24 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./InstructorCalendarForAdmin.module.scss";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import momentTimezonePlugin from "@fullcalendar/moment-timezone";
-import { EventClickArg } from "@fullcalendar/core";
 import {
   getCalendarAvailabilities,
   getCalendarClasses,
   getInstructorProfile,
 } from "@/app/helper/api/instructorsApi";
 import Loading from "../elements/loading/Loading";
-import { useRouter } from "next/navigation";
-import {
-  createRenderEventContent,
-  getClassSlotTimesForCalendar,
-  getValidRange,
-} from "@/app/helper/utils/calendarUtils";
+import { getValidRange } from "@/app/helper/utils/calendarUtils";
+import InstructorCalendarClient from "../instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendarClient";
 
 function InstructorCalendarForAdmin({
   instructorId,
@@ -39,7 +29,6 @@ function InstructorCalendarForAdmin({
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const fetchData = useCallback(async () => {
     if (!instructorId) return;
@@ -67,19 +56,6 @@ function InstructorCalendarForAdmin({
     fetchData();
   }, [fetchData]);
 
-  const handleEventClick = (clickInfo: EventClickArg) => {
-    if (clickInfo.event.title === "No booked class" || !isAdminAuthenticated)
-      return;
-
-    const classId = clickInfo.event.extendedProps.classId;
-    const redirectURL = `/admins/instructor-list/${instructorId}/class-schedule/${classId}`;
-    router.push(redirectURL);
-  };
-
-  const renderInstructorEventContent = createRenderEventContent("instructor");
-
-  const { slotMinTime, slotMaxTime } = getClassSlotTimesForCalendar();
-
   if (!instructorId) return <></>;
 
   if (error) {
@@ -97,34 +73,11 @@ function InstructorCalendarForAdmin({
               Instructor: &nbsp;{name}
             </span>
           ) : null}
-          <FullCalendar
-            plugins={[
-              dayGridPlugin,
-              timeGridPlugin,
-              interactionPlugin,
-              momentTimezonePlugin,
-            ]}
-            initialView={"timeGridWeek"}
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay",
-            }}
-            events={instructorCalendarEvents}
-            eventClick={handleEventClick}
-            eventContent={renderInstructorEventContent}
+          <InstructorCalendarClient
+            instructorId={instructorId}
+            instructorCalendarEvents={instructorCalendarEvents}
             validRange={calendarValidRange!}
-            // TODO: After the 'Holiday' table is created, apply the styling to them
-            // dayCellDidMount={dayCellDidMount}
-            locale="en"
-            contentHeight="auto"
-            dayMaxEvents={true}
-            editable={false}
-            selectable={false}
-            eventDisplay="block"
-            allDaySlot={false}
-            slotMinTime={slotMinTime}
-            slotMaxTime={slotMaxTime}
+            isAdminAuthenticated={isAdminAuthenticated}
           />
         </>
       )}
