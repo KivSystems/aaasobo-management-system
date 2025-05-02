@@ -2,6 +2,19 @@ const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/admins`;
 
+export type Response<T> = T | { message: string };
+
+export const getAdmin = async (
+  id: number,
+): Promise<Response<{ admin: Admin }>> => {
+  const apiUrl = `${BASE_URL}/admin-list/${id}`;
+  const data: Response<{ admin: Admin }> = await fetch(apiUrl, {
+    cache: "no-store",
+  }).then((res) => res.json());
+
+  return data;
+};
+
 // GET all admins data
 export const getAllAdmins = async () => {
   try {

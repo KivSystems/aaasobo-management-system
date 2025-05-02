@@ -60,6 +60,12 @@ type ClassType = {
   recurringClassId: number;
 };
 
+type Admin = {
+  id: number;
+  name: string;
+  email: string;
+};
+
 type Customer = {
   id: number;
   name: string;

@@ -4,6 +4,7 @@ import {
   logoutAdminController,
   registerAdminController,
   registerInstructorController,
+  getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
   getAllCustomersController,
@@ -29,6 +30,7 @@ adminsRouter.post(
   requireAuthentication,
   registerInstructorController,
 );
+adminsRouter.get("/admin-list/:id", getAdminController);
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);
