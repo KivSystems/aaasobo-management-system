@@ -147,7 +147,6 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
             placeholder="e.g., john-1.jpg"
             icon={<PhotoIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.name}
             onChange={() => clearErrorMessage("icon")}
           />
           <TextInput
@@ -158,7 +157,6 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
             placeholder="e.g., https://zoom.us/j/..."
             icon={<LinkIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.classURL}
             onChange={() => clearErrorMessage("classURL")}
           />
           <TextInput
@@ -169,7 +167,6 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
             placeholder="e.g., 123 456 7890"
             icon={<IdentificationIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.meetingId}
             onChange={() => clearErrorMessage("meetingId")}
           />
           <TextInput
@@ -180,7 +177,6 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
             placeholder="e.g., 123456"
             icon={<KeyIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.passcode}
             onChange={() => clearErrorMessage("passcode")}
           />
           <TextInput
@@ -191,7 +187,6 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
             placeholder="e.g., https://..."
             icon={<DocumentTextIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.introductionURL}
             onChange={() => clearErrorMessage("introductionURL")}
           />
         </>

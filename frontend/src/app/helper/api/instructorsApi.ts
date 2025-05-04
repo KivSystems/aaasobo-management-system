@@ -1,7 +1,8 @@
 import {
-  REGISTRATION_SUCCESS_MESSAGE,
-  EMAIL_ALREADY_REGISTERED_ERROR,
+  INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE,
   GENERAL_ERROR_MESSAGE,
+  SINGLE_ITEM_ALREADY_REGISTERED_ERROR,
+  MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR,
 } from "../messages/formValidation";
 import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
 
@@ -85,7 +86,15 @@ export const registerInstructor = async (userData: {
     });
 
     if (response.status === 409) {
-      return { email: EMAIL_ALREADY_REGISTERED_ERROR };
+      const data = await response.json();
+      const { items } = data;
+      // Check the number of commas in the error message
+      const commaCount = (items.match(/,/g) || []).length;
+      if (commaCount === 0) {
+        return { errorMessage: SINGLE_ITEM_ALREADY_REGISTERED_ERROR(items) };
+      } else if (commaCount > 0) {
+        return { errorMessage: MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR(items) };
+      }
     }
 
     if (!response.ok) {
@@ -93,7 +102,7 @@ export const registerInstructor = async (userData: {
     }
 
     return {
-      successMessage: REGISTRATION_SUCCESS_MESSAGE,
+      successMessage: INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE,
     };
   } catch (error) {
     console.error("API error while registering instructor:", error);

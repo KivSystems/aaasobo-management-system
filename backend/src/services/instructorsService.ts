@@ -17,7 +17,7 @@ export const registerInstructor = async (data: {
 }) => {
   const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
-  const instructor = await prisma.instructor.create({
+  await prisma.instructor.create({
     data: {
       name: data.name,
       email: data.email,
@@ -32,10 +32,7 @@ export const registerInstructor = async (data: {
     },
   });
 
-  return {
-    id: instructor.id,
-    name: instructor.name,
-  };
+  return;
 };
 
 // Fetch all instructors information
@@ -253,6 +250,60 @@ export const getInstructorByEmail = async (
 ): Promise<Instructor | null> => {
   return await prisma.instructor.findUnique({
     where: { email },
+  });
+};
+
+// Fetch the instructor by the nickname
+export const getInstructorByNickname = async (
+  nickname: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { nickname },
+  });
+};
+
+// Fetch the instructor by the icon
+export const getInstructorByIcon = async (
+  icon: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { icon },
+  });
+};
+
+// Fetch the instructor by the class URL
+export const getInstructorByClassURL = async (
+  classURL: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { classURL },
+  });
+};
+
+// Fetch the instructor by the meeting ID
+export const getInstructorByMeetingId = async (
+  meetingId: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { meetingId },
+  });
+};
+
+// Fetch the instructor by the passcode
+export const getInstructorByPasscode = async (
+  passcode: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { passcode },
+  });
+};
+
+// Fetch the instructor by the introduction URL
+export const getInstructorByIntroductionURL = async (
+  introductionURL: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { introductionURL },
   });
 };
 

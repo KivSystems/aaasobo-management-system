@@ -1,11 +1,18 @@
 import { Request, Response } from "express";
 import { kv } from "@vercel/kv";
+import { prisma } from "../../prisma/prismaClient";
 import { createAdmin, getAdmin } from "../services/adminsService";
 import { getAllAdmins } from "../services/adminsService";
 import {
   getAllInstructors,
-  getInstructorByEmail,
   registerInstructor,
+  getInstructorByEmail,
+  getInstructorByNickname,
+  getInstructorByIcon,
+  getInstructorByClassURL,
+  getInstructorByMeetingId,
+  getInstructorByPasscode,
+  getInstructorByIntroductionURL,
 } from "../services/instructorsService";
 import { getAllClasses } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
@@ -13,6 +20,7 @@ import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
 import bcrypt from "bcrypt";
 import { logout } from "../helper/logout";
+import { error } from "console";
 
 export const saltRounds = 12;
 
@@ -243,11 +251,53 @@ export const registerInstructorController = async (
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
 
+  // Set unique checks list
+  const uniqueChecks = [
+    { fn: getInstructorByNickname, value: nickname },
+    { fn: getInstructorByEmail, value: normalizedEmail },
+    { fn: getInstructorByIcon, value: icon },
+    { fn: getInstructorByClassURL, value: classURL },
+    { fn: getInstructorByMeetingId, value: meetingId },
+    { fn: getInstructorByPasscode, value: passcode },
+    { fn: getInstructorByIntroductionURL, value: introductionURL },
+  ];
+  let errorItems = "";
+
   try {
-    const existingInstructor = await getInstructorByEmail(normalizedEmail);
-    if (existingInstructor) {
-      return res.sendStatus(409);
+    const results = await Promise.all(
+      uniqueChecks.map(({ fn, value }) => fn(value)),
+    );
+
+    const [
+      emailExists,
+      nicknameExists,
+      iconExists,
+      classURLExists,
+      meetingIdExists,
+      passcodeExists,
+      introductionURLExists,
+    ] = results;
+
+    // Make list of error items and set the text including each error item
+    if (nicknameExists) errorItems = errorItems.concat(", ", "Nickname");
+    if (emailExists) errorItems = errorItems.concat(", ", "Email");
+    if (iconExists) errorItems = errorItems.concat(", ", "Icon");
+    if (classURLExists) errorItems = errorItems.concat(", ", "Class URL");
+    if (meetingIdExists) errorItems = errorItems.concat(", ", "Meeting ID");
+    if (passcodeExists) errorItems = errorItems.concat(", ", "Pass Code");
+    if (introductionURLExists)
+      errorItems = errorItems.concat(", ", "Introduction URL");
+
+    // Count the number of commas in the errorItems string
+    const errorItemCount = (errorItems.match(/,/g) || []).length;
+
+    if (errorItemCount > 0) {
+      // Remove the first comma and space from the errorItems string
+      errorItems = errorItems.substring(2);
+      // Return error items
+      return res.status(409).json({ items: errorItems });
     }
+
     await registerInstructor({
       name,
       nickname,
@@ -259,15 +309,10 @@ export const registerInstructorController = async (
       passcode,
       introductionURL,
     });
+
     res.sendStatus(201);
   } catch (error) {
-    console.error("Error registering instructor", {
-      error,
-      context: {
-        email: normalizedEmail,
-        time: new Date().toISOString(),
-      },
-    });
+    console.error("Error registering instructor", { error });
     res.sendStatus(500);
   }
 };
