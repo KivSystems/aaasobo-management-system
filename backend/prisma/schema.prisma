@@ -71,7 +71,7 @@ model Customer {
   children      Children[]
   subscription  Subscription[]
   prefecture    String
-  createdAt    DateTime       @default(now())
+  createdAt     DateTime       @default(now())
 }
 
 model Class {
@@ -88,6 +88,7 @@ model Class {
   subscriptionId   Int
   subscription     Subscription      @relation(fields: [subscriptionId], references: [id])
   isRebookable     Boolean           @default(true)
+  rebookableUntil  DateTime?
 }
 
 enum Status {
