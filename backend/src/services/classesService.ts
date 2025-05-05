@@ -70,6 +70,7 @@ export const createClass = async (
     status: Status;
     subscriptionId: number;
     recurringClassId: number;
+    rebookableUntil: string;
   },
   childrenIds: number[],
 ) => {
@@ -168,40 +169,34 @@ export const getClassById = async (classId: number) => {
 
 // Update/Edit a class
 export const updateClass = async (
-  classId: number,
-  dateTime?: string,
-  instructorId?: number,
-  childrenIds?: number[],
-  status?:
-    | "booked"
-    | "completed"
-    | "canceledByCustomer"
-    | "canceledByInstructor",
-  isRebookable?: boolean,
+  id: number,
+  classData: {
+    dateTime?: string;
+    instructorId?: number;
+    childrenIds?: number[];
+    status?: Status;
+    isRebookable?: boolean;
+    rebookableUntil?: string | null;
+  },
 ) => {
+  const { childrenIds, ...fieldsToUpdate } = classData;
   try {
     const updatedClass = await prisma.$transaction(async (prisma) => {
-      // Update the Class data
       const updatedClass = await prisma.class.update({
-        where: { id: classId },
-        data: {
-          dateTime,
-          instructorId,
-          status,
-          isRebookable,
-        },
+        where: { id },
+        data: fieldsToUpdate,
       });
 
       // Delete existing classAttendance records
       await prisma.classAttendance.deleteMany({
-        where: { classId },
+        where: { classId: id },
       });
 
       // Add new classAttendance records if childrenIds is provided
       if (childrenIds) {
         await prisma.classAttendance.createMany({
           data: childrenIds.map((childId) => ({
-            classId,
+            classId: id,
             childrenId: childId,
           })),
         });
@@ -609,7 +604,10 @@ export const createCanceledClasses = async ({
         recurringClassId,
         subscriptionId,
         dateTime,
-        status: "canceledByInstructor",
+        status: "canceledByInstructor", // TODO: need to discuss what status would be appropriate here
+        rebookableUntil: new Date(
+          new Date(dateTime).getTime() + 259200 * 60 * 1000, // 180 days (259200 minutes) after the class dateTime
+        ),
       })),
     });
     // Add the Class Attendance to the ClassAttendance Table based on the Class ID.

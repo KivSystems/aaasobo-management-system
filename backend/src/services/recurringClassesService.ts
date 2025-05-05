@@ -31,6 +31,9 @@ export const addRecurringClass = async (
         subscriptionId,
         dateTime,
         status: "booked",
+        rebookableUntil: new Date(
+          new Date(dateTime).getTime() + 259200 * 60 * 1000, // 180 days (259200 minutes) after the class dateTime
+        ),
       })),
     });
     // Add the Class Attendance to the ClassAttendance Table based on the Class ID.

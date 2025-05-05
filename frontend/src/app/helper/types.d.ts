@@ -58,6 +58,7 @@ type ClassType = {
   status: ClassStatus;
   isRebookable: boolean;
   recurringClassId: number;
+  rebookableUntil: string;
 };
 
 type Admin = {

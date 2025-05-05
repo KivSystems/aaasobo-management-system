@@ -46,6 +46,7 @@ export const bookClass = async (classData: {
   childrenIds: number[];
   status: string;
   recurringClassId: number;
+  rebookableUntil: string;
 }) => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/classes`, {
@@ -90,22 +91,21 @@ export const getClassById = async (classId: number) => {
 };
 
 // PATCH a class date
-export const editClass = async (editedClass: {
-  classId: number;
-  childrenIds: number[];
-  dateTime?: string;
-  status?:
-    | "booked"
-    | "completed"
-    | "canceledByCustomer"
-    | "canceledByInstructor";
-  instructorId?: number;
-  isRebookable?: boolean;
-}) => {
+export const editClass = async (
+  id: number,
+  classData: {
+    childrenIds?: number[];
+    dateTime?: string;
+    status?: ClassStatus;
+    instructorId?: number;
+    isRebookable?: boolean;
+    rebookableUntil?: string | null;
+  },
+) => {
   // Define the data to be sent to the server side.
-  const classURL = `${BACKEND_ORIGIN}/classes/${editedClass.classId}`;
+  const classURL = `${BACKEND_ORIGIN}/classes/${id}`;
   const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify(editedClass);
+  const body = JSON.stringify(classData);
 
   const response = await fetch(classURL, {
     method: "PATCH",

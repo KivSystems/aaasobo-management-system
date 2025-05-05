@@ -116,16 +116,26 @@ const InstructorClassesTable = ({
 
     const attendedChildrenIds = childrenWithoutEditingAttendance
       ? childrenWithoutEditingAttendance.map((child) => child.id)
-      : Array.from(selectedChildrenIds);
+      : updatedStatus === "canceledByInstructor"
+        ? undefined
+        : Array.from(selectedChildrenIds);
 
     const isRebookable = updatedStatus !== "completed";
+    const rebookableUntil =
+      updatedStatus === "canceledByInstructor"
+        ? new Date(
+            new Date(classStart).getTime() + 259200 * 60 * 1000, // If the class is canceled by the instructor, set rebookableUntil to 180 days (259200 minutes) after the class dateTime
+          ).toISOString()
+        : updatedStatus === "completed"
+          ? null
+          : undefined;
 
     try {
-      await editClass({
-        classId: classToCompleteId,
+      await editClass(classToCompleteId, {
         childrenIds: attendedChildrenIds,
         status: updatedStatus,
-        isRebookable: isRebookable,
+        isRebookable,
+        rebookableUntil,
       });
 
       setClasses((prev) => {
@@ -138,7 +148,7 @@ const InstructorClassesTable = ({
                 attendingChildren:
                   childrenWithoutEditingAttendance ||
                   registeredChildren.filter((child) =>
-                    attendedChildrenIds.includes(child.id),
+                    attendedChildrenIds?.includes(child.id),
                   ),
                 status: updatedStatus,
               }
@@ -150,7 +160,7 @@ const InstructorClassesTable = ({
         classToCompleteId,
         childrenWithoutEditingAttendance ||
           registeredChildren.filter((child) =>
-            attendedChildrenIds.includes(child.id),
+            attendedChildrenIds?.includes(child.id),
           ),
         updatedStatus,
       );
