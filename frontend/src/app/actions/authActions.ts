@@ -5,17 +5,21 @@ import { signIn, signOut } from "../../../auth.config";
 import { userLoginSchema } from "../schemas/authSchema";
 import { extractLoginValidationErrors } from "../helper/utils/validationErrorUtils";
 import { authenticateUser } from "../helper/api/usersApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
+import {
+  GENERAL_ERROR_MESSAGE,
+  GENERAL_ERROR_MESSAGE_JA,
+} from "../helper/messages/formValidation";
 
 export async function authenticate(
   prevState: { errorMessage: string } | undefined,
   formData: FormData,
 ): Promise<{ errorMessage: string } | undefined> {
-  try {
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const userType = formData.get("userType");
+  const email = formData.get("email");
+  const password = formData.get("password");
+  const userType = formData.get("userType");
+  const language = formData.get("language") as LanguageType;
 
+  try {
     const parsedForm = userLoginSchema.safeParse({
       email,
       password,
@@ -24,13 +28,14 @@ export async function authenticate(
 
     if (!parsedForm.success) {
       const validationErrors = parsedForm.error.errors;
-      return extractLoginValidationErrors(validationErrors);
+      return extractLoginValidationErrors(validationErrors, language);
     }
 
     const response = await authenticateUser(
       parsedForm.data.email,
       parsedForm.data.password,
       parsedForm.data.userType,
+      language,
     );
 
     if ("errorMessage" in response) {
@@ -53,7 +58,8 @@ export async function authenticate(
     if (error instanceof AuthError) {
       console.error("Error in authenticate server action:", error);
       return {
-        errorMessage: GENERAL_ERROR_MESSAGE,
+        errorMessage:
+          language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
       };
     }
     // Re-throw non-auth errors so that Next.js can handle redirects properly.

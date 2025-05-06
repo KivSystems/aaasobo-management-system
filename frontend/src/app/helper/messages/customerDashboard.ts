@@ -1,17 +1,17 @@
 export const FAILED_TO_FETCH_BOOKABLE_CLASSES =
-  "We couldn't load the available classes. Please try again later. / 利用可能なクラスを読み込めませんでした。後ほどもう一度お試しください。";
+  "We couldn’t load your available classes to rebook. Please refresh the page or try again later. / 振替予約可能クラスの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const INVALID_CUSTOMER_ID =
-  "We encountered an issue while processing the customer ID. Please try again later. / カスタマーIDの処理中に問題が発生しました。後ほどもう一度お試しください。";
+  "We encountered an issue while processing your ID. Please refresh the page or try again later. / カスタマーIDの処理中に問題が発生しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const FAILED_TO_FETCH_UPCOMING_CLASSES =
-  "We couldn't load the upcoming classes. Please try again later. / 予約済みクラスを読み込めませんでした。後ほどもう一度お試しください。";
+  "We couldn't load your upcoming classes. Please refresh the page or try again later. / 予約済みクラスの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const FAILED_TO_FETCH_CUSTOMER_CLASSES =
-  "We couldn't load the classes. Please try again later. / クラスを読み込めませんでした。後ほどもう一度お試しください。";
+  "We couldn't load your classes. Please refresh the page or try again later. / クラスの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const FAILED_TO_FETCH_CUSTOMER_PROFILE =
-  "We couldn't load the customer's profile. Please try again later. / プロフィールを読み込めませんでした。後ほどもう一度お試しください。";
+  "We couldn’t load your profile. Please refresh the page or try again later. / プロフィールの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const CANCELATION_NOT_ALLOWED_MESSAGE = {
   ja: "日本時間を基準とし、クラスは予定日の当日以降、キャンセルできません。",

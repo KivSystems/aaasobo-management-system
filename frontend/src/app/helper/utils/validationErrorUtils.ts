@@ -2,6 +2,7 @@ import { ZodFormattedError } from "zod";
 import { ZodIssue } from "zod";
 import {
   GENERAL_ERROR_MESSAGE,
+  GENERAL_ERROR_MESSAGE_JA,
   LOGIN_FAILED_MESSAGE,
   PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR,
 } from "../messages/formValidation";
@@ -47,7 +48,10 @@ export function extractUpdateValidationErrors(
   return errors;
 }
 
-export function extractLoginValidationErrors(validationErrors: ZodIssue[]): {
+export function extractLoginValidationErrors(
+  validationErrors: ZodIssue[],
+  language: LanguageType,
+): {
   errorMessage: string;
 } {
   const unexpectedError = validationErrors.some(
@@ -55,9 +59,12 @@ export function extractLoginValidationErrors(validationErrors: ZodIssue[]): {
   );
 
   if (unexpectedError) {
-    return { errorMessage: GENERAL_ERROR_MESSAGE };
+    return {
+      errorMessage:
+        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+    };
   }
-  return { errorMessage: LOGIN_FAILED_MESSAGE };
+  return { errorMessage: LOGIN_FAILED_MESSAGE[language] };
 }
 
 export function extractResetRequestValidationErrors(
