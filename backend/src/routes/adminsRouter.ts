@@ -4,12 +4,13 @@ import {
   logoutAdminController,
   registerAdminController,
   registerInstructorController,
+  getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
   getAllCustomersController,
   getAllChildrenController,
   getAllPlansController,
-  getAllClassesController,
+  getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
 import {
   requireAuthentication,
@@ -31,4 +32,4 @@ adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
-adminsRouter.get("/class-list", getAllClassesController);
+adminsRouter.get("/class-list", getClassesWithinPeriodController);

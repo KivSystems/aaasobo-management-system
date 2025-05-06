@@ -24,6 +24,22 @@ export async function revalidateUpcomingClasses() {
   revalidateTag("upcoming-classes");
 }
 
-export async function revalidatePlans() {
-  revalidateTag("plans");
+export async function revalidateAdminList() {
+  revalidateTag("admin-list");
+}
+
+export async function revalidateInstructorList() {
+  revalidateTag("instructor-list");
+}
+
+export async function revalidateCustomerList() {
+  revalidateTag("customer-list");
+}
+
+export async function revalidateChildList() {
+  revalidateTag("child-list");
+}
+
+export async function revalidatePlanList() {
+  revalidateTag("plan-list");
 }

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { kv } from "@vercel/kv";
 import { prisma } from "../../prisma/prismaClient";
 import { createAdmin, getAdmin } from "../services/adminsService";
-import { getAllAdmins } from "../services/adminsService";
+import { getAllAdmins, getAdminById } from "../services/adminsService";
 import {
   getAllInstructors,
   registerInstructor,
@@ -14,7 +14,7 @@ import {
   getInstructorByPasscode,
   getInstructorByIntroductionURL,
 } from "../services/instructorsService";
-import { getAllClasses } from "../services/classesService";
+import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
@@ -139,6 +139,34 @@ interface SingleChildSubscription extends Omit<Subscription, "customer"> {
     };
   };
 }
+
+function setErrorResponse(res: Response, error: unknown) {
+  return res
+    .status(500)
+    .json({ message: error instanceof Error ? error.message : `${error}` });
+}
+
+export const getAdminController = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "Invalid ID provided." });
+  }
+  try {
+    const admin = await getAdminById(id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found." });
+    }
+    return res.status(200).json({
+      admin: {
+        id: admin.id,
+        name: admin.name,
+        email: admin.email,
+      },
+    });
+  } catch (error) {
+    return setErrorResponse(res, error);
+  }
+};
 
 // Admin dashboard for displaying admins' information
 export const getAllAdminsController = async (_: Request, res: Response) => {
@@ -369,16 +397,33 @@ export const getAllPlansController = async (_: Request, res: Response) => {
   }
 };
 
-// Get all class information for Admin lesson list page
-export const getAllClassesController = async (_: Request, res: Response) => {
+// Get class information within designated period
+export const getClassesWithinPeriodController = async (
+  _: Request,
+  res: Response,
+) => {
   try {
-    // Fetch all class data.
-    const classes = await getAllClasses();
+    // Fetch class data within designated period.
+    const designatedPeriod = 30;
+    const designatedPeriodBefore = new Date(
+      Date.now() - designatedPeriod * (24 * 60 * 60 * 1000),
+    );
+    const designatedPeriodAfter = new Date(
+      Date.now() + (designatedPeriod + 1) * (24 * 60 * 60 * 1000),
+    );
+    // Set the designated period to 30 days converted to "T00:00:00.000Z".
+    designatedPeriodBefore.setUTCHours(0, 0, 0, 0);
+    designatedPeriodAfter.setUTCHours(0, 0, 0, 0);
+
+    const classes = await getClassesWithinPeriod(
+      designatedPeriodBefore,
+      designatedPeriodAfter,
+    );
 
     // Transform the data structure.
     const data = classes.map((classItem, number) => {
       const { id, instructor, customer, dateTime, status } = classItem;
-      const instructorName = instructor.name;
+      const instructorName = instructor.nickname;
       const customerName = customer.name;
 
       // Convert dateTime from UTC to JST (Add 9 hours).
