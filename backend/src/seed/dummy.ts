@@ -369,6 +369,15 @@ async function insertClasses() {
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
       },
+      {
+        instructorId: helen.id,
+        customerId: alice.id,
+        dateTime: "2025-05-03T09:00:00Z",
+        status: "booked",
+        subscriptionId: alice.subscription[0].id,
+        recurringClassId: 1,
+        rebookableUntil: "2025-10-30T09:00:00Z",
+      },
       // {
       //   instructorId: helen.id,
       //   customerId: bob.id,
@@ -857,6 +866,31 @@ async function insertInstructorUnavailabilities() {
         instructorId: helen.id,
         dateTime: new Date("2025-03-17T07:30:00Z"),
       },
+      // Helen is unavailable on Saturday, May 31.
+      {
+        instructorId: helen.id,
+        dateTime: new Date("2025-05-31T09:00:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        dateTime: new Date("2025-05-31T09:30:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        dateTime: new Date("2025-05-31T10:00:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        dateTime: new Date("2025-05-31T10:30:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        dateTime: new Date("2025-05-31T11:00:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        dateTime: new Date("2025-05-31T11:30:00Z"),
+      },
     ],
   });
 }
@@ -929,7 +963,7 @@ async function main() {
     await insertAdmins();
 
     // Dependant on the above
-    await insertInstructorAvailabilities();
+    // await insertInstructorAvailabilities();
     await insertSubscriptions();
     await insertChildren();
 

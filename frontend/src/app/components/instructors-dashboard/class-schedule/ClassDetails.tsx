@@ -7,12 +7,6 @@ import styles from "./ClassDetails.module.scss";
 import Link from "next/link";
 import Loading from "../../elements/loading/Loading";
 
-type StatusType =
-  | "booked"
-  | "completed"
-  | "canceledByCustomer"
-  | "canceledByInstructor";
-
 function ClassDetails({
   instructorId,
   classId,
@@ -67,7 +61,7 @@ function ClassDetails({
   const handleUpdateClassDetail = (
     completedClassId: number,
     attendedChildren: Child[],
-    updatedStatus: StatusType,
+    updatedStatus: ClassStatus,
   ) => {
     if (completedClassId !== classId) return;
 

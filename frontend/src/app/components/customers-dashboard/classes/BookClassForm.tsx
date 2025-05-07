@@ -140,6 +140,7 @@ function BookClassForm({
         status: "booked",
         childrenIds: selectedChildrenIdsArray,
         recurringClassId: classToRebook.recurringClassId,
+        rebookableUntil: classToRebook.rebookableUntil,
       });
 
       toast.success("The class has been successfully booked!");
