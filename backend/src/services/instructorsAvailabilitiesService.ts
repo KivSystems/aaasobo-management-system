@@ -1,4 +1,5 @@
 import { prisma } from "../../prisma/prismaClient";
+import { nHoursLater } from "../helper/dateUtils";
 
 export const fetchInstructorAvailabilitiesTodayAndAfter = async (
   instructorId: number,
@@ -68,14 +69,14 @@ export const fetchInstructorAvailabilitiesTodayAndAfter = async (
 };
 
 export const getCalendarAvailabilities = async (instructorId: number) => {
-  const threeHoursLater = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
+  const effectiveFrom = nHoursLater(3);
 
   // Get the instructor's unavailable dateTimes from Class table
   const bookedOrCanceledTimeSlots = await prisma.class.findMany({
     where: {
       instructorId: instructorId,
       dateTime: {
-        gte: threeHoursLater,
+        gte: effectiveFrom,
       },
       status: {
         in: ["booked", "canceledByInstructor"],
@@ -91,7 +92,7 @@ export const getCalendarAvailabilities = async (instructorId: number) => {
     where: {
       instructorId: instructorId,
       dateTime: {
-        gte: threeHoursLater,
+        gte: effectiveFrom,
       },
     },
     select: {
@@ -110,7 +111,7 @@ export const getCalendarAvailabilities = async (instructorId: number) => {
     where: {
       instructorId: instructorId,
       dateTime: {
-        gte: threeHoursLater,
+        gte: effectiveFrom,
         notIn: unavailableDateTimes, // Exclude the records of unavailable dateTimes
       },
     },
