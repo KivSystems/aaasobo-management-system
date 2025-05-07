@@ -66,7 +66,8 @@ function BookClass({
               eachClass.isRebookable) ||
             (eachClass.status === "canceledByInstructor" &&
               eachClass.isRebookable &&
-              now <= fiveMonthsLaterEndOfMonth)
+              now <= fiveMonthsLaterEndOfMonth) ||
+            (eachClass.status === "pending" && eachClass.isRebookable)
           );
         });
 

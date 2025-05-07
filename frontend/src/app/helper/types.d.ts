@@ -34,7 +34,8 @@ type ClassStatus =
   | "booked"
   | "completed"
   | "canceledByCustomer"
-  | "canceledByInstructor";
+  | "canceledByInstructor"
+  | "pending";
 
 type ClassType = {
   id: number;

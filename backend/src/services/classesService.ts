@@ -1,6 +1,5 @@
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import { getFirstDayOfFiveMonthsAgo } from "../helper/dateUtils";
 
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
@@ -470,7 +469,7 @@ export const checkDoubleBooking = async (
 };
 
 export const getBookableClasses = async (customerId: number) => {
-  const fiveMonthsAgoFirstDay = getFirstDayOfFiveMonthsAgo();
+  const threeHoursFromNow = new Date(new Date().getTime() + 180 * 60 * 1000);
 
   const classes = await prisma.class.findMany({
     where: {
@@ -479,14 +478,20 @@ export const getBookableClasses = async (customerId: number) => {
       OR: [
         {
           status: "canceledByCustomer",
-          dateTime: {
-            gte: fiveMonthsAgoFirstDay,
+          rebookableUntil: {
+            gte: threeHoursFromNow, // A class can only be rebooked if its "rebookableUntil" time is more than three hours from now
           },
         },
         {
           status: "canceledByInstructor",
-          dateTime: {
-            gte: fiveMonthsAgoFirstDay,
+          rebookableUntil: {
+            gte: threeHoursFromNow,
+          },
+        },
+        {
+          status: "pending",
+          rebookableUntil: {
+            gte: threeHoursFromNow,
           },
         },
       ],
@@ -496,7 +501,7 @@ export const getBookableClasses = async (customerId: number) => {
     },
   });
 
-  // Return only the dateTime property from the class data
+  // TODO: Also return "id" and "rebookableUntil" for each class
   return classes.map((classItem) => classItem.dateTime);
 };
 
@@ -604,7 +609,7 @@ export const createCanceledClasses = async ({
         recurringClassId,
         subscriptionId,
         dateTime,
-        status: "canceledByInstructor", // TODO: need to discuss what status would be appropriate here
+        status: "pending", // NOTE: the status has been changed from "canceledByInstructor" to "pending"
         rebookableUntil: new Date(
           new Date(dateTime).getTime() + 259200 * 60 * 1000, // 180 days (259200 minutes) after the class dateTime
         ),
@@ -633,6 +638,9 @@ export const getCustomerClasses = async (customerId: number) => {
   const classes = await prisma.class.findMany({
     where: {
       customerId: customerId,
+      NOT: {
+        status: "pending",
+      },
     },
     orderBy: {
       dateTime: "desc",

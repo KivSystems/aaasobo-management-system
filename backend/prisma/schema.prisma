@@ -96,6 +96,7 @@ enum Status {
   completed
   canceledByCustomer
   canceledByInstructor
+  pending
 }
 
 model Admins {
