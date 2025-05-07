@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../../prisma/prismaClient";
+import { nHoursLater } from "../helper/dateUtils";
 
 export const generatePasswordResetToken = async (email: string) => {
   const token = uuidv4();
-  const expires = new Date(new Date().getTime() + 60 * 60 * 1000);
+  const expires = nHoursLater(1);
 
   // Delete an existing token to make only the latest one valid
   const existingToken = await prisma.passwordResetToken.findFirst({

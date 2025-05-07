@@ -583,9 +583,7 @@ export const createCanceledClasses = async ({
         subscriptionId,
         dateTime,
         status: "pending", // NOTE: the status has been changed from "canceledByInstructor" to "pending"
-        rebookableUntil: new Date(
-          new Date(dateTime).getTime() + 259200 * 60 * 1000, // 180 days (259200 minutes) after the class dateTime
-        ),
+        rebookableUntil: nHoursLater(180 * 24, dateTime), // 180 days (* 24 hours) after the class dateTime,
       })),
     });
     // Add the Class Attendance to the ClassAttendance Table based on the Class ID.

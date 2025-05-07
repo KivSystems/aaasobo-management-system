@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   formatTime24Hour,
   isPastClassEndTime,
+  nHoursLater,
 } from "@/app/helper/utils/dateUtils";
 import styles from "./InstructorClassesTable.module.scss";
 import Link from "next/link";
@@ -117,9 +118,7 @@ const InstructorClassesTable = ({
     const isRebookable = updatedStatus !== "completed";
     const rebookableUntil =
       updatedStatus === "canceledByInstructor"
-        ? new Date(
-            new Date(classStart).getTime() + 259200 * 60 * 1000, // If the class is canceled by the instructor, set rebookableUntil to 180 days (259200 minutes) after the class dateTime
-          ).toISOString()
+        ? nHoursLater(180 * 24, new Date(classStart)).toISOString() // If the class is canceled by the instructor, set rebookableUntil to 180 days (* 24 * 60 minutes) after the class dateTime
         : updatedStatus === "completed"
           ? null
           : undefined;
