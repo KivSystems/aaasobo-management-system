@@ -1,7 +1,6 @@
 "use client";
 
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
-import InstructorCalendar from "@/app/components/instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendar";
 import InstructorProfile from "@/app/components/instructors-dashboard/instructor-profile/InstructorProfile";
 import { useContext } from "react";
 import { AuthContext } from "@/app/admins/(authenticated)/authContext";
