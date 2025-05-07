@@ -1,14 +1,14 @@
-"use client";
+import InstructorCalendar from "@/app/components/instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendar";
+import { INVALID_INSTRUCTOR_ID } from "@/app/helper/messages/instructorDashboard";
 
-import InstructorCalendar from "@/app/components/instructors-dashboard/class-schedule/InstructorCalendar";
+const ClassSchedulePage = async ({ params }: { params: { id: string } }) => {
+  const instructorId = parseInt(params.id);
 
-const Page = ({ params }: { params: { id: string } }) => {
-  let instructorId = null;
-  if (params.id) {
-    instructorId = parseInt(params.id);
+  if (isNaN(instructorId)) {
+    console.error(`Invalid instructor ID: ID = ${instructorId}`);
+    throw new Error(INVALID_INSTRUCTOR_ID);
   }
-
-  return <InstructorCalendar id={instructorId} />;
+  return <InstructorCalendar instructorId={instructorId} />;
 };
 
-export default Page;
+export default ClassSchedulePage;

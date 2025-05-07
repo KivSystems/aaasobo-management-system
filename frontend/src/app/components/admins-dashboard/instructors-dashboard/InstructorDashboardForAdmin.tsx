@@ -1,5 +1,6 @@
-import InstructorTabs from "@/app/components/admins-dashboard/instructors-dashboard/InstructorDashboardClient";
 import { getInstructor } from "@/app/helper/api/instructorsApi";
+import InstructorCalendar from "../../instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendar";
+import InstructorDashboardClient from "@/app/components/admins-dashboard/instructors-dashboard/InstructorDashboardClient";
 
 export default async function InstructorDashboardForAdmin({
   instructorId,
@@ -19,5 +20,16 @@ export default async function InstructorDashboardForAdmin({
   // TODO: Add fetching functions for the following purposes:
   // InstructorCalendar, AvailabilityCalendar, and InstructorSchedule
 
-  return <InstructorTabs instructorId={instructorId} instructor={instructor} />;
+  return (
+    <InstructorDashboardClient
+      instructorId={instructorId}
+      instructor={instructor}
+      classScheduleComponent={
+        <InstructorCalendar
+          instructorId={instructorId}
+          isAdminAuthenticated={true}
+        />
+      }
+    />
+  );
 }

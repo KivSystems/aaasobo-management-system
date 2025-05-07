@@ -229,35 +229,6 @@ export async function countClassesOfSubscription(
   }
 }
 
-// TODO: Delete the service below after finishing refactoring the customer & instructor calendar pages
-export const getClassesForCalendar = async (
-  userId: number,
-  userType: "instructor" | "customer",
-) => {
-  try {
-    const includeOptions = {
-      instructor: userType === "customer",
-      classAttendance: { include: { children: true } },
-    };
-
-    const whereCondition =
-      userType === "instructor"
-        ? { instructorId: userId }
-        : { customerId: userId };
-
-    const classes = await prisma.class.findMany({
-      where: whereCondition,
-      include: includeOptions,
-      orderBy: { dateTime: "desc" },
-    });
-
-    return classes;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch classes.");
-  }
-};
-
 // Cancel a class
 export const cancelClassById = async (
   classId: number,
@@ -698,4 +669,54 @@ export const getCustomerClasses = async (customerId: number) => {
     };
   });
   return customerClasses;
+};
+
+export const getCalendarClasses = async (instructorId: number) => {
+  const classes = await prisma.class.findMany({
+    where: {
+      instructorId: instructorId,
+      status: {
+        in: ["booked", "completed", "canceledByInstructor"],
+      },
+    },
+    orderBy: {
+      dateTime: "desc",
+    },
+    include: {
+      classAttendance: {
+        include: {
+          children: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  const instructorCalendarClasses = classes.map((classItem) => {
+    const start = classItem.dateTime;
+    const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
+
+    const color =
+      classItem.status === "booked"
+        ? "#E7FBD9"
+        : classItem.status === "completed"
+          ? "#B5C4AB"
+          : "#FFEBE0";
+
+    const childrenNames = classItem.classAttendance
+      .map((attendance) => attendance.children.name)
+      .join(", ");
+
+    return {
+      classId: classItem.id,
+      start,
+      end,
+      title: childrenNames,
+      color,
+      classStatus: classItem.status,
+    };
+  });
+  return instructorCalendarClasses;
 };

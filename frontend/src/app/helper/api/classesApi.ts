@@ -122,33 +122,6 @@ export const editClass = async (
   return data;
 };
 
-// TODO: Delete the API below after finishing refactoring the customer & instructor calendar pages
-export const fetchClassesForCalendar = async (
-  userId: number,
-  userType: "instructor" | "customer",
-) => {
-  try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/classes/calendar/${userType}/${userId}`,
-      {
-        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
-        cache: "no-store",
-      },
-      // { next: { tags: ["classes-calendar"] } },
-    );
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const data = await response.json();
-    return data.classes;
-  } catch (error) {
-    console.error("Error fetching classes:", error);
-    throw error;
-  }
-};
-
 // Cancel a class: Change the state of the class from 'booked' to 'canceledByCustomer'
 export const cancelClass = async (classId: number) => {
   const classURL = `${BACKEND_ORIGIN}/classes/${classId}/cancel`;
@@ -174,6 +147,7 @@ export const cancelClass = async (classId: number) => {
   }
 };
 
+// TODO: Delete this api call function after finishing refactoring the instructor class details page
 export const getClassesByInstructorId = async (instructorId: number) => {
   try {
     const response = await fetch(
