@@ -25,12 +25,8 @@ adminsRouter.post("/login", loginAdminController);
 adminsRouter.get("/logout", logoutAdminController);
 adminsRouter.post("/register", requireAuthentication, registerAdminController);
 adminsRouter.get("/authentication", authenticateAdminSession);
-adminsRouter.post(
-  "/instructor-list/register",
-  requireAuthentication,
-  registerInstructorController,
-);
-adminsRouter.get("/admin-list/:id", getAdminController);
+// TODO: add authentication middleware to this route
+adminsRouter.post("/instructor-list/register", registerInstructorController);
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);

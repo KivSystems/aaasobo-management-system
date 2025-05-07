@@ -15,12 +15,6 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/solid";
 
-type StatusType =
-  | "booked"
-  | "completed"
-  | "canceledByCustomer"
-  | "canceledByInstructor";
-
 const InstructorClassesTable = ({
   instructorId,
   selectedDateClasses,
@@ -36,7 +30,7 @@ const InstructorClassesTable = ({
   handleUpdateClassDetail: (
     completedClassId: number,
     attendedChildren: Child[],
-    updatedStatus: StatusType,
+    updatedStatus: ClassStatus,
   ) => void;
   isAdminAuthenticate?: boolean;
   classDate: string;
@@ -47,7 +41,7 @@ const InstructorClassesTable = ({
   const [selectedChildrenIds, setSelectedChildrenIds] = useState<Set<number>>(
     new Set(),
   );
-  const [selectedStatus, setSelectedStatus] = useState<StatusType>("booked");
+  const [selectedStatus, setSelectedStatus] = useState<ClassStatus>("booked");
 
   useEffect(() => {
     setClasses(selectedDateClasses);
@@ -61,7 +55,7 @@ const InstructorClassesTable = ({
     classId: number,
     children: Child[],
     classStart: string,
-    status: StatusType,
+    status: ClassStatus,
   ) => {
     if (!isPastClassEndTime(classStart, timeZone) && !isAdminAuthenticate) {
       return alert(
@@ -88,7 +82,7 @@ const InstructorClassesTable = ({
     setSelectedChildrenIds(new Set(selectedChildrenIds));
   };
 
-  const handleStatusChange = (changedStatus: StatusType) => {
+  const handleStatusChange = (changedStatus: ClassStatus) => {
     setSelectedStatus(changedStatus);
   };
 
@@ -102,7 +96,7 @@ const InstructorClassesTable = ({
     classToCompleteId: number,
     registeredChildren: Child[], // All of the initially registered children(all the children of the customer)
     classStart: string,
-    updatedStatus: StatusType,
+    updatedStatus: ClassStatus,
     childrenWithoutEditingAttendance?: Child[],
   ) => {
     if (
@@ -174,7 +168,7 @@ const InstructorClassesTable = ({
     setSelectedStatus("booked");
   };
 
-  const statusToString = (status: StatusType): string => {
+  const statusToString = (status: ClassStatus): string => {
     switch (status) {
       case "booked":
         return "Booked";

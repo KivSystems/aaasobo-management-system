@@ -1,3 +1,9 @@
+import {
+  INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE,
+  GENERAL_ERROR_MESSAGE,
+  SINGLE_ITEM_ALREADY_REGISTERED_ERROR,
+  MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR,
+} from "../messages/formValidation";
 import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
 
 const BACKEND_ORIGIN =
@@ -57,6 +63,53 @@ export const getInstructor = async (
   }
 
   return data;
+};
+
+// Register instructor data
+export const registerInstructor = async (userData: {
+  name: string;
+  nickname: string;
+  email: string;
+  password: string;
+  icon: string;
+  classURL: string;
+  meetingId: string;
+  passcode: string;
+  introductionURL: string;
+}): Promise<RegisterFormState> => {
+  try {
+    const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
+    const response = await fetch(registerURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    if (response.status === 409) {
+      const data = await response.json();
+      const { items } = data;
+      // Check the number of commas in the error message
+      const commaCount = (items.match(/,/g) || []).length;
+      if (commaCount === 0) {
+        return { errorMessage: SINGLE_ITEM_ALREADY_REGISTERED_ERROR(items) };
+      } else if (commaCount > 0) {
+        return { errorMessage: MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR(items) };
+      }
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      successMessage: INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while registering instructor:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
 };
 
 // PATCH instructor data
