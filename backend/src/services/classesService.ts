@@ -1,5 +1,6 @@
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
+import { nHoursLater } from "../helper/dateUtils";
 
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
@@ -440,7 +441,8 @@ export const checkDoubleBooking = async (
 };
 
 export const getBookableClasses = async (customerId: number) => {
-  const threeHoursFromNow = new Date(new Date().getTime() + 180 * 60 * 1000);
+  // A class can only be rebooked if its "rebookableUntil" time is more than three hours from now
+  const rebookableFrom = nHoursLater(3);
 
   const classes = await prisma.class.findMany({
     where: {
@@ -450,19 +452,19 @@ export const getBookableClasses = async (customerId: number) => {
         {
           status: "canceledByCustomer",
           rebookableUntil: {
-            gte: threeHoursFromNow, // A class can only be rebooked if its "rebookableUntil" time is more than three hours from now
+            gte: rebookableFrom,
           },
         },
         {
           status: "canceledByInstructor",
           rebookableUntil: {
-            gte: threeHoursFromNow,
+            gte: rebookableFrom,
           },
         },
         {
           status: "pending",
           rebookableUntil: {
-            gte: threeHoursFromNow,
+            gte: rebookableFrom,
           },
         },
       ],
