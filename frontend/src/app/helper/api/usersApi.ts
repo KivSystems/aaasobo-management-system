@@ -1,4 +1,3 @@
-// TODO: Combine this message to "../messages/formValidation"
 import {
   CONFIRMATION_EMAIL_RESEND_FAILURE,
   EMAIL_NOT_REGISTERED_MESSAGE,

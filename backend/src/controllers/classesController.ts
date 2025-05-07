@@ -11,7 +11,6 @@ import {
   getAllClasses,
   getClassById,
   getClassesByCustomerId,
-  getClassesForCalendar,
   getExcludedClasses,
   isInstructorBooked,
   updateClass,
@@ -324,43 +323,6 @@ export const updateClassController = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
-  }
-};
-
-// TODO: Delete the controller below after finishing refactoring the instructor calendar page
-export const getClassesForInstructorCalendar = async (
-  req: Request,
-  res: Response,
-) => {
-  const instructorId = parseInt(req.params.instructorId);
-
-  if (!instructorId) {
-    return res.status(400).json({ error: "instructorId is required" });
-  }
-
-  try {
-    const classes = await getClassesForCalendar(instructorId, "instructor");
-
-    const classesData = classes.map((eachClass) => {
-      const { id, dateTime, status, classAttendance } = eachClass;
-
-      return {
-        id,
-        dateTime,
-        classAttendance: {
-          children: classAttendance.map((classAttendance) => ({
-            id: classAttendance.children.id,
-            name: classAttendance.children.name,
-          })),
-        },
-        status,
-      };
-    });
-
-    res.json({ classes: classesData });
-  } catch (error) {
-    console.error("Error fetching classes:", error);
-    res.status(500).json({ error: "Failed to fetch classes" });
   }
 };
 

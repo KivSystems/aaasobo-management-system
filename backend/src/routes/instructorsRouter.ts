@@ -10,6 +10,7 @@ import {
   getRecurringAvailabilityById,
   getInstructorProfileController,
   updateInstructorProfile,
+  getCalendarClassesController,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -22,7 +23,7 @@ import {
 import { authenticateInstructorSession } from "../../src/middlewares/auth.middleware";
 import { getInstructorClasses } from "../../src/controllers/classesController";
 import {
-  getInstructorAvailabilitiesTodayAndAfter,
+  getCalendarAvailabilitiesController,
   getInstructorAvailabilitiesTomorrowAndAfter,
 } from "../../src/controllers/instructorsAvailabilityController";
 
@@ -67,17 +68,14 @@ instructorsRouter.get("/", getAllInstructorsController);
 
 instructorsRouter.get("/:id/authentication", authenticateInstructorSession);
 
+// TODO: Delete this route after finishing refactoring instructor class details page
 instructorsRouter.get("/:id/classes", parseId, (req, res) => {
   getInstructorClasses(req as RequestWithId, res);
 });
 
-instructorsRouter.get(
-  "/:id/availabilities/after-today",
-  parseId,
-  (req, res) => {
-    getInstructorAvailabilitiesTodayAndAfter(req as RequestWithId, res);
-  },
-);
+instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
+  getCalendarAvailabilitiesController(req as RequestWithId, res);
+});
 instructorsRouter.get(
   "/:id/availabilities/after-tomorrow",
   parseId,
@@ -85,3 +83,7 @@ instructorsRouter.get(
     getInstructorAvailabilitiesTomorrowAndAfter(req as RequestWithId, res);
   },
 );
+
+instructorsRouter.get("/:id/calendar-classes", parseId, (req, res) => {
+  getCalendarClassesController(req as RequestWithId, res);
+});

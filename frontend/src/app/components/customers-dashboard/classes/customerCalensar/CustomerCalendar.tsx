@@ -11,8 +11,8 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 import Modal from "@/app/components/elements/modal/Modal";
 import ClassDetail from "@/app/components/features/classDetail/ClassDetail";
 import {
+  createRenderEventContent,
   getValidRange,
-  renderEventContent,
 } from "@/app/helper/utils/calendarUtils";
 
 export default function CustomerCalendar({
@@ -34,6 +34,7 @@ export default function CustomerCalendar({
   };
 
   const validRange = () => getValidRange(createdAt);
+  const renderCustomerEventContent = createRenderEventContent("customer");
 
   const handleModalClose = () => {
     setClassDetail(null);
@@ -57,7 +58,7 @@ export default function CustomerCalendar({
         }}
         events={classes}
         eventClick={handleEventClick}
-        eventContent={renderEventContent}
+        eventContent={renderCustomerEventContent}
         validRange={validRange}
         // TODO: After the 'Holiday' table is created, apply the styling to them
         // dayCellDidMount={dayCellDidMount}
