@@ -132,7 +132,6 @@ Contains **generic**, low-level UI components that can be used across multiple f
 This folder contains components that belong to specific application features and are used across multiple pages. They are more **complex** and include business logic or interact with backend data. Examples include:
 
 - `calendar/` – The main calendar view.
-- `calendarView/` – Displays different views of the calendar (e.g., daily, weekly, monthly).
 - `classDetail/` – Displays detailed information about a class.
 - `classesTable/` – A table for displaying and managing classes.
 
@@ -155,7 +154,6 @@ components/
     modal/
   features/
     calendar/
-    calendarView/
     classDetail/
     classesTable/
   layout/

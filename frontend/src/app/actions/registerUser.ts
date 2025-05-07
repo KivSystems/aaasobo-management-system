@@ -1,9 +1,13 @@
 "use server";
 
 import { registerCustomer } from "../helper/api/customersApi";
+import { registerInstructor } from "../helper/api/instructorsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractRegisterValidationErrors } from "../helper/utils/validationErrorUtils";
-import { customerRegisterSchema } from "../schemas/authSchema";
+import {
+  customerRegisterSchema,
+  instructorRegisterSchema,
+} from "../schemas/authSchema";
 
 export async function registerUser(
   prevState: RegisterFormState | undefined,
@@ -11,45 +15,88 @@ export async function registerUser(
 ): Promise<RegisterFormState> {
   try {
     const name = formData.get("name");
+    const nickname = formData.get("nickname");
     const email = formData.get("email");
     const password = formData.get("password");
     const passConfirmation = formData.get("passConfirmation");
     const prefecture = formData.get("prefecture");
     const isAgreed = formData.get("isAgreed") === "on";
+    const icon = formData.get("icon");
+    const classURL = formData.get("classURL");
+    const meetingId = formData.get("meetingId");
+    const passcode = formData.get("passcode");
+    const introductionURL = formData.get("introductionURL");
     const passwordStrength = parseInt(
       formData.get("passwordStrength") as string,
       10,
     );
     const userType = formData.get("userType");
 
-    // TODO: If this component is used for different user types, the appropriate schema must be used for each based on the userType.
-    const parsedForm = customerRegisterSchema.safeParse({
-      name,
-      email,
-      password,
-      passConfirmation,
-      passwordStrength,
-      prefecture,
-      isAgreed,
-      userType,
-    });
+    let parsedForm;
+    let response;
 
-    if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
-      return extractRegisterValidationErrors(validationErrors);
+    switch (userType) {
+      case "customer":
+        parsedForm = customerRegisterSchema.safeParse({
+          name,
+          email,
+          password,
+          passConfirmation,
+          passwordStrength,
+          prefecture,
+          isAgreed,
+          userType,
+        });
+        if (!parsedForm.success) {
+          const validationErrors = parsedForm.error.errors;
+          return extractRegisterValidationErrors(validationErrors);
+        }
+        response = await registerCustomer({
+          name: parsedForm.data.name,
+          email: parsedForm.data.email,
+          password: parsedForm.data.password,
+          prefecture: parsedForm.data.prefecture,
+        });
+        return response;
+
+      case "instructor":
+        parsedForm = instructorRegisterSchema.safeParse({
+          name,
+          nickname,
+          email,
+          password,
+          passConfirmation,
+          passwordStrength,
+          icon,
+          classURL,
+          meetingId,
+          passcode,
+          introductionURL,
+          userType,
+        });
+        if (!parsedForm.success) {
+          const validationErrors = parsedForm.error.errors;
+          return extractRegisterValidationErrors(validationErrors);
+        }
+        response = await registerInstructor({
+          name: parsedForm.data.name,
+          nickname: parsedForm.data.nickname,
+          email: parsedForm.data.email,
+          password: parsedForm.data.password,
+          icon: parsedForm.data.icon,
+          classURL: parsedForm.data.classURL,
+          meetingId: parsedForm.data.meetingId,
+          passcode: parsedForm.data.passcode,
+          introductionURL: parsedForm.data.introductionURL,
+        });
+        return response;
+      default:
+        return {
+          errorMessage: "Invalid user type.",
+        };
     }
-
-    // TODO: If this component handles different user types, the appropriate API function must be called for each based on the userType.
-    const response = await registerCustomer({
-      name: parsedForm.data.name,
-      email: parsedForm.data.email,
-      password: parsedForm.data.password,
-      prefecture: parsedForm.data.prefecture,
-    });
-
-    return response;
   } catch (error) {
-    console.error("Unexpected error in registerCustomer server action:", error);
+    console.error("Unexpected error in registerUser server action:", error);
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
     };

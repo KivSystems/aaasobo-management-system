@@ -1,35 +1,38 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
+import bcrypt from "bcrypt";
+import { saltRounds } from "../controllers/adminsController";
 
-// Create a new instructor account in the DB
-export const createInstructor = async (instructorData: {
+// Register a new instructor account in the DB
+export const registerInstructor = async (data: {
   name: string;
+  nickname: string;
   email: string;
   password: string;
-  nickname: string;
   icon: string;
   classURL: string;
   meetingId: string;
   passcode: string;
   introductionURL: string;
 }) => {
-  try {
-    return await prisma.instructor.create({
-      data: instructorData,
-    });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // P2002: Unique Constraint Violation
-      if (error.code === "P2002") {
-        throw new Error("Email is already registered");
-      } else {
-        console.error("Database Error:", error);
-        throw new Error("Failed to register instructor");
-      }
-    } else {
-      throw error;
-    }
-  }
+  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+
+  await prisma.instructor.create({
+    data: {
+      name: data.name,
+      email: data.email,
+      password: hashedPassword,
+      icon: data.icon,
+      classURL: data.classURL,
+      meetingId: data.meetingId,
+      passcode: data.passcode,
+      introductionURL: data.introductionURL,
+      nickname: data.nickname,
+      emailVerified: new Date(),
+    },
+  });
+
+  return;
 };
 
 // Fetch all instructors information
@@ -94,7 +97,6 @@ export const updateInstructor = async (
         introductionURL,
       },
     });
-
     return instructor;
   } catch (error) {
     console.error("Database Error:", error);
@@ -251,6 +253,60 @@ export const getInstructorByEmail = async (
   });
 };
 
+// Fetch the instructor by the nickname
+export const getInstructorByNickname = async (
+  nickname: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { nickname },
+  });
+};
+
+// Fetch the instructor by the icon
+export const getInstructorByIcon = async (
+  icon: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { icon },
+  });
+};
+
+// Fetch the instructor by the class URL
+export const getInstructorByClassURL = async (
+  classURL: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { classURL },
+  });
+};
+
+// Fetch the instructor by the meeting ID
+export const getInstructorByMeetingId = async (
+  meetingId: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { meetingId },
+  });
+};
+
+// Fetch the instructor by the passcode
+export const getInstructorByPasscode = async (
+  passcode: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { passcode },
+  });
+};
+
+// Fetch the instructor by the introduction URL
+export const getInstructorByIntroductionURL = async (
+  introductionURL: string,
+): Promise<Instructor | null> => {
+  return await prisma.instructor.findUnique({
+    where: { introductionURL },
+  });
+};
+
 export async function getInstructorWithRecurringAvailabilityDay(
   instructorId: number,
   tx: Prisma.TransactionClient,
@@ -352,7 +408,7 @@ export async function getUnavailabilities(instructorId: number) {
 export async function getInstructorProfile(instructorId: number) {
   const instructorProfile = await prisma.instructor.findUnique({
     where: { id: instructorId },
-    select: { id: true, name: true, nickname: true },
+    select: { id: true, name: true, nickname: true, createdAt: true },
   });
 
   if (!instructorProfile) {

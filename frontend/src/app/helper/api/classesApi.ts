@@ -46,6 +46,7 @@ export const bookClass = async (classData: {
   childrenIds: number[];
   status: string;
   recurringClassId: number;
+  rebookableUntil: string;
 }) => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/classes`, {
@@ -90,22 +91,21 @@ export const getClassById = async (classId: number) => {
 };
 
 // PATCH a class date
-export const editClass = async (editedClass: {
-  classId: number;
-  childrenIds: number[];
-  dateTime?: string;
-  status?:
-    | "booked"
-    | "completed"
-    | "canceledByCustomer"
-    | "canceledByInstructor";
-  instructorId?: number;
-  isRebookable?: boolean;
-}) => {
+export const editClass = async (
+  id: number,
+  classData: {
+    childrenIds?: number[];
+    dateTime?: string;
+    status?: ClassStatus;
+    instructorId?: number;
+    isRebookable?: boolean;
+    rebookableUntil?: string | null;
+  },
+) => {
   // Define the data to be sent to the server side.
-  const classURL = `${BACKEND_ORIGIN}/classes/${editedClass.classId}`;
+  const classURL = `${BACKEND_ORIGIN}/classes/${id}`;
   const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify(editedClass);
+  const body = JSON.stringify(classData);
 
   const response = await fetch(classURL, {
     method: "PATCH",
@@ -120,33 +120,6 @@ export const editClass = async (editedClass: {
   }
 
   return data;
-};
-
-// TODO: Delete the API below after finishing refactoring the customer & instructor calendar pages
-export const fetchClassesForCalendar = async (
-  userId: number,
-  userType: "instructor" | "customer",
-) => {
-  try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/classes/calendar/${userType}/${userId}`,
-      {
-        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
-        cache: "no-store",
-      },
-      // { next: { tags: ["classes-calendar"] } },
-    );
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const data = await response.json();
-    return data.classes;
-  } catch (error) {
-    console.error("Error fetching classes:", error);
-    throw error;
-  }
 };
 
 // Cancel a class: Change the state of the class from 'booked' to 'canceledByCustomer'
@@ -174,6 +147,7 @@ export const cancelClass = async (classId: number) => {
   }
 };
 
+// TODO: Delete this api call function after finishing refactoring the instructor class details page
 export const getClassesByInstructorId = async (instructorId: number) => {
   try {
     const response = await fetch(

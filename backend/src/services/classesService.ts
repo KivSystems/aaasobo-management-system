@@ -1,6 +1,6 @@
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import { getFirstDayOfFiveMonthsAgo } from "../helper/dateUtils";
+import { nHoursLater } from "../helper/dateUtils";
 
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
@@ -70,6 +70,7 @@ export const createClass = async (
     status: Status;
     subscriptionId: number;
     recurringClassId: number;
+    rebookableUntil: string;
   },
   childrenIds: number[],
 ) => {
@@ -168,40 +169,34 @@ export const getClassById = async (classId: number) => {
 
 // Update/Edit a class
 export const updateClass = async (
-  classId: number,
-  dateTime?: string,
-  instructorId?: number,
-  childrenIds?: number[],
-  status?:
-    | "booked"
-    | "completed"
-    | "canceledByCustomer"
-    | "canceledByInstructor",
-  isRebookable?: boolean,
+  id: number,
+  classData: {
+    dateTime?: string;
+    instructorId?: number;
+    childrenIds?: number[];
+    status?: Status;
+    isRebookable?: boolean;
+    rebookableUntil?: string | null;
+  },
 ) => {
+  const { childrenIds, ...fieldsToUpdate } = classData;
   try {
     const updatedClass = await prisma.$transaction(async (prisma) => {
-      // Update the Class data
       const updatedClass = await prisma.class.update({
-        where: { id: classId },
-        data: {
-          dateTime,
-          instructorId,
-          status,
-          isRebookable,
-        },
+        where: { id },
+        data: fieldsToUpdate,
       });
 
       // Delete existing classAttendance records
       await prisma.classAttendance.deleteMany({
-        where: { classId },
+        where: { classId: id },
       });
 
       // Add new classAttendance records if childrenIds is provided
       if (childrenIds) {
         await prisma.classAttendance.createMany({
           data: childrenIds.map((childId) => ({
-            classId,
+            classId: id,
             childrenId: childId,
           })),
         });
@@ -234,35 +229,6 @@ export async function countClassesOfSubscription(
     throw new Error("Failed to count lessons.");
   }
 }
-
-// TODO: Delete the service below after finishing refactoring the customer & instructor calendar pages
-export const getClassesForCalendar = async (
-  userId: number,
-  userType: "instructor" | "customer",
-) => {
-  try {
-    const includeOptions = {
-      instructor: userType === "customer",
-      classAttendance: { include: { children: true } },
-    };
-
-    const whereCondition =
-      userType === "instructor"
-        ? { instructorId: userId }
-        : { customerId: userId };
-
-    const classes = await prisma.class.findMany({
-      where: whereCondition,
-      include: includeOptions,
-      orderBy: { dateTime: "desc" },
-    });
-
-    return classes;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch classes.");
-  }
-};
 
 // Cancel a class
 export const cancelClassById = async (
@@ -475,7 +441,8 @@ export const checkDoubleBooking = async (
 };
 
 export const getBookableClasses = async (customerId: number) => {
-  const fiveMonthsAgoFirstDay = getFirstDayOfFiveMonthsAgo();
+  // A class can only be rebooked if its "rebookableUntil" time is more than three hours from now
+  const rebookableFrom = nHoursLater(3);
 
   const classes = await prisma.class.findMany({
     where: {
@@ -484,14 +451,20 @@ export const getBookableClasses = async (customerId: number) => {
       OR: [
         {
           status: "canceledByCustomer",
-          dateTime: {
-            gte: fiveMonthsAgoFirstDay,
+          rebookableUntil: {
+            gte: rebookableFrom,
           },
         },
         {
           status: "canceledByInstructor",
-          dateTime: {
-            gte: fiveMonthsAgoFirstDay,
+          rebookableUntil: {
+            gte: rebookableFrom,
+          },
+        },
+        {
+          status: "pending",
+          rebookableUntil: {
+            gte: rebookableFrom,
           },
         },
       ],
@@ -501,7 +474,7 @@ export const getBookableClasses = async (customerId: number) => {
     },
   });
 
-  // Return only the dateTime property from the class data
+  // TODO: Also return "id" and "rebookableUntil" for each class
   return classes.map((classItem) => classItem.dateTime);
 };
 
@@ -609,7 +582,8 @@ export const createCanceledClasses = async ({
         recurringClassId,
         subscriptionId,
         dateTime,
-        status: "canceledByInstructor",
+        status: "pending", // NOTE: the status has been changed from "canceledByInstructor" to "pending"
+        rebookableUntil: nHoursLater(180 * 24, dateTime), // 180 days (* 24 hours) after the class dateTime,
       })),
     });
     // Add the Class Attendance to the ClassAttendance Table based on the Class ID.
@@ -635,6 +609,9 @@ export const getCustomerClasses = async (customerId: number) => {
   const classes = await prisma.class.findMany({
     where: {
       customerId: customerId,
+      NOT: {
+        status: "pending",
+      },
     },
     orderBy: {
       dateTime: "desc",
@@ -692,4 +669,54 @@ export const getCustomerClasses = async (customerId: number) => {
     };
   });
   return customerClasses;
+};
+
+export const getCalendarClasses = async (instructorId: number) => {
+  const classes = await prisma.class.findMany({
+    where: {
+      instructorId: instructorId,
+      status: {
+        in: ["booked", "completed", "canceledByInstructor"],
+      },
+    },
+    orderBy: {
+      dateTime: "desc",
+    },
+    include: {
+      classAttendance: {
+        include: {
+          children: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  const instructorCalendarClasses = classes.map((classItem) => {
+    const start = classItem.dateTime;
+    const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
+
+    const color =
+      classItem.status === "booked"
+        ? "#E7FBD9"
+        : classItem.status === "completed"
+          ? "#B5C4AB"
+          : "#FFEBE0";
+
+    const childrenNames = classItem.classAttendance
+      .map((attendance) => attendance.children.name)
+      .join(", ");
+
+    return {
+      classId: classItem.id,
+      start,
+      end,
+      title: childrenNames,
+      color,
+      classStatus: classItem.status,
+    };
+  });
+  return instructorCalendarClasses;
 };

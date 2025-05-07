@@ -28,6 +28,7 @@ import {
   updateInstructor,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
+import { getCalendarClasses } from "../services/classesService";
 
 // Fetch all the instructors and their availabilities
 export const getAllInstructorsAvailabilitiesController = async (
@@ -507,17 +508,39 @@ export const getInstructorProfileController = async (
     const profile = await getInstructorProfile(instructorId);
 
     if (!profile) {
-      return res.status(404).json({ error: "Instructor profile not found." });
+      res.sendStatus(404);
     }
 
     res.status(200).json(profile);
   } catch (error) {
-    console.error("Error fetching instructor profile:", error);
-    res.status(500).json({
-      error:
-        error instanceof Error
-          ? error.message
-          : "An unexpected error occurred.",
+    console.error("Error fetching instructor profile", {
+      error,
+      context: {
+        ID: instructorId,
+        time: new Date().toISOString(),
+      },
     });
+    res.sendStatus(500);
+  }
+};
+
+export const getCalendarClassesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const instructorId = req.id;
+
+  try {
+    const classes = await getCalendarClasses(instructorId);
+    res.status(200).json(classes);
+  } catch (error) {
+    console.error("Error getting instructor calendar classes", {
+      error,
+      context: {
+        ID: instructorId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };

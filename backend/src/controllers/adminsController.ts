@@ -1,10 +1,18 @@
 import { Request, Response } from "express";
 import { kv } from "@vercel/kv";
+import { prisma } from "../../prisma/prismaClient";
 import { createAdmin, getAdmin } from "../services/adminsService";
 import { getAllAdmins, getAdminById } from "../services/adminsService";
 import {
   getAllInstructors,
-  createInstructor,
+  registerInstructor,
+  getInstructorByEmail,
+  getInstructorByNickname,
+  getInstructorByIcon,
+  getInstructorByClassURL,
+  getInstructorByMeetingId,
+  getInstructorByPasscode,
+  getInstructorByIntroductionURL,
 } from "../services/instructorsService";
 import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
@@ -12,6 +20,7 @@ import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
 import bcrypt from "bcrypt";
 import { logout } from "../helper/logout";
+import { error } from "console";
 
 export const saltRounds = 12;
 
@@ -243,9 +252,9 @@ export const registerInstructorController = async (
 ) => {
   const {
     name,
+    nickname,
     email,
     password,
-    nickname,
     icon,
     classURL,
     meetingId,
@@ -253,16 +262,75 @@ export const registerInstructorController = async (
     introductionURL,
   } = req.body;
 
-  try {
-    // Hash the password.
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+  if (
+    !name ||
+    !email ||
+    !password ||
+    !nickname ||
+    !icon ||
+    !classURL ||
+    !meetingId ||
+    !passcode ||
+    !introductionURL
+  ) {
+    return res.sendStatus(400);
+  }
 
-    // Insert the instructor data into the DB.
-    const instructor = await createInstructor({
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // Set unique checks list
+  const uniqueChecks = [
+    { fn: getInstructorByNickname, value: nickname },
+    { fn: getInstructorByEmail, value: normalizedEmail },
+    { fn: getInstructorByIcon, value: icon },
+    { fn: getInstructorByClassURL, value: classURL },
+    { fn: getInstructorByMeetingId, value: meetingId },
+    { fn: getInstructorByPasscode, value: passcode },
+    { fn: getInstructorByIntroductionURL, value: introductionURL },
+  ];
+  let errorItems = "";
+
+  try {
+    const results = await Promise.all(
+      uniqueChecks.map(({ fn, value }) => fn(value)),
+    );
+
+    const [
+      emailExists,
+      nicknameExists,
+      iconExists,
+      classURLExists,
+      meetingIdExists,
+      passcodeExists,
+      introductionURLExists,
+    ] = results;
+
+    // Make list of error items and set the text including each error item
+    if (nicknameExists) errorItems = errorItems.concat(", ", "Nickname");
+    if (emailExists) errorItems = errorItems.concat(", ", "Email");
+    if (iconExists) errorItems = errorItems.concat(", ", "Icon");
+    if (classURLExists) errorItems = errorItems.concat(", ", "Class URL");
+    if (meetingIdExists) errorItems = errorItems.concat(", ", "Meeting ID");
+    if (passcodeExists) errorItems = errorItems.concat(", ", "Pass Code");
+    if (introductionURLExists)
+      errorItems = errorItems.concat(", ", "Introduction URL");
+
+    // Count the number of commas in the errorItems string
+    const errorItemCount = (errorItems.match(/,/g) || []).length;
+
+    if (errorItemCount > 0) {
+      // Remove the first comma and space from the errorItems string
+      errorItems = errorItems.substring(2);
+      // Return error items
+      return res.status(409).json({ items: errorItems });
+    }
+
+    await registerInstructor({
       name,
-      email,
-      password: hashedPassword,
       nickname,
+      email: normalizedEmail,
+      password,
       icon,
       classURL,
       meetingId,
@@ -270,25 +338,10 @@ export const registerInstructorController = async (
       introductionURL,
     });
 
-    // Exclude the password from the response.
-    if (instructor) {
-      const { password: _, ...instructorWithoutPassword } = instructor;
-      res.status(200).json({
-        message: "Instructor is registered successfully",
-        admin: instructorWithoutPassword,
-      });
-    }
+    res.sendStatus(201);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({
-        message: error.message,
-      });
-    } else {
-      res.status(500).json({
-        message: "Failed to register instructor",
-        error,
-      });
-    }
+    console.error("Error registering instructor", { error });
+    res.sendStatus(500);
   }
 };
 
