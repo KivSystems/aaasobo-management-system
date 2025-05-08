@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { kv } from "@vercel/kv";
-import { prisma } from "../../prisma/prismaClient";
-import { createAdmin, getAdmin } from "../services/adminsService";
+import { registerAdmin, getAdminByEmail } from "../services/adminsService";
 import { getAllAdmins, getAdminById } from "../services/adminsService";
 import {
   getAllInstructors,
@@ -20,9 +19,6 @@ import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
 import bcrypt from "bcrypt";
 import { logout } from "../helper/logout";
-import { error } from "console";
-
-export const saltRounds = 12;
 
 // Login Admin
 export const loginAdminController = async (req: Request, res: Response) => {
@@ -30,7 +26,7 @@ export const loginAdminController = async (req: Request, res: Response) => {
 
   try {
     // Fetch the admin data using the email.
-    const admin = await getAdmin(email);
+    const admin = await getAdminByEmail(email);
 
     if (!admin) {
       return res.status(401).json({
@@ -77,36 +73,32 @@ export const logoutAdminController = async (req: Request, res: Response) => {
 export const registerAdminController = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
+  if (!name || !email || !password) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+
   try {
-    // Hash the password.
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Insert the admin data into the DB.
-    const admin = await createAdmin({ name, email, password: hashedPassword });
-
-    // Exclude the password from the response.
-    if (admin) {
-      const { password: _, ...adminWithoutPassword } = admin;
-      res.status(200).json({
-        message: "Admin is registered successfully",
-        admin: adminWithoutPassword,
-      });
+    const existingAdmin = await getAdminByEmail(normalizedEmail);
+    if (existingAdmin) {
+      return res.sendStatus(409);
     }
+
+    await registerAdmin({
+      name,
+      email: normalizedEmail,
+      password,
+    });
+
+    res.sendStatus(201);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({
-        message: error.message,
-      });
-    } else {
-      res.status(500).json({
-        message: "Failed to register admin",
-        error,
-      });
-    }
+    console.error("Error registering admin", { error });
+    res.sendStatus(500);
   }
 };
 
-// Interface for the subscription data to use in the getAllCustomersController.
 interface Subscription {
   id: number;
   planId: number;
