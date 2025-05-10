@@ -14,8 +14,8 @@ import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import {
-  getBookableClasses,
   getCustomerClasses,
+  getRebookableClasses,
   getUpcomingClasses,
 } from "../services/classesService";
 import {
@@ -188,15 +188,15 @@ export const registerSubscriptionController = async (
   }
 };
 
-export const getBookableClassesController = async (
+export const getRebookableClassesController = async (
   req: RequestWithId,
   res: Response,
 ) => {
   const customerId = req.id;
 
   try {
-    const bookableClasses = await getBookableClasses(customerId);
-    res.status(200).json(bookableClasses);
+    const rebookableClasses = await getRebookableClasses(customerId);
+    res.status(200).json(rebookableClasses);
   } catch (error) {
     console.error(
       `Error while getting bookable classes (customer ID: ${customerId}):`,

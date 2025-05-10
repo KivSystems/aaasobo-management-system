@@ -440,14 +440,13 @@ export const checkDoubleBooking = async (
   }
 };
 
-export const getBookableClasses = async (customerId: number) => {
+export const getRebookableClasses = async (customerId: number) => {
   // A class can only be rebooked if its "rebookableUntil" time is more than three hours from now
   const rebookableFrom = nHoursLater(3);
 
   const classes = await prisma.class.findMany({
     where: {
       customerId: customerId,
-      isRebookable: true,
       OR: [
         {
           status: "canceledByCustomer",
@@ -470,12 +469,14 @@ export const getBookableClasses = async (customerId: number) => {
       ],
     },
     orderBy: {
-      dateTime: "asc",
+      rebookableUntil: "asc",
     },
   });
 
-  // TODO: Also return "id" and "rebookableUntil" for each class
-  return classes.map((classItem) => classItem.dateTime);
+  return classes.map((classItem) => ({
+    id: classItem.id,
+    rebookableUntil: classItem.rebookableUntil,
+  }));
 };
 
 export const getUpcomingClasses = async (customerId: number) => {

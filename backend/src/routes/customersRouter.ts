@@ -4,10 +4,10 @@ import {
   registerCustomerController,
   updateCustomerProfile,
   registerSubscriptionController,
-  getBookableClassesController,
   getUpcomingClassesController,
   getCustomerByIdController,
   getClassesController,
+  getRebookableClassesController,
 } from "../../src/controllers/customersController";
 import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
 import {
@@ -25,8 +25,8 @@ customersRouter.get("/:id/subscriptions", getSubscriptionsByIdController);
 customersRouter.get("/:id/customer", parseId, (req, res) =>
   getCustomerByIdController(req as RequestWithId, res),
 );
-customersRouter.get("/:id/bookable-classes", parseId, (req, res) =>
-  getBookableClassesController(req as RequestWithId, res),
+customersRouter.get("/:id/rebookable-classes", parseId, (req, res) =>
+  getRebookableClassesController(req as RequestWithId, res),
 );
 customersRouter.get("/:id/upcoming-classes", parseId, (req, res) =>
   getUpcomingClassesController(req as RequestWithId, res),
