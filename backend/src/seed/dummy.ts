@@ -963,7 +963,7 @@ async function main() {
     await insertAdmins();
 
     // Dependant on the above
-    // await insertInstructorAvailabilities();
+    await insertInstructorAvailabilities();
     await insertSubscriptions();
     await insertChildren();
 
