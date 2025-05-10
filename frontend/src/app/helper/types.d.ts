@@ -306,3 +306,8 @@ type InstructorCalendarClientProps = {
     end: string;
   };
 };
+
+type RebookableClass = {
+  id: number;
+  rebookableUntil: Date;
+};

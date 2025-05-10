@@ -18,11 +18,12 @@ function Page({ params }: { params: { customerId: string; classId: string } }) {
   const { isAuthenticated } = useContext(AuthContext);
 
   return (
-    <RescheduleClass
-      customerId={customerId}
-      classId={classId}
-      isAdminAuthenticated={isAuthenticated}
-    />
+    <h3>Rebook Page for Admin: Class ID: {classId}</h3>
+    // <RescheduleClass
+    //   customerId={customerId}
+    //   classId={classId}
+    //   isAdminAuthenticated={isAuthenticated}
+    // />
   );
 }
 
