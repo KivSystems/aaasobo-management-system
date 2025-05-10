@@ -5,9 +5,9 @@ import ListTable from "@/app/components/admins-dashboard/ListTable";
 function Page() {
   const listType = "Plan List";
   const omitItems = [""]; // Omit the item from the table
-  const linkItems = [""]; // Set the item to be a link
-  const replaceItems = [""]; // Replace the item with the value(e.g., ID -> 1,2,3...)
-  const linkUrls = [""]; // Set the link URL
+  const linkItems = ["ID"]; // Set the item to be a link
+  const replaceItems = ["ID"]; // Replace the item with the value(e.g., ID -> 1,2,3...)
+  const linkUrls = ["/admins/plan-list/[ID]"]; // Set the link URL
 
   return (
     <div>
