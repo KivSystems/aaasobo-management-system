@@ -297,8 +297,8 @@
   }
 }
 
-.bookClass,
-.modalBookClass {
+.rebookClass,
+.modalRebookClass {
   width: 135px;
   background-color: $green-success;
   transition:
@@ -322,6 +322,6 @@
   }
 }
 
-.modalBookClass {
+.modalRebookClass {
   width: 80px;
 }

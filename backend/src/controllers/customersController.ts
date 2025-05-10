@@ -199,7 +199,7 @@ export const getRebookableClassesController = async (
     res.status(200).json(rebookableClasses);
   } catch (error) {
     console.error(
-      `Error while getting bookable classes (customer ID: ${customerId}):`,
+      `Error while getting rebookable classes (customer ID: ${customerId}):`,
       error,
     );
     res.sendStatus(500);

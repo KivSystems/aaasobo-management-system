@@ -441,7 +441,8 @@ export const checkDoubleBooking = async (
 };
 
 export const getRebookableClasses = async (customerId: number) => {
-  // A class can only be rebooked if its "rebookableUntil" time is more than three hours from now
+  // A class can only be rebooked if its rebookableUntil time is more than three hours from now.
+  // In other words, rebooking is allowed up to three hours before the rebookableUntil time.
   const rebookableFrom = nHoursLater(3);
 
   const classes = await prisma.class.findMany({

@@ -34,9 +34,9 @@ export default function RebookingModalController({
         btnText={
           language === "ja"
             ? `振替予約 ${rebookableClassesNumber > 0 ? `(${rebookableClassesNumber})` : ""}`
-            : `Book Class ${rebookableClassesNumber > 0 ? `(${rebookableClassesNumber})` : ""}`
+            : `Rebook Class ${rebookableClassesNumber > 0 ? `(${rebookableClassesNumber})` : ""}`
         }
-        className="bookClass"
+        className="rebookClass"
         onClick={handleRebookingClick}
         disabled={rebookableClassesNumber === 0}
       />

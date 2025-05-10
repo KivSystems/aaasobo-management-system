@@ -46,7 +46,7 @@ export const NO_CANCELABLE_CLASSES_MESSAGE = {
   en: "You have no classes that can be canceled.",
 };
 
-export const TODAYS_CLASS_BOOKING_NOTICE = {
+export const TODAYS_CLASS_REBOOKING_NOTICE = {
   ja: "当日の振替は、クラス開始の3時間前まで可能です。ただし、インストラクターの準備が間に合わない場合、キャンセルとなることがございますのでご了承ください。",
   en: "You can rebook a class on the same day up to 3 hours before it starts. However, please note that in some cases, the class may be canceled if the instructor doesn't have enough time to prepare.",
 };

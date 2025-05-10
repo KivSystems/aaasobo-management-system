@@ -8,7 +8,7 @@ import {
 import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
 import {
   REBOOKING_TOO_LATE_NOTICE,
-  TODAYS_CLASS_BOOKING_NOTICE,
+  TODAYS_CLASS_REBOOKING_NOTICE,
 } from "@/app/helper/messages/customerDashboard";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import { Dispatch, SetStateAction } from "react";
@@ -33,7 +33,7 @@ export default function RebookingModal({
       <h3>
         {language === "ja"
           ? "振替予約するクラスをお選びください"
-          : "Please select the class to book."}
+          : "Please select the class to rebook."}
       </h3>
 
       <ul className={styles.modal__list}>
@@ -54,9 +54,6 @@ export default function RebookingModal({
             const rebookingURL = isAdminAuthenticated
               ? `/admins/customer-list/${customerId}/classes/${id}/rebook`
               : `/customers/${customerId}/classes/${id}/rebook`;
-            // const rebookingURL = isAdminAuthenticated
-            //   ? `/admins/customer-list/${customerId}/classes/book`
-            //   : `/customers/${customerId}/classes/book`;
 
             if (now > rebookingDeadline) {
               return alert(REBOOKING_TOO_LATE_NOTICE[language]);
@@ -75,15 +72,15 @@ export default function RebookingModal({
                   </>
                 ) : (
                   <>
-                    Bookable until <span>{`${time}`}</span> class,{" "}
+                    Rebookable until <span>{`${time}`}</span> class,{" "}
                     <span>{`${date}`}</span>
                   </>
                 )}
               </div>
               <div className={styles.listItem__button}>
                 <ActionButton
-                  className="modalBookClass"
-                  btnText={language === "ja" ? "振替予約" : "Book"}
+                  className="modalRebookClass"
+                  btnText={language === "ja" ? "振替予約" : "Rebook"}
                   onClick={() =>
                     handleRebook(classItem.id, classItem.rebookableUntil)
                   }
@@ -93,7 +90,7 @@ export default function RebookingModal({
           );
         })}
       </ul>
-      <InfoBanner info={TODAYS_CLASS_BOOKING_NOTICE[language]} />
+      <InfoBanner info={TODAYS_CLASS_REBOOKING_NOTICE[language]} />
       <div className={styles.modal__backBtn}>
         <ActionButton
           btnText={language === "ja" ? "戻る" : "Back"}

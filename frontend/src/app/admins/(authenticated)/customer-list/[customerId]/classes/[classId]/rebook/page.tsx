@@ -17,14 +17,7 @@ function Page({ params }: { params: { customerId: string; classId: string } }) {
   // Check the authentication of the admin.
   const { isAuthenticated } = useContext(AuthContext);
 
-  return (
-    <h3>Rebook Page for Admin: Class ID: {classId}</h3>
-    // <RescheduleClass
-    //   customerId={customerId}
-    //   classId={classId}
-    //   isAdminAuthenticated={isAuthenticated}
-    // />
-  );
+  return <h3>Rebook Page for Admin: Class ID: {classId}</h3>;
 }
 
 export default Page;
