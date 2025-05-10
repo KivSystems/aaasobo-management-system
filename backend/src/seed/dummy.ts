@@ -268,6 +268,15 @@ async function insertCustomers() {
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2024-08-01T00:00:00.000Z",
       },
+      {
+        name: "山田 花",
+        email: "hana@example.com",
+        password:
+          "$2b$12$qbcPqqpR3nKgtCgrusCbQOfMqJJHiMlBSkeClYEeWkKM6Fc6xahD2", // AaasoBo!Hana
+        prefecture: "Hokkaido",
+        emailVerified: "2025-04-11T01:26:02.736Z",
+        createdAt: "2025-04-01T00:00:00.000Z",
+      },
     ],
   });
 }
@@ -711,6 +720,7 @@ async function insertPlans() {
 async function insertSubscriptions() {
   const alice = await getCustomer("Alice");
   const bob = await getCustomer("Bob");
+  const hana = await getCustomer("山田 花");
   const plan1 = await getPlan("3,180 yen/month");
   const plan2 = await getPlan("7,980 yen/month");
 
@@ -728,6 +738,12 @@ async function insertSubscriptions() {
         startAt: new Date("2024-06-01"),
         endAt: null,
       },
+      {
+        customerId: hana.id,
+        planId: plan1.id,
+        startAt: new Date("2025-04-04"),
+        endAt: null,
+      },
     ],
   });
 }
@@ -735,6 +751,7 @@ async function insertSubscriptions() {
 async function insertRecurringClasses() {
   const alice = await getCustomer("Alice");
   const bob = await getCustomer("Bob");
+  const hana = await getCustomer("山田 花");
   const helen = await getInstructor("Helen");
   const elian = await getInstructor("Elian");
 
@@ -785,6 +802,15 @@ async function insertRecurringClasses() {
       },
     },
   });
+
+  await prisma.recurringClass.create({
+    data: {
+      subscriptionId: hana.subscription[0].id,
+      instructorId: helen.id,
+      startAt: "2025-04-03T07:00:00Z",
+    },
+  });
+
   // await prisma.recurringClass.create({
   //   data: {
   //     subscriptionId: alice.subscription[0].id,
@@ -895,7 +921,7 @@ async function insertInstructorUnavailabilities() {
   });
 }
 
-async function getCustomer(name: "Alice" | "Bob") {
+async function getCustomer(name: "Alice" | "Bob" | "山田 花") {
   const customer = await prisma.customer.findFirst({
     where: { name },
     include: { children: true, subscription: true },
