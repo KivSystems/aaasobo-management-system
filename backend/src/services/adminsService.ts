@@ -45,3 +45,15 @@ export const getAdmin = async (email: string) => {
     throw new Error("Failed to fetch admin.");
   }
 };
+
+// Fetch the admin using the ID
+export async function getAdminById(id: number) {
+  try {
+    return prisma.admins.findUnique({
+      where: { id },
+    });
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch admin.");
+  }
+}

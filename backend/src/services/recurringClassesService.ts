@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
+import { nHoursLater } from "../helper/dateUtils";
 
 // Create a new recurring class in the DB
 export const addRecurringClass = async (
@@ -31,6 +32,7 @@ export const addRecurringClass = async (
         subscriptionId,
         dateTime,
         status: "booked",
+        rebookableUntil: nHoursLater(180 * 24, dateTime), // 180 days (* 24 hours) after the class dateTime,
       })),
     });
     // Add the Class Attendance to the ClassAttendance Table based on the Class ID.

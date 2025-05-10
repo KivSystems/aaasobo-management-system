@@ -1,17 +1,26 @@
 import { Request, Response } from "express";
 import { kv } from "@vercel/kv";
+import { prisma } from "../../prisma/prismaClient";
 import { createAdmin, getAdmin } from "../services/adminsService";
-import { getAllAdmins } from "../services/adminsService";
+import { getAllAdmins, getAdminById } from "../services/adminsService";
 import {
   getAllInstructors,
-  createInstructor,
+  registerInstructor,
+  getInstructorByEmail,
+  getInstructorByNickname,
+  getInstructorByIcon,
+  getInstructorByClassURL,
+  getInstructorByMeetingId,
+  getInstructorByPasscode,
+  getInstructorByIntroductionURL,
 } from "../services/instructorsService";
-import { getAllClasses } from "../services/classesService";
+import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
 import bcrypt from "bcrypt";
 import { logout } from "../helper/logout";
+import { error } from "console";
 
 export const saltRounds = 12;
 
@@ -131,6 +140,34 @@ interface SingleChildSubscription extends Omit<Subscription, "customer"> {
   };
 }
 
+function setErrorResponse(res: Response, error: unknown) {
+  return res
+    .status(500)
+    .json({ message: error instanceof Error ? error.message : `${error}` });
+}
+
+export const getAdminController = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "Invalid ID provided." });
+  }
+  try {
+    const admin = await getAdminById(id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found." });
+    }
+    return res.status(200).json({
+      admin: {
+        id: admin.id,
+        name: admin.name,
+        email: admin.email,
+      },
+    });
+  } catch (error) {
+    return setErrorResponse(res, error);
+  }
+};
+
 // Admin dashboard for displaying admins' information
 export const getAllAdminsController = async (_: Request, res: Response) => {
   try {
@@ -215,9 +252,9 @@ export const registerInstructorController = async (
 ) => {
   const {
     name,
+    nickname,
     email,
     password,
-    nickname,
     icon,
     classURL,
     meetingId,
@@ -225,16 +262,75 @@ export const registerInstructorController = async (
     introductionURL,
   } = req.body;
 
-  try {
-    // Hash the password.
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+  if (
+    !name ||
+    !email ||
+    !password ||
+    !nickname ||
+    !icon ||
+    !classURL ||
+    !meetingId ||
+    !passcode ||
+    !introductionURL
+  ) {
+    return res.sendStatus(400);
+  }
 
-    // Insert the instructor data into the DB.
-    const instructor = await createInstructor({
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // Set unique checks list
+  const uniqueChecks = [
+    { fn: getInstructorByNickname, value: nickname },
+    { fn: getInstructorByEmail, value: normalizedEmail },
+    { fn: getInstructorByIcon, value: icon },
+    { fn: getInstructorByClassURL, value: classURL },
+    { fn: getInstructorByMeetingId, value: meetingId },
+    { fn: getInstructorByPasscode, value: passcode },
+    { fn: getInstructorByIntroductionURL, value: introductionURL },
+  ];
+  let errorItems = "";
+
+  try {
+    const results = await Promise.all(
+      uniqueChecks.map(({ fn, value }) => fn(value)),
+    );
+
+    const [
+      emailExists,
+      nicknameExists,
+      iconExists,
+      classURLExists,
+      meetingIdExists,
+      passcodeExists,
+      introductionURLExists,
+    ] = results;
+
+    // Make list of error items and set the text including each error item
+    if (nicknameExists) errorItems = errorItems.concat(", ", "Nickname");
+    if (emailExists) errorItems = errorItems.concat(", ", "Email");
+    if (iconExists) errorItems = errorItems.concat(", ", "Icon");
+    if (classURLExists) errorItems = errorItems.concat(", ", "Class URL");
+    if (meetingIdExists) errorItems = errorItems.concat(", ", "Meeting ID");
+    if (passcodeExists) errorItems = errorItems.concat(", ", "Pass Code");
+    if (introductionURLExists)
+      errorItems = errorItems.concat(", ", "Introduction URL");
+
+    // Count the number of commas in the errorItems string
+    const errorItemCount = (errorItems.match(/,/g) || []).length;
+
+    if (errorItemCount > 0) {
+      // Remove the first comma and space from the errorItems string
+      errorItems = errorItems.substring(2);
+      // Return error items
+      return res.status(409).json({ items: errorItems });
+    }
+
+    await registerInstructor({
       name,
-      email,
-      password: hashedPassword,
       nickname,
+      email: normalizedEmail,
+      password,
       icon,
       classURL,
       meetingId,
@@ -242,25 +338,10 @@ export const registerInstructorController = async (
       introductionURL,
     });
 
-    // Exclude the password from the response.
-    if (instructor) {
-      const { password: _, ...instructorWithoutPassword } = instructor;
-      res.status(200).json({
-        message: "Instructor is registered successfully",
-        admin: instructorWithoutPassword,
-      });
-    }
+    res.sendStatus(201);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({
-        message: error.message,
-      });
-    } else {
-      res.status(500).json({
-        message: "Failed to register instructor",
-        error,
-      });
-    }
+    console.error("Error registering instructor", { error });
+    res.sendStatus(500);
   }
 };
 
@@ -316,16 +397,33 @@ export const getAllPlansController = async (_: Request, res: Response) => {
   }
 };
 
-// Get all class information for Admin lesson list page
-export const getAllClassesController = async (_: Request, res: Response) => {
+// Get class information within designated period
+export const getClassesWithinPeriodController = async (
+  _: Request,
+  res: Response,
+) => {
   try {
-    // Fetch all class data.
-    const classes = await getAllClasses();
+    // Fetch class data within designated period.
+    const designatedPeriod = 30;
+    const designatedPeriodBefore = new Date(
+      Date.now() - designatedPeriod * (24 * 60 * 60 * 1000),
+    );
+    const designatedPeriodAfter = new Date(
+      Date.now() + (designatedPeriod + 1) * (24 * 60 * 60 * 1000),
+    );
+    // Set the designated period to 30 days converted to "T00:00:00.000Z".
+    designatedPeriodBefore.setUTCHours(0, 0, 0, 0);
+    designatedPeriodAfter.setUTCHours(0, 0, 0, 0);
+
+    const classes = await getClassesWithinPeriod(
+      designatedPeriodBefore,
+      designatedPeriodAfter,
+    );
 
     // Transform the data structure.
     const data = classes.map((classItem, number) => {
       const { id, instructor, customer, dateTime, status } = classItem;
-      const instructorName = instructor.name;
+      const instructorName = instructor.nickname;
       const customerName = customer.name;
 
       // Convert dateTime from UTC to JST (Add 9 hours).

@@ -272,3 +272,7 @@ export const formatTime24Hour = (date: Date): string => {
 
   return `${hours}:${minutes.toString().padStart(2, "0")}`;
 };
+
+export const nHoursLater = (n: number, dateTime: Date = new Date()): Date => {
+  return new Date(dateTime.getTime() + n * 60 * 60 * 1000);
+};

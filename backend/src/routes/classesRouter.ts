@@ -10,7 +10,6 @@ import {
   getAllClassesController,
   getClassByIdController,
   getClassesByCustomerIdController,
-  getClassesForInstructorCalendar,
   nonRebookableCancelController,
   updateClassController,
 } from "../../src/controllers/classesController";
@@ -23,11 +22,6 @@ classesRouter.get("/", getAllClassesController);
 classesRouter.get("/:id", getClassesByCustomerIdController);
 classesRouter.get("/class/:id", getClassByIdController);
 
-// TODO: Delete the route below after finishing refactoring the instructor calendar page
-classesRouter.get(
-  "/calendar/instructor/:instructorId",
-  getClassesForInstructorCalendar,
-);
 classesRouter.post("/create-classes", createClassesForMonthController);
 classesRouter.post("/", createClassController);
 classesRouter.post("/check-double-booking", checkDoubleBookingController);

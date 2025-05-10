@@ -72,8 +72,7 @@ function EditClassForm({
     const selectedChildrenIdsArray = Array.from(selectedChildrenIds);
 
     try {
-      await editClass({
-        classId: editedClass.id,
+      await editClass(editedClass.id, {
         dateTime: selectedDateTime,
         instructorId: selectedInstructorId,
         childrenIds: selectedChildrenIdsArray,

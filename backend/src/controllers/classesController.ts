@@ -11,7 +11,6 @@ import {
   getAllClasses,
   getClassById,
   getClassesByCustomerId,
-  getClassesForCalendar,
   getExcludedClasses,
   isInstructorBooked,
   updateClass,
@@ -92,6 +91,7 @@ export const getClassesByCustomerIdController = async (
         classAttendance,
         isRebookable,
         recurringClassId,
+        rebookableUntil,
       } = eachClass;
 
       return {
@@ -120,6 +120,7 @@ export const getClassesByCustomerIdController = async (
         status,
         isRebookable,
         recurringClassId,
+        rebookableUntil,
       };
     });
 
@@ -140,6 +141,7 @@ export const createClassController = async (req: Request, res: Response) => {
     childrenIds,
     status,
     recurringClassId,
+    rebookableUntil,
   } = req.body;
 
   // Check for missing fields
@@ -151,6 +153,7 @@ export const createClassController = async (req: Request, res: Response) => {
   if (!childrenIds) missingFields.push("childrenIds");
   if (!status) missingFields.push("status");
   if (!recurringClassId) missingFields.push("recurringClassId");
+  if (!rebookableUntil) missingFields.push("rebookableUntil");
 
   if (missingFields.length > 0) {
     return res.status(400).json({
@@ -196,7 +199,6 @@ export const createClassController = async (req: Request, res: Response) => {
       });
     }
 
-    const isRebookable = false;
     const [newClass, updatedClass] = await Promise.all([
       // Create a new Booked Class
       createClass(
@@ -207,18 +209,12 @@ export const createClassController = async (req: Request, res: Response) => {
           status,
           subscriptionId: subscription.id,
           recurringClassId,
+          rebookableUntil,
         },
         childrenIds,
       ),
-      // Upgrade the CanceledByCustomer class that was rebooked => isRebookable: false
-      updateClass(
-        classId,
-        undefined, // dateTime
-        undefined, // instructorId
-        undefined, // childrenIds
-        undefined, // status
-        isRebookable,
-      ),
+      // Update the rebooked class's isRebookable and rebookableUntil fields to prevent further rebooking
+      updateClass(classId, { isRebookable: false, rebookableUntil: null }),
     ]);
 
     res.status(201).json({ newClass, updatedClass });
@@ -305,18 +301,10 @@ export const getClassByIdController = async (req: Request, res: Response) => {
 // Update[Edit] a class
 export const updateClassController = async (req: Request, res: Response) => {
   const classId = parseInt(req.params.id);
-  const { dateTime, instructorId, childrenIds, status, isRebookable } =
-    req.body;
+  const classData = req.body;
 
   try {
-    const updatedClass = await updateClass(
-      classId,
-      dateTime,
-      instructorId,
-      childrenIds,
-      status,
-      isRebookable,
-    );
+    const updatedClass = await updateClass(classId, classData);
 
     res.status(200).json({
       message: "Class is updated successfully",
@@ -324,43 +312,6 @@ export const updateClassController = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
-  }
-};
-
-// TODO: Delete the controller below after finishing refactoring the instructor calendar page
-export const getClassesForInstructorCalendar = async (
-  req: Request,
-  res: Response,
-) => {
-  const instructorId = parseInt(req.params.instructorId);
-
-  if (!instructorId) {
-    return res.status(400).json({ error: "instructorId is required" });
-  }
-
-  try {
-    const classes = await getClassesForCalendar(instructorId, "instructor");
-
-    const classesData = classes.map((eachClass) => {
-      const { id, dateTime, status, classAttendance } = eachClass;
-
-      return {
-        id,
-        dateTime,
-        classAttendance: {
-          children: classAttendance.map((classAttendance) => ({
-            id: classAttendance.children.id,
-            name: classAttendance.children.name,
-          })),
-        },
-        status,
-      };
-    });
-
-    res.json({ classes: classesData });
-  } catch (error) {
-    console.error("Error fetching classes:", error);
-    res.status(500).json({ error: "Failed to fetch classes" });
   }
 };
 

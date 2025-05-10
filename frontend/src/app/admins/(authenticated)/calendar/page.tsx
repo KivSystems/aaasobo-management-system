@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "@/app/admins/(authenticated)/authContext";
-import InstructorCalendar from "@/app/components/instructors-dashboard/class-schedule/InstructorCalendar";
 import InstructorSearch from "@/app/components/admins-dashboard/InstructorSearch";
+import InstructorCalendarForAdmin from "@/app/components/admins-dashboard/InstructorCalendarForAdmin";
 
 const Page = () => {
   const [instructorId, setInstructorId] = useState<number | null>(null);
@@ -34,8 +34,8 @@ const Page = () => {
       {isAuthenticated && (
         <InstructorSearch handleSendInstructor={handleSendInstructor} />
       )}
-      <InstructorCalendar
-        id={instructorId}
+      <InstructorCalendarForAdmin
+        instructorId={instructorId}
         name={instructorName}
         isAdminAuthenticated={isAuthenticated}
       />

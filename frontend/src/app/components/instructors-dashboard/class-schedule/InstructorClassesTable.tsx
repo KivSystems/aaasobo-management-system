@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   formatTime24Hour,
   isPastClassEndTime,
+  nHoursLater,
 } from "@/app/helper/utils/dateUtils";
 import styles from "./InstructorClassesTable.module.scss";
 import Link from "next/link";
@@ -14,12 +15,6 @@ import {
   ExclamationTriangleIcon,
   UsersIcon,
 } from "@heroicons/react/24/solid";
-
-type StatusType =
-  | "booked"
-  | "completed"
-  | "canceledByCustomer"
-  | "canceledByInstructor";
 
 const InstructorClassesTable = ({
   instructorId,
@@ -36,7 +31,7 @@ const InstructorClassesTable = ({
   handleUpdateClassDetail: (
     completedClassId: number,
     attendedChildren: Child[],
-    updatedStatus: StatusType,
+    updatedStatus: ClassStatus,
   ) => void;
   isAdminAuthenticate?: boolean;
   classDate: string;
@@ -47,7 +42,7 @@ const InstructorClassesTable = ({
   const [selectedChildrenIds, setSelectedChildrenIds] = useState<Set<number>>(
     new Set(),
   );
-  const [selectedStatus, setSelectedStatus] = useState<StatusType>("booked");
+  const [selectedStatus, setSelectedStatus] = useState<ClassStatus>("booked");
 
   useEffect(() => {
     setClasses(selectedDateClasses);
@@ -61,7 +56,7 @@ const InstructorClassesTable = ({
     classId: number,
     children: Child[],
     classStart: string,
-    status: StatusType,
+    status: ClassStatus,
   ) => {
     if (!isPastClassEndTime(classStart, timeZone) && !isAdminAuthenticate) {
       return alert(
@@ -88,7 +83,7 @@ const InstructorClassesTable = ({
     setSelectedChildrenIds(new Set(selectedChildrenIds));
   };
 
-  const handleStatusChange = (changedStatus: StatusType) => {
+  const handleStatusChange = (changedStatus: ClassStatus) => {
     setSelectedStatus(changedStatus);
   };
 
@@ -102,7 +97,7 @@ const InstructorClassesTable = ({
     classToCompleteId: number,
     registeredChildren: Child[], // All of the initially registered children(all the children of the customer)
     classStart: string,
-    updatedStatus: StatusType,
+    updatedStatus: ClassStatus,
     childrenWithoutEditingAttendance?: Child[],
   ) => {
     if (
@@ -116,16 +111,24 @@ const InstructorClassesTable = ({
 
     const attendedChildrenIds = childrenWithoutEditingAttendance
       ? childrenWithoutEditingAttendance.map((child) => child.id)
-      : Array.from(selectedChildrenIds);
+      : updatedStatus === "canceledByInstructor"
+        ? undefined
+        : Array.from(selectedChildrenIds);
 
     const isRebookable = updatedStatus !== "completed";
+    const rebookableUntil =
+      updatedStatus === "canceledByInstructor"
+        ? nHoursLater(180 * 24, new Date(classStart)).toISOString() // If the class is canceled by the instructor, set rebookableUntil to 180 days (* 24 * 60 minutes) after the class dateTime
+        : updatedStatus === "completed"
+          ? null
+          : undefined;
 
     try {
-      await editClass({
-        classId: classToCompleteId,
+      await editClass(classToCompleteId, {
         childrenIds: attendedChildrenIds,
         status: updatedStatus,
-        isRebookable: isRebookable,
+        isRebookable,
+        rebookableUntil,
       });
 
       setClasses((prev) => {
@@ -138,7 +141,7 @@ const InstructorClassesTable = ({
                 attendingChildren:
                   childrenWithoutEditingAttendance ||
                   registeredChildren.filter((child) =>
-                    attendedChildrenIds.includes(child.id),
+                    attendedChildrenIds?.includes(child.id),
                   ),
                 status: updatedStatus,
               }
@@ -150,7 +153,7 @@ const InstructorClassesTable = ({
         classToCompleteId,
         childrenWithoutEditingAttendance ||
           registeredChildren.filter((child) =>
-            attendedChildrenIds.includes(child.id),
+            attendedChildrenIds?.includes(child.id),
           ),
         updatedStatus,
       );
@@ -164,7 +167,7 @@ const InstructorClassesTable = ({
     setSelectedStatus("booked");
   };
 
-  const statusToString = (status: StatusType): string => {
+  const statusToString = (status: ClassStatus): string => {
     switch (status) {
       case "booked":
         return "Booked";

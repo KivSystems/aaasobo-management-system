@@ -1,4 +1,15 @@
+import {
+  INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE,
+  GENERAL_ERROR_MESSAGE,
+  SINGLE_ITEM_ALREADY_REGISTERED_ERROR,
+  MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR,
+} from "../messages/formValidation";
 import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
+import {
+  FAILED_TO_FETCH_INSTRUCTOR_AVAILABILITIES,
+  FAILED_TO_FETCH_INSTRUCTOR_CLASSES,
+  FAILED_TO_FETCH_INSTRUCTOR_PROFILE,
+} from "../messages/instructorDashboard";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -57,6 +68,53 @@ export const getInstructor = async (
   }
 
   return data;
+};
+
+// Register instructor data
+export const registerInstructor = async (userData: {
+  name: string;
+  nickname: string;
+  email: string;
+  password: string;
+  icon: string;
+  classURL: string;
+  meetingId: string;
+  passcode: string;
+  introductionURL: string;
+}): Promise<RegisterFormState> => {
+  try {
+    const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
+    const response = await fetch(registerURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    if (response.status === 409) {
+      const data = await response.json();
+      const { items } = data;
+      // Check the number of commas in the error message
+      const commaCount = (items.match(/,/g) || []).length;
+      if (commaCount === 0) {
+        return { errorMessage: SINGLE_ITEM_ALREADY_REGISTERED_ERROR(items) };
+      } else if (commaCount > 0) {
+        return { errorMessage: MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR(items) };
+      }
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      successMessage: INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while registering instructor:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
 };
 
 // PATCH instructor data
@@ -207,24 +265,27 @@ export const registerUnavailability = async (
   }).then((res) => res.json());
 };
 
-export const fetchInstructorAvailabilitiesForTodayAndAfter = async (
+export const getCalendarAvailabilities = async (
   instructorId: number,
-) => {
+): Promise<EventType[] | []> => {
   try {
-    const response = await fetch(
-      `${BASE_URL}/${instructorId}/availabilities/after-today`,
-    );
+    const calendarAvailabilitiesURL = `${BASE_URL}/${instructorId}/calendar-availabilities`;
+    const response = await fetch(calendarAvailabilitiesURL, {
+      cache: "no-store",
+    });
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
-    const instructorAvailabilities = await response.json();
-    return instructorAvailabilities.data;
+
+    const calendarAvailabilities = await response.json();
+    return calendarAvailabilities;
   } catch (error) {
     console.error(
-      "Failed to fetch instructor availability date and times:",
+      "API error while fetching instructor calendar availabilities:",
       error,
     );
-    throw error;
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_AVAILABILITIES);
   }
 };
 
@@ -274,21 +335,43 @@ export const getInstructorProfile = async (
   instructorId: number,
 ): Promise<InstructorProfile> => {
   try {
-    const response = await fetch(`${BASE_URL}/${instructorId}/profile`, {
-      // TODO: Remove this line before production to use cached data
+    const instructorProfileURL = `${BASE_URL}/${instructorId}/profile`;
+    const response = await fetch(instructorProfileURL, {
       cache: "no-store",
-      next: { tags: ["instructor-profile"] },
     });
 
     if (!response.ok) {
-      const { error } = await response.json();
-      throw new Error(`HTTP Status: ${response.status} ${error}`);
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
     const instructorProfile = await response.json();
     return instructorProfile;
   } catch (error) {
-    console.error("Failed to fetch instructor profile:", error);
-    throw new Error("We couldn't load your profile. Please try again later.");
+    console.error("API error while fetching instructor profile:", error);
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILE);
+  }
+};
+
+export const getCalendarClasses = async (
+  instructorId: number,
+): Promise<EventType[] | []> => {
+  try {
+    const calendarClassesURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/calendar-classes`;
+    const response = await fetch(calendarClassesURL, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "API error while fetching instructor calendar classes:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_CLASSES);
   }
 };

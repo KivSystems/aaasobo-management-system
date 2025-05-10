@@ -4,12 +4,13 @@ import {
   logoutAdminController,
   registerAdminController,
   registerInstructorController,
+  getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
   getAllCustomersController,
   getAllChildrenController,
   getAllPlansController,
-  getAllClassesController,
+  getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
 import {
   requireAuthentication,
@@ -24,14 +25,11 @@ adminsRouter.post("/login", loginAdminController);
 adminsRouter.get("/logout", logoutAdminController);
 adminsRouter.post("/register", requireAuthentication, registerAdminController);
 adminsRouter.get("/authentication", authenticateAdminSession);
-adminsRouter.post(
-  "/instructor-list/register",
-  requireAuthentication,
-  registerInstructorController,
-);
+// TODO: add authentication middleware to this route
+adminsRouter.post("/instructor-list/register", registerInstructorController);
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
-adminsRouter.get("/class-list", getAllClassesController);
+adminsRouter.get("/class-list", getClassesWithinPeriodController);

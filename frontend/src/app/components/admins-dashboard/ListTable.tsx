@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useMemo } from "react";
 import styles from "./ListTable.module.scss";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -10,18 +12,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import Link from "next/link";
-import {
-  getAllAdmins,
-  getAllInstructors,
-  getAllCustomers,
-  getAllChildren,
-  getAllPlans,
-  getAllClasses,
-} from "@/app/helper/api/adminsApi";
 import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
 
 type ListTableProps = {
   listType: string;
+  fetchedData: any[];
   omitItems: string[];
   linkItems: string[];
   linkUrls: string[];
@@ -31,6 +26,7 @@ type ListTableProps = {
 
 function ListTable({
   listType,
+  fetchedData,
   omitItems,
   linkItems,
   linkUrls,
@@ -44,46 +40,34 @@ function ListTable({
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch the applicable based on the list type
-    const fetchData = async () => {
+    const listData = async () => {
       try {
-        let fetchData;
+        let listData = fetchedData;
+
         switch (listType) {
-          case "Admin List":
-            fetchData = await getAllAdmins();
-            break;
           case "Instructor List":
-            fetchData = await getAllInstructors();
             // Set the active tab to the instructor calendar tab.
             localStorage.setItem("activeInstructorTab", "0");
             break;
           case "Customer List":
-            fetchData = await getAllCustomers();
             // Set the active tab to the customer calendar tab.
             localStorage.setItem("activeCustomerTab", "0");
             break;
           case "Child List":
-            fetchData = await getAllChildren();
             // Set the active tab to the children profiles tab.
             localStorage.setItem("activeCustomerTab", "2");
             break;
-          case "Plan List":
-            fetchData = await getAllPlans();
-            break;
-          case "Class List":
-            fetchData = await getAllClasses();
-            break;
           default:
-            fetchData = [];
+            break;
         }
-        setData(fetchData);
+        setData(listData);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchData();
-  }, [listType]);
+    listData();
+  }, [fetchedData, listType]);
 
   useEffect(() => {
     // Handle the click event on the table cell

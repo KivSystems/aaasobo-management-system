@@ -5,11 +5,28 @@ export const GENERAL_ERROR_MESSAGE =
 export const EMAIL_ALREADY_REGISTERED_ERROR =
   "This email address is already registered. Try a different one.";
 
+export const SINGLE_ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {
+  return (
+    "The input value for the following item has already been registered. Please enter a different one: " +
+    item
+  );
+};
+
+export const MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR = (items: string) => {
+  return (
+    "The input values for the following items have already been registered. Please enter different ones: \n" +
+    items
+  );
+};
+
 export const CONFIRMATION_EMAIL_SENT =
   "We have sent a confirmation email. Please click the link in the email to activate your account.";
 
 export const CONFIRMATION_EMAIL_SEND_FAILURE =
   "We couldn't send the confirmation email. Please check your email address and try again. If the problem persists, contact our staff. We apologize for the inconvenience.";
+
+export const INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE =
+  "The instructor account has been created successfully.";
 
 // LoginForm
 export const LOGIN_FAILED_MESSAGE = "Invalid email or password.";

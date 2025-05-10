@@ -26,6 +26,7 @@ type InstructorProfile = {
   id: number;
   name: string;
   nickname: string;
+  createdAt: string;
 };
 
 type Availability = { dateTime: string };
@@ -34,7 +35,8 @@ type ClassStatus =
   | "booked"
   | "completed"
   | "canceledByCustomer"
-  | "canceledByInstructor";
+  | "canceledByInstructor"
+  | "pending";
 
 type ClassType = {
   id: number;
@@ -58,6 +60,13 @@ type ClassType = {
   status: ClassStatus;
   isRebookable: boolean;
   recurringClassId: number;
+  rebookableUntil: string;
+};
+
+type Admin = {
+  id: number;
+  name: string;
+  email: string;
 };
 
 type Customer = {
@@ -275,12 +284,6 @@ type CustomerProfile = {
   createdAt: string;
 };
 
-type InstructorProfile = {
-  id: number;
-  name: string;
-  nickname: string;
-};
-
 type LanguageType = "ja" | "en";
 
 type ClassInfo = { classId: number; classDateTime: string };
@@ -292,4 +295,14 @@ type CustomerCalendarProps = {
   customerId: number;
   classes: CustomerClass[] | [];
   createdAt: string;
+};
+
+type InstructorCalendarClientProps = {
+  instructorId: number;
+  isAdminAuthenticated?: boolean;
+  instructorCalendarEvents: EventType[];
+  validRange: {
+    start: string;
+    end: string;
+  };
 };
