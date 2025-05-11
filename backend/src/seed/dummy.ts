@@ -252,10 +252,8 @@ async function insertCustomers() {
     data: [
       {
         name: "Alice",
-        // email: "alice@example.com",
-        email: "kiv-developers@googlegroups.com",
-        // emailVerified: "2025-03-08T14:31:26.816Z",
-        emailVerified: null,
+        email: "alice@example.com",
+        emailVerified: "2025-03-08T14:31:26.816Z",
         password:
           "$2b$12$GFM.a0hEjl/0/U3IjO057esEr7l.NMKZSeRC7c1he6wzDvoIW4oxy", // AaasoBo!Alice
         prefecture: "Aomori",
@@ -965,7 +963,7 @@ async function main() {
     await insertAdmins();
 
     // Dependant on the above
-    // await insertInstructorAvailabilities();
+    await insertInstructorAvailabilities();
     await insertSubscriptions();
     await insertChildren();
 
