@@ -1,4 +1,4 @@
-// This file contains common functions that are used in multiple controllers.
+// This file contains common functions that are used in multiple controllers or services.
 
 // Create a new object that contains only the properties specified in the array.
 export const pickProperties = (
@@ -19,3 +19,6 @@ export const pickProperties = (
   });
   return pickedProperties;
 };
+
+// Standardize salt rounds for hashing passwords
+export const saltRounds = 12;

@@ -25,7 +25,7 @@ import {
   generatePasswordResetToken,
   getPasswordResetTokenByToken,
 } from "../services/passwordResetTokensService";
-import { saltRounds } from "./adminsController";
+import { saltRounds } from "../helper/commonUtils";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {

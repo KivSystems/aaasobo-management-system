@@ -28,6 +28,9 @@ export const CONFIRMATION_EMAIL_SEND_FAILURE =
 export const INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE =
   "The instructor account has been created successfully.";
 
+export const ADMIN_REGISTRATION_SUCCESS_MESSAGE =
+  "The admin account has been created successfully.";
+
 // LoginForm
 export const LOGIN_FAILED_MESSAGE = "Invalid email or password.";
 

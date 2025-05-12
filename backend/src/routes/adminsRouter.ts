@@ -23,11 +23,13 @@ export const adminsRouter = express.Router();
 
 adminsRouter.post("/login", loginAdminController);
 adminsRouter.get("/logout", logoutAdminController);
-adminsRouter.post("/register", requireAuthentication, registerAdminController);
+// TODO: add authentication middleware to this route
+adminsRouter.post("/register", registerAdminController);
 adminsRouter.get("/authentication", authenticateAdminSession);
 // TODO: add authentication middleware to this route
 adminsRouter.post("/instructor-list/register", registerInstructorController);
 adminsRouter.get("/admin-list", getAllAdminsController);
+adminsRouter.get("/admin-list/:id", getAdminController);
 adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
