@@ -124,7 +124,6 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
       />
       <input type="hidden" name="userType" value={userType ?? ""} />
 
-      {/* TODO: If this component supports multiple user types, render the appropriate UI for each. */}
       {userType === "customer" && (
         <>
           <PrefectureSelect
