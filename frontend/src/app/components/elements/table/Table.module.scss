@@ -39,3 +39,23 @@
     grid-template-columns: 0.25fr 1fr 0.45fr 1fr 1fr;
   }
 }
+
+.rebookableClassList {
+  flex-grow: 1;
+  .table {
+    &__head {
+      grid-template-columns: 1.3fr 0.3fr 0.35fr;
+      height: 40px;
+
+      h3 {
+        margin-left: unset;
+        margin: 0 auto;
+      }
+    }
+
+    &__body {
+      max-height: 330px;
+      margin: unset;
+    }
+  }
+}

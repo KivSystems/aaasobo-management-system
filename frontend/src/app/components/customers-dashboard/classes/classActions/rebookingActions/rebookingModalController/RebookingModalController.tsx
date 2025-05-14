@@ -12,12 +12,7 @@ export default function RebookingModalController({
   customerId,
   rebookableClasses,
   hasChildProfile,
-}: {
-  isAdminAuthenticated?: boolean;
-  customerId: number;
-  rebookableClasses: RebookableClass[] | [];
-  hasChildProfile: boolean;
-}) {
+}: RebookingModalControllerProps) {
   const { language } = useLanguage();
   const [isRebookingModalOpen, setIsRebookingModalOpen] = useState(false);
   const rebookableClassesNumber = rebookableClasses.length;

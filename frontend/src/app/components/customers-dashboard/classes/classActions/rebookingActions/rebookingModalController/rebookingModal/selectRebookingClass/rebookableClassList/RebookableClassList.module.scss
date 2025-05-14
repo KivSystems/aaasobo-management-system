@@ -1,0 +1,48 @@
+.modal {
+  &__list {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  &__backBtn {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}
+
+.listItem {
+  margin-top: 0.2rem;
+  display: grid;
+  grid-template-columns: 1.3fr 0.3fr 0.35fr;
+  align-items: center;
+
+  transition: background-color 0.3s ease;
+  background-color: #fafbfe;
+  border-radius: 0.5rem;
+  min-height: 60px;
+
+  &:hover {
+    background-color: #f0f1fb;
+  }
+
+  span {
+    font-weight: 500;
+    font-size: 1rem;
+  }
+
+  &__dateTime {
+    padding-left: 1rem;
+  }
+
+  &__classId {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

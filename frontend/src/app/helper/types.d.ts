@@ -311,3 +311,48 @@ type RebookableClass = {
   id: number;
   rebookableUntil: Date;
 };
+
+type RebookingModalControllerProps = {
+  isAdminAuthenticated?: boolean;
+  customerId: number;
+  rebookableClasses: RebookableClass[] | [];
+  hasChildProfile: boolean;
+};
+
+type RebookingModalProps = {
+  isAdminAuthenticated?: boolean;
+  customerId: number;
+  rebookableClasses: RebookableClass[] | [];
+  setIsRebookingModalOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+type RebookingStep = "selectClass" | "selectOption" | "confirmRebooking";
+
+type SelectRebookingClassProps = {
+  rebookableClasses: RebookableClass[] | [];
+  setIsRebookingModalOpen: Dispatch<SetStateAction<boolean>>;
+  setRebookingStep: Dispatch<SetStateAction<RebookingStep>>;
+  setClassToRebook: Dispatch<SetStateAction<number | null>>;
+  language: LanguageType;
+};
+
+type RebookableClassListProps = {
+  rebookableClasses: { id: number; rebookableUntil: Date }[];
+  language: LanguageType;
+  setRebookingStep: (step: string) => void;
+  setClassToRebook: (id: number) => void;
+};
+
+type SelectRebookingOptionProps = {
+  isAdminAuthenticated?: boolean;
+  customerId: number;
+  setRebookingStep: Dispatch<SetStateAction<RebookingStep>>;
+  classToRebook: number | null;
+  language: LanguageType;
+};
+
+type ConfirmRebookingProps = {
+  setRebookingStep: Dispatch<SetStateAction<RebookingStep>>;
+  classToRebook: number | null;
+  language: LanguageType;
+};
