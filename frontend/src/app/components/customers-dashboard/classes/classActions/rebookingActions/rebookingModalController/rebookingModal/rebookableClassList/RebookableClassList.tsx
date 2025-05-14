@@ -9,14 +9,21 @@ import {
 } from "@/app/helper/utils/dateUtils";
 import { REBOOKING_TOO_LATE_NOTICE } from "@/app/helper/messages/customerDashboard";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
+import { useRouter } from "next/navigation";
 
 export default function RebookableClassList({
+  isAdminAuthenticated,
+  customerId,
   rebookableClasses,
   language,
-  setRebookingStep,
-  setClassToRebook,
 }: RebookableClassListProps) {
+  const router = useRouter();
+
   const handleRebook = (id: number, rebookableUntil: Date) => {
+    const redirectUrl = isAdminAuthenticated
+      ? `/admins/customer-list/${customerId}/classes/${id}/rebook`
+      : `/customers/${customerId}/classes/${id}/rebook`;
+
     const now = new Date().getTime();
     const rebookingDeadline = nHoursBefore(
       3,
@@ -27,8 +34,7 @@ export default function RebookableClassList({
       return alert(REBOOKING_TOO_LATE_NOTICE[language]);
     }
 
-    setRebookingStep("selectOption");
-    setClassToRebook(id);
+    router.push(redirectUrl);
   };
 
   return (
@@ -42,7 +48,7 @@ export default function RebookableClassList({
         const time = formatTime24Hour(new Date(classItem.rebookableUntil));
 
         return (
-          // TODO: After updating the Class table, use 'originalId' instead of 'id' here
+          // TODO: After updating the Class table, use a different field here instead of 'id'
           <li key={classItem.id} className={styles.listItem}>
             <div className={styles.listItem__dateTime}>
               {language === "ja" ? (
@@ -56,12 +62,12 @@ export default function RebookableClassList({
                 </>
               )}
             </div>
-            {/* TODO: After updating the Class table, use 'originalId' instead of 'id' here */}
+            {/* TODO: After updating the Class table, use a different field here instead of 'id' */}
             <div className={styles.listItem__classId}>{classItem.id}</div>
             <div className={styles.listItem__button}>
               <ActionButton
-                className="select"
-                btnText={language === "ja" ? "選択" : "Select"}
+                className="selectRebookingClass"
+                btnText={language === "ja" ? "振替予約" : "Rebook"}
                 onClick={() =>
                   handleRebook(classItem.id, classItem.rebookableUntil)
                 }

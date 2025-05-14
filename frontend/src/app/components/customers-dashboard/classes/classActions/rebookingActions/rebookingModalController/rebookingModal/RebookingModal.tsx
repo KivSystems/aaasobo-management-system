@@ -1,11 +1,12 @@
 "use client";
 
+import Table from "@/app/components/elements/table/Table";
 import styles from "./RebookingModal.module.scss";
-import { useState } from "react";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import ConfirmRebooking from "./confirmRebooking/ConfirmRebooking";
-import SelectRebookingClass from "./selectRebookingClass/SelectRebookingClass";
-import SelectRebookingOption from "./selectRebookingOption/SelectRebookingOption";
+import RebookableClassList from "./rebookableClassList/RebookableClassList";
+import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
+import { TODAYS_CLASS_REBOOKING_NOTICE } from "@/app/helper/messages/customerDashboard";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 export default function RebookingModal({
   isAdminAuthenticated,
@@ -14,42 +15,38 @@ export default function RebookingModal({
   setIsRebookingModalOpen,
 }: RebookingModalProps) {
   const { language } = useLanguage();
-  const [rebookingStep, setRebookingStep] =
-    useState<RebookingStep>("selectClass");
-  const [classToRebook, setClassToRebook] = useState<number | null>(null);
-
-  const getSlideClass = () => {
-    switch (rebookingStep) {
-      case "selectClass":
-        return "slide0";
-      case "selectOption":
-        return "slide1";
-      case "confirmRebooking":
-        return "slide2";
-    }
-  };
 
   return (
     <div className={styles.modal}>
-      <div className={`${styles.slider} ${styles[getSlideClass()]}`}>
-        <SelectRebookingClass
-          rebookableClasses={rebookableClasses}
-          setIsRebookingModalOpen={setIsRebookingModalOpen}
-          setRebookingStep={setRebookingStep}
-          setClassToRebook={setClassToRebook}
-          language={language}
-        />
-        <SelectRebookingOption
-          customerId={customerId}
+      <h3 className={styles.modal__title}>
+        {language === "ja"
+          ? "振替予約するクラスをお選びください"
+          : "Please select the class to rebook."}
+      </h3>
+
+      <Table
+        className="rebookableClassList"
+        headItems={
+          language === "ja"
+            ? ["振替可能クラス", "クラスコード", ""]
+            : ["Rebookable Classes", "Class Code", ""]
+        }
+      >
+        <RebookableClassList
           isAdminAuthenticated={isAdminAuthenticated}
-          setRebookingStep={setRebookingStep}
-          classToRebook={classToRebook}
+          customerId={customerId}
+          rebookableClasses={rebookableClasses}
           language={language}
         />
-        <ConfirmRebooking
-          setRebookingStep={setRebookingStep}
-          classToRebook={classToRebook}
-          language={language}
+      </Table>
+
+      <InfoBanner info={TODAYS_CLASS_REBOOKING_NOTICE[language]} />
+
+      <div className={styles.modal__backBtn}>
+        <ActionButton
+          btnText={language === "ja" ? "戻る" : "Back"}
+          className="back"
+          onClick={() => setIsRebookingModalOpen(false)}
         />
       </div>
     </div>
