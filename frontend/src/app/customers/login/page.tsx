@@ -1,10 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import styles from "./page.module.scss";
 import LoginForm from "@/app/components/features/loginForm/LoginForm";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function LoginPage() {
+  const { language } = useLanguage();
+
   return (
     <main className={styles.outsideContainer}>
       <div className={styles.container}>
@@ -16,11 +21,16 @@ export default function LoginPage() {
           className={styles.logo}
           priority={true}
         />
-        <h2>Login</h2>
+        <h2>{language === "ja" ? "ログイン" : "Login"}</h2>
         <p>
-          Not a member yet? <Link href="/customers/register">Join us!</Link>
+          {language === "ja"
+            ? "アカウントをお持ちでないですか？"
+            : "Not a member yet?"}{" "}
+          <Link href="/customers/register">
+            {language === "ja" ? "登録する" : "Join us!"}
+          </Link>
         </p>
-        <LoginForm userType="customer" />
+        <LoginForm userType="customer" language={language} />
       </div>
     </main>
   );

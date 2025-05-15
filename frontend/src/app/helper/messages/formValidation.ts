@@ -1,5 +1,7 @@
 export const GENERAL_ERROR_MESSAGE =
   "Something went wrong. Please try again shortly. If the problem persists, contact our staff. We apologize for the inconvenience.";
+export const GENERAL_ERROR_MESSAGE_JA =
+  "エラーが発生しました。しばらくしてから再度お試しください。問題が解決しない場合は、スタッフまでお問い合わせください。ご不便をおかけして申し訳ありません。";
 
 // RegisterForm
 export const EMAIL_ALREADY_REGISTERED_ERROR =
@@ -32,13 +34,20 @@ export const ADMIN_REGISTRATION_SUCCESS_MESSAGE =
   "The admin account has been created successfully.";
 
 // LoginForm
-export const LOGIN_FAILED_MESSAGE = "Invalid email or password.";
+export const LOGIN_FAILED_MESSAGE = {
+  ja: "メールアドレスまたはパスワードが正しくありません。",
+  en: "Invalid email or password.",
+};
 
-export const CONFIRMATION_EMAIL_RESEND_FAILURE =
-  "Your email hasn't been verified yet. We tried to resend the verification link but failed. Please check your inbox for a previous link, or try logging in again later to resend it.";
+export const CONFIRMATION_EMAIL_RESEND_FAILURE = {
+  ja: "メールアドレスがまだ認証されていません。確認リンクの再送信を試みましたが、失敗しました。以前お送りしたリンクを受信トレイでご確認いただくか、後ほど再度ログインしてリンクの再送信をお試しください。",
+  en: "Your email hasn't been verified yet. We tried to resend the verification link but failed. Please check your inbox for a previous link, or try logging in again later to resend it.",
+};
 
-export const EMAIL_VERIFICATION_RESENT_NOTICE =
-  "Your email address is not verified yet. We have resent the verification link via email.";
+export const EMAIL_VERIFICATION_RESENT_NOTICE = {
+  ja: "メールアドレスがまだ認証されていません。確認リンクをメールで再送しましたのでご確認ください。",
+  en: "Your email address is not verified yet. We have resent the verification link via email.",
+};
 
 // EmailVerificationForm
 export const EMAIL_VERIFICATION_TOKEN_NOT_FOUND =
