@@ -3,16 +3,14 @@
 import Table from "@/app/components/elements/table/Table";
 import styles from "./RebookingModal.module.scss";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import RebookableClassList from "./rebookableClassList/RebookableClassList";
+import RebookableClassList from "../rebookableClassList/RebookableClassList";
 import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
 import { TODAYS_CLASS_REBOOKING_NOTICE } from "@/app/helper/messages/customerDashboard";
-import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 export default function RebookingModal({
   isAdminAuthenticated,
   customerId,
   rebookableClasses,
-  setIsRebookingModalOpen,
 }: RebookingModalProps) {
   const { language } = useLanguage();
 
@@ -41,14 +39,6 @@ export default function RebookingModal({
       </Table>
 
       <InfoBanner info={TODAYS_CLASS_REBOOKING_NOTICE[language]} />
-
-      <div className={styles.modal__backBtn}>
-        <ActionButton
-          btnText={language === "ja" ? "戻る" : "Back"}
-          className="back"
-          onClick={() => setIsRebookingModalOpen(false)}
-        />
-      </div>
     </div>
   );
 }

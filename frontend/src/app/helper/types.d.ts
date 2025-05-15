@@ -312,20 +312,18 @@ type RebookableClass = {
   rebookableUntil: Date;
 };
 
-type BaseRebookingProps = {
+type RebookingModalControllerProps = {
+  rebookableClasses: RebookableClass[] | [];
+  hasChildProfile: boolean;
+  modalContent: React.ReactNode;
+};
+
+type RebookingModalProps = {
   isAdminAuthenticated?: boolean;
   customerId: number;
   rebookableClasses: RebookableClass[] | [];
 };
 
-type RebookingModalControllerProps = BaseRebookingProps & {
-  hasChildProfile: boolean;
-};
-
-type RebookingModalProps = BaseRebookingProps & {
-  setIsRebookingModalOpen: Dispatch<SetStateAction<boolean>>;
-};
-
-type RebookableClassListProps = BaseRebookingProps & {
+type RebookableClassListProps = RebookingModalProps & {
   language: LanguageType;
 };

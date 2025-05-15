@@ -4,14 +4,12 @@ import Modal from "@/app/components/elements/modal/Modal";
 import { useState } from "react";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import RebookingModal from "./rebookingModal/RebookingModal";
 import { CHILD_PROFILE_REQUIRED_MESSAGE } from "@/app/helper/messages/customerDashboard";
 
 export default function RebookingModalController({
-  isAdminAuthenticated,
-  customerId,
   rebookableClasses,
   hasChildProfile,
+  modalContent,
 }: RebookingModalControllerProps) {
   const { language } = useLanguage();
   const [isRebookingModalOpen, setIsRebookingModalOpen] = useState(false);
@@ -38,13 +36,9 @@ export default function RebookingModalController({
       <Modal
         isOpen={isRebookingModalOpen}
         onClose={() => setIsRebookingModalOpen(false)}
+        className="rebooking"
       >
-        <RebookingModal
-          customerId={customerId}
-          isAdminAuthenticated={isAdminAuthenticated}
-          rebookableClasses={rebookableClasses}
-          setIsRebookingModalOpen={setIsRebookingModalOpen}
-        />
+        {modalContent}
       </Modal>
     </>
   );

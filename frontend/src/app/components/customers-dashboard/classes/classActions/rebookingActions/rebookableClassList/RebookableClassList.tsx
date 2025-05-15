@@ -48,7 +48,7 @@ export default function RebookableClassList({
         const time = formatTime24Hour(new Date(classItem.rebookableUntil));
 
         return (
-          // TODO: After updating the Class table, use a different field here instead of 'id'
+          // TODO: After updating the Class table, use 'classCode' field here instead of 'id'
           <li key={classItem.id} className={styles.listItem}>
             <div className={styles.listItem__dateTime}>
               {language === "ja" ? (
@@ -62,7 +62,7 @@ export default function RebookableClassList({
                 </>
               )}
             </div>
-            {/* TODO: After updating the Class table, use a different field here instead of 'id' */}
+            {/* TODO: After updating the Class table, use 'classCode' field here instead of 'id' */}
             <div className={styles.listItem__classId}>{classItem.id}</div>
             <div className={styles.listItem__button}>
               <ActionButton
