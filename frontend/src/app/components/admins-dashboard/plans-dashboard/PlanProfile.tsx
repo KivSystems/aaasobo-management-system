@@ -1,30 +1,33 @@
 "use client";
 
-import styles from "./AdminProfile.module.scss";
+import styles from "./PlanProfile.module.scss";
 import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
 import { updateUser } from "@/app/actions/updateUser";
-import InputField from "../elements/inputField/InputField";
-import ActionButton from "../elements/buttons/actionButton/ActionButton";
-import { CheckIcon } from "@heroicons/react/24/outline";
-import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import InputField from "../../elements/inputField/InputField";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
+import {
+  CalendarIcon,
+  PencilIcon,
+  CheckIcon,
+} from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "@/app/components/elements/loading/Loading";
 
-function AdminProfile({
-  admin,
+function PlanProfile({
+  plan,
   isAdminAuthenticated,
 }: {
-  admin: Admin | string;
+  plan: Plan | string;
   isAdminAuthenticated?: boolean;
 }) {
   const [updateResultState, formAction] = useFormState(updateUser, {});
-  const [previousAdmin, setPreviousAdmin] = useState<Admin | null>(
-    typeof admin !== "string" ? admin : null,
+  const [previousPlan, setPreviousPlan] = useState<Plan | null>(
+    typeof plan !== "string" ? plan : null,
   );
-  const [latestAdmin, setLatestAdmin] = useState<Admin | null>(
-    typeof admin !== "string" ? admin : null,
+  const [latestPlan, setLatestPlan] = useState<Plan | null>(
+    typeof plan !== "string" ? plan : null,
   );
   const [isEditing, setIsEditing] = useState(false);
 
@@ -34,28 +37,28 @@ function AdminProfile({
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof Admin,
+    field: keyof Plan,
   ) => {
-    if (latestAdmin) {
-      setLatestAdmin({ ...latestAdmin, [field]: e.target.value });
+    if (latestPlan) {
+      setLatestPlan({ ...latestPlan, [field]: e.target.value });
     }
   };
 
   const handleCancelClick = () => {
-    if (latestAdmin) {
-      setLatestAdmin(previousAdmin);
+    if (latestPlan) {
+      setLatestPlan(previousPlan);
       setIsEditing(false);
     }
   };
 
   useEffect(() => {
     if (updateResultState !== undefined) {
-      if ("admin" in updateResultState) {
-        const result = updateResultState as { admin: Admin };
+      if ("plan" in updateResultState) {
+        const result = updateResultState as { plan: Plan };
         toast.success("Profile updated successfully!");
         setIsEditing(false);
-        setPreviousAdmin(result.admin);
-        setLatestAdmin(result.admin);
+        setPreviousPlan(result.plan);
+        setLatestPlan(result.plan);
       } else {
         const result = updateResultState as { errorMessage: string };
         toast.error(result.errorMessage);
@@ -63,52 +66,69 @@ function AdminProfile({
     }
   }, [updateResultState]);
 
-  if (typeof admin === "string") {
-    return <p>{admin}</p>;
+  if (typeof plan === "string") {
+    return <p>{plan}</p>;
   }
 
   return (
     <>
       <div className={styles.container}>
-        {latestAdmin ? (
+        {latestPlan ? (
           <form action={formAction} className={styles.profileCard}>
-            {/* Admin name */}
-            <div className={styles.adminName__nameSection}>
-              <p className={styles.adminName__text}>Name</p>
+            {/* Plan name */}
+            <div className={styles.planName__nameSection}>
+              <p className={styles.planName__text}>Plan</p>
               {isEditing ? (
                 <InputField
                   name="name"
-                  value={latestAdmin.name}
+                  value={latestPlan.name}
                   onChange={(e) => handleInputChange(e, "name")}
-                  className={`${styles.adminName__inputField} ${isEditing ? styles.editable : ""}`}
+                  className={`${styles.planName__inputField} ${isEditing ? styles.editable : ""}`}
                 />
               ) : (
-                <h3 className={styles.adminName__name}>{latestAdmin.name}</h3>
+                <h3 className={styles.planName__name}>{latestPlan.name}</h3>
               )}
             </div>
 
-            {/* Admin email */}
+            {/* Weekly class times */}
             <div className={styles.insideContainer}>
-              <EnvelopeIcon className={styles.icon} />
+              <CalendarIcon className={styles.icon} />
               <div>
-                <p>Email</p>
+                <p>Weekly class times</p>
                 {isEditing ? (
                   <InputField
-                    name="email"
-                    type="email"
-                    value={latestAdmin.email}
-                    onChange={(e) => handleInputChange(e, "email")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                    name="weeklyClassTimes"
+                    type="number"
+                    value={String(latestPlan.weeklyClassTimes)}
+                    onChange={(e) => handleInputChange(e, "weeklyClassTimes")}
+                    className={`${styles.planName__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
-                  <h4>{latestAdmin.email}</h4>
+                  <h4>{latestPlan.weeklyClassTimes}</h4>
                 )}
               </div>
             </div>
 
-            {/* Hidden input fields */}
-            <input type="hidden" name="userType" value="admin" />
-            <input type="hidden" name="id" value={latestAdmin.id} />
+            {/* Description */}
+            <div className={styles.insideContainer}>
+              <PencilIcon className={styles.icon} />
+              <div>
+                <p className={styles.planName__text}>Description</p>
+                {isEditing ? (
+                  <InputField
+                    name="description"
+                    value={latestPlan.description}
+                    onChange={(e) => handleInputChange(e, "description")}
+                    className={`${styles.planDescription__inputField} ${isEditing ? styles.editable : ""}`}
+                  />
+                ) : (
+                  <h4>{latestPlan.description}</h4>
+                )}
+              </div>
+            </div>
+
+            {/* Hidden input field */}
+            <input type="hidden" name="id" value={latestPlan.id} />
 
             {/* Action buttons for only admin */}
             {isAdminAuthenticated ? (
@@ -152,4 +172,4 @@ function AdminProfile({
   );
 }
 
-export default AdminProfile;
+export default PlanProfile;

@@ -377,7 +377,7 @@ export const getAllPlansController = async (_: Request, res: Response) => {
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Plan: name,
         "Weekly class times": weeklyClassTimes,
         Description: description,
       };
