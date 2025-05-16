@@ -36,15 +36,8 @@ export const getAllClassesController = async (_: Request, res: Response) => {
     const classes = await getAllClasses();
 
     const classesData = classes.map((eachClass) => {
-      const {
-        id,
-        dateTime,
-        customer,
-        instructor,
-        status,
-        isRebookable,
-        recurringClassId,
-      } = eachClass;
+      const { id, dateTime, customer, instructor, status, recurringClassId } =
+        eachClass;
 
       return {
         id,
@@ -59,7 +52,6 @@ export const getAllClassesController = async (_: Request, res: Response) => {
           name: instructor.name,
         },
         status,
-        isRebookable,
         recurringClassId,
       };
     });
@@ -89,7 +81,6 @@ export const getClassesByCustomerIdController = async (
         instructor,
         status,
         classAttendance,
-        isRebookable,
         recurringClassId,
         rebookableUntil,
       } = eachClass;
@@ -118,7 +109,6 @@ export const getClassesByCustomerIdController = async (
           })),
         },
         status,
-        isRebookable,
         recurringClassId,
         rebookableUntil,
       };
@@ -213,8 +203,8 @@ export const createClassController = async (req: Request, res: Response) => {
         },
         childrenIds,
       ),
-      // Update the rebooked class's isRebookable and rebookableUntil fields to prevent further rebooking
-      updateClass(classId, { isRebookable: false, rebookableUntil: null }),
+      // Update the rebooked class's rebookableUntil fields to prevent further rebooking
+      updateClass(classId, { rebookableUntil: null }),
     ]);
 
     res.status(201).json({ newClass, updatedClass });
@@ -352,15 +342,8 @@ export const getInstructorClasses = async (
     const classes = await fetchInstructorClasses(req.id);
 
     const classesData = classes.map((eachClass) => {
-      const {
-        id,
-        dateTime,
-        customer,
-        instructor,
-        status,
-        classAttendance,
-        isRebookable,
-      } = eachClass;
+      const { id, dateTime, customer, instructor, status, classAttendance } =
+        eachClass;
 
       return {
         id,
@@ -382,7 +365,6 @@ export const getInstructorClasses = async (
           personalInfo: child.personalInfo,
         })),
         status,
-        isRebookable,
       };
     });
 

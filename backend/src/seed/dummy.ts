@@ -304,7 +304,6 @@ async function insertClasses() {
         customerId: alice.id,
         dateTime: "2024-08-05T07:00:00Z",
         status: "completed",
-        isRebookable: true,
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
       },
@@ -313,7 +312,6 @@ async function insertClasses() {
         customerId: alice.id,
         dateTime: "2024-08-12T07:00:00Z",
         status: "booked",
-        isRebookable: false,
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
       },
@@ -322,7 +320,6 @@ async function insertClasses() {
         customerId: alice.id,
         dateTime: "2024-08-19T07:00:00Z",
         status: "booked",
-        isRebookable: false,
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
       },
@@ -339,7 +336,6 @@ async function insertClasses() {
         customerId: alice.id,
         dateTime: "2024-08-06T07:00:00Z",
         status: "completed",
-        isRebookable: true,
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
       },
@@ -348,7 +344,6 @@ async function insertClasses() {
         customerId: alice.id,
         dateTime: "2024-08-13T07:00:00Z",
         status: "booked",
-        isRebookable: false,
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
       },
@@ -357,7 +352,6 @@ async function insertClasses() {
         customerId: alice.id,
         dateTime: "2024-08-20T07:00:00Z",
         status: "booked",
-        isRebookable: false,
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
       },
@@ -383,7 +377,6 @@ async function insertClasses() {
       //   customerId: bob.id,
       //   dateTime: "2024-06-03T15:30:00+09:00",
       //   status: "completed",
-      //   isRebookable: false,
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
       // },
@@ -392,7 +385,6 @@ async function insertClasses() {
       //   customerId: bob.id,
       //   dateTime: "2024-06-03T16:00:00+09:00",
       //   status: "completed",
-      //   isRebookable: false,
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
       // },
@@ -411,7 +403,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -420,7 +411,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -429,7 +419,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -438,7 +427,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -447,7 +435,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -456,7 +443,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -465,7 +451,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -474,7 +459,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -483,7 +467,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -492,7 +475,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -501,7 +483,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,

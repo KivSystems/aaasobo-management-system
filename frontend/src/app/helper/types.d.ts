@@ -58,7 +58,6 @@ type ClassType = {
   classAttendance: { children: { id: number; name: string }[] };
 
   status: ClassStatus;
-  isRebookable: boolean;
   recurringClassId: number;
   rebookableUntil: string;
 };
@@ -161,7 +160,6 @@ type ClassForCalendar = {
     children: Child[];
   };
   status: ClassStatus;
-  isRebookable: boolean;
 };
 
 type RecurringClassState = {
@@ -182,7 +180,6 @@ type InstructorClassDetail = {
   attendingChildren: Child[];
   customerChildren: Child[];
   status: ClassStatus;
-  isRebookable: boolean;
 };
 
 type Tab = {

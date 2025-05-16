@@ -175,7 +175,6 @@ export const updateClass = async (
     instructorId?: number;
     childrenIds?: number[];
     status?: Status;
-    isRebookable?: boolean;
     rebookableUntil?: string | null;
   },
 ) => {
@@ -253,8 +252,8 @@ export const cancelClassById = async (
     await prisma.classAttendance.deleteMany({
       where: { classId },
     });
-    // If classes are canceled before the class dates (!isPastPrevDayDeadline), they can be rescheduled (isRebookable: true).
-    // Otherwise (isPastPrevDayDeadline), not (isRebookable: false)
+    // If classes are canceled before the class dates (!isPastPrevDayDeadline), they are still rebookable.
+    // Otherwise (isPastPrevDayDeadline), not (rebookableUntil: null)
     if (!isPastPrevDayDeadline) {
       await prisma.class.update({
         where: { id: classId },
@@ -263,7 +262,7 @@ export const cancelClassById = async (
     } else {
       await prisma.class.update({
         where: { id: classId },
-        data: { status: "canceledByCustomer", isRebookable: false },
+        data: { status: "canceledByCustomer", rebookableUntil: null },
       });
     }
   });
@@ -447,7 +446,6 @@ export const getBookableClasses = async (customerId: number) => {
   const classes = await prisma.class.findMany({
     where: {
       customerId: customerId,
-      isRebookable: true,
       OR: [
         {
           status: "canceledByCustomer",

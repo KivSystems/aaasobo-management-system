@@ -115,7 +115,6 @@ const InstructorClassesTable = ({
         ? undefined
         : Array.from(selectedChildrenIds);
 
-    const isRebookable = updatedStatus !== "completed";
     const rebookableUntil =
       updatedStatus === "canceledByInstructor"
         ? nHoursLater(180 * 24, new Date(classStart)).toISOString() // If the class is canceled by the instructor, set rebookableUntil to 180 days (* 24 * 60 minutes) after the class dateTime
@@ -127,7 +126,6 @@ const InstructorClassesTable = ({
       await editClass(classToCompleteId, {
         childrenIds: attendedChildrenIds,
         status: updatedStatus,
-        isRebookable,
         rebookableUntil,
       });
 

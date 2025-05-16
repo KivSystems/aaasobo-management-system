@@ -98,7 +98,6 @@ export const editClass = async (
     dateTime?: string;
     status?: ClassStatus;
     instructorId?: number;
-    isRebookable?: boolean;
     rebookableUntil?: string | null;
   },
 ) => {
