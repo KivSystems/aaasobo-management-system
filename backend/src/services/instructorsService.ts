@@ -1,7 +1,7 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { saltRounds } from "../controllers/adminsController";
+import { saltRounds } from "../helper/commonUtils";
 
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {

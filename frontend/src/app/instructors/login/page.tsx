@@ -16,7 +16,7 @@ export default function LoginPage() {
           priority={true}
         />
         <h2>Login for instructors</h2>
-        <LoginForm userType="instructor" />
+        <LoginForm userType="instructor" language="en" />
       </div>
     </main>
   );

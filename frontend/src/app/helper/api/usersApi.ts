@@ -7,6 +7,7 @@ import {
   EMAIL_VERIFICATION_TOKEN_EXPIRED,
   EMAIL_VERIFICATION_UNEXPECTED_ERROR,
   GENERAL_ERROR_MESSAGE,
+  GENERAL_ERROR_MESSAGE_JA,
   LOGIN_FAILED_MESSAGE,
   PASSWORD_RESET_EMAIL_SEND_FAILURE,
   PASSWORD_RESET_EMAIL_SENT_MESSAGE,
@@ -24,15 +25,16 @@ export const authenticateUser = async (
   email: string,
   password: string,
   userType: UserType,
+  language: LanguageType,
 ): Promise<{ userId: number } | { errorMessage: string }> => {
   const apiUrl = `${BACKEND_ORIGIN}/users/authenticate`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({ email, password, userType });
 
   const statusErrorMessages: Record<number, string> = {
-    401: LOGIN_FAILED_MESSAGE,
-    503: CONFIRMATION_EMAIL_RESEND_FAILURE,
-    403: EMAIL_VERIFICATION_RESENT_NOTICE,
+    401: LOGIN_FAILED_MESSAGE[language],
+    503: CONFIRMATION_EMAIL_RESEND_FAILURE[language],
+    403: EMAIL_VERIFICATION_RESENT_NOTICE[language],
   };
 
   try {
@@ -55,7 +57,10 @@ export const authenticateUser = async (
     return { userId: data.id };
   } catch (error) {
     console.error("API error while authenticating[logging in] user:", error);
-    return { errorMessage: GENERAL_ERROR_MESSAGE };
+    return {
+      errorMessage:
+        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+    };
   }
 };
 

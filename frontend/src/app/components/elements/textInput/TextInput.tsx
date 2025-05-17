@@ -6,7 +6,7 @@ import FormValidationMessage from "../formValidationMessage/FormValidationMessag
 
 type TextInputProps = {
   id?: string;
-  label: string;
+  label?: string;
   type: string;
   value?: string;
   placeholder: string;
@@ -21,6 +21,7 @@ type TextInputProps = {
   autoComplete?: string;
   showPassword?: boolean;
   onTogglePasswordVisibility?: () => void;
+  language?: LanguageType;
 };
 
 function TextInput({
@@ -40,6 +41,7 @@ function TextInput({
   autoComplete,
   showPassword = false,
   onTogglePasswordVisibility,
+  language = "en",
 }: TextInputProps) {
   return (
     <div className={styles.inputWrapper}>
@@ -63,7 +65,15 @@ function TextInput({
           />
           {type === "password" && (
             <Tooltip
-              message={showPassword ? "Click to hide" : "Click to reveal"}
+              message={
+                language === "ja"
+                  ? showPassword
+                    ? "パスワードを非表示"
+                    : "パスワードを表示"
+                  : showPassword
+                    ? "Click to hide"
+                    : "Click to reveal"
+              }
             >
               <div
                 className={styles.eyeIcon}

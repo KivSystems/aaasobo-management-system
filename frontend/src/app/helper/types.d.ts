@@ -106,6 +106,7 @@ type Plan = {
   id: number;
   name: string;
   description: string;
+  weeklyClassTimes?: number;
 };
 
 type Subscriptions = {

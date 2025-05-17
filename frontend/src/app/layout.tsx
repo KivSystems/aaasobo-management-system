@@ -6,7 +6,6 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-poppins",
   display: "swap",
   weight: [
     "100", // Thin
