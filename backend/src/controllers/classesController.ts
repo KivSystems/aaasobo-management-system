@@ -11,6 +11,7 @@ import {
   getAllClasses,
   getClassById,
   getClassesByCustomerId,
+  getClassStatus,
   getExcludedClasses,
   isInstructorBooked,
   updateClass,
@@ -83,6 +84,8 @@ export const getClassesByCustomerIdController = async (
         classAttendance,
         recurringClassId,
         rebookableUntil,
+        updatedAt,
+        classCode,
       } = eachClass;
 
       return {
@@ -111,6 +114,8 @@ export const getClassesByCustomerIdController = async (
         status,
         recurringClassId,
         rebookableUntil,
+        updatedAt,
+        classCode,
       };
     });
 
@@ -132,6 +137,7 @@ export const createClassController = async (req: Request, res: Response) => {
     status,
     recurringClassId,
     rebookableUntil,
+    classCode,
   } = req.body;
 
   // Check for missing fields
@@ -144,6 +150,7 @@ export const createClassController = async (req: Request, res: Response) => {
   if (!status) missingFields.push("status");
   if (!recurringClassId) missingFields.push("recurringClassId");
   if (!rebookableUntil) missingFields.push("rebookableUntil");
+  if (!classCode) missingFields.push("classCode");
 
   if (missingFields.length > 0) {
     return res.status(400).json({
@@ -189,8 +196,23 @@ export const createClassController = async (req: Request, res: Response) => {
       });
     }
 
+    // If the class status is "canceled", update the rebookableUntil field to null to prevent further rebooking.
+    // If it's "pending", delete it.
+    const classStatus = await getClassStatus(classId);
+
+    let secondPromise;
+
+    if (
+      classStatus === "canceledByCustomer" ||
+      classStatus === "canceledByInstructor"
+    ) {
+      secondPromise = updateClass(classId, { rebookableUntil: null });
+    } else if (classStatus === "pending") {
+      secondPromise = deleteClass(classId);
+    }
+
     const [newClass, updatedClass] = await Promise.all([
-      // Create a new Booked Class
+      // Create a new "rebooked" class
       createClass(
         {
           dateTime,
@@ -200,11 +222,12 @@ export const createClassController = async (req: Request, res: Response) => {
           subscriptionId: subscription.id,
           recurringClassId,
           rebookableUntil,
+          updatedAt: new Date(),
+          classCode,
         },
         childrenIds,
       ),
-      // Update the rebooked class's rebookableUntil fields to prevent further rebooking
-      updateClass(classId, { rebookableUntil: null }),
+      secondPromise,
     ]);
 
     res.status(201).json({ newClass, updatedClass });

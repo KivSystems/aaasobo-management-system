@@ -36,7 +36,8 @@ type ClassStatus =
   | "completed"
   | "canceledByCustomer"
   | "canceledByInstructor"
-  | "pending";
+  | "pending"
+  | "rebooked";
 
 type ClassType = {
   id: number;
@@ -60,6 +61,8 @@ type ClassType = {
   status: ClassStatus;
   recurringClassId: number;
   rebookableUntil: string;
+  updatedAt: string;
+  classCode: string;
 };
 
 type Admin = {

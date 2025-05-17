@@ -127,6 +127,7 @@ const InstructorClassesTable = ({
         childrenIds: attendedChildrenIds,
         status: updatedStatus,
         rebookableUntil,
+        updateAt: new Date(),
       });
 
       setClasses((prev) => {

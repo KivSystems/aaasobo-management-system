@@ -62,8 +62,10 @@ function BookClass({
           );
 
           return (
-            eachClass.status === "canceledByCustomer" ||
+            (eachClass.status === "canceledByCustomer" &&
+              eachClass.rebookableUntil) ||
             (eachClass.status === "canceledByInstructor" &&
+              eachClass.rebookableUntil &&
               now <= fiveMonthsLaterEndOfMonth) ||
             eachClass.status === "pending"
           );
