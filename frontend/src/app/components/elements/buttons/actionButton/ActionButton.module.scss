@@ -150,6 +150,7 @@
 }
 
 .cancelClasses {
+  font-weight: 400;
   background-color: $gray-background;
   height: 39px;
   width: 135px;
@@ -299,6 +300,7 @@
 
 .rebookClass,
 .selectRebookingClass {
+  font-weight: 300;
   width: 145px;
   background-color: $green-success;
   transition:
