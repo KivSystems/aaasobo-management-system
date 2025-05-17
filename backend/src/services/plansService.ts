@@ -22,3 +22,15 @@ export const getWeeklyClassTimes = async (id: number) => {
     throw new Error("Failed to fetch weekly class times.");
   }
 };
+
+// Fetch the plan using the ID
+export async function getPlanById(id: number) {
+  try {
+    return prisma.plan.findUnique({
+      where: { id },
+    });
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch plan.");
+  }
+}

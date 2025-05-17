@@ -1,0 +1,18 @@
+.modal {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  max-width: 620px;
+
+  &__title {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  &__backBtn {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}
