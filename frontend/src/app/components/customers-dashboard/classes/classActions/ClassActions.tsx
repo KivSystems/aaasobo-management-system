@@ -1,6 +1,6 @@
 import styles from "./ClassActions.module.scss";
 import CancelClassesActions from "./cancelClassesActions/CancelClassesActions";
-import BookClassActions from "./bookClassActions/BookClassActions";
+import RebookingActions from "./rebookingActions/RebookingActions";
 
 export default async function ClassActions({
   isAdminAuthenticated,
@@ -18,7 +18,7 @@ export default async function ClassActions({
             isAdminAuthenticated={isAdminAuthenticated}
           />
 
-          <BookClassActions
+          <RebookingActions
             customerId={customerId}
             isAdminAuthenticated={isAdminAuthenticated}
           />

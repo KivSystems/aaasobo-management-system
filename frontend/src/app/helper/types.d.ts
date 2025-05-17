@@ -307,3 +307,24 @@ type InstructorCalendarClientProps = {
     end: string;
   };
 };
+
+type RebookableClass = {
+  id: number;
+  rebookableUntil: Date;
+};
+
+type RebookingModalControllerProps = {
+  rebookableClasses: RebookableClass[] | [];
+  hasChildProfile: boolean;
+  modalContent: React.ReactNode;
+};
+
+type RebookingModalProps = {
+  isAdminAuthenticated?: boolean;
+  customerId: number;
+  rebookableClasses: RebookableClass[] | [];
+};
+
+type RebookableClassListProps = RebookingModalProps & {
+  language: LanguageType;
+};

@@ -1,7 +1,7 @@
 import {
-  FAILED_TO_FETCH_BOOKABLE_CLASSES,
   FAILED_TO_FETCH_CUSTOMER_CLASSES,
   FAILED_TO_FETCH_CUSTOMER_PROFILE,
+  FAILED_TO_FETCH_REBOOKABLE_CLASSES,
   FAILED_TO_FETCH_UPCOMING_CLASSES,
 } from "../messages/customerDashboard";
 import {
@@ -116,17 +116,14 @@ export const registerCustomer = async (userData: {
   }
 };
 
-export const getBookableClasses = async (customerId: number) => {
+export const getRebookableClasses = async (
+  customerId: number,
+): Promise<RebookableClass[] | []> => {
   try {
-    const bookableClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/bookable-classes`;
-    const response = await fetch(
-      bookableClassesURL,
-      {
-        // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
-        cache: "no-store",
-      },
-      // { next: { tags: ["bookable-classes"] } },
-    );
+    const rebookableClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/rebookable-classes`;
+    const response = await fetch(rebookableClassesURL, {
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -135,8 +132,8 @@ export const getBookableClasses = async (customerId: number) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Failed to fetch bookable classes:", error);
-    throw new Error(FAILED_TO_FETCH_BOOKABLE_CLASSES);
+    console.error("Failed to fetch rebookable classes:", error);
+    throw new Error(FAILED_TO_FETCH_REBOOKABLE_CLASSES);
   }
 };
 
