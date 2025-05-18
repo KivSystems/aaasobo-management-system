@@ -310,7 +310,7 @@ export const createClassesUsingRecurringClassId = async (
 ) => {
   try {
     const createdClasses = await tx.class.createManyAndReturn({
-      data: dateTimes.map((dateTime) => {
+      data: dateTimes.map((dateTime, index) => {
         return {
           recurringClassId,
           instructorId,
@@ -318,6 +318,8 @@ export const createClassesUsingRecurringClassId = async (
           subscriptionId,
           status: "booked",
           dateTime,
+          updatedAt: new Date(),
+          classCode: `${recurringClassId}-${index}`,
         };
       }),
     });

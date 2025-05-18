@@ -89,8 +89,8 @@ model Class {
   subscription     Subscription      @relation(fields: [subscriptionId], references: [id])
   rebookableUntil  DateTime?
   createdAt        DateTime          @default(now())
-  updatedAt        DateTime?
-  classCode        String?
+  updatedAt        DateTime
+  classCode        String
 }
 
 enum Status {
