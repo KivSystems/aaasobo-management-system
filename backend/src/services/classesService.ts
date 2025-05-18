@@ -483,6 +483,7 @@ export const getRebookableClasses = async (customerId: number) => {
   return classes.map((classItem) => ({
     id: classItem.id,
     rebookableUntil: classItem.rebookableUntil,
+    classCode: classItem.classCode,
   }));
 };
 

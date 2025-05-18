@@ -311,6 +311,7 @@ type InstructorCalendarClientProps = {
 type RebookableClass = {
   id: number;
   rebookableUntil: Date;
+  classCode: string;
 };
 
 type RebookingModalControllerProps = {
