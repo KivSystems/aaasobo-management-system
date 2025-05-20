@@ -9,6 +9,7 @@ import {
   CONFIRMATION_EMAIL_SENT,
   EMAIL_ALREADY_REGISTERED_ERROR,
   GENERAL_ERROR_MESSAGE,
+  GENERAL_ERROR_MESSAGE_JA,
 } from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
@@ -79,12 +80,15 @@ type Response<E> =
       error: E;
     };
 
-export const registerCustomer = async (userData: {
-  name: string;
-  email: string;
-  password: string;
-  prefecture: string;
-}): Promise<RegisterFormState> => {
+export const registerCustomer = async (
+  userData: {
+    name: string;
+    email: string;
+    password: string;
+    prefecture: string;
+  },
+  language: LanguageType,
+): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/customers/register`;
     const response = await fetch(registerURL, {
@@ -94,11 +98,11 @@ export const registerCustomer = async (userData: {
     });
 
     if (response.status === 409) {
-      return { email: EMAIL_ALREADY_REGISTERED_ERROR };
+      return { email: EMAIL_ALREADY_REGISTERED_ERROR[language] };
     }
 
     if (response.status === 503) {
-      return { errorMessage: CONFIRMATION_EMAIL_SEND_FAILURE };
+      return { errorMessage: CONFIRMATION_EMAIL_SEND_FAILURE[language] };
     }
 
     if (!response.ok) {
@@ -106,12 +110,13 @@ export const registerCustomer = async (userData: {
     }
 
     return {
-      successMessage: CONFIRMATION_EMAIL_SENT,
+      successMessage: CONFIRMATION_EMAIL_SENT[language],
     };
   } catch (error) {
     console.error("API error while registering customer:", error);
     return {
-      errorMessage: GENERAL_ERROR_MESSAGE,
+      errorMessage:
+        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
     };
   }
 };
