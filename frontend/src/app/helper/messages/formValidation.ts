@@ -24,8 +24,8 @@ export const MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR = (items: string) => {
 };
 
 export const CONFIRMATION_EMAIL_SENT = {
-  ja: "確認メールを送信いたしました。メールに記載されたリンクをクリックし、アカウントを有効化してください。",
-  en: "We have sent a confirmation email. Please click the link in the email to activate your account.",
+  ja: "確認メールを送信しました。メール内のボタンをクリックしてアカウントを有効化してください。",
+  en: "We have sent a confirmation email. Please click the button in the email to activate your account.",
 };
 
 export const CONFIRMATION_EMAIL_SEND_FAILURE = {
