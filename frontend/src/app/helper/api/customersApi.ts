@@ -7,7 +7,12 @@ import {
 import {
   CONFIRMATION_EMAIL_SEND_FAILURE,
   CONFIRMATION_EMAIL_SENT,
+  CONFIRMATION_LINK_EXPIRED_RESEND_FAILED,
   EMAIL_ALREADY_REGISTERED_ERROR,
+  EMAIL_VERIFICATION_FAILED_MESSAGE,
+  EMAIL_VERIFICATION_SUCCESS_MESSAGE,
+  EMAIL_VERIFICATION_TOKEN_EXPIRED,
+  EMAIL_VERIFICATION_UNEXPECTED_ERROR,
   GENERAL_ERROR_MESSAGE,
 } from "../messages/formValidation";
 
@@ -176,5 +181,49 @@ export const getClasses = async (customerId: number) => {
   } catch (error) {
     console.error("Failed to fetch customer classes:", error);
     throw new Error(FAILED_TO_FETCH_CUSTOMER_CLASSES);
+  }
+};
+
+export const verifyCustomerEmail = async (
+  token: string,
+): Promise<{
+  success?: { ja: string; en: string };
+  error?: { ja: string; en: string };
+}> => {
+  const apiUrl = `${BACKEND_ORIGIN}/customers/verify-email`;
+  const headers = { "Content-Type": "application/json" };
+  const body = JSON.stringify({
+    token,
+  });
+
+  const statusErrorMessages: Record<number, { ja: string; en: string }> = {
+    400: EMAIL_VERIFICATION_FAILED_MESSAGE,
+    404: EMAIL_VERIFICATION_FAILED_MESSAGE,
+    410: EMAIL_VERIFICATION_TOKEN_EXPIRED,
+    503: CONFIRMATION_LINK_EXPIRED_RESEND_FAILED,
+  };
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "PATCH",
+      headers,
+      body,
+    });
+
+    const errorMessage = statusErrorMessages[response.status];
+    if (errorMessage) {
+      return { error: errorMessage };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return { success: EMAIL_VERIFICATION_SUCCESS_MESSAGE };
+  } catch (error) {
+    console.error("API error while verifying user email:", error);
+    return {
+      error: EMAIL_VERIFICATION_UNEXPECTED_ERROR,
+    };
   }
 };

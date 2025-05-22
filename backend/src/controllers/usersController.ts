@@ -3,21 +3,18 @@ import bcrypt from "bcrypt";
 import {
   getCustomerByEmail,
   updateCustomerPassword,
-  verifyCustomerEmail,
 } from "../services/customersService";
 import {
   getInstructorByEmail,
   updateInstructorPassword,
-  verifyInstructorEmail,
 } from "../services/instructorsService";
 import {
   deleteVerificationToken,
   generateVerificationToken,
-  getVerificationTokenByToken,
 } from "../services/verificationTokensService";
 import {
+  resendVerificationEmail,
   sendPasswordResetEmail,
-  sendVerificationEmail,
   UserType,
 } from "../helper/mail";
 import {
@@ -26,6 +23,7 @@ import {
   getPasswordResetTokenByToken,
 } from "../services/passwordResetTokensService";
 import { saltRounds } from "../helper/commonUtils";
+import { Customer } from "@prisma/client";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   if (userType === "customer") {
@@ -62,23 +60,27 @@ export const authenticateUserController = async (
       return res.sendStatus(401);
     }
 
-    // TODO: Remove the 'userType === "customer"' condition if email verification is required for instructors too.
-    if (userType === "customer" && !user.emailVerified) {
-      // Resend email to verify the registered email address
-      const verificationToken = await generateVerificationToken(email);
+    // Email verification is only required for customers.
+    if (userType === "customer") {
+      const customer = user as Customer;
 
-      const sendResult = await sendVerificationEmail(
-        verificationToken.email,
-        user.name,
-        verificationToken.token,
-        userType,
-      );
+      // Resend email to verify the registered email address if it is not verified yet.
+      if (!customer.emailVerified) {
+        const verificationToken = await generateVerificationToken(email);
 
-      if (!sendResult.success) {
-        await deleteVerificationToken(email);
-        return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
+        const resendResult = await resendVerificationEmail(
+          verificationToken.email,
+          user.name,
+          verificationToken.token,
+        );
+
+        if (!resendResult.success) {
+          await deleteVerificationToken(email);
+          return res.sendStatus(503); // Failed to resend verification email. 503 Service Unavailable
+        }
+
+        return res.sendStatus(403); // Email is not verified yet. 403 Forbidden
       }
-      return res.sendStatus(403); // Email is not verified yet. 403 Forbidden
     }
 
     res.status(200).json({ id: user.id });
@@ -87,61 +89,6 @@ export const authenticateUserController = async (
       error,
       context: {
         email: normalizedEmail,
-        time: new Date().toISOString(),
-      },
-    });
-    res.sendStatus(500);
-  }
-};
-
-export const verifyUserEmailController = async (
-  req: Request,
-  res: Response,
-) => {
-  const { token, userType } = req.body;
-
-  if (!token || !userType) {
-    return res.sendStatus(400);
-  }
-
-  try {
-    const existingToken = await getVerificationTokenByToken(token);
-
-    if (!existingToken) {
-      return res.sendStatus(404);
-    }
-
-    const existingUser = await getUserByEmail(userType, existingToken.email);
-
-    if (!existingUser) {
-      return res.sendStatus(404);
-    }
-
-    // This is for cases where a user who has already been verified clicks the email link again.
-    if (existingUser.emailVerified) {
-      return res.sendStatus(200);
-    }
-
-    const isTokenExpired = new Date(existingToken.expires) < new Date();
-
-    if (isTokenExpired) {
-      return res.sendStatus(410); // 410 Gone
-    }
-
-    if (userType === "customer") {
-      await verifyCustomerEmail(existingUser.id, existingToken.email);
-      // TODO: Remove this section if we decide not to require email verification for instructors
-    } else if (userType === "instructor") {
-      await verifyInstructorEmail(existingUser.id, existingToken.email);
-    }
-
-    return res.sendStatus(200);
-  } catch (error) {
-    console.error("Error verifying user email", {
-      error,
-      context: {
-        token,
-        userType,
         time: new Date().toISOString(),
       },
     });

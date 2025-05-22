@@ -5,6 +5,7 @@ import {
   getCustomerById,
   registerCustomer,
   updateCustomer,
+  verifyCustomerEmail,
 } from "../services/customersService";
 import {
   getSubscriptionsById,
@@ -21,8 +22,9 @@ import {
 import {
   deleteVerificationToken,
   generateVerificationToken,
+  getVerificationTokenByToken,
 } from "../services/verificationTokensService";
-import { sendVerificationEmail } from "../helper/mail";
+import { resendVerificationEmail, sendVerificationEmail } from "../helper/mail";
 import { prisma } from "../../prisma/prismaClient";
 
 export const registerCustomerController = async (
@@ -64,7 +66,6 @@ export const registerCustomerController = async (
       verificationToken.email,
       name,
       verificationToken.token,
-      "customer",
     );
 
     if (!sendResult.success) {
@@ -238,6 +239,70 @@ export const getClassesController = async (
       `Error while getting customer classes (customer ID: ${customerId}):`,
       error,
     );
+    res.sendStatus(500);
+  }
+};
+
+export const verifyCustomerEmailController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const existingToken = await getVerificationTokenByToken(token);
+
+    if (!existingToken) {
+      return res.sendStatus(404);
+    }
+
+    const existingCustomer = await getCustomerByEmail(existingToken.email);
+
+    if (!existingCustomer) {
+      return res.sendStatus(404);
+    }
+
+    // This is for cases where a customer who has already been verified clicks the email link again.
+    if (existingCustomer.emailVerified) {
+      return res.sendStatus(200);
+    }
+
+    const isTokenExpired = new Date(existingToken.expires) < new Date();
+
+    if (isTokenExpired) {
+      const verificationToken = await generateVerificationToken(
+        existingToken.email,
+      );
+
+      const resendResult = await resendVerificationEmail(
+        verificationToken.email,
+        existingCustomer.name,
+        verificationToken.token,
+      );
+
+      if (!resendResult.success) {
+        await deleteVerificationToken(verificationToken.email);
+        return res.sendStatus(503); // Failed to resend verification email. 503 Service Unavailable
+      }
+
+      return res.sendStatus(410); // 410 Gone
+    }
+
+    await verifyCustomerEmail(existingCustomer.id, existingToken.email);
+
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error("Error verifying customer email", {
+      error,
+      context: {
+        token,
+        time: new Date().toISOString(),
+      },
+    });
     res.sendStatus(500);
   }
 };
