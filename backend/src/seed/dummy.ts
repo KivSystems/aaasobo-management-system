@@ -7,7 +7,6 @@ async function insertInstructors() {
   await prisma.instructor.create({
     data: {
       email: "helen@example.com",
-      emailVerified: "2025-03-08T14:31:26.816Z",
       name: "Helene Gay Santos",
       nickname: "Helen",
       icon: "helen-1.jpg",
@@ -23,7 +22,6 @@ async function insertInstructors() {
   await prisma.instructor.create({
     data: {
       email: "elian@example.com",
-      emailVerified: "2025-03-08T14:31:26.816Z",
       name: "Elian P.Quilisadio",
       nickname: "Elian",
       icon: "elian-1.jpg",
