@@ -22,10 +22,34 @@ export const registerAdmin = async (data: {
   return;
 };
 
+// Update the selected admin
+export const updateAdmin = async (id: number, name: string, email: string) => {
+  try {
+    // Update the admin data.
+    const admin = await prisma.admins.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        email,
+      },
+    });
+    return admin;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to update the admin data.");
+  }
+};
+
 // Fetch all admins information
 export const getAllAdmins = async () => {
   try {
-    return await prisma.admins.findMany();
+    return await prisma.admins.findMany({
+      orderBy: {
+        id: "asc",
+      },
+    });
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch admins.");

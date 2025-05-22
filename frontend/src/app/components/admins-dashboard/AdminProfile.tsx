@@ -3,7 +3,8 @@
 import styles from "./AdminProfile.module.scss";
 import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
-import { updateUser } from "@/app/actions/updateUser";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
+import { updateAdminAction } from "@/app/actions/updateUser";
 import InputField from "../elements/inputField/InputField";
 import ActionButton from "../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
@@ -19,7 +20,9 @@ function AdminProfile({
   admin: Admin | string;
   isAdminAuthenticated?: boolean;
 }) {
-  const [updateResultState, formAction] = useFormState(updateUser, {});
+  const [updateResultState, formAction] = useFormState(updateAdminAction, {});
+  const { localMessages, clearErrorMessage } =
+    useFormMessages(updateResultState);
   const [previousAdmin, setPreviousAdmin] = useState<Admin | null>(
     typeof admin !== "string" ? admin : null,
   );
@@ -38,6 +41,7 @@ function AdminProfile({
   ) => {
     if (latestAdmin) {
       setLatestAdmin({ ...latestAdmin, [field]: e.target.value });
+      clearErrorMessage(field);
     }
   };
 
@@ -45,6 +49,7 @@ function AdminProfile({
     if (latestAdmin) {
       setLatestAdmin(previousAdmin);
       setIsEditing(false);
+      clearErrorMessage("email");
     }
   };
 
@@ -97,6 +102,7 @@ function AdminProfile({
                     name="email"
                     type="email"
                     value={latestAdmin.email}
+                    error={localMessages.email}
                     onChange={(e) => handleInputChange(e, "email")}
                     className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />

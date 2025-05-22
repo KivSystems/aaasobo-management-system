@@ -3,6 +3,7 @@ import {
   GENERAL_ERROR_MESSAGE,
   ADMIN_REGISTRATION_SUCCESS_MESSAGE,
 } from "../messages/formValidation";
+import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -153,6 +154,46 @@ export const registerAdmin = async (userData: {
     return {
       successMessage: ADMIN_REGISTRATION_SUCCESS_MESSAGE,
     };
+  } catch (error) {
+    console.error("API error while registering admin:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+// PATCH admin data
+export const updateAdmin = async (
+  adminId: number,
+  adminName: string,
+  adminEmail: string,
+): Promise<UpdateFormState> => {
+  try {
+    // Define the data to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/${adminId}`;
+    const headers = { "Content-Type": "application/json" };
+    const body = JSON.stringify({
+      name: adminName,
+      email: adminEmail,
+    });
+
+    const response = await fetch(apiURL, {
+      method: "PATCH",
+      headers,
+      body,
+    });
+
+    if (response.status === 409) {
+      return { email: EMAIL_ALREADY_REGISTERED_ERROR };
+    }
+
+    const data = await response.json();
+
+    if (response.status !== 200) {
+      return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
+    }
+
+    return data;
   } catch (error) {
     console.error("API error while registering admin:", error);
     return {

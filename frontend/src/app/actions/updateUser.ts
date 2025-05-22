@@ -1,11 +1,56 @@
 "use server";
 
+import { updateAdmin } from "@/app/helper/api/adminsApi";
 import { updateInstructor } from "@/app/helper/api/instructorsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractUpdateValidationErrors } from "../helper/utils/validationErrorUtils";
-import { userUpdateSchema } from "../schemas/authSchema";
+import {
+  adminUpdateSchema,
+  instructorUpdateSchema,
+} from "../schemas/authSchema";
+import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
 
-export async function updateUser(
+export async function updateAdminAction(
+  prevState: UpdateFormState | undefined,
+  formData: FormData,
+): Promise<UpdateFormState> {
+  try {
+    const name = formData.get("name");
+    const email = formData.get("email");
+    // Hidden input tag fields
+    const userType = formData.get("userType");
+    const id = Number(formData.get("id"));
+
+    const parsedForm = adminUpdateSchema.safeParse({
+      name,
+      email,
+      userType,
+    });
+
+    if (!parsedForm.success) {
+      const validationErrors = parsedForm.error.errors;
+      return extractUpdateValidationErrors(validationErrors);
+    }
+
+    const response = await updateAdmin(
+      id,
+      parsedForm.data.name,
+      parsedForm.data.email,
+    );
+
+    // Refresh cached admin data for the admin list page
+    revalidateAdminList();
+
+    return response;
+  } catch (error) {
+    console.error("Unexpected error in updateUser server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+}
+
+export async function updateInstructorAction(
   prevState: UpdateFormState | undefined,
   formData: FormData,
 ): Promise<UpdateFormState> {
@@ -22,7 +67,7 @@ export async function updateUser(
     const id = Number(formData.get("id"));
     const icon = String(formData.get("icon"));
 
-    const parsedForm = userUpdateSchema.safeParse({
+    const parsedForm = instructorUpdateSchema.safeParse({
       name,
       nickname,
       email,
@@ -38,8 +83,6 @@ export async function updateUser(
       return extractUpdateValidationErrors(validationErrors);
     }
 
-    // TODO: If this component handles different user types,
-    // the appropriate API function must be called for each based on the userType.
     const response = await updateInstructor(
       id,
       parsedForm.data.name,
@@ -51,6 +94,9 @@ export async function updateUser(
       parsedForm.data.passcode,
       parsedForm.data.introductionURL,
     );
+
+    // Refresh cached instructor data for the instructor list page
+    revalidateInstructorList();
 
     return response;
   } catch (error) {

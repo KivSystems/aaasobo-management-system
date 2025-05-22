@@ -100,8 +100,7 @@ export const adminRegisterSchema = z
     path: ["password"],
   });
 
-// TODO: Need to separate the instructor and customer update schemas
-export const userUpdateSchema = z.object({
+export const instructorUpdateSchema = z.object({
   name: z.string().min(1, "Name is required."),
   nickname: z.string().min(1, "Nickname is required."),
   email: z
@@ -123,6 +122,17 @@ export const userUpdateSchema = z.object({
   // .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
   //   message: "URL must start with http:// or https://",
   // }),
+  userType: z.enum(["admin", "customer", "instructor"], {
+    message: "Invalid user type.",
+  }),
+});
+
+export const adminUpdateSchema = z.object({
+  name: z.string().min(1, "Name is required."),
+  email: z
+    .string()
+    .email("Please enter a valid email address.")
+    .min(1, "Email is required."),
   userType: z.enum(["admin", "customer", "instructor"], {
     message: "Invalid user type.",
   }),
