@@ -87,8 +87,10 @@ model Class {
   classAttendance  ClassAttendance[]
   subscriptionId   Int
   subscription     Subscription      @relation(fields: [subscriptionId], references: [id])
-  isRebookable     Boolean           @default(true)
   rebookableUntil  DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  classCode        String
 }
 
 enum Status {
@@ -97,6 +99,7 @@ enum Status {
   canceledByCustomer
   canceledByInstructor
   pending
+  rebooked
 }
 
 model Admins {
