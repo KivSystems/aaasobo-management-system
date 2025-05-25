@@ -162,9 +162,7 @@ export const getClasses = async (customerId: number) => {
   try {
     const customerClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/classes`;
     const response = await fetch(customerClassesURL, {
-      // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
       cache: "no-store",
-      next: { tags: ["customer-classes"] },
     });
 
     if (!response.ok) {

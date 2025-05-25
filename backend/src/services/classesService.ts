@@ -668,6 +668,7 @@ export const getCustomerClasses = async (customerId: number) => {
       instructorMeetingId: classItem.instructor.meetingId,
       instructorPasscode: classItem.instructor.passcode,
       classStatus: classItem.status,
+      rebookableUntil: classItem.rebookableUntil,
     };
   });
   return customerClasses;

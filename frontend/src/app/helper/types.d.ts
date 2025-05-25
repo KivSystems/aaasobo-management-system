@@ -33,6 +33,7 @@ type Availability = { dateTime: string };
 
 type ClassStatus =
   | "booked"
+  | "rebooked"
   | "completed"
   | "canceledByCustomer"
   | "canceledByInstructor"
@@ -90,6 +91,7 @@ type CustomerClass = {
   instructorMeetingId: string;
   instructorPasscode: string;
   classStatus: ClassStatus;
+  rebookableUntil: string;
 };
 
 type Child = {

@@ -1,0 +1,39 @@
+@import "../../../../variables.module.scss";
+
+.classStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 1rem 0;
+
+  &__icon {
+    height: 2rem;
+    
+    &.booked {
+      color: $green-success;
+    }
+    &.completed {
+      color: $completed-background-color;
+    }
+    &.canceledByInstructor {
+      color: $gray-canceled-by-instructor;
+    }
+    &.canceledByCustomer {
+      color: $gray-background;
+    }
+  }
+
+  &__label {
+    font-size: 26px;
+    font-weight: 500;
+
+    &.ja {
+      font-weight: 600;
+    }
+
+    span {
+      font-size: 20px;
+    }
+  }
+}
+

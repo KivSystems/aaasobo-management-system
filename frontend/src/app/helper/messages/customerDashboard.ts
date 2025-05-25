@@ -60,3 +60,24 @@ export const CHILD_PROFILE_REQUIRED_MESSAGE = {
   ja: "お子様のプロフィールが未登録のため、振替予約を行うことができません。サイドメニューの「お子様プロフィール」からプロフィールを登録のうえ、再度振替予約を行ってください。",
   en: "You cannot rebook a class because your child's profile has not been registered. Please go to 'Child Profile' in the side menu to register the profile, then try rebooking again.",
 };
+
+// ClassDetail/ClassNotification
+export const NO_CLASS_DETAILS = {
+  ja: "クラス情報が取得できませんでした。",
+  en: "No class details available",
+};
+
+export const SAME_DAY_CANCELATION_NOTICE = {
+  ja: "当日（日本時間基準）のキャンセルは、振替の対象外となります。ご理解のほどよろしくお願いいたします。",
+  en: "Same-day cancellations (based on Japan time) are not eligible for rebooking. Thank you for your understanding.",
+};
+
+export const CANCELED_BY_INSTRUCTOR_NOTICE = {
+  ja: "インストラクターの都合でキャンセルとなったクラスは、振替可能クラスとしてカウントされ、180日間有効です。",
+  en: "Classes canceled by the instructor count toward your rebookable class total and are valid for 180 days.",
+};
+
+export const CANCELED_BY_CUSTOMER_NOTICE = {
+  ja: "前日まで（日本時間基準）にキャンセルされたクラスは、180日間振替可能です。複数回のキャンセルは初回予約日から180日間が対象です。当日キャンセルは振替できませんのでご了承ください。",
+  en: "Cancellations made by the day before (Japan time) are rebookable within 180 days. For multiple cancellations, the period starts from the original booking. Same-day cancellations aren't rebookable.",
+};

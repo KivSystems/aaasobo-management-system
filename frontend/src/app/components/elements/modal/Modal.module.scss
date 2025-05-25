@@ -32,9 +32,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 180px;
   &:hover {
     cursor: pointer;
-    border-radius: 180px;
     background-color: rgba(black, 0.1);
   }
 }
@@ -46,5 +46,19 @@
     right: 15px;
     height: 35px;
     width: 35px;
+  }
+}
+
+.classDetail {
+  .closeButton {
+    top: 10px;
+    right: 10px;
+    height: 35px;
+    width: 35px;
+    color: white;
+    background-color: rgba(black, 0.4);
+    &:hover {
+      background-color: rgba(black, 0.7);
+    }
   }
 }

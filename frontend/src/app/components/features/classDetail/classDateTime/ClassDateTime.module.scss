@@ -1,0 +1,70 @@
+
+.dateTime {
+  display: flex;
+  margin-top: 1rem;
+
+  &__iconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__icon {
+    height: 2rem;
+    margin-right: 50px;
+  }
+
+  &__details {
+    display: flex;
+    gap: 20px;
+  }
+
+  &__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__day {
+    font-size: 35px;
+    font-weight: 500;
+  }
+
+  &__month {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  &__time {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 0 2px 0;
+  }
+
+  &__dayOfWeek {
+    font-size: 20px;
+    font-weight: 400;
+  }
+
+  &__classTime {
+    font-size: 18px;
+  }
+}
+
+// when the language is Japanese
+.dateTime {
+  &__detailsJa {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__dateJa {
+    font-size: 26px;
+    font-weight: 500;
+  }
+
+  &__classTimeJa {
+    font-size: 20px;
+  }
+}

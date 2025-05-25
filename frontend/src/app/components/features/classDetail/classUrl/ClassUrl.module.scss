@@ -1,0 +1,22 @@
+
+
+.classURL {
+  display: flex;
+  margin-top: 1.5rem;
+
+  &__iconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__icon {
+    height: 2rem;
+    margin-right: 50px;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+  }
+}
