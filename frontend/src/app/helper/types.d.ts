@@ -37,7 +37,8 @@ type ClassStatus =
   | "completed"
   | "canceledByCustomer"
   | "canceledByInstructor"
-  | "pending";
+  | "pending"
+  | "rebooked";
 
 type ClassType = {
   id: number;
@@ -59,9 +60,10 @@ type ClassType = {
   classAttendance: { children: { id: number; name: string }[] };
 
   status: ClassStatus;
-  isRebookable: boolean;
   recurringClassId: number;
   rebookableUntil: string;
+  updatedAt: string;
+  classCode: string;
 };
 
 type Admin = {
@@ -164,7 +166,6 @@ type ClassForCalendar = {
     children: Child[];
   };
   status: ClassStatus;
-  isRebookable: boolean;
 };
 
 type RecurringClassState = {
@@ -185,7 +186,6 @@ type InstructorClassDetail = {
   attendingChildren: Child[];
   customerChildren: Child[];
   status: ClassStatus;
-  isRebookable: boolean;
 };
 
 type Tab = {
@@ -313,6 +313,7 @@ type InstructorCalendarClientProps = {
 type RebookableClass = {
   id: number;
   rebookableUntil: Date;
+  classCode: string;
 };
 
 type RebookingModalControllerProps = {

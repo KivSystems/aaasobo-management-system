@@ -63,11 +63,11 @@ function BookClass({
 
           return (
             (eachClass.status === "canceledByCustomer" &&
-              eachClass.isRebookable) ||
+              eachClass.rebookableUntil) ||
             (eachClass.status === "canceledByInstructor" &&
-              eachClass.isRebookable &&
+              eachClass.rebookableUntil &&
               now <= fiveMonthsLaterEndOfMonth) ||
-            (eachClass.status === "pending" && eachClass.isRebookable)
+            eachClass.status === "pending"
           );
         });
 

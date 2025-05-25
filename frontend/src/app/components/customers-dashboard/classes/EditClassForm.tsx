@@ -76,6 +76,7 @@ function EditClassForm({
         dateTime: selectedDateTime,
         instructorId: selectedInstructorId,
         childrenIds: selectedChildrenIdsArray,
+        updateAt: new Date(),
       });
 
       if (isAdminAuthenticated) {

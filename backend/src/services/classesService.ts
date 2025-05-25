@@ -71,6 +71,8 @@ export const createClass = async (
     subscriptionId: number;
     recurringClassId: number;
     rebookableUntil: string;
+    updatedAt: Date;
+    classCode: string;
   },
   childrenIds: number[],
 ) => {
@@ -175,8 +177,8 @@ export const updateClass = async (
     instructorId?: number;
     childrenIds?: number[];
     status?: Status;
-    isRebookable?: boolean;
     rebookableUntil?: string | null;
+    updatedAt?: Date;
   },
 ) => {
   const { childrenIds, ...fieldsToUpdate } = classData;
@@ -253,17 +255,21 @@ export const cancelClassById = async (
     await prisma.classAttendance.deleteMany({
       where: { classId },
     });
-    // If classes are canceled before the class dates (!isPastPrevDayDeadline), they can be rescheduled (isRebookable: true).
-    // Otherwise (isPastPrevDayDeadline), not (isRebookable: false)
+    // If classes are canceled before the class dates (!isPastPrevDayDeadline), they are still rebookable.
+    // Otherwise (isPastPrevDayDeadline), not (rebookableUntil: null)
     if (!isPastPrevDayDeadline) {
       await prisma.class.update({
         where: { id: classId },
-        data: { status: "canceledByCustomer" },
+        data: { status: "canceledByCustomer", updatedAt: new Date() },
       });
     } else {
       await prisma.class.update({
         where: { id: classId },
-        data: { status: "canceledByCustomer", isRebookable: false },
+        data: {
+          status: "canceledByCustomer",
+          rebookableUntil: null,
+          updatedAt: new Date(),
+        },
       });
     }
   });
@@ -304,7 +310,7 @@ export const createClassesUsingRecurringClassId = async (
 ) => {
   try {
     const createdClasses = await tx.class.createManyAndReturn({
-      data: dateTimes.map((dateTime) => {
+      data: dateTimes.map((dateTime, index) => {
         return {
           recurringClassId,
           instructorId,
@@ -312,6 +318,8 @@ export const createClassesUsingRecurringClassId = async (
           subscriptionId,
           status: "booked",
           dateTime,
+          updatedAt: new Date(),
+          classCode: `${recurringClassId}-${index}`,
         };
       }),
     });
@@ -477,6 +485,7 @@ export const getRebookableClasses = async (customerId: number) => {
   return classes.map((classItem) => ({
     id: classItem.id,
     rebookableUntil: classItem.rebookableUntil,
+    classCode: classItem.classCode,
   }));
 };
 
@@ -533,7 +542,7 @@ export const cancelClasses = async (classIds: number[]) => {
 
     await tx.class.updateMany({
       where: { id: { in: classIds } },
-      data: { status: "canceledByCustomer" },
+      data: { status: "canceledByCustomer", updatedAt: new Date() },
     });
 
     return true;
@@ -578,14 +587,16 @@ export const createCanceledClasses = async ({
 }) => {
   try {
     const createdClasses = await tx.class.createManyAndReturn({
-      data: dateTimes.map((dateTime) => ({
+      data: dateTimes.map((dateTime, index) => ({
         instructorId,
         customerId,
         recurringClassId,
         subscriptionId,
         dateTime,
         status: "pending", // NOTE: the status has been changed from "canceledByInstructor" to "pending"
-        rebookableUntil: nHoursLater(180 * 24, dateTime), // 180 days (* 24 hours) after the class dateTime,
+        rebookableUntil: nHoursLater(180 * 24, dateTime), // 180 days (* 24 hours) after the class dateTime
+        updatedAt: new Date(),
+        classCode: `${recurringClassId}-f-${index}`, // "f" = failed booking
       })),
     });
     // Add the Class Attendance to the ClassAttendance Table based on the Class ID.
@@ -722,4 +733,12 @@ export const getCalendarClasses = async (instructorId: number) => {
     };
   });
   return instructorCalendarClasses;
+};
+
+export const getClassStatus = async (classId: number) => {
+  const classData = await prisma.class.findUnique({
+    where: { id: classId },
+  });
+
+  return classData?.status;
 };
