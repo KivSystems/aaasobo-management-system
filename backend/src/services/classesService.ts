@@ -72,7 +72,7 @@ export const createClass = async (
     recurringClassId: number;
     rebookableUntil: string;
     updatedAt: Date;
-    classCode: "string";
+    classCode: string;
   },
   childrenIds: number[],
 ) => {
