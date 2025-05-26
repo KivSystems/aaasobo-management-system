@@ -91,6 +91,13 @@
   border-radius: 50%;
   border: 1.5px solid #7f8c6b;
   margin-right: 5px;
+  
+  &.booked {
+    border: 1.5px solid #415a77;
+  }
+  &.rebooked {
+    border: 1.5px solid #2c6e01;
+  }
 }
 
 .classStatusIcon {
@@ -114,6 +121,9 @@
   display: flex;
   align-items: center;
   &.booked {
+    color: #415a77;
+  }
+  &.rebooked {
     color: #2c6e01;
   }
   &.completed {
@@ -124,6 +134,7 @@
     text-decoration: line-through;
   }
 }
+
 
 // -- Holiday cells ---------------------------
 .holidayCell {

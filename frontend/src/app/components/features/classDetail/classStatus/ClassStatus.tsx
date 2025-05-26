@@ -15,7 +15,11 @@ const ClassStatus = ({
   const languageClass = language === "ja" ? styles.ja : styles.en;
 
   const renderIcon = () => {
-    if (status === "booked" || status === "completed") {
+    if (
+      status === "booked" ||
+      status === "rebooked" ||
+      status === "completed"
+    ) {
       return (
         <CheckCircleIcon
           className={`${styles.classStatus__icon} ${styles[status]}`}

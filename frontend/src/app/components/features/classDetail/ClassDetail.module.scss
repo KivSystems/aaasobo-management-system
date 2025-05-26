@@ -5,6 +5,9 @@
   width: 470px;
 
   &.booked {
+    border-top: 17px solid $blue_primary;
+  }
+  &.rebooked {
     border-top: 17px solid $green-success;
   }
   &.completed {

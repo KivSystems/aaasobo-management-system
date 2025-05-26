@@ -657,10 +657,12 @@ export const getCustomerClasses = async (customerId: number) => {
 
     const color =
       classItem.status === "booked"
-        ? "#E7FBD9"
-        : classItem.status === "completed"
-          ? "#B5C4AB"
-          : "#FFEBE0";
+        ? "#e8f1fb"
+        : classItem.status === "rebooked"
+          ? "#E7FBD9"
+          : classItem.status === "completed"
+            ? "#B5C4AB"
+            : "#FFEBE0";
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)
@@ -680,6 +682,8 @@ export const getCustomerClasses = async (customerId: number) => {
       instructorPasscode: classItem.instructor.passcode,
       classStatus: classItem.status,
       rebookableUntil: classItem.rebookableUntil,
+      classCode: classItem.classCode,
+      updatedAt: classItem.updatedAt,
     };
   });
   return customerClasses;

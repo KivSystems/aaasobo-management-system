@@ -10,6 +10,9 @@
     height: 2rem;
     
     &.booked {
+      color: $blue-primary;
+    }
+    &.rebooked {
       color: $green-success;
     }
     &.completed {

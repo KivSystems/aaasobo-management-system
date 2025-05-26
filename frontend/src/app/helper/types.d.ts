@@ -94,6 +94,8 @@ type CustomerClass = {
   instructorPasscode: string;
   classStatus: ClassStatus;
   rebookableUntil: string;
+  classCode: string;
+  updatedAt: string;
 };
 
 type Child = {
