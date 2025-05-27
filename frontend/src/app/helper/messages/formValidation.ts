@@ -50,9 +50,6 @@ export const EMAIL_VERIFICATION_RESENT_NOTICE = {
 };
 
 // EmailVerificationForm
-export const EMAIL_VERIFICATION_TOKEN_NOT_FOUND =
-  "We couldn't verify your request. Please click the confirmation button in the email again. / 認証リクエストを確認できませんでした。もう一度メール内の認証ボタンをクリックしてください。";
-
 export const EMAIL_VERIFICATION_SUCCESS_MESSAGE = {
   ja: "メールアドレスが認証されました。ログインページからログインしてください。",
   en: "Your email address has been verified. Please log in from the login page.",

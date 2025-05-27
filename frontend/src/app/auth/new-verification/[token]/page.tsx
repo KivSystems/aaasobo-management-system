@@ -3,7 +3,6 @@ import styles from "./page.module.scss";
 import Image from "next/image";
 import { Suspense } from "react";
 import Loading from "@/app/components/elements/loading/Loading";
-import { EMAIL_VERIFICATION_TOKEN_NOT_FOUND } from "@/app/helper/messages/formValidation";
 import { verifyCustomerEmail } from "@/app/helper/api/customersApi";
 
 export default async function EmailVerificationPage({
@@ -12,11 +11,6 @@ export default async function EmailVerificationPage({
   params: { token: string };
 }) {
   const token = params.token;
-
-  if (!token) {
-    console.error("Email verification token not found.");
-    throw new Error(EMAIL_VERIFICATION_TOKEN_NOT_FOUND);
-  }
 
   const resultMessage = await verifyCustomerEmail(token);
 
