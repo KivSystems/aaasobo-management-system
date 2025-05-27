@@ -8,6 +8,7 @@ import {
   getCustomerByIdController,
   getClassesController,
   getRebookableClassesController,
+  verifyCustomerEmailController,
 } from "../../src/controllers/customersController";
 import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
 import {
@@ -20,6 +21,7 @@ export const customersRouter = express.Router();
 // http://localhost:4000/customers
 
 customersRouter.post("/register", registerCustomerController);
+customersRouter.patch("/verify-email", verifyCustomerEmailController);
 
 customersRouter.get("/:id/subscriptions", getSubscriptionsByIdController);
 customersRouter.get("/:id/customer", parseId, (req, res) =>
@@ -36,5 +38,6 @@ customersRouter.get("/:id/classes", parseId, (req, res) =>
 );
 
 customersRouter.patch("/:id", updateCustomerProfile);
+
 customersRouter.post("/:id/subscription", registerSubscriptionController);
 customersRouter.get("/:id/authentication", authenticateCustomerSession);
