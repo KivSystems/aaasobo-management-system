@@ -4,25 +4,34 @@ import styles from "./PasswordStrengthMeter.module.scss";
 export default function PasswordStrengthMeter({
   password,
   passwordStrength,
-  passwordFeedback,
+  language,
 }: {
   password: string;
-  passwordStrength: number;
-  passwordFeedback: string;
+  passwordStrength: number | null;
+  language?: LanguageType;
 }) {
-  const strengthLabels = ["Weak", "Good!", "Very Good!"];
+  const strengthLabels =
+    language === "ja"
+      ? ["低い", "高い", "とても高い"]
+      : ["Weak", "Good!", "Very Good!"];
   const strengthColors = ["#FF3E3E", "#A0D468", "#4CAF50"];
   const strengthBarWidths = ["20%", "60%", "100%"];
   const mappedStrength =
-    passwordStrength < 3 ? 0 : passwordStrength === 3 ? 1 : 2;
+    passwordStrength === null
+      ? 0
+      : passwordStrength < 3
+        ? 0
+        : passwordStrength === 3
+          ? 1
+          : 2;
 
   return (
     <div>
       {/* Strength Label */}
       <p className={styles.strengthLabel}>
-        Strength:{" "}
+        {language === "ja" ? "パスワードの安全性" : "Strength"}:{" "}
         <span>
-          {password ? (
+          {password && passwordStrength !== null ? (
             passwordStrength >= 3 ? (
               <CheckCircleIcon
                 className={`${styles.strengthLabel__icon} ${styles["strengthLabel__icon--check"]}`}
@@ -36,7 +45,11 @@ export default function PasswordStrengthMeter({
             ""
           )}
         </span>
-        <span>{password ? strengthLabels[mappedStrength] : ""}</span>
+        <span>
+          {password && passwordStrength !== null
+            ? strengthLabels[mappedStrength]
+            : ""}
+        </span>
       </p>
 
       {/* Strength Bar */}
@@ -44,7 +57,10 @@ export default function PasswordStrengthMeter({
         <div
           className={styles.strengthBar}
           style={{
-            width: password ? strengthBarWidths[mappedStrength] : "0",
+            width:
+              password && passwordStrength !== null
+                ? strengthBarWidths[mappedStrength]
+                : "0",
             backgroundColor: password
               ? strengthColors[mappedStrength]
               : "transparent",
@@ -52,9 +68,12 @@ export default function PasswordStrengthMeter({
         />
       </div>
 
-      {/* Password Feedback */}
       <div className={styles.passwordFeedback}>
-        {passwordFeedback ? <p>{passwordFeedback}</p> : ""}
+        {password && passwordStrength !== null && passwordStrength < 3
+          ? language === "ja"
+            ? "数字・記号・アルファベットを組み合わせると、不正アクセスを防ぎやすくなります。"
+            : "Mixing numbers, symbols, and letters improves security."
+          : ""}
       </div>
     </div>
   );

@@ -4,8 +4,10 @@ export const GENERAL_ERROR_MESSAGE_JA =
   "エラーが発生しました。しばらくしてから再度お試しください。問題が解決しない場合は、スタッフまでお問い合わせください。ご不便をおかけして申し訳ありません。";
 
 // RegisterForm
-export const EMAIL_ALREADY_REGISTERED_ERROR =
-  "This email address is already registered. Try a different one.";
+export const EMAIL_ALREADY_REGISTERED_ERROR = {
+  ja: "このメールアドレスは既に登録されています。別のアドレスをお試しください。",
+  en: "This email address is already registered. Try a different one.",
+};
 
 export const SINGLE_ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {
   return (
@@ -21,11 +23,15 @@ export const MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR = (items: string) => {
   );
 };
 
-export const CONFIRMATION_EMAIL_SENT =
-  "We have sent a confirmation email. Please click the link in the email to activate your account.";
+export const CONFIRMATION_EMAIL_SENT = {
+  ja: "確認メールを送信しました。メール内のボタンをクリックしてアカウントを有効化してください。",
+  en: "We have sent a confirmation email. Please click the button in the email to activate your account.",
+};
 
-export const CONFIRMATION_EMAIL_SEND_FAILURE =
-  "We couldn't send the confirmation email. Please check your email address and try again. If the problem persists, contact our staff. We apologize for the inconvenience.";
+export const CONFIRMATION_EMAIL_SEND_FAILURE = {
+  ja: "確認メールの送信に失敗しました。メールアドレスをご確認のうえ、再度［アカウント登録］ボタンをクリックしてみてください。問題が解決しない場合は、スタッフまでご連絡ください。ご不便をおかけして申し訳ございません。",
+  en: "We couldn't send the confirmation email. Please check your email address and try again. If the problem persists, contact our staff. We apologize for the inconvenience.",
+};
 
 export const INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE =
   "The instructor account has been created successfully.";

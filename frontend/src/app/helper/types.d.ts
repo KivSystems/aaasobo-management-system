@@ -219,6 +219,7 @@ type RegisterFormState = {
   isAgreed?: string;
   errorMessage?: string;
   successMessage?: string;
+  language?: LanguageType;
 };
 
 type ResetPasswordFormState = {
