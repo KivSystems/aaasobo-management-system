@@ -22,6 +22,7 @@ export default function CancelClassesModalController({
         onClick={() => {
           setIsCancelingModalOpen(true);
         }}
+        disabled={upcomingClasses.length === 0}
       />
       <Modal
         isOpen={isCancelingModalOpen}

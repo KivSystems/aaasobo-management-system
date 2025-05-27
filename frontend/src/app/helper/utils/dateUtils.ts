@@ -23,12 +23,12 @@ export const formatDateTime = (date: Date, locale: string = "en-US") => {
   }).format(date);
 };
 
-// Formats year and date (e.g., "Thu, January 11, 2025", "2025年1月11日(木)")
+// Formats year and date (e.g., "Thu, Jan 11, 2025", "2025年1月11日(木)")
 export const formatYearDate = (date: Date, locale: string = "en-US") => {
   return new Intl.DateTimeFormat(locale, {
     weekday: "short",
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   }).format(date);
 };
@@ -276,10 +276,7 @@ export const getShortMonth = (date: Date, locale: string = "en-US"): string => {
 };
 
 // Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
-export const formatShortDate = (
-  date: Date,
-  locale: string = Intl.DateTimeFormat().resolvedOptions().locale,
-) => {
+export const formatShortDate = (date: Date, locale: string = "en-US") => {
   const day = date.getDate();
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
@@ -306,3 +303,8 @@ export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
 
 export const hasTimePassed = (targetTime: Date | string): boolean =>
   Date.now() > new Date(targetTime).getTime();
+
+export const formatClassDetailFooter = (updatedDateTime: string) => {
+  const updatedDate = new Date(updatedDateTime);
+  return format(updatedDate, "yyyy-MM-dd-HH:mm");
+};

@@ -4,12 +4,12 @@ import {
   isPastPreviousDayDeadline,
 } from "@/app/helper/utils/dateUtils";
 import styles from "./ClassNotification.module.scss";
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import {
   CANCELED_BY_CUSTOMER_NOTICE,
   CANCELED_BY_INSTRUCTOR_NOTICE,
-  SAME_DAY_CANCELATION_NOTICE,
 } from "@/app/helper/messages/customerDashboard";
+import SameDayCancellationNotice from "../sameDayCancellationNotice/SameDayCancellationNotice";
+import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
 
 const ClassNotification = ({
   classStatus,
@@ -27,59 +27,60 @@ const ClassNotification = ({
   if (
     classStatus === "completed" ||
     ((classStatus === "booked" || classStatus === "rebooked") &&
-      hasTimePassed(classStart))
+      hasTimePassed(classEnd))
   )
     return null;
 
-  const PriorDayCancellationNotice = () => {
-    return language === "ja" ? (
-      <p>
-        キャンセルが前日まで（日本時間基準）に行われた場合、{" "}
-        <span>{formatYearDateTime(new Date(rebookableUntil), "ja-JP")}</span>
-        のクラスまで振替できます。
-      </p>
-    ) : (
-      <p>
-        If the cancellation is made by the day before (based on Japan time), you
-        can rebook up to the class on{" "}
-        <span>{formatYearDateTime(new Date(rebookableUntil))}</span>.
-      </p>
-    );
+  const isBookedOrRebooked =
+    classStatus === "booked" || classStatus === "rebooked";
+
+  const isBeforePreviousDayDeadline =
+    isBookedOrRebooked && !isPastPreviousDayDeadline(classStart);
+
+  const isSameDayButNotYetEnded =
+    isBookedOrRebooked &&
+    isPastPreviousDayDeadline(classStart) &&
+    !hasTimePassed(classEnd);
+
+  const renderNotice = (): React.ReactNode => {
+    switch (true) {
+      case isBeforePreviousDayDeadline:
+        return language === "ja" ? (
+          <p>
+            キャンセルが前日まで（日本時間基準）に行われた場合、{" "}
+            <span>
+              {formatYearDateTime(new Date(rebookableUntil), "ja-JP")}
+            </span>
+            のクラスまで振替できます。
+          </p>
+        ) : (
+          <p>
+            If the cancellation is made by the day before (based on Japan time),
+            you can rebook up to the class on{" "}
+            <span>{formatYearDateTime(new Date(rebookableUntil))}</span>.
+          </p>
+        );
+
+      case isSameDayButNotYetEnded:
+        return <SameDayCancellationNotice language={language} />;
+
+      case classStatus === "canceledByInstructor":
+        return CANCELED_BY_INSTRUCTOR_NOTICE[language];
+
+      case classStatus === "canceledByCustomer":
+        return CANCELED_BY_CUSTOMER_NOTICE[language];
+
+      default:
+        return null;
+    }
   };
 
-  const SameDayCancellationNotice = () => {
-    return <p>{SAME_DAY_CANCELATION_NOTICE[language]}</p>;
-  };
-
-  const CanceledByInstructorNotice = () => {
-    return <p>{CANCELED_BY_INSTRUCTOR_NOTICE[language]}</p>;
-  };
-
-  const CanceledByCustomerNotice = () => {
-    return <p>{CANCELED_BY_CUSTOMER_NOTICE[language]}</p>;
-  };
+  const noticeContent = renderNotice();
+  if (!noticeContent) return null;
 
   return (
     <div className={styles.notification}>
-      <div className={styles.notification__iconContainer}>
-        <InformationCircleIcon className={styles.notification__icon} />
-      </div>
-      {/* condition 1: class status: "booked" or "rebooked", current date&time: before the day of the class */}
-      {(classStatus === "booked" || classStatus === "rebooked") &&
-        !isPastPreviousDayDeadline(classStart) && (
-          <PriorDayCancellationNotice />
-        )}
-
-      {/* condition 2: class status: "booked" or "rebooked", current date&time: on the same day of the class and before the end of the class */}
-      {(classStatus === "booked" || classStatus === "rebooked") &&
-        isPastPreviousDayDeadline(classStart) &&
-        !hasTimePassed(classEnd) && <SameDayCancellationNotice />}
-
-      {/* condition 3: class status: "canceledByInstructor" */}
-      {classStatus === "canceledByInstructor" && <CanceledByInstructorNotice />}
-
-      {/* condition 4: class status: "canceledByCustomer" */}
-      {classStatus === "canceledByCustomer" && <CanceledByCustomerNotice />}
+      <InfoBanner info={noticeContent} className="classDetail" />
     </div>
   );
 };

@@ -2,34 +2,31 @@
 
 import {
   isPastPreviousDayDeadline,
-  hasTimePassed,
+  formatClassDetailFooter,
 } from "../../../helper/utils/dateUtils";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import styles from "./ClassDetail.module.scss";
 import { UsersIcon } from "@heroicons/react/24/solid";
-import { cancelClass } from "@/app/helper/api/classesApi";
-import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
 import { toast } from "react-toastify";
 import ClassStatus from "./classStatus/ClassStatus";
 import ClassDateTime from "./classDateTime/ClassDateTime";
 import ClassUrl from "./classUrl/ClassUrl";
 import ClassNotification from "./classNotification/ClassNotification";
 import ClassInstructor from "./classInstructor/ClassInstructor";
-import { NO_CLASS_DETAILS } from "@/app/helper/messages/customerDashboard";
+import {
+  CANCEL_CLASS_CONFIRM_MESSAGE,
+  CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY,
+  NO_CLASS_DETAILS,
+} from "@/app/helper/messages/customerDashboard";
+import { cancelClassAction } from "@/app/actions/cancelSelectedClasses";
 
 const ClassDetail = ({
-  customerId, // Necessary when implementing the Rescheduling functionality
+  customerId,
   classDetail,
-  isAdminAuthenticated, // Necessary when implementing the Rescheduling functionality
+  isAdminAuthenticated,
   handleModalClose,
   language,
-}: {
-  customerId: number;
-  classDetail: CustomerClass | null;
-  isAdminAuthenticated?: boolean;
-  handleModalClose: () => void;
-  language: LanguageType;
-}) => {
+}: ClassDetailProps) => {
   if (!classDetail) {
     return <div>{NO_CLASS_DETAILS[language]}</div>;
   }
@@ -39,27 +36,25 @@ const ClassDetail = ({
     classDateTime: string,
     customerId: number,
   ) => {
-    const isPastPreviousDay = isPastPreviousDayDeadline(classDateTime);
+    const isAfterPreviousDayDeadline = isPastPreviousDayDeadline(classDateTime);
 
-    if (isPastPreviousDay)
-      return alert(
-        "Classes cannot be canceled on or after the scheduled day of the class.",
-      );
-
-    const confirmed = window.confirm(
-      "Are you sure you want to cancel this class?",
-    );
+    const confirmed = window.confirm(CANCEL_CLASS_CONFIRM_MESSAGE[language]);
     if (!confirmed) return;
-    try {
-      await cancelClass(classId);
 
-      // TODO: Revalidation should be done directly from a server component or API call
-      await revalidateCustomerCalendar(customerId, isAdminAuthenticated!);
-      handleModalClose();
-      toast.success("The class has been successfully canceled!");
-    } catch (error) {
-      console.error("Failed to cancel the class:", error);
-    }
+    if (isAfterPreviousDayDeadline)
+      return alert(CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY[language]);
+
+    const cancelationResult = await cancelClassAction(
+      classId,
+      isAdminAuthenticated,
+      customerId,
+    );
+
+    if (!cancelationResult.success)
+      return alert(cancelationResult.message[language]);
+
+    handleModalClose();
+    toast.success(cancelationResult.message[language]);
   };
 
   return (
@@ -96,10 +91,10 @@ const ClassDetail = ({
       />
 
       {/* Cancel Booking button */}
-      {/* Only render if the class status is "booked" or "rebooked", and the class has not ended yet. */}
+      {/* Only render if the class is "booked" or "rebooked" and hasn't passed the previous-day deadline. */}
       {(classDetail.classStatus === "booked" ||
         classDetail.classStatus === "rebooked") &&
-        !hasTimePassed(classDetail.end) && (
+        !isPastPreviousDayDeadline(classDetail.start) && (
           <div className={styles.buttons}>
             <ActionButton
               onClick={() =>
@@ -120,6 +115,10 @@ const ClassDetail = ({
         rebookableUntil={classDetail.rebookableUntil}
         language={language}
       />
+
+      <div className={styles.footer}>
+        {formatClassDetailFooter(classDetail.updatedAt)} {classDetail.classCode}
+      </div>
     </div>
   );
 };

@@ -233,45 +233,16 @@ export async function countClassesOfSubscription(
 }
 
 // Cancel a class
-export const cancelClassById = async (
-  classId: number,
-  isPastPrevDayDeadline: boolean,
-) => {
-  const classToUpdate = await prisma.class.findUnique({
-    where: { id: classId },
-  });
-
-  if (!classToUpdate) {
-    throw new Error("Class not found");
-  }
-
-  if (classToUpdate.status !== "booked") {
-    throw new Error("Class cannot be canceled");
-  }
-
-  // Use a transaction to ensure both operations succeed or fail together
-  await prisma.$transaction(async (prisma) => {
-    // Delete class attendance records
-    await prisma.classAttendance.deleteMany({
+export const cancelClassById = async (classId: number) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.classAttendance.deleteMany({
       where: { classId },
     });
-    // If classes are canceled before the class dates (!isPastPrevDayDeadline), they are still rebookable.
-    // Otherwise (isPastPrevDayDeadline), not (rebookableUntil: null)
-    if (!isPastPrevDayDeadline) {
-      await prisma.class.update({
-        where: { id: classId },
-        data: { status: "canceledByCustomer", updatedAt: new Date() },
-      });
-    } else {
-      await prisma.class.update({
-        where: { id: classId },
-        data: {
-          status: "canceledByCustomer",
-          rebookableUntil: null,
-          updatedAt: new Date(),
-        },
-      });
-    }
+
+    await tx.class.update({
+      where: { id: classId },
+      data: { status: "canceledByCustomer", updatedAt: new Date() },
+    });
   });
 };
 
@@ -495,7 +466,9 @@ export const getUpcomingClasses = async (customerId: number) => {
   const classes = await prisma.class.findMany({
     where: {
       customerId: customerId,
-      status: "booked",
+      status: {
+        in: ["booked", "rebooked"],
+      },
       dateTime: {
         gte: nowUTC,
       },

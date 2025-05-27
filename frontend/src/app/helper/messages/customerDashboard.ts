@@ -31,14 +31,14 @@ export const SELECTED_CLASSES_CANCELLATION_SUCCESS = {
   en: "The selected class(es) have been successfully canceled.",
 };
 
-export const FAILED_TO_CANCEL_CLASSES = {
-  ja: "選択したクラスのキャンセルに失敗しました。後ほど、もう一度お試しください。",
-  en: "Failed to cancel the selected classes. Please try again later.",
+export const FAILED_TO_CANCEL_INVALID_CLASSES = {
+  ja: "無効なクラスIDが含まれていたため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
-export const TODAYS_CLASS_CANCELLATION_NOTICE = {
-  ja: "当日のクラスをキャンセルする場合は、LINEでスタッフにご連絡ください。この場合、振替クラスはご利用いただけませんのでご注意ください。なお、日本時間を基準としております。",
-  en: "If you need to cancel the class on the scheduled day, please contact our staff via LINE. Please note that make-up classes will not be available in this case. Note that Japan Standard Time is used as the reference.",
+export const FAILED_TO_CANCEL_CLASSES = {
+  ja: "選択したクラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "Failed to cancel the selected classes. Please try again after a short while. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
 export const NO_CANCELABLE_CLASSES_MESSAGE = {
@@ -61,15 +61,35 @@ export const CHILD_PROFILE_REQUIRED_MESSAGE = {
   en: "You cannot rebook a class because your child's profile has not been registered. Please go to 'Child Profile' in the side menu to register the profile, then try rebooking again.",
 };
 
-// ClassDetail/ClassNotification
+// ClassDetail Modal
 export const NO_CLASS_DETAILS = {
   ja: "クラス情報が取得できませんでした。",
   en: "No class details available",
 };
 
-export const SAME_DAY_CANCELATION_NOTICE = {
-  ja: "当日（日本時間基準）のキャンセルは、振替の対象外となります。ご理解のほどよろしくお願いいたします。",
-  en: "Same-day cancellations (based on Japan time) are not eligible for rebooking. Thank you for your understanding.",
+export const CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY = {
+  ja: "クラス当日以降のキャンセルは承っておりません。当日キャンセルをご希望の方は、contact@aaasobo.org までご連絡ください。",
+  en: "Same-day or later cancellations aren’t available. Please contact contact@aaasobo.org if needed.",
+};
+
+export const CANCEL_CLASS_CONFIRM_MESSAGE = {
+  ja: "このクラスをキャンセルしてもよろしいですか？",
+  en: "Are you sure you want to cancel this class?",
+};
+
+export const CLASS_CANCELLATION_SUCCESS = {
+  ja: "クラスのキャンセルが完了しました。",
+  en: "The class has been successfully canceled.",
+};
+
+export const FAILED_TO_CANCEL_INVALID_CLASS = {
+  ja: "クラスIDが無効だったため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const FAILED_TO_CANCEL_CLASS = {
+  ja: "クラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "Failed to cancel the class. Please try again after a short while. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
 export const CANCELED_BY_INSTRUCTOR_NOTICE = {

@@ -333,3 +333,11 @@ type RebookingModalProps = {
 type RebookableClassListProps = RebookingModalProps & {
   language: LanguageType;
 };
+
+type ClassDetailProps = {
+  customerId: number;
+  classDetail: CustomerClass | null;
+  isAdminAuthenticated?: boolean;
+  handleModalClose: () => void;
+  language: LanguageType;
+};
