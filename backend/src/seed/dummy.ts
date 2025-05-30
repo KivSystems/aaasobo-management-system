@@ -274,7 +274,8 @@ async function insertCustomers() {
         password:
           "$2b$12$qbcPqqpR3nKgtCgrusCbQOfMqJJHiMlBSkeClYEeWkKM6Fc6xahD2", // AaasoBo!Hana
         prefecture: "Hokkaido",
-        emailVerified: "2025-04-11T01:26:02.736Z",
+        // emailVerified: "2025-04-11T01:26:02.736Z",
+        emailVerified: null,
         createdAt: "2025-04-01T00:00:00.000Z",
       },
     ],
