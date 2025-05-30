@@ -164,19 +164,6 @@ export const updatePasswordController = async (req: Request, res: Response) => {
     const isTokenExpired = new Date(existingToken.expires) < new Date();
 
     if (isTokenExpired) {
-      const passwordResetToken = await generatePasswordResetToken(user.email);
-
-      const sendResult = await sendPasswordResetEmail(
-        passwordResetToken.email,
-        user.name,
-        passwordResetToken.token,
-        userType,
-      );
-
-      if (!sendResult.success) {
-        await deletePasswordResetToken(passwordResetToken.email);
-        return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
-      }
       return res.sendStatus(410); // Token is expired. 410 Gone
     }
 

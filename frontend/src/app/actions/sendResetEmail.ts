@@ -1,19 +1,29 @@
 "use server";
 
 import { sendUserResetEmail } from "../helper/api/usersApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
+import {
+  GENERAL_ERROR_MESSAGE,
+  UNEXPECTED_ERROR_MESSAGE,
+} from "../helper/messages/formValidation";
 import { extractResetRequestValidationErrors } from "../helper/utils/validationErrorUtils";
-import { forgotPasswordFormSchema } from "../schemas/authSchema";
+import {
+  forgotPasswordFormSchema,
+  forgotPasswordFormSchemaJa,
+} from "../schemas/authSchema";
 
 export async function sendResetEmail(
   prevState: ForgotPasswordFormState | undefined,
   formData: FormData,
 ): Promise<ForgotPasswordFormState> {
-  try {
-    const email = formData.get("email");
-    const userType = formData.get("userType");
+  const email = formData.get("email");
+  const userType = formData.get("userType");
+  const language = formData.get("language") as LanguageType;
 
-    const parsedForm = forgotPasswordFormSchema.safeParse({
+  try {
+    const schema =
+      language === "ja" ? forgotPasswordFormSchemaJa : forgotPasswordFormSchema;
+
+    const parsedForm = schema.safeParse({
       email,
       userType,
     });
@@ -26,13 +36,14 @@ export async function sendResetEmail(
     const response = await sendUserResetEmail(
       parsedForm.data.email,
       parsedForm.data.userType,
+      language,
     );
 
     return response;
   } catch (error) {
     console.error("Unexpected error in sendResetEmail server action:", error);
     return {
-      errorMessage: GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language],
     };
   }
 }

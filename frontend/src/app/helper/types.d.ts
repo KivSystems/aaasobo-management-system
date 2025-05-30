@@ -223,9 +223,9 @@ type RegisterFormState = {
 };
 
 type ResetPasswordFormState = {
-  unexpectedErrorMessage?: string;
+  errorMessageWithResetLink?: string;
   password?: string;
-  passwordConfirmation?: string;
+  passConfirmation?: string;
   errorMessage?: string;
   successMessage?: string;
 };

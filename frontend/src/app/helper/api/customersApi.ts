@@ -13,8 +13,7 @@ import {
   EMAIL_VERIFICATION_SUCCESS_MESSAGE,
   EMAIL_VERIFICATION_TOKEN_EXPIRED,
   EMAIL_VERIFICATION_UNEXPECTED_ERROR,
-  GENERAL_ERROR_MESSAGE,
-  GENERAL_ERROR_MESSAGE_JA,
+  UNEXPECTED_ERROR_MESSAGE,
 } from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
@@ -120,8 +119,7 @@ export const registerCustomer = async (
   } catch (error) {
     console.error("API error while registering customer:", error);
     return {
-      errorMessage:
-        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language],
     };
   }
 };

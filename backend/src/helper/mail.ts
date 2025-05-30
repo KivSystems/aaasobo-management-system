@@ -75,7 +75,7 @@ export const sendVerificationEmail = async (
         </p>
         <p style="font-size: 14px;">
           KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-          kidsinternationalvillage@gmail.com
+          contact@aaasobo.org
         </p>
       </div>
     `,
@@ -174,7 +174,7 @@ export const resendVerificationEmail = async (
         </p>
         <p style="font-size: 14px;">
           KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-          kidsinternationalvillage@gmail.com
+          contact@aaasobo.org
         </p>
       </div>
     `,
@@ -221,22 +221,26 @@ export const sendPasswordResetEmail = async (
       from: "onboarding@resend.dev", // Resend-provided email
       to: email,
       subject:
-        "【KIVこどもオンライン英会話AaasoBo!】パスワード再発行のお知らせ / Password Reset Notification",
+        "【KIVこどもオンライン英会話AaasoBo!】パスワード再設定のお知らせ / Password Reset Notification",
       html: `
     <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
       <p>${name} 様</p>
 
       <p>
-        以下のボタンをクリックして、パスワードのリセットを行ってください。
+        下のボタンをクリックして、パスワードの再設定を行ってください。
+      </p>
+
+      <p style="font-size: 14px; color: #555;">
+        ※このリンクは一定時間で無効になりますので、お早めにご対応ください。
       </p>
 
       <p>
         <a href="${resetLink}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-          パスワードをリセットする
+          パスワードを再設定
         </a>
       </p>
 
-      <p style="font-size: 12px; color: #555;">
+      <p style="font-size: 14px; color: #555;">
         ※このメールにお心当たりがない場合は、お手数ですが破棄してください。
       </p>
 
@@ -250,13 +254,17 @@ export const sendPasswordResetEmail = async (
         Please click the button below to reset your password.
       </p>
 
+      <p style="font-size: 14px; color: #555;">
+        Note: This link will expire after a certain period. Please complete the process promptly.
+      </p>
+
       <p>
         <a href="${resetLink}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
           Reset password
         </a>
       </p>
 
-      <p style="font-size: 12px; color: #555;">
+      <p style="font-size: 14px; color: #555;">
         If you did not sign up for this service, please disregard this email.
       </p>
 
@@ -267,7 +275,7 @@ export const sendPasswordResetEmail = async (
       </p>
       <p style="font-size: 14px;">
         KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-        kidsinternationalvillage@gmail.com
+        contact@aaasobo.org
       </p>
     </div>
   `,

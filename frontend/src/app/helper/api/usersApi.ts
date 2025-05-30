@@ -2,16 +2,14 @@ import {
   CONFIRMATION_EMAIL_RESEND_FAILURE,
   EMAIL_NOT_REGISTERED_MESSAGE,
   EMAIL_VERIFICATION_RESENT_NOTICE,
-  GENERAL_ERROR_MESSAGE,
-  GENERAL_ERROR_MESSAGE_JA,
   LOGIN_FAILED_MESSAGE,
   PASSWORD_RESET_EMAIL_SEND_FAILURE,
   PASSWORD_RESET_EMAIL_SENT_MESSAGE,
-  PASSWORD_RESET_EXPIRED_AND_RESENT,
   PASSWORD_RESET_FAILED_MESSAGE,
-  PASSWORD_RESET_RESEND_FAILURE,
+  PASSWORD_RESET_LINK_EXPIRED,
   PASSWORD_RESET_SUCCESS_MESSAGE,
   TOKEN_OR_USER_NOT_FOUND_ERROR,
+  UNEXPECTED_ERROR_MESSAGE,
 } from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
@@ -54,8 +52,7 @@ export const authenticateUser = async (
   } catch (error) {
     console.error("API error while authenticating[logging in] user:", error);
     return {
-      errorMessage:
-        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language],
     };
   }
 };
@@ -63,6 +60,7 @@ export const authenticateUser = async (
 export const sendUserResetEmail = async (
   email: string,
   userType: UserType,
+  language: LanguageType,
 ): Promise<ForgotPasswordFormState> => {
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/send-password-reset`;
@@ -72,8 +70,8 @@ export const sendUserResetEmail = async (
       body: JSON.stringify({ email, userType }),
     });
     const statusErrorMessages: Record<number, string> = {
-      404: EMAIL_NOT_REGISTERED_MESSAGE,
-      503: PASSWORD_RESET_EMAIL_SEND_FAILURE,
+      404: EMAIL_NOT_REGISTERED_MESSAGE[language],
+      503: PASSWORD_RESET_EMAIL_SEND_FAILURE[language],
     };
 
     const errorMessage = statusErrorMessages[response.status];
@@ -86,12 +84,12 @@ export const sendUserResetEmail = async (
     }
 
     return {
-      successMessage: PASSWORD_RESET_EMAIL_SENT_MESSAGE,
+      successMessage: PASSWORD_RESET_EMAIL_SENT_MESSAGE[language],
     };
   } catch (error) {
     console.error("API error while sending password reset email:", error);
     return {
-      errorMessage: GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language],
     };
   }
 };
@@ -100,6 +98,7 @@ export const updateUserPassword = async (
   token: string,
   userType: UserType,
   password: string,
+  language: LanguageType,
 ): Promise<ResetPasswordFormState> => {
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
@@ -110,15 +109,13 @@ export const updateUserPassword = async (
     });
 
     if (response.status === 410) {
-      return { errorMessage: PASSWORD_RESET_EXPIRED_AND_RESENT };
-    }
-
-    if (response.status === 503) {
-      return { unexpectedErrorMessage: PASSWORD_RESET_RESEND_FAILURE };
+      return {
+        errorMessageWithResetLink: PASSWORD_RESET_LINK_EXPIRED[language],
+      };
     }
 
     if (response.status === 404) {
-      return { errorMessage: TOKEN_OR_USER_NOT_FOUND_ERROR };
+      return { errorMessage: TOKEN_OR_USER_NOT_FOUND_ERROR[language] };
     }
 
     if (!response.ok) {
@@ -126,12 +123,12 @@ export const updateUserPassword = async (
     }
 
     return {
-      successMessage: PASSWORD_RESET_SUCCESS_MESSAGE,
+      successMessage: PASSWORD_RESET_SUCCESS_MESSAGE[language],
     };
   } catch (error) {
     console.error("API error while updating password:", error);
     return {
-      unexpectedErrorMessage: PASSWORD_RESET_FAILED_MESSAGE,
+      errorMessageWithResetLink: PASSWORD_RESET_FAILED_MESSAGE[language],
     };
   }
 };

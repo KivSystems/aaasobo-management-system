@@ -1,10 +1,15 @@
+"use client";
+
 import styles from "./page.module.scss";
 import Image from "next/image";
 import { Suspense } from "react";
 import Loading from "@/app/components/elements/loading/Loading";
 import ResetPasswordForm from "@/app/components/features/resetPasswordForm/ResetPasswordForm";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function ResetPasswordPage() {
+  const { language } = useLanguage();
+
   return (
     <main className={styles.outsideContainer}>
       <div className={styles.container}>
@@ -16,7 +21,9 @@ export default function ResetPasswordPage() {
           className={styles.logo}
           priority={true}
         />
-        <h2>Reset Password</h2>
+        <h2>
+          {language === "ja" ? "パスワードを再設定" : "Reset Your Password"}
+        </h2>
         <Suspense
           fallback={
             <div className={styles.loaderWrapper}>
@@ -24,7 +31,7 @@ export default function ResetPasswordPage() {
             </div>
           }
         >
-          <ResetPasswordForm />
+          <ResetPasswordForm language={language} />
         </Suspense>
       </div>
     </main>

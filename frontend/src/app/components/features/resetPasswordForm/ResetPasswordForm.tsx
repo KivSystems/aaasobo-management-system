@@ -15,10 +15,14 @@ import PasswordStrengthMeter from "../../elements/passwordStrengthMeter/Password
 import { resetPassword } from "@/app/actions/resetPassword";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
-export default function ResetPasswordForm() {
+export default function ResetPasswordForm({
+  language,
+}: {
+  language: LanguageType;
+}) {
   const [password, onPasswordChange] = useInput();
   const [showPassword, setShowPassword] = useState(false);
-  const { passwordStrength, passwordFeedback } = usePasswordStrength(password);
+  const { passwordStrength } = usePasswordStrength(password);
 
   const [resultState, formAction] = useFormState(resetPassword, undefined);
 
@@ -28,15 +32,19 @@ export default function ResetPasswordForm() {
   const token = searchParams.get("token");
   const userType = searchParams.get("type") as UserType;
 
+  const isError = !!localMessages.errorMessage;
+  const isErrorWithLink = !!localMessages.errorMessageWithResetLink;
+  const isSuccess = !!localMessages.successMessage;
+
   return (
     <form action={formAction} className={styles.form}>
       <TextInput
         id="password"
-        label="New Password"
+        label={language === "ja" ? "新しいパスワード" : "New Password"}
         type="password"
         name="password"
         value={password}
-        placeholder="At least 8 characters"
+        placeholder={language === "ja" ? "8文字以上" : "At least 8 characters"}
         onChange={(event) => {
           onPasswordChange(event);
           clearErrorMessage("password");
@@ -51,20 +59,22 @@ export default function ResetPasswordForm() {
       <PasswordStrengthMeter
         password={password}
         passwordStrength={passwordStrength}
-        passwordFeedback={passwordFeedback}
+        language={language}
       />
       <TextInput
-        id="passwordConfirmation"
-        label="Password Confirmation"
+        id="passConfirmation"
         type="password"
-        name="passwordConfirmation"
-        placeholder="Re-enter your password"
+        name="passConfirmation"
+        required
+        placeholder={
+          language === "ja" ? "パスワード再入力" : "Re-enter password"
+        }
         icon={<LockClosedIcon className={styles.icon} />}
-        required={true}
-        error={localMessages.passwordConfirmation}
-        onChange={() => clearErrorMessage("passwordConfirmation")}
+        error={localMessages.passConfirmation}
+        onChange={() => clearErrorMessage("passConfirmation")}
         showPassword={showPassword}
         onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
+        language={language}
       />
 
       {/* Hidden inputs to send necessary data with form submission. */}
@@ -75,51 +85,51 @@ export default function ResetPasswordForm() {
       />
       <input type="hidden" name="userType" value={userType ?? ""} />
       <input type="hidden" name="token" value={token ?? ""} />
+      <input type="hidden" name="language" value={language ?? "en"} />
 
       <div className={styles.buttonWrapper}>
-        <ActionButton btnText="Submit" className="bookBtn" type="submit" />
+        <ActionButton
+          btnText={language === "ja" ? "送 信" : "Submit"}
+          className="submitBtn"
+          type="submit"
+        />
       </div>
 
       <div className={styles.messageWrapper}>
-        {localMessages.unexpectedErrorMessage && (
+        {(isError || isErrorWithLink || isSuccess) && (
           <FormValidationMessage
-            type="error"
-            message={localMessages.unexpectedErrorMessage}
-          />
-        )}
-        {localMessages.errorMessage && (
-          <FormValidationMessage
-            type="error"
-            message={localMessages.errorMessage}
-          />
-        )}
-        {localMessages.successMessage && (
-          <FormValidationMessage
-            type="success"
-            message={localMessages.successMessage}
+            type={isSuccess ? "success" : "error"}
+            message={
+              isError
+                ? localMessages.errorMessage
+                : isErrorWithLink
+                  ? localMessages.errorMessageWithResetLink
+                  : localMessages.successMessage
+            }
           />
         )}
       </div>
 
-      {localMessages.unexpectedErrorMessage ? (
+      {(isErrorWithLink || isSuccess) && (
         <Link
-          className={styles.passResetLink}
+          className={styles.link}
           href={
-            userType === "customer"
-              ? "/auth/forgot-password?type=customer"
-              : "/auth/forgot-password?type=instructor"
+            isErrorWithLink
+              ? userType === "customer"
+                ? "/auth/forgot-password?type=customer"
+                : "/auth/forgot-password?type=instructor"
+              : userType === "customer"
+                ? "/customers/login"
+                : "/instructors/login"
           }
         >
-          Request password reset link
-        </Link>
-      ) : (
-        <Link
-          className={styles.loginLink}
-          href={
-            userType === "customer" ? "/customers/login" : "/instructors/login"
-          }
-        >
-          Return to login page
+          {isErrorWithLink
+            ? language === "ja"
+              ? "リンクを再発行"
+              : "Request link"
+            : language === "ja"
+              ? "ログイン"
+              : "Login"}
         </Link>
       )}
     </form>
