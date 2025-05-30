@@ -1,9 +1,9 @@
 export const GENERAL_ERROR_MESSAGE =
-  "Something went wrong. Please try again shortly. If the problem persists, contact our staff. We apologize for the inconvenience.";
+  "Something went wrong. Please try again shortly. If the issue persists, contact us at contact@aaasobo.org. We're sorry for the inconvenience.";
 
 export const UNEXPECTED_ERROR_MESSAGE = {
-  ja: "エラーが発生しました。しばらくしてから、もう一度お試しください。解決しない場合は、contact@aaasobo.orgまでご連絡ください。ご不便をおかけし、申し訳ありません。",
-  en: "Something went wrong. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org. We apologize for the inconvenience.",
+  ja: "エラーが発生しました。しばらくしてから、もう一度お試しください。問題が解決しない場合は、contact@aaasobo.org までご連絡ください。ご不便をおかけして申し訳ありません。",
+  en: "Something went wrong. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org. We're sorry for the inconvenience.",
 };
 
 // RegisterForm
@@ -32,8 +32,8 @@ export const CONFIRMATION_EMAIL_SENT = {
 };
 
 export const CONFIRMATION_EMAIL_SEND_FAILURE = {
-  ja: "確認メールの送信に失敗しました。メールアドレスをご確認のうえ、再度「アカウント登録」ボタンをクリックしてみてください。問題が解決しない場合は、スタッフまでご連絡ください。ご不便をおかけして申し訳ございません。",
-  en: "We couldn't send the confirmation email. Please check your email address and try again. If the problem persists, contact our staff. We apologize for the inconvenience.",
+  ja: "確認メールの送信に失敗しました。メールアドレスをご確認のうえ、再度「アカウント登録」ボタンをクリックしてみてください。問題が解決しない場合は、contact@aaasobo.org までご連絡ください。ご不便をおかけして申し訳ありません。",
+  en: "We couldn't send the confirmation email. Please check your email address and try again. If the issue persists, contact us at contact@aaasobo.org. We're sorry for the inconvenience.",
 };
 
 export const INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE =
@@ -54,8 +54,8 @@ export const CONFIRMATION_EMAIL_RESEND_FAILURE = {
 };
 
 export const EMAIL_VERIFICATION_RESENT_NOTICE = {
-  ja: "メールアドレスがまだ認証されていません。認証リンクをメールで再送しましたのでご確認ください。",
-  en: "Your email address is not verified yet. We have resent the verification link via email.",
+  ja: "メールアドレスがまだ認証されていません。認証リンクを再送しましたので、受信ボックスをご確認ください。",
+  en: "Your email address hasn't been verified yet. We've resent the verification link — please check your inbox.",
 };
 
 // EmailVerificationForm
@@ -70,18 +70,13 @@ export const EMAIL_VERIFICATION_FAILED_MESSAGE = {
 };
 
 export const EMAIL_VERIFICATION_TOKEN_EXPIRED = {
-  ja: "認証リンクの有効期限が切れています。新しいリンクをメールで再送しましたのでご確認ください。",
-  en: "The confirmation link has expired. A new link has been sent to your email, so please check it.",
+  ja: "認証リンクの有効期限が切れています。お手数ですが、下のリンクからログインをお試しください。ログインすると、新しい認証メールが再送されます。",
+  en: "The verification link has expired. Please try logging in using the link below to receive a new verification email.",
 };
 
 export const EMAIL_VERIFICATION_UNEXPECTED_ERROR = {
-  ja: "認証リクエストを確認できませんでした。しばらくしてから下のリンクからログインし、新しい認証メールをリクエストしてください。問題が解決しない場合は、スタッフまでお問い合わせください。ご不便をおかけして申し訳ありません。",
-  en: "We couldn't verify your request. Please try logging in using the link below to request a new confirmation link later. If the issue persists, contact our staff. We apologize for the inconvenience.",
-};
-
-export const CONFIRMATION_LINK_EXPIRED_RESEND_FAILED = {
-  ja: "認証リンクの有効期限が切れていたため再送を試みましたが、失敗しました。しばらくしてから下のリンクからログインし、新しい認証メールをリクエストしてください。問題が解決しない場合は、スタッフまでお問い合わせください。ご不便をおかけして申し訳ありません。",
-  en: "The confirmation link has expired, and resending it failed. Please try logging in using the link below to request a new one later. If the issue persists, contact our staff. We apologize for the inconvenience.",
+  ja: "認証リクエストを確認できませんでした。しばらくしてから下のリンクからログインし、新しい認証メールをリクエストしてください。問題が解決しない場合は、contact@aaasobo.org までご連絡ください。ご不便をおかけして申し訳ありません。",
+  en: "We couldn't verify your request. Please try logging in using the link below to request a new confirmation link later. If the issue persists, contact us at contact@aaasobo.org. We're sorry for the inconvenience.",
 };
 
 // ForgotPasswordForm
@@ -101,8 +96,8 @@ export const PASSWORD_RESET_EMAIL_SENT_MESSAGE = {
 };
 
 export const PASSWORD_RESET_EMAIL_SEND_FAILURE = {
-  ja: "パスワード再設定メールを送信できませんでした。後ほど再度お試しください。問題が続く場合は、contact@aaasobo.org までご連絡ください。ご迷惑をおかけして申し訳ありません。",
-  en: "We couldn't send the password reset email. Please try again later. If the issue continues, contact us at contact@aaasobo.org. Sorry for the inconvenience.",
+  ja: "パスワード再設定メールを送信できませんでした。後ほど再度お試しください。問題が解決しない場合は、contact@aaasobo.org までご連絡ください。ご不便をおかけして申し訳ありません。",
+  en: "We couldn't send the password reset email. Please try again later. If the issue persists, contact us at contact@aaasobo.org. We're sorry for the inconvenience.",
 };
 
 // ResetPasswordForm
@@ -112,8 +107,8 @@ export const PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR = {
 };
 
 export const PASSWORD_SECURITY_CHECK_FAILED_MESSAGE = {
-  ja: "パスワードの安全性を確認できませんでした。時間をおいて、もう一度お試しください。問題が解決しない場合は、contact@aaasobo.orgまでご連絡ください。ご不便をおかけし、申し訳ありません。",
-  en: "We couldn't check your password's security. Please try again later. If the issue continues, contact us at contact@aaasobo.org. Sorry for the inconvenience.",
+  ja: "パスワードの安全性を確認できませんでした。時間をおいて、もう一度お試しください。問題が解決しない場合は、contact@aaasobo.org までご連絡ください。ご不便をおかけして申し訳ありません。",
+  en: "We couldn't check your password's security. Please try again later. If the issue persists, contact us at contact@aaasobo.org. We're sorry for the inconvenience.",
 };
 
 export const PASSWORD_RESET_LINK_EXPIRED = {
@@ -127,7 +122,7 @@ export const TOKEN_OR_USER_NOT_FOUND_ERROR = {
 };
 
 export const PASSWORD_RESET_FAILED_MESSAGE = {
-  ja: "パスワードの再設定に失敗しました。新しいパスワードをもう一度送信してみてください。うまくいかない場合は、下のリンクから新しい再設定リンクを再発行してください。ご不便をおかけし、申し訳ありません。",
+  ja: "パスワードの再設定に失敗しました。新しいパスワードをもう一度送信してみてください。うまくいかない場合は、下のリンクから新しい再設定リンクを再発行してください。ご不便をおかけして申し訳ありません。",
   en: "We couldn't reset your password. Please try submitting your new password again. If that doesn't work, request a new reset link using the link below. We're sorry for the inconvenience.",
 };
 
