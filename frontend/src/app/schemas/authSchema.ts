@@ -133,9 +133,6 @@ export const adminUpdateSchema = z.object({
     .string()
     .email("Please enter a valid email address.")
     .min(1, "Email is required."),
-  userType: z.enum(["admin", "customer", "instructor"], {
-    message: "Invalid user type.",
-  }),
 });
 
 export const userLoginSchema = z.object({

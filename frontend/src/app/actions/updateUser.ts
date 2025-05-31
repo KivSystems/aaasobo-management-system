@@ -18,13 +18,11 @@ export async function updateAdminAction(
     const name = formData.get("name");
     const email = formData.get("email");
     // Hidden input tag fields
-    const userType = formData.get("userType");
     const id = Number(formData.get("id"));
 
     const parsedForm = adminUpdateSchema.safeParse({
       name,
       email,
-      userType,
     });
 
     if (!parsedForm.success) {
