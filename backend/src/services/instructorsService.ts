@@ -28,7 +28,6 @@ export const registerInstructor = async (data: {
       passcode: data.passcode,
       introductionURL: data.introductionURL,
       nickname: data.nickname,
-      emailVerified: new Date(),
     },
   });
 
@@ -417,21 +416,6 @@ export async function getInstructorProfile(instructorId: number) {
 
   return instructorProfile;
 }
-
-export const verifyInstructorEmail = async (
-  id: number,
-  email: string,
-): Promise<void> => {
-  await prisma.instructor.update({
-    where: {
-      id,
-    },
-    data: {
-      emailVerified: new Date(),
-      email,
-    },
-  });
-};
 
 export const updateInstructorPassword = async (
   id: number,

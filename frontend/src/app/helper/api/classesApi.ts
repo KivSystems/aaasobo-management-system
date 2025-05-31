@@ -47,6 +47,7 @@ export const bookClass = async (classData: {
   status: string;
   recurringClassId: number;
   rebookableUntil: string;
+  classCode: string;
 }) => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/classes`, {
@@ -98,8 +99,8 @@ export const editClass = async (
     dateTime?: string;
     status?: ClassStatus;
     instructorId?: number;
-    isRebookable?: boolean;
     rebookableUntil?: string | null;
+    updateAt: Date;
   },
 ) => {
   // Define the data to be sent to the server side.

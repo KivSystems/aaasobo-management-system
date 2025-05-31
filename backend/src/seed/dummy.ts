@@ -7,7 +7,6 @@ async function insertInstructors() {
   await prisma.instructor.create({
     data: {
       email: "helen@example.com",
-      emailVerified: "2025-03-08T14:31:26.816Z",
       name: "Helene Gay Santos",
       nickname: "Helen",
       icon: "helen-1.jpg",
@@ -23,7 +22,6 @@ async function insertInstructors() {
   await prisma.instructor.create({
     data: {
       email: "elian@example.com",
-      emailVerified: "2025-03-08T14:31:26.816Z",
       name: "Elian P.Quilisadio",
       nickname: "Elian",
       icon: "elian-1.jpg",
@@ -308,76 +306,94 @@ async function insertClasses() {
 
   await prisma.class.createMany({
     data: [
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2024-08-05T07:00:00Z",
-        status: "completed",
-        isRebookable: true,
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-      },
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2024-08-12T07:00:00Z",
-        status: "booked",
-        isRebookable: false,
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-      },
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2024-08-19T07:00:00Z",
-        status: "booked",
-        isRebookable: false,
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-      },
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2024-08-26T07:00:00Z",
-        status: "booked",
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-      },
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2024-08-06T07:00:00Z",
-        status: "completed",
-        isRebookable: true,
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-      },
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2024-08-13T07:00:00Z",
-        status: "booked",
-        isRebookable: false,
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-      },
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2024-08-20T07:00:00Z",
-        status: "booked",
-        isRebookable: false,
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-      },
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2024-08-27T07:00:00Z",
-        status: "booked",
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-      },
+      // {
+      //   instructorId: helen.id,
+      //   customerId: alice.id,
+      //   dateTime: "2024-08-05T07:00:00Z",
+      //   status: "completed",
+      //   subscriptionId: alice.subscription[0].id,
+      //   recurringClassId: 1,
+      //   createdAt: "2024-08-05T07:00:00Z",
+      //   updatedAt: "2024-08-05T07:00:00Z",
+      //   classCode: "1-0",
+      // },
+      // {
+      //   instructorId: helen.id,
+      //   customerId: alice.id,
+      //   dateTime: "2024-08-12T07:00:00Z",
+      //   status: "booked",
+      //   subscriptionId: alice.subscription[0].id,
+      //   recurringClassId: 1,
+      //   createdAt: "2024-08-05T07:00:00Z",
+      //   updatedAt: "2024-08-05T07:00:00Z",
+      //   classCode: "1-1",
+      // },
+      // {
+      //   instructorId: helen.id,
+      //   customerId: alice.id,
+      //   dateTime: "2024-08-19T07:00:00Z",
+      //   status: "booked",
+      //   subscriptionId: alice.subscription[0].id,
+      //   recurringClassId: 1,
+      //   createdAt: "2024-08-05T07:00:00Z",
+      //   updatedAt: "2024-08-05T07:00:00Z",
+      //   classCode: "1-2",
+      // },
+      // {
+      //   instructorId: helen.id,
+      //   customerId: alice.id,
+      //   dateTime: "2024-08-26T07:00:00Z",
+      //   status: "booked",
+      //   subscriptionId: alice.subscription[0].id,
+      //   recurringClassId: 1,
+      //   createdAt: "2024-08-05T07:00:00Z",
+      //   updatedAt: "2024-08-05T07:00:00Z",
+      //   classCode: "1-3",
+      // },
+      // {
+      //   instructorId: helen.id,
+      //   customerId: alice.id,
+      //   dateTime: "2024-08-06T07:00:00Z",
+      //   status: "completed",
+      //   subscriptionId: alice.subscription[0].id,
+      //   recurringClassId: 1,
+      //   createdAt: "2024-08-05T07:00:00Z",
+      //   updatedAt: "2024-08-05T07:00:00Z",
+      //   classCode: "1-4",
+      // },
+      // {
+      //   instructorId: helen.id,
+      //   customerId: alice.id,
+      //   dateTime: "2024-08-13T07:00:00Z",
+      //   status: "booked",
+      //   subscriptionId: alice.subscription[0].id,
+      //   recurringClassId: 1,
+      //   createdAt: "2024-08-05T07:00:00Z",
+      //   updatedAt: "2024-08-05T07:00:00Z",
+      //   classCode: "1-5",
+      // },
+      // {
+      //   instructorId: helen.id,
+      //   customerId: alice.id,
+      //   dateTime: "2024-08-20T07:00:00Z",
+      //   status: "booked",
+      //   subscriptionId: alice.subscription[0].id,
+      //   recurringClassId: 1,
+      //   createdAt: "2024-08-05T07:00:00Z",
+      //   updatedAt: "2024-08-05T07:00:00Z",
+      //   classCode: "1-6",
+      // },
+      // {
+      //   instructorId: helen.id,
+      //   customerId: alice.id,
+      //   dateTime: "2024-08-27T07:00:00Z",
+      //   status: "booked",
+      //   subscriptionId: alice.subscription[0].id,
+      //   recurringClassId: 1,
+      //   createdAt: "2024-08-05T07:00:00Z",
+      //   updatedAt: "2024-08-05T07:00:00Z",
+      //   classCode: "1-7",
+      // },
       {
         instructorId: helen.id,
         customerId: alice.id,
@@ -386,13 +402,15 @@ async function insertClasses() {
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
         rebookableUntil: "2025-10-30T09:00:00Z",
+        createdAt: "2024-08-05T07:00:00Z",
+        updatedAt: "2024-08-05T07:00:00Z",
+        classCode: "1-8",
       },
       // {
       //   instructorId: helen.id,
       //   customerId: bob.id,
       //   dateTime: "2024-06-03T15:30:00+09:00",
       //   status: "completed",
-      //   isRebookable: false,
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
       // },
@@ -401,7 +419,6 @@ async function insertClasses() {
       //   customerId: bob.id,
       //   dateTime: "2024-06-03T16:00:00+09:00",
       //   status: "completed",
-      //   isRebookable: false,
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
       // },
@@ -420,7 +437,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -429,7 +445,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -438,7 +453,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -447,7 +461,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -456,7 +469,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -465,7 +477,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -474,7 +485,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -483,7 +493,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -492,7 +501,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -501,7 +509,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: bob.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -510,7 +517,6 @@ async function insertClasses() {
       //   status: "booked",
       //   subscriptionId: alice.subscription[0].id,
       //   recurringClassId: 1,
-      //   isRebookable: true,
       // },
       // {
       //   instructorId: helen.id,
@@ -656,21 +662,21 @@ async function insertClassAttendance() {
   const classes = await prisma.class.findMany();
   const children = await prisma.children.findMany();
 
-  if (classes.length < 4 || children.length < 1) {
-    throw new Error("Not enough classes or children found");
-  }
+  // if (classes.length < 4 || children.length < 1) {
+  //   throw new Error("Not enough classes or children found");
+  // }
 
   await prisma.classAttendance.createMany({
     data: [
       { classId: classes[0].id, childrenId: children[0].id },
       // { classId: classes[0].id, childrenId: children[1].id },
-      { classId: classes[1].id, childrenId: children[0].id },
-      { classId: classes[2].id, childrenId: children[0].id },
-      { classId: classes[3].id, childrenId: children[0].id },
-      { classId: classes[4].id, childrenId: children[0].id },
-      { classId: classes[5].id, childrenId: children[0].id },
-      { classId: classes[6].id, childrenId: children[0].id },
-      { classId: classes[7].id, childrenId: children[0].id },
+      // { classId: classes[1].id, childrenId: children[0].id },
+      // { classId: classes[2].id, childrenId: children[0].id },
+      // { classId: classes[3].id, childrenId: children[0].id },
+      // { classId: classes[4].id, childrenId: children[0].id },
+      // { classId: classes[5].id, childrenId: children[0].id },
+      // { classId: classes[6].id, childrenId: children[0].id },
+      // { classId: classes[7].id, childrenId: children[0].id },
     ],
   });
 

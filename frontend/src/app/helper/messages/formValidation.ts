@@ -4,8 +4,10 @@ export const GENERAL_ERROR_MESSAGE_JA =
   "エラーが発生しました。しばらくしてから再度お試しください。問題が解決しない場合は、スタッフまでお問い合わせください。ご不便をおかけして申し訳ありません。";
 
 // RegisterForm
-export const EMAIL_ALREADY_REGISTERED_ERROR =
-  "This email address is already registered. Try a different one.";
+export const EMAIL_ALREADY_REGISTERED_ERROR = {
+  ja: "このメールアドレスは既に登録されています。別のアドレスをお試しください。",
+  en: "This email address is already registered. Try a different one.",
+};
 
 export const SINGLE_ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {
   return (
@@ -21,11 +23,15 @@ export const MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR = (items: string) => {
   );
 };
 
-export const CONFIRMATION_EMAIL_SENT =
-  "We have sent a confirmation email. Please click the link in the email to activate your account.";
+export const CONFIRMATION_EMAIL_SENT = {
+  ja: "確認メールを送信しました。メール内のボタンをクリックしてアカウントを有効化してください。",
+  en: "We have sent a confirmation email. Please click the button in the email to activate your account.",
+};
 
-export const CONFIRMATION_EMAIL_SEND_FAILURE =
-  "We couldn't send the confirmation email. Please check your email address and try again. If the problem persists, contact our staff. We apologize for the inconvenience.";
+export const CONFIRMATION_EMAIL_SEND_FAILURE = {
+  ja: "確認メールの送信に失敗しました。メールアドレスをご確認のうえ、再度［アカウント登録］ボタンをクリックしてみてください。問題が解決しない場合は、スタッフまでご連絡ください。ご不便をおかけして申し訳ございません。",
+  en: "We couldn't send the confirmation email. Please check your email address and try again. If the problem persists, contact our staff. We apologize for the inconvenience.",
+};
 
 export const INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE =
   "The instructor account has been created successfully.";
@@ -45,28 +51,35 @@ export const CONFIRMATION_EMAIL_RESEND_FAILURE = {
 };
 
 export const EMAIL_VERIFICATION_RESENT_NOTICE = {
-  ja: "メールアドレスがまだ認証されていません。確認リンクをメールで再送しましたのでご確認ください。",
+  ja: "メールアドレスがまだ認証されていません。認証リンクをメールで再送しましたのでご確認ください。",
   en: "Your email address is not verified yet. We have resent the verification link via email.",
 };
 
 // EmailVerificationForm
-export const EMAIL_VERIFICATION_TOKEN_NOT_FOUND =
-  "We couldn't verify your request. Please click the confirmation button in the email again.";
+export const EMAIL_VERIFICATION_SUCCESS_MESSAGE = {
+  ja: "メールアドレスが認証されました。ログインページからログインしてください。",
+  en: "Your email address has been verified. Please log in from the login page.",
+};
 
-export const EMAIL_VERIFICATION_USER_TYPE_ERROR =
-  "We couldn't determine your account type. Please click the confirmation button in the email again.";
+export const EMAIL_VERIFICATION_FAILED_MESSAGE = {
+  ja: "認証リクエストを確認できませんでした。認証メールが複数届いている場合は、最新のメールの認証ボタンをクリックしてみてください。うまくいかない場合は、下のリンクからログインし、新しい認証メールをリクエストしてください。",
+  en: "We couldn't verify your request. Please click the confirmation button in the latest verification email. If that doesn't work, try logging in using the link below to request a new one.",
+};
 
-export const EMAIL_VERIFICATION_SUCCESS_MESSAGE =
-  "Your email address has been verified. Please log in from the login page.";
+export const EMAIL_VERIFICATION_TOKEN_EXPIRED = {
+  ja: "認証リンクの有効期限が切れています。新しいリンクをメールで再送しましたのでご確認ください。",
+  en: "The confirmation link has expired. A new link has been sent to your email, so please check it.",
+};
 
-export const EMAIL_VERIFICATION_FAILED_MESSAGE =
-  "We couldn't verify your request. Please click the confirmation button in the email again. If that doesn't work, try logging in using the link below to request a new one.";
+export const EMAIL_VERIFICATION_UNEXPECTED_ERROR = {
+  ja: "認証リクエストを確認できませんでした。しばらくしてから下のリンクからログインし、新しい認証メールをリクエストしてください。問題が解決しない場合は、スタッフまでお問い合わせください。ご不便をおかけして申し訳ありません。",
+  en: "We couldn't verify your request. Please try logging in using the link below to request a new confirmation link later. If the issue persists, contact our staff. We apologize for the inconvenience.",
+};
 
-export const EMAIL_VERIFICATION_TOKEN_EXPIRED =
-  "This confirmation link has expired. Please try logging in using the link below to request a new confirmation email.";
-
-export const EMAIL_VERIFICATION_UNEXPECTED_ERROR =
-  "Something went wrong. Please try logging in using the link below. If that doesn't work, click the confirmation button in the email again.";
+export const CONFIRMATION_LINK_EXPIRED_RESEND_FAILED = {
+  ja: "認証リンクの有効期限が切れていたため再送を試みましたが、失敗しました。しばらくしてから下のリンクからログインし、新しい認証メールをリクエストしてください。問題が解決しない場合は、スタッフまでお問い合わせください。ご不便をおかけして申し訳ありません。",
+  en: "The confirmation link has expired, and resending it failed. Please try logging in using the link below to request a new one later. If the issue persists, contact our staff. We apologize for the inconvenience.",
+};
 
 // ForgotPasswordForm
 export const PASSWORD_RESET_INSTRUCTION =

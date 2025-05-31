@@ -23,8 +23,36 @@ export const customerRegisterSchema = z
     path: ["passConfirmation"],
   })
   .refine((data) => data.passwordStrength >= 3, {
-    message:
-      "Your password is too weak. Try using a longer passphrase or a password manager.",
+    message: "Your password is too weak.",
+    path: ["password"],
+  });
+
+export const customerRegisterSchemaJa = z
+  .object({
+    name: z.string().min(1, "名前は必須項目です。"),
+    email: z
+      .string()
+      .email("有効なメールアドレスを入力してください。")
+      .min(1, "メールアドレスは必須項目です。"),
+    password: z.string().min(8, "8文字以上で入力してください。"),
+    passConfirmation: z.string(),
+    passwordStrength: z.number(),
+    prefecture: z.string().min(1, "都道府県は必須項目です。"),
+    isAgreed: z.literal(true, {
+      errorMap: () => ({
+        message: "個人情報の取扱いに同意していただく必要があります。",
+      }),
+    }),
+    userType: z.enum(["admin", "customer", "instructor"], {
+      message: "無効なユーザータイプです。",
+    }),
+  })
+  .refine((data) => data.password === data.passConfirmation, {
+    message: "パスワードが一致しません。",
+    path: ["passConfirmation"],
+  })
+  .refine((data) => data.passwordStrength >= 3, {
+    message: "パスワードの安全性が低過ぎます。",
     path: ["password"],
   });
 
@@ -100,8 +128,7 @@ export const adminRegisterSchema = z
     path: ["password"],
   });
 
-// TODO: Need to separate the instructor and customer update schemas
-export const userUpdateSchema = z.object({
+export const instructorUpdateSchema = z.object({
   name: z.string().min(1, "Name is required."),
   nickname: z.string().min(1, "Nickname is required."),
   email: z
@@ -126,6 +153,14 @@ export const userUpdateSchema = z.object({
   userType: z.enum(["admin", "customer", "instructor"], {
     message: "Invalid user type.",
   }),
+});
+
+export const adminUpdateSchema = z.object({
+  name: z.string().min(1, "Name is required."),
+  email: z
+    .string()
+    .email("Please enter a valid email address.")
+    .min(1, "Email is required."),
 });
 
 export const userLoginSchema = z.object({

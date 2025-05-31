@@ -9,6 +9,7 @@ import {
   customerRegisterSchema,
   instructorRegisterSchema,
   adminRegisterSchema,
+  customerRegisterSchemaJa,
 } from "../schemas/authSchema";
 import { revalidateAdminList } from "./revalidate";
 
@@ -34,13 +35,17 @@ export async function registerUser(
       10,
     );
     const userType = formData.get("userType");
+    const language = formData.get("language") as LanguageType;
 
     let parsedForm;
     let response;
 
     switch (userType) {
       case "customer":
-        parsedForm = customerRegisterSchema.safeParse({
+        const schema =
+          language === "ja" ? customerRegisterSchemaJa : customerRegisterSchema;
+
+        parsedForm = schema.safeParse({
           name,
           email,
           password,
@@ -52,14 +57,17 @@ export async function registerUser(
         });
         if (!parsedForm.success) {
           const validationErrors = parsedForm.error.errors;
-          return extractRegisterValidationErrors(validationErrors);
+          return extractRegisterValidationErrors(validationErrors, language);
         }
-        response = await registerCustomer({
-          name: parsedForm.data.name,
-          email: parsedForm.data.email,
-          password: parsedForm.data.password,
-          prefecture: parsedForm.data.prefecture,
-        });
+        response = await registerCustomer(
+          {
+            name: parsedForm.data.name,
+            email: parsedForm.data.email,
+            password: parsedForm.data.password,
+            prefecture: parsedForm.data.prefecture,
+          },
+          language,
+        );
         return response;
 
       case "instructor":

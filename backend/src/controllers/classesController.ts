@@ -11,6 +11,7 @@ import {
   getAllClasses,
   getClassById,
   getClassesByCustomerId,
+  getClassStatus,
   getExcludedClasses,
   isInstructorBooked,
   updateClass,
@@ -36,15 +37,8 @@ export const getAllClassesController = async (_: Request, res: Response) => {
     const classes = await getAllClasses();
 
     const classesData = classes.map((eachClass) => {
-      const {
-        id,
-        dateTime,
-        customer,
-        instructor,
-        status,
-        isRebookable,
-        recurringClassId,
-      } = eachClass;
+      const { id, dateTime, customer, instructor, status, recurringClassId } =
+        eachClass;
 
       return {
         id,
@@ -59,7 +53,6 @@ export const getAllClassesController = async (_: Request, res: Response) => {
           name: instructor.name,
         },
         status,
-        isRebookable,
         recurringClassId,
       };
     });
@@ -89,9 +82,10 @@ export const getClassesByCustomerIdController = async (
         instructor,
         status,
         classAttendance,
-        isRebookable,
         recurringClassId,
         rebookableUntil,
+        updatedAt,
+        classCode,
       } = eachClass;
 
       return {
@@ -118,9 +112,10 @@ export const getClassesByCustomerIdController = async (
           })),
         },
         status,
-        isRebookable,
         recurringClassId,
         rebookableUntil,
+        updatedAt,
+        classCode,
       };
     });
 
@@ -142,6 +137,7 @@ export const createClassController = async (req: Request, res: Response) => {
     status,
     recurringClassId,
     rebookableUntil,
+    classCode,
   } = req.body;
 
   // Check for missing fields
@@ -154,6 +150,7 @@ export const createClassController = async (req: Request, res: Response) => {
   if (!status) missingFields.push("status");
   if (!recurringClassId) missingFields.push("recurringClassId");
   if (!rebookableUntil) missingFields.push("rebookableUntil");
+  if (!classCode) missingFields.push("classCode");
 
   if (missingFields.length > 0) {
     return res.status(400).json({
@@ -199,8 +196,23 @@ export const createClassController = async (req: Request, res: Response) => {
       });
     }
 
+    // If the class status is "canceled", update the rebookableUntil field to null to prevent further rebooking.
+    // If it's "pending", delete it.
+    const classStatus = await getClassStatus(classId);
+
+    let secondPromise;
+
+    if (
+      classStatus === "canceledByCustomer" ||
+      classStatus === "canceledByInstructor"
+    ) {
+      secondPromise = updateClass(classId, { rebookableUntil: null });
+    } else if (classStatus === "pending") {
+      secondPromise = deleteClass(classId);
+    }
+
     const [newClass, updatedClass] = await Promise.all([
-      // Create a new Booked Class
+      // Create a new "rebooked" class
       createClass(
         {
           dateTime,
@@ -210,11 +222,12 @@ export const createClassController = async (req: Request, res: Response) => {
           subscriptionId: subscription.id,
           recurringClassId,
           rebookableUntil,
+          updatedAt: new Date(),
+          classCode,
         },
         childrenIds,
       ),
-      // Update the rebooked class's isRebookable and rebookableUntil fields to prevent further rebooking
-      updateClass(classId, { isRebookable: false, rebookableUntil: null }),
+      secondPromise,
     ]);
 
     res.status(201).json({ newClass, updatedClass });
@@ -352,15 +365,8 @@ export const getInstructorClasses = async (
     const classes = await fetchInstructorClasses(req.id);
 
     const classesData = classes.map((eachClass) => {
-      const {
-        id,
-        dateTime,
-        customer,
-        instructor,
-        status,
-        classAttendance,
-        isRebookable,
-      } = eachClass;
+      const { id, dateTime, customer, instructor, status, classAttendance } =
+        eachClass;
 
       return {
         id,
@@ -382,7 +388,6 @@ export const getInstructorClasses = async (
           personalInfo: child.personalInfo,
         })),
         status,
-        isRebookable,
       };
     });
 

@@ -1,9 +1,13 @@
 .verificationForm {
-  min-height: 10rem;
+  min-height: 12rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1rem;
+
+  &__title {
+    text-align: center;
+  }
 
   &__loaderWrapper {
     height: 3rem;
@@ -18,5 +22,6 @@
 
   &__loginLink {
     margin: 0 auto;
+    text-decoration: none;
   }
 }

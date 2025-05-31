@@ -9,6 +9,7 @@ import {
 
 export function extractRegisterValidationErrors(
   validationErrors: ZodIssue[],
+  language?: LanguageType,
 ): RegisterFormState {
   const unexpectedError = validationErrors.some(
     (error) =>
@@ -16,7 +17,10 @@ export function extractRegisterValidationErrors(
   );
 
   if (unexpectedError) {
-    return { errorMessage: GENERAL_ERROR_MESSAGE };
+    return {
+      errorMessage:
+        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+    };
   }
 
   const errors: Record<string, string> = {};

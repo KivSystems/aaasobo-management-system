@@ -7,15 +7,16 @@ const PrefectureSelect = ({
   setSelectedPrefecture,
   clearErrorMessage,
   localMessages,
+  language,
 }: {
   selectedPrefecture: string;
   setSelectedPrefecture: (value: string) => void;
   clearErrorMessage: (field: string) => void;
   localMessages: Record<string, string>;
+  language: LanguageType;
 }) => {
   return (
     <label className={styles.label}>
-      Prefecture of Residence<span className={styles.required}>*</span>
       <div className={styles.selectWrapper}>
         <HomeIcon className={styles.icon} />
         <select
@@ -31,7 +32,7 @@ const PrefectureSelect = ({
           style={{ color: selectedPrefecture ? "black" : "gray" }}
         >
           <option value="" disabled>
-            Select a prefecture
+            {language === "ja" ? "都道府県" : "Select a prefecture"}
           </option>
           {prefectures.map((prefecture) => (
             <option key={prefecture} value={prefecture}>
