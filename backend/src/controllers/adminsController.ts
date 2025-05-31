@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import { kv } from "@vercel/kv";
 import { registerAdmin, getAdminByEmail } from "../services/adminsService";
-import { getAllAdmins, getAdminById } from "../services/adminsService";
+import {
+  getAllAdmins,
+  getAdminById,
+  updateAdmin,
+} from "../services/adminsService";
 import {
   getAllInstructors,
   registerInstructor,
@@ -96,6 +100,39 @@ export const registerAdminController = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error registering admin", { error });
     res.sendStatus(500);
+  }
+};
+
+// Update the applicable admin data
+export const updateAdminProfileController = async (
+  req: Request,
+  res: Response,
+) => {
+  const adminId = parseInt(req.params.id);
+  const { name, email } = req.body;
+
+  try {
+    if (!name || !email) {
+      return res.sendStatus(400);
+    }
+
+    // Normalize email
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check if the updated email already exists
+    const existingAdmin = await getAdminByEmail(normalizedEmail);
+    if (existingAdmin && existingAdmin.id !== adminId) {
+      return res.sendStatus(409);
+    }
+
+    const admin = await updateAdmin(adminId, name, email);
+
+    res.status(200).json({
+      message: "Admin is updated successfully",
+      admin,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
   }
 };
 
