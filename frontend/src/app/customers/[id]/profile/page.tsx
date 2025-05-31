@@ -1,18 +1,24 @@
 import CustomerProfile from "@/app/components/customers-dashboard/profile/CustomerProfile";
-import styles from "./page.module.scss";
+import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
+import { getCustomerById } from "@/app/helper/api/customersApi";
 
-function Page({ params }: { params: { id: string } }) {
+async function CustomerProfilePage({ params }: { params: { id: string } }) {
   const customerId = parseInt(params.id);
   if (isNaN(customerId)) {
     throw new Error("Invalid customerId");
   }
 
+  const customerProfile = await getCustomerById(customerId);
+
   return (
-    <>
-      <div className={styles.pageTitle}>Customer Profile</div>
-      <CustomerProfile customerId={customerId} />
-    </>
+    <main>
+      <Breadcrumb
+        links={[{ label: { ja: "プロフィール", en: "Customer Profile" } }]}
+        className="customerProfile"
+      />
+      <CustomerProfile customerProfile={customerProfile} />
+    </main>
   );
 }
 
-export default Page;
+export default CustomerProfilePage;
