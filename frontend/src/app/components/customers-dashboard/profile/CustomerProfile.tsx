@@ -3,16 +3,18 @@
 import styles from "./CustomerProfile.module.scss";
 import { useState } from "react";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
-import { prefectures } from "@/app/helper/data/data";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loading from "../../elements/loading/Loading";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useFormState } from "react-dom";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
-import { updateCustomerProfile } from "@/app/actions/updateUser";
+import { updateCustomerProfileAction } from "@/app/actions/updateUser";
+import InputField from "../../elements/inputField/InputField";
+import PrefectureSelect from "../../features/registerForm/prefectureSelect/PrefectureSelect";
+import { getLocalizedPrefecture } from "@/app/helper/utils/stringUtils";
+import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 function CustomerProfile({
   customerProfile,
@@ -20,13 +22,17 @@ function CustomerProfile({
   customerProfile: CustomerProfile;
 }) {
   const [profileUpdateResult, formAction] = useFormState(
-    updateCustomerProfile,
+    updateCustomerProfileAction,
     undefined,
   );
   const [isEditing, setIsEditing] = useState(false);
   const { localMessages, clearErrorMessage } =
     useFormMessages(profileUpdateResult);
   const { language } = useLanguage();
+  const localizedCustomerPrefecture = getLocalizedPrefecture(
+    customerProfile.prefecture,
+    language,
+  );
 
   // const handleFormSubmit = async (e: React.FormEvent) => {
   //   e.preventDefault();
@@ -76,7 +82,7 @@ function CustomerProfile({
     return (
       <h3>
         {language === "ja"
-          ? "プロフィールが読み込めませんでした。"
+          ? "プロフィールを読み込めませんでした。"
           : "Failed to load the profile."}
       </h3>
     );
@@ -94,12 +100,11 @@ function CustomerProfile({
             {language === "ja" ? "名前" : "Name"}
           </p>
           {isEditing ? (
-            <input
+            <InputField
               name="name"
               type="text"
               defaultValue={customerProfile.name}
-              className={`${styles.customerName__inputField} ${isEditing ? styles.editable : ""}`}
-              required
+              className={styles.customerName__inputField}
             />
           ) : (
             <div className={styles.customerName__name}>
@@ -115,12 +120,11 @@ function CustomerProfile({
           {language === "ja" ? "メール" : "e-mail"}
         </div>
         {isEditing ? (
-          <input
+          <InputField
             name="email"
             type="email"
             defaultValue={customerProfile.email}
-            className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-            required
+            className={styles.email__inputField}
           />
         ) : (
           <div className={styles.email__name}>{customerProfile.email}</div>
@@ -134,24 +138,35 @@ function CustomerProfile({
         </div>
 
         {isEditing ? (
-          <select
-            name="prefecture"
-            className={`${styles.customerHome__inputField} ${isEditing ? styles.editable : ""}`}
+          <PrefectureSelect
+            clearErrorMessage={clearErrorMessage}
+            errorMessage={localMessages.prefecture}
+            language={language}
             defaultValue={customerProfile.prefecture}
-            required
-          >
-            {prefectures.map((prefecture) => (
-              <option key={prefecture} value={prefecture}>
-                {prefecture}
-              </option>
-            ))}
-          </select>
+            className="customerProfile"
+            withIcon={false}
+          />
         ) : (
           <div className={styles.customerHome__name}>
-            {customerProfile.prefecture}
+            {localizedCustomerPrefecture}
           </div>
         )}
       </label>
+
+      <div className={styles.messageWrapper}>
+        {localMessages.errorMessage && (
+          <FormValidationMessage
+            type="error"
+            message={localMessages.errorMessage}
+          />
+        )}
+        {localMessages.successMessage && (
+          <FormValidationMessage
+            type="success"
+            message={localMessages.successMessage}
+          />
+        )}
+      </div>
 
       {isEditing ? (
         <div className={styles.buttons}>
@@ -161,6 +176,7 @@ function CustomerProfile({
             type="button"
             onClick={(e) => {
               e.preventDefault();
+              clearErrorMessage("errorMessage");
               setIsEditing(false);
             }}
           />
@@ -183,6 +199,21 @@ function CustomerProfile({
           />
         </div>
       )}
+
+      {/* Hidden fields to include in form submission */}
+      <input type="hidden" name="id" value={customerProfile.id ?? ""} />
+      <input type="hidden" name="oldName" value={customerProfile.name ?? ""} />
+      <input
+        type="hidden"
+        name="oldEmail"
+        value={customerProfile.email ?? ""}
+      />
+      <input
+        type="hidden"
+        name="oldPrefecture"
+        value={customerProfile.prefecture ?? ""}
+      />
+      <input type="hidden" name="language" value={language ?? "en"} />
     </form>
   );
 }

@@ -9,6 +9,11 @@ import {
   instructorUpdateSchema,
 } from "../schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
+import {
+  customerProfileSchema,
+  customerProfileSchemaJa,
+} from "../schemas/customerDashboardSchemas.ts";
+import { editCustomer } from "../helper/api/customersApi";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -103,4 +108,54 @@ export async function updateInstructorAction(
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
   }
+}
+
+export async function updateCustomerProfileAction(
+  prevState: UpdateFormState | undefined,
+  formData: FormData,
+): Promise<UpdateFormState> {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const prefecture = formData.get("prefecture");
+  // Hidden input tag fields
+  const id = Number(formData.get("id"));
+  const oldName = formData.get("oldName");
+  const oldEmail = formData.get("oldEmail");
+  const oldPrefecture = formData.get("oldPrefecture");
+  const language = formData.get("language") as LanguageType;
+
+  const schema =
+    language === "ja" ? customerProfileSchemaJa : customerProfileSchema;
+
+  // Check if there are any changes
+  if (name === oldName && email === oldEmail && prefecture === oldPrefecture) {
+    return {
+      errorMessage:
+        language === "ja"
+          ? "変更された項目がありません。"
+          : "No changes were made.",
+    };
+  }
+
+  const parsedForm = schema.safeParse({
+    name,
+    email,
+    prefecture,
+  });
+
+  if (!parsedForm.success) {
+    const validationErrors = parsedForm.error.errors;
+    return extractUpdateValidationErrors(validationErrors);
+  }
+
+  const responseMessage = await editCustomer(
+    id,
+    parsedForm.data.name,
+    parsedForm.data.email,
+    parsedForm.data.prefecture,
+  );
+
+  // TODO: RevalidatePath
+
+  return responseMessage;
 }

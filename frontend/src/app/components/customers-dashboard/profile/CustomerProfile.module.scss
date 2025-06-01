@@ -100,14 +100,6 @@
     font-size: 14px;
   }
 
-  &__inputField {
-    font-size: 20px;
-    font-weight: 400;
-    padding: 3px;
-    border-radius: 6px;
-    width: 50%;
-  }
-
   &__name {
     font-size: 20px;
     font-weight: 500;
@@ -123,7 +115,6 @@
   margin-bottom: 24px;
 }
 
-.addBtn {
-  margin-top: 10px;
-  margin-bottom: 20px;
+.messageWrapper {
+  margin-top: 1rem;
 }

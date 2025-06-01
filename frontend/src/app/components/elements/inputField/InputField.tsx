@@ -5,6 +5,7 @@ function InputField({
   name,
   error,
   value,
+  defaultValue,
   onChange,
   type = "text",
   className,
@@ -12,6 +13,7 @@ function InputField({
   name?: string;
   error?: string;
   value?: string;
+  defaultValue?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   className?: string;
@@ -23,6 +25,7 @@ function InputField({
         className={clsx(className)}
         type={type}
         value={value}
+        defaultValue={defaultValue}
         onChange={onChange}
         required
       />
