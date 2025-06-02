@@ -10,7 +10,6 @@ import {
   getAllClassesController,
   getClassByIdController,
   getClassesByCustomerIdController,
-  nonRebookableCancelController,
   updateClassController,
 } from "../../src/controllers/classesController";
 
@@ -35,7 +34,3 @@ classesRouter.delete("/:id", deleteClassController);
 
 classesRouter.patch("/:id", updateClassController);
 classesRouter.patch("/:id/cancel", cancelClassController);
-classesRouter.patch(
-  "/:id/non-rebookable-cancel",
-  nonRebookableCancelController,
-);

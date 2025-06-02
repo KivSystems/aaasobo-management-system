@@ -1,3 +1,12 @@
+import {
+  CLASS_CANCELLATION_SUCCESS,
+  FAILED_TO_CANCEL_CLASS,
+  FAILED_TO_CANCEL_CLASSES,
+  FAILED_TO_CANCEL_INVALID_CLASS,
+  FAILED_TO_CANCEL_INVALID_CLASSES,
+  SELECTED_CLASSES_CANCELLATION_SUCCESS,
+} from "../messages/customerDashboard";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
@@ -123,28 +132,25 @@ export const editClass = async (
   return data;
 };
 
-// Cancel a class: Change the state of the class from 'booked' to 'canceledByCustomer'
 export const cancelClass = async (classId: number) => {
-  const classURL = `${BACKEND_ORIGIN}/classes/${classId}/cancel`;
+  const cancelClassUrl = `${BACKEND_ORIGIN}/classes/${classId}/cancel`;
 
   try {
-    const response = await fetch(classURL, {
+    const response = await fetch(cancelClassUrl, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Error ${response.status}: ${errorData.message}`);
+      if (response.status === 400)
+        return { success: false, message: FAILED_TO_CANCEL_INVALID_CLASS };
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    return await response.json();
+    return { success: true, message: CLASS_CANCELLATION_SUCCESS };
   } catch (error) {
-    console.error(
-      "Failed to cancel class:",
-      error instanceof Error ? error.message : "Unknown error",
-    );
-    throw error;
+    console.error("API error while canceling a class:", error);
+    return { success: false, message: FAILED_TO_CANCEL_CLASS };
   }
 };
 
@@ -280,12 +286,13 @@ export const cancelClasses = async (classIds: number[]) => {
     });
 
     if (!response.ok) {
-      const { error } = await response.json();
-
-      throw new Error(`HTTP Status: ${response.status} ${error}`);
+      if (response.status === 400)
+        return { success: false, message: FAILED_TO_CANCEL_INVALID_CLASSES };
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
+    return { success: true, message: SELECTED_CLASSES_CANCELLATION_SUCCESS };
   } catch (error) {
-    console.error("Failed to cancel classes:", error);
-    throw new Error("Failed to cancel classes.");
+    console.error("API error while canceling classes:", error);
+    return { success: false, message: FAILED_TO_CANCEL_CLASSES };
   }
 };

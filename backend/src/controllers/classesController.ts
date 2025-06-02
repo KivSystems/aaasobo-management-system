@@ -331,29 +331,21 @@ export const updateClassController = async (req: Request, res: Response) => {
 // Cancel a class
 export const cancelClassController = async (req: Request, res: Response) => {
   const classId = parseInt(req.params.id);
-  const isPastPrevDayDeadline = false;
+
+  if (!classId || isNaN(classId)) res.sendStatus(400);
 
   try {
-    await cancelClassById(classId, isPastPrevDayDeadline);
-    res.status(200).json({ message: "Class canceled successfully" });
+    await cancelClassById(classId);
+    res.sendStatus(200);
   } catch (error) {
-    res.status(500).json({ error: "An unknown error occurred" });
-  }
-};
-
-// Cancel a class on the same day of the class
-export const nonRebookableCancelController = async (
-  req: Request,
-  res: Response,
-) => {
-  const classId = parseInt(req.params.id);
-  const isPastPrevDayDeadline = true;
-
-  try {
-    await cancelClassById(classId, isPastPrevDayDeadline);
-    res.status(200).json({ message: "Class canceled successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "An unknown error occurred" });
+    console.error("Error canceling a class", {
+      error,
+      context: {
+        classId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
@@ -594,21 +586,24 @@ export const checkChildrenAvailabilityController = async (
 };
 
 export const cancelClassesController = async (req: Request, res: Response) => {
+  const { classIds } = req.body;
+
+  if (!Array.isArray(classIds) || classIds.length === 0) {
+    return res.sendStatus(400);
+  }
+
   try {
-    const { classIds } = req.body;
-
-    if (!Array.isArray(classIds) || classIds.length === 0) {
-      return res.status(400).json({ error: "Invalid class IDs provided." });
-    }
-
     await cancelClasses(classIds);
 
     res.sendStatus(200);
   } catch (error) {
-    console.error("Error canceling classes:", error);
-    res.status(500).json({
-      error:
-        error instanceof Error ? error.message : "Unexpected server failure.",
+    console.error("Error canceling classes", {
+      error,
+      context: {
+        classIds,
+        time: new Date().toISOString(),
+      },
     });
+    res.sendStatus(500);
   }
 };

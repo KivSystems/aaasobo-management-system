@@ -4,7 +4,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 
 type InfoBannerProps = {
   className?: string;
-  info: string;
+  info: React.ReactNode;
 };
 
 const InfoBanner: React.FC<InfoBannerProps> = ({ className, info }) => {
@@ -15,7 +15,7 @@ const InfoBanner: React.FC<InfoBannerProps> = ({ className, info }) => {
       <div className={styles.infoBanner__iconWrapper}>
         <InformationCircleIcon className={styles.infoBanner__icon} />
       </div>
-      <p className={styles.infoBanner__notice}>{info}</p>
+      <div className={styles.infoBanner__notice}>{info}</div>
     </div>
   );
 };

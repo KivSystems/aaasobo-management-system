@@ -74,13 +74,17 @@ export default function CustomerCalendar({
         allDaySlot={false}
       />
 
-      <Modal isOpen={isClassDetailModalOpen} onClose={handleModalClose}>
+      <Modal
+        isOpen={isClassDetailModalOpen}
+        onClose={handleModalClose}
+        className="classDetail"
+      >
         <ClassDetail
           classDetail={classDetail}
           customerId={customerId}
-          timeZone="Asia/Tokyo"
           isAdminAuthenticated
           handleModalClose={handleModalClose}
+          language={language}
         />
       </Modal>
     </>
