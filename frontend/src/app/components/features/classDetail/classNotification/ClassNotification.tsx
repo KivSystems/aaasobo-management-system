@@ -24,15 +24,14 @@ const ClassNotification = ({
   rebookableUntil: string;
   language: LanguageType;
 }) => {
-  if (
-    classStatus === "completed" ||
-    ((classStatus === "booked" || classStatus === "rebooked") &&
-      hasTimePassed(classEnd))
-  )
-    return null;
-
   const isBookedOrRebooked =
     classStatus === "booked" || classStatus === "rebooked";
+
+  if (
+    classStatus === "completed" ||
+    (isBookedOrRebooked && hasTimePassed(classEnd))
+  )
+    return null;
 
   const isBeforePreviousDayDeadline =
     isBookedOrRebooked && !isPastPreviousDayDeadline(classStart);

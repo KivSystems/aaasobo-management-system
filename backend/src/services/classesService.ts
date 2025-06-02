@@ -628,14 +628,15 @@ export const getCustomerClasses = async (customerId: number) => {
     const start = classItem.dateTime;
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
-    const color =
-      classItem.status === "booked"
-        ? "#e8f1fb"
-        : classItem.status === "rebooked"
-          ? "#E7FBD9"
-          : classItem.status === "completed"
-            ? "#B5C4AB"
-            : "#FFEBE0";
+    const statusColorMap: Partial<Record<Status, string>> = {
+      booked: "#e8f1fb",
+      rebooked: "#E7FBD9",
+      canceledByCustomer: "#FFEBE0",
+      canceledByInstructor: "#FFEBE0",
+      completed: "#B5C4AB",
+    };
+
+    const color = statusColorMap[classItem.status] ?? "#FFFFFF";
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)

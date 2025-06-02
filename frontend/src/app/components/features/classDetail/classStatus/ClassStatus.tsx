@@ -9,57 +9,43 @@ const ClassStatus = ({
   status,
   language,
 }: {
-  status: string;
+  status: ClassStatus;
   language?: LanguageType;
 }) => {
   const languageClass = language === "ja" ? styles.ja : styles.en;
 
-  const renderIcon = () => {
-    if (
-      status === "booked" ||
-      status === "rebooked" ||
-      status === "completed"
-    ) {
-      return (
-        <CheckCircleIcon
-          className={`${styles.classStatus__icon} ${styles[status]}`}
-        />
-      );
-    }
-    if (status === "canceledByInstructor") {
-      return (
-        <ExclamationTriangleIcon
-          className={`${styles.classStatus__icon} ${styles[status]}`}
-        />
-      );
-    }
-    return (
-      <XCircleIcon
-        className={`${styles.classStatus__icon} ${styles[status]}`}
-      />
-    );
+  const statusIconMap: Partial<Record<ClassStatus, React.ElementType>> = {
+    booked: CheckCircleIcon,
+    rebooked: CheckCircleIcon,
+    completed: CheckCircleIcon,
+    canceledByInstructor: ExclamationTriangleIcon,
+    canceledByCustomer: XCircleIcon,
+  };
+
+  const IconComponent = statusIconMap[status] ?? CheckCircleIcon;
+
+  const statusLabelMap: Partial<
+    Record<ClassStatus, { ja: string; en: string }>
+  > = {
+    booked: { ja: "レギュラークラス", en: "Regular Class" },
+    rebooked: { ja: "振替クラス", en: "Rebooked Class" },
+    completed: { ja: "終了", en: "Completed" },
+    canceledByCustomer: { ja: "キャンセル", en: "Canceled" },
+    canceledByInstructor: { ja: "キャンセル", en: "Canceled by Instructor" },
   };
 
   const renderStatusLabel = () => {
-    switch (status) {
-      case "booked":
-        return language === "ja" ? "レギュラークラス" : "Regular Class";
-      case "rebooked":
-        return language === "ja" ? "振替クラス" : "Rebooked Class";
-      case "completed":
-        return language === "ja" ? "終了" : "Completed";
-      case "canceledByCustomer":
-        return language === "ja" ? "キャンセル" : "Canceled";
-      case "canceledByInstructor":
-        return language === "ja" ? "キャンセル" : "Canceled by Instructor";
-      default:
-        return language === "ja" ? "不明なクラス" : "Unknown Status";
-    }
+    return (
+      statusLabelMap[status]?.[language === "ja" ? "ja" : "en"] ??
+      (language === "ja" ? "不明なクラス" : "Unknown Status")
+    );
   };
 
   return (
     <div className={styles.classStatus}>
-      {renderIcon()}
+      <IconComponent
+        className={`${styles.classStatus__icon} ${styles[status]}`}
+      />
       <div className={`${styles.classStatus__label} ${languageClass}`}>
         {renderStatusLabel()}
         {status === "canceledByInstructor" && language === "ja" && (

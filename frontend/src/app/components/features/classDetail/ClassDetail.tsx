@@ -30,6 +30,12 @@ const ClassDetail = ({
   if (!classDetail) {
     return <div>{NO_CLASS_DETAILS[language]}</div>;
   }
+  const statusesForAttendance: ClassStatus[] = [
+    "booked",
+    "rebooked",
+    "completed",
+  ];
+  const statusesForCancelBtn: ClassStatus[] = ["booked", "rebooked"];
 
   const handleCancel = async (
     classId: number,
@@ -70,9 +76,7 @@ const ClassDetail = ({
       <ClassDateTime classStart={classDetail.start} language={language} />
 
       {/* Children Attendance */}
-      {(classDetail.classStatus === "booked" ||
-        classDetail.classStatus === "rebooked" ||
-        classDetail.classStatus === "completed") && (
+      {statusesForAttendance.includes(classDetail.classStatus) && (
         <div className={styles.children}>
           <div className={styles.children__iconContainer}>
             <UsersIcon className={styles.children__icon} />
@@ -92,8 +96,7 @@ const ClassDetail = ({
 
       {/* Cancel Booking button */}
       {/* Only render if the class is "booked" or "rebooked" and hasn't passed the previous-day deadline. */}
-      {(classDetail.classStatus === "booked" ||
-        classDetail.classStatus === "rebooked") &&
+      {statusesForCancelBtn.includes(classDetail.classStatus) &&
         !isPastPreviousDayDeadline(classDetail.start) && (
           <div className={styles.buttons}>
             <ActionButton
