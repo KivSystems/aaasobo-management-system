@@ -69,7 +69,7 @@ export const NO_CLASS_DETAILS = {
 
 export const CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY = {
   ja: "クラス当日以降のキャンセルは承っておりません。当日キャンセルをご希望の方は、contact@aaasobo.org までご連絡ください。",
-  en: "Same-day or later cancellations aren’t available. Please contact contact@aaasobo.org if needed.",
+  en: "Same-day or later cancellations aren't available. Please contact contact@aaasobo.org if needed.",
 };
 
 export const CANCEL_CLASS_CONFIRM_MESSAGE = {
@@ -98,6 +98,6 @@ export const CANCELED_BY_INSTRUCTOR_NOTICE = {
 };
 
 export const CANCELED_BY_CUSTOMER_NOTICE = {
-  ja: "前日まで（日本時間基準）にキャンセルされたクラスは、180日間振替可能です。複数回のキャンセルは初回予約日から180日間が対象です。当日キャンセルは振替できませんのでご了承ください。",
+  ja: "前日まで（日本時間基準）にキャンセルされたクラスは、180日間振替可能です。当日キャンセルは振替できませんのでご了承ください。",
   en: "Cancellations made by the day before (Japan time) are rebookable within 180 days. For multiple cancellations, the period starts from the original booking. Same-day cancellations aren't rebookable.",
 };
