@@ -233,45 +233,16 @@ export async function countClassesOfSubscription(
 }
 
 // Cancel a class
-export const cancelClassById = async (
-  classId: number,
-  isPastPrevDayDeadline: boolean,
-) => {
-  const classToUpdate = await prisma.class.findUnique({
-    where: { id: classId },
-  });
-
-  if (!classToUpdate) {
-    throw new Error("Class not found");
-  }
-
-  if (classToUpdate.status !== "booked") {
-    throw new Error("Class cannot be canceled");
-  }
-
-  // Use a transaction to ensure both operations succeed or fail together
-  await prisma.$transaction(async (prisma) => {
-    // Delete class attendance records
-    await prisma.classAttendance.deleteMany({
+export const cancelClassById = async (classId: number) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.classAttendance.deleteMany({
       where: { classId },
     });
-    // If classes are canceled before the class dates (!isPastPrevDayDeadline), they are still rebookable.
-    // Otherwise (isPastPrevDayDeadline), not (rebookableUntil: null)
-    if (!isPastPrevDayDeadline) {
-      await prisma.class.update({
-        where: { id: classId },
-        data: { status: "canceledByCustomer", updatedAt: new Date() },
-      });
-    } else {
-      await prisma.class.update({
-        where: { id: classId },
-        data: {
-          status: "canceledByCustomer",
-          rebookableUntil: null,
-          updatedAt: new Date(),
-        },
-      });
-    }
+
+    await tx.class.update({
+      where: { id: classId },
+      data: { status: "canceledByCustomer", updatedAt: new Date() },
+    });
   });
 };
 
@@ -495,7 +466,9 @@ export const getUpcomingClasses = async (customerId: number) => {
   const classes = await prisma.class.findMany({
     where: {
       customerId: customerId,
-      status: "booked",
+      status: {
+        in: ["booked", "rebooked"],
+      },
       dateTime: {
         gte: nowUTC,
       },
@@ -655,12 +628,15 @@ export const getCustomerClasses = async (customerId: number) => {
     const start = classItem.dateTime;
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
-    const color =
-      classItem.status === "booked"
-        ? "#E7FBD9"
-        : classItem.status === "completed"
-          ? "#B5C4AB"
-          : "#FFEBE0";
+    const statusColorMap: Partial<Record<Status, string>> = {
+      booked: "#e8f1fb",
+      rebooked: "#E7FBD9",
+      canceledByCustomer: "#FFEBE0",
+      canceledByInstructor: "#FFEBE0",
+      completed: "#B5C4AB",
+    };
+
+    const color = statusColorMap[classItem.status] ?? "#FFFFFF";
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)
@@ -679,6 +655,9 @@ export const getCustomerClasses = async (customerId: number) => {
       instructorMeetingId: classItem.instructor.meetingId,
       instructorPasscode: classItem.instructor.passcode,
       classStatus: classItem.status,
+      rebookableUntil: classItem.rebookableUntil,
+      classCode: classItem.classCode,
+      updatedAt: classItem.updatedAt,
     };
   });
   return customerClasses;

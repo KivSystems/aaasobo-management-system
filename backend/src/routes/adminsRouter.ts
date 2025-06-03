@@ -4,6 +4,7 @@ import {
   logoutAdminController,
   registerAdminController,
   registerInstructorController,
+  updateAdminProfileController,
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
@@ -25,6 +26,7 @@ adminsRouter.post("/login", loginAdminController);
 adminsRouter.get("/logout", logoutAdminController);
 // TODO: add authentication middleware to this route
 adminsRouter.post("/register", registerAdminController);
+adminsRouter.patch("/:id", updateAdminProfileController);
 adminsRouter.get("/authentication", authenticateAdminSession);
 // TODO: add authentication middleware to this route
 adminsRouter.post("/instructor-list/register", registerInstructorController);

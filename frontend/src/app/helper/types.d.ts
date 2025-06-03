@@ -33,6 +33,7 @@ type Availability = { dateTime: string };
 
 type ClassStatus =
   | "booked"
+  | "rebooked"
   | "completed"
   | "canceledByCustomer"
   | "canceledByInstructor"
@@ -92,6 +93,9 @@ type CustomerClass = {
   instructorMeetingId: string;
   instructorPasscode: string;
   classStatus: ClassStatus;
+  rebookableUntil: string;
+  classCode: string;
+  updatedAt: string;
 };
 
 type Child = {
@@ -341,4 +345,12 @@ type ResetPasswordFormProps = {
   token: string;
   userType: UserType;
   tokenVerificationResult: TokenVerificationResult;
+};
+
+type ClassDetailProps = {
+  customerId: number;
+  classDetail: CustomerClass | null;
+  isAdminAuthenticated?: boolean;
+  handleModalClose: () => void;
+  language: LanguageType;
 };

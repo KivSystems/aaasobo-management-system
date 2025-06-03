@@ -70,11 +70,7 @@ export const validateCancelableClasses = (
   );
 
   if (pastPrevDayClasses.length > 0) {
-    alert(
-      language === "ja"
-        ? CANCELATION_NOT_ALLOWED_MESSAGE.ja
-        : CANCELATION_NOT_ALLOWED_MESSAGE.en,
-    );
+    alert(CANCELATION_NOT_ALLOWED_MESSAGE[language]);
 
     const updatedSelectedClasses = selectedClasses.filter(
       (eachClass) =>
