@@ -112,13 +112,18 @@ export const PASSWORD_SECURITY_CHECK_FAILED_MESSAGE = {
 };
 
 export const PASSWORD_RESET_LINK_EXPIRED = {
-  ja: "パスワード再設定用リンクの有効期限が切れています。お手数ですが、下のリンクから再発行をお願いします。",
+  ja: "パスワード再設定リンクの有効期限が切れています。お手数ですが、下のリンクから再発行をお願いします。",
   en: "The password reset link has expired. Please request a new one using the link below.",
 };
 
 export const TOKEN_OR_USER_NOT_FOUND_ERROR = {
-  ja: "パスワードの再設定に失敗しました。再設定メールが複数届いている場合は、最新のメールにある再設定ボタンをクリックしてください。問題が解決しない場合は、contact@aaasobo.orgまでご連絡ください。",
-  en: "We couldn't reset your password. If you've received multiple reset emails, please click the reset button in the most recent one. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: "パスワード再設定リンクの確認に失敗しました。複数のメールが届いている場合は、最新のものをご確認ください。うまくいかない場合は、contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't verify your password reset link. If you've received multiple reset emails, please use the most recent one. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const RESET_TOKEN_VERIFICATION_FAILED = {
+  ja: "パスワード再設定リンクの確認に失敗しました。複数のメールが届いている場合は、最新のものをご確認ください。うまくいかない場合は、下のリンクから新しい再設定リンクを再発行してください。ご不便をおかけして申し訳ありません。",
+  en: "We couldn't verify your password reset link. If you've received multiple reset emails, please use the most recent one. If the issue persists, request a new reset link using the link below. We're sorry for the inconvenience.",
 };
 
 export const PASSWORD_RESET_FAILED_MESSAGE = {

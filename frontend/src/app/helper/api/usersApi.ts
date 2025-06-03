@@ -8,6 +8,7 @@ import {
   PASSWORD_RESET_FAILED_MESSAGE,
   PASSWORD_RESET_LINK_EXPIRED,
   PASSWORD_RESET_SUCCESS_MESSAGE,
+  RESET_TOKEN_VERIFICATION_FAILED,
   TOKEN_OR_USER_NOT_FOUND_ERROR,
   UNEXPECTED_ERROR_MESSAGE,
 } from "../messages/formValidation";
@@ -129,6 +130,53 @@ export const updateUserPassword = async (
     console.error("API error while updating password:", error);
     return {
       errorMessageWithResetLink: PASSWORD_RESET_FAILED_MESSAGE[language],
+    };
+  }
+};
+
+export const verifyResetToken = async (
+  token: string,
+  userType: UserType,
+): Promise<TokenVerificationResult> => {
+  try {
+    const apiURL = `${BACKEND_ORIGIN}/users/verify-reset-token`;
+    const response = await fetch(apiURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, userType }),
+    });
+
+    if (response.status === 404) {
+      return {
+        valid: false,
+        needsResetLink: false,
+        message: TOKEN_OR_USER_NOT_FOUND_ERROR,
+      };
+    }
+
+    if (response.status === 410) {
+      return {
+        valid: false,
+        needsResetLink: true,
+        message: PASSWORD_RESET_LINK_EXPIRED,
+      };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      valid: true,
+      needsResetLink: false,
+      message: { ja: "有効なトークン", en: "valid token" },
+    };
+  } catch (error) {
+    console.error("API error while verifying password reset token:", error);
+    return {
+      valid: false,
+      needsResetLink: true,
+      message: RESET_TOKEN_VERIFICATION_FAILED,
     };
   }
 };

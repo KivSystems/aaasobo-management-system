@@ -330,3 +330,15 @@ type RebookingModalProps = {
 type RebookableClassListProps = RebookingModalProps & {
   language: LanguageType;
 };
+
+type TokenVerificationResult = {
+  valid: boolean;
+  needsResetLink: boolean;
+  message: { ja: string; en: string };
+};
+
+type ResetPasswordFormProps = {
+  token: string;
+  userType: UserType;
+  tokenVerificationResult: TokenVerificationResult;
+};
