@@ -131,7 +131,7 @@ const RegisterForm = ({
         </>
       )}
 
-      {userType === "instructor" && (
+      {(userType === "admin" || userType === "instructor") && (
         <>
           <p className={styles.required}>*Required</p>
           <TextInput
@@ -145,17 +145,21 @@ const RegisterForm = ({
             error={localMessages.name}
             onChange={() => clearErrorMessage("name")}
           />
-          <TextInput
-            id="nickname"
-            label="Nickname"
-            type="text"
-            name="nickname"
-            placeholder="e.g., John"
-            icon={<UserCircleIcon className={styles.icon} />}
-            inputRequired
-            error={localMessages.name}
-            onChange={() => clearErrorMessage("nickname")}
-          />
+
+          {userType === "instructor" && (
+            <TextInput
+              id="nickname"
+              label="Nickname"
+              type="text"
+              name="nickname"
+              placeholder="e.g., John"
+              icon={<UserCircleIcon className={styles.icon} />}
+              inputRequired
+              error={localMessages.name}
+              onChange={() => clearErrorMessage("nickname")}
+            />
+          )}
+
           <TextInput
             id="email"
             label="Email"
@@ -202,56 +206,61 @@ const RegisterForm = ({
             showPassword={showPassword}
             onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
           />
-          <TextInput
-            id="icon"
-            label="Icon"
-            type="text"
-            name="icon"
-            placeholder="e.g., john-1.jpg"
-            icon={<PhotoIcon className={styles.icon} />}
-            inputRequired
-            onChange={() => clearErrorMessage("icon")}
-          />
-          <TextInput
-            id="classURL"
-            label="Class URL"
-            type="text"
-            name="classURL"
-            placeholder="e.g., https://zoom.us/j/..."
-            icon={<LinkIcon className={styles.icon} />}
-            inputRequired
-            onChange={() => clearErrorMessage("classURL")}
-          />
-          <TextInput
-            id="meetingId"
-            label="Meeting ID"
-            type="text"
-            name="meetingId"
-            placeholder="e.g., 123 456 7890"
-            icon={<IdentificationIcon className={styles.icon} />}
-            inputRequired
-            onChange={() => clearErrorMessage("meetingId")}
-          />
-          <TextInput
-            id="passcode"
-            label="Pass Code"
-            type="text"
-            name="passcode"
-            placeholder="e.g., 123456"
-            icon={<KeyIcon className={styles.icon} />}
-            inputRequired
-            onChange={() => clearErrorMessage("passcode")}
-          />
-          <TextInput
-            id="introductionURL"
-            label="Introduction URL"
-            type="text"
-            name="introductionURL"
-            placeholder="e.g., https://..."
-            icon={<DocumentTextIcon className={styles.icon} />}
-            inputRequired
-            onChange={() => clearErrorMessage("introductionURL")}
-          />
+
+          {userType === "instructor" && (
+            <>
+              <TextInput
+                id="icon"
+                label="Icon"
+                type="text"
+                name="icon"
+                placeholder="e.g., john-1.jpg"
+                icon={<PhotoIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("icon")}
+              />
+              <TextInput
+                id="classURL"
+                label="Class URL"
+                type="text"
+                name="classURL"
+                placeholder="e.g., https://zoom.us/j/..."
+                icon={<LinkIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("classURL")}
+              />
+              <TextInput
+                id="meetingId"
+                label="Meeting ID"
+                type="text"
+                name="meetingId"
+                placeholder="e.g., 123 456 7890"
+                icon={<IdentificationIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("meetingId")}
+              />
+              <TextInput
+                id="passcode"
+                label="Pass Code"
+                type="text"
+                name="passcode"
+                placeholder="e.g., 123456"
+                icon={<KeyIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("passcode")}
+              />
+              <TextInput
+                id="introductionURL"
+                label="Introduction URL"
+                type="text"
+                name="introductionURL"
+                placeholder="e.g., https://..."
+                icon={<DocumentTextIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("introductionURL")}
+              />
+            </>
+          )}
         </>
       )}
 
