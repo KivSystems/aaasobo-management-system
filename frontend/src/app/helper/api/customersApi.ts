@@ -7,14 +7,12 @@ import {
 import {
   CONFIRMATION_EMAIL_SEND_FAILURE,
   CONFIRMATION_EMAIL_SENT,
-  CONFIRMATION_LINK_EXPIRED_RESEND_FAILED,
   EMAIL_ALREADY_REGISTERED_ERROR,
   EMAIL_VERIFICATION_FAILED_MESSAGE,
   EMAIL_VERIFICATION_SUCCESS_MESSAGE,
   EMAIL_VERIFICATION_TOKEN_EXPIRED,
   EMAIL_VERIFICATION_UNEXPECTED_ERROR,
-  GENERAL_ERROR_MESSAGE,
-  GENERAL_ERROR_MESSAGE_JA,
+  UNEXPECTED_ERROR_MESSAGE,
 } from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
@@ -119,8 +117,7 @@ export const registerCustomer = async (
   } catch (error) {
     console.error("API error while registering customer:", error);
     return {
-      errorMessage:
-        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language],
     };
   }
 };
@@ -171,9 +168,7 @@ export const getClasses = async (customerId: number) => {
   try {
     const customerClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/classes`;
     const response = await fetch(customerClassesURL, {
-      // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
       cache: "no-store",
-      next: { tags: ["customer-classes"] },
     });
 
     if (!response.ok) {
@@ -204,7 +199,6 @@ export const verifyCustomerEmail = async (
     400: EMAIL_VERIFICATION_FAILED_MESSAGE,
     404: EMAIL_VERIFICATION_FAILED_MESSAGE,
     410: EMAIL_VERIFICATION_TOKEN_EXPIRED,
-    503: CONFIRMATION_LINK_EXPIRED_RESEND_FAILED,
   };
 
   try {

@@ -144,7 +144,7 @@ export const registerAdmin = async (userData: {
     });
 
     if (response.status === 409) {
-      return { email: EMAIL_ALREADY_REGISTERED_ERROR };
+      return { email: EMAIL_ALREADY_REGISTERED_ERROR.en };
     }
 
     if (!response.ok) {

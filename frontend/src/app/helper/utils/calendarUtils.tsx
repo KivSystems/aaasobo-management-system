@@ -27,14 +27,16 @@ export const createRenderEventContent = (userType: UserType) => {
           cursor: isClickable ? "pointer" : "default",
         }}
       >
-        {isCustomer && classStatus === "booked" && instructorIcon ? (
+        {isCustomer &&
+        (classStatus === "booked" || classStatus === "rebooked") &&
+        instructorIcon ? (
           <Image
             src={`/instructors/${instructorIcon}`}
             alt={instructorNickname || "Instructor"}
             width={30}
             height={30}
             priority
-            className={styles.instructorIcon}
+            className={`${styles.instructorIcon} ${styles[classStatus]}`}
           />
         ) : classStatus === "completed" ? (
           <div className={styles.classStatusIcon}>
@@ -56,12 +58,14 @@ export const createRenderEventContent = (userType: UserType) => {
           className={`${styles.eventDetails} ${
             classStatus === "booked"
               ? styles.booked
-              : classStatus === "completed"
-                ? styles.completed
-                : classStatus === "canceledByCustomer" ||
-                    classStatus === "canceledByInstructor"
-                  ? styles.canceled
-                  : ""
+              : classStatus === "rebooked"
+                ? styles.rebooked
+                : classStatus === "completed"
+                  ? styles.completed
+                  : classStatus === "canceledByCustomer" ||
+                      classStatus === "canceledByInstructor"
+                    ? styles.canceled
+                    : ""
           }`}
         >
           <div className={styles.eventTime}>{classTime} -</div>

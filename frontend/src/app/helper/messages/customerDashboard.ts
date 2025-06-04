@@ -31,14 +31,14 @@ export const SELECTED_CLASSES_CANCELLATION_SUCCESS = {
   en: "The selected class(es) have been successfully canceled.",
 };
 
-export const FAILED_TO_CANCEL_CLASSES = {
-  ja: "選択したクラスのキャンセルに失敗しました。後ほど、もう一度お試しください。",
-  en: "Failed to cancel the selected classes. Please try again later.",
+export const FAILED_TO_CANCEL_INVALID_CLASSES = {
+  ja: "無効なクラスIDが含まれていたため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
-export const TODAYS_CLASS_CANCELLATION_NOTICE = {
-  ja: "当日のクラスをキャンセルする場合は、LINEでスタッフにご連絡ください。この場合、振替クラスはご利用いただけませんのでご注意ください。なお、日本時間を基準としております。",
-  en: "If you need to cancel the class on the scheduled day, please contact our staff via LINE. Please note that make-up classes will not be available in this case. Note that Japan Standard Time is used as the reference.",
+export const FAILED_TO_CANCEL_CLASSES = {
+  ja: "選択したクラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "Failed to cancel the selected classes. Please try again after a short while. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
 export const NO_CANCELABLE_CLASSES_MESSAGE = {
@@ -59,4 +59,45 @@ export const REBOOKING_TOO_LATE_NOTICE = {
 export const CHILD_PROFILE_REQUIRED_MESSAGE = {
   ja: "お子様のプロフィールが未登録のため、振替予約を行うことができません。サイドメニューの「お子様プロフィール」からプロフィールを登録のうえ、再度振替予約を行ってください。",
   en: "You cannot rebook a class because your child's profile has not been registered. Please go to 'Child Profile' in the side menu to register the profile, then try rebooking again.",
+};
+
+// ClassDetail Modal
+export const NO_CLASS_DETAILS = {
+  ja: "クラス情報が取得できませんでした。",
+  en: "No class details available",
+};
+
+export const CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY = {
+  ja: "クラス当日以降のキャンセルは承っておりません。当日キャンセルをご希望の方は、contact@aaasobo.org までご連絡ください。",
+  en: "Same-day or later cancellations aren't available. Please contact contact@aaasobo.org if needed.",
+};
+
+export const CANCEL_CLASS_CONFIRM_MESSAGE = {
+  ja: "このクラスをキャンセルしてもよろしいですか？",
+  en: "Are you sure you want to cancel this class?",
+};
+
+export const CLASS_CANCELLATION_SUCCESS = {
+  ja: "クラスのキャンセルが完了しました。",
+  en: "The class has been successfully canceled.",
+};
+
+export const FAILED_TO_CANCEL_INVALID_CLASS = {
+  ja: "クラスIDが無効だったため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const FAILED_TO_CANCEL_CLASS = {
+  ja: "クラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "Failed to cancel the class. Please try again after a short while. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const CANCELED_BY_INSTRUCTOR_NOTICE = {
+  ja: "インストラクターの都合でキャンセルとなったクラスは、振替可能クラスとしてカウントされ、180日間有効です。",
+  en: "Classes canceled by the instructor count toward your rebookable class total and are valid for 180 days.",
+};
+
+export const CANCELED_BY_CUSTOMER_NOTICE = {
+  ja: "前日まで（日本時間基準）にキャンセルされたクラスは、180日間振替可能です。当日キャンセルは振替できませんのでご了承ください。",
+  en: "Cancellations made by the day before (Japan time) are rebookable within 180 days. For multiple cancellations, the period starts from the original booking. Same-day cancellations aren't rebookable.",
 };

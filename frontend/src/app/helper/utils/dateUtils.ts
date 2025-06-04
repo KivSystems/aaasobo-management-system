@@ -23,6 +23,29 @@ export const formatDateTime = (date: Date, locale: string = "en-US") => {
   }).format(date);
 };
 
+// Formats year and date (e.g., "Thu, Jan 11, 2025", "2025年1月11日(木)")
+export const formatYearDate = (date: Date, locale: string = "en-US") => {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
+
+// Formats year,date, and time (e.g., "Thu, January 11, 2025 at 09:30", "2025年1月11日(木) 9:30")
+export const formatYearDateTime = (date: Date, locale: string = "en-US") => {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+};
+
 // Converts a UTC ISO date string to the specified time zone, calculates the end time by adding 25 minutes,
 // and formats both start and end times as "YYYY-MM-DDTHH:MM:SS" for use in calendar events.
 export function getClassStartAndEndTimes(isoDateStr: string, timeZone: string) {
@@ -54,11 +77,7 @@ export const formatTimeWithAddedMinutes = (
   minutesToAdd: number,
 ): string => {
   const updatedDate = addMinutes(date, minutesToAdd);
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: false,
-  }).format(updatedDate);
+  return formatTime24Hour(updatedDate);
 };
 
 // Function to format the previous day for a given time zone (e.g., Jun 28, 2024)
@@ -241,22 +260,23 @@ export const formatDateToISO = (dateString: string): string => {
 };
 
 // e.g., Monday, Tuesday ...
-export const getDayOfWeek = (date: Date): string => {
-  const formatter = new Intl.DateTimeFormat("en-US", { weekday: "long" });
+export const getDayOfWeek = (date: Date, locale: string = "en-US"): string => {
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: "long" });
   return formatter.format(date);
 };
 
-// e.g., JAN, FEB ...
-export const getShortMonth = (date: Date): string => {
-  const formatter = new Intl.DateTimeFormat("en-US", { month: "short" });
-  return formatter.format(date).toUpperCase(); // Converts to uppercase
+// e.g., "en-US": MAY, JAN ..., "ja-JP": 5, 6 ...
+export const getShortMonth = (date: Date, locale: string = "en-US"): string => {
+  if (locale === "ja-JP") {
+    return String(date.getMonth() + 1);
+  }
+
+  const formatter = new Intl.DateTimeFormat(locale, { month: "short" });
+  return formatter.format(date).toUpperCase();
 };
 
 // Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
-export const formatShortDate = (
-  date: Date,
-  locale: string = Intl.DateTimeFormat().resolvedOptions().locale,
-) => {
+export const formatShortDate = (date: Date, locale: string = "en-US") => {
   const day = date.getDate();
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
@@ -279,4 +299,12 @@ export const nHoursLater = (n: number, dateTime: Date = new Date()): Date => {
 
 export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
   return new Date(dateTime.getTime() - n * 60 * 60 * 1000);
+};
+
+export const hasTimePassed = (targetTime: Date | string): boolean =>
+  Date.now() > new Date(targetTime).getTime();
+
+export const formatClassDetailFooter = (updatedDateTime: string) => {
+  const updatedDate = new Date(updatedDateTime);
+  return format(updatedDate, "yyyy-MM-dd-HH:mm");
 };

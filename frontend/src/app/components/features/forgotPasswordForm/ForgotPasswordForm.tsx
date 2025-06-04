@@ -12,7 +12,11 @@ import { sendResetEmail } from "@/app/actions/sendResetEmail";
 import { useSearchParams } from "next/navigation";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
-export default function ForgotPasswordForm() {
+export default function ForgotPasswordForm({
+  language,
+}: {
+  language: LanguageType;
+}) {
   const [resultState, formAction] = useFormState(sendResetEmail, undefined);
   const { localMessages, clearErrorMessage } = useFormMessages(resultState);
 
@@ -23,10 +27,9 @@ export default function ForgotPasswordForm() {
     <form action={formAction} className={styles.form}>
       <TextInput
         id="email"
-        label="Email"
         type="email"
         name="email"
-        placeholder="e.g., example@aaasobo.com"
+        placeholder={language === "ja" ? "メール" : "e-mail"}
         icon={<EnvelopeIcon className={styles.icon} />}
         required={true}
         onChange={() => clearErrorMessage("message")}
@@ -34,9 +37,14 @@ export default function ForgotPasswordForm() {
 
       {/* Hidden input to send necessary data with form submission. */}
       <input type="hidden" name="userType" value={userType ?? ""} />
+      <input type="hidden" name="language" value={language ?? "en"} />
 
       <div className={styles.buttonWrapper}>
-        <ActionButton btnText="Submit" className="bookBtn" type="submit" />
+        <ActionButton
+          btnText={language === "ja" ? "送 信" : "Submit"}
+          className="submitBtn"
+          type="submit"
+        />
       </div>
 
       <div className={styles.messageWrapper}>
@@ -60,7 +68,7 @@ export default function ForgotPasswordForm() {
           userType === "customer" ? "/customers/login" : "/instructors/login"
         }
       >
-        Return to login page
+        {language === "ja" ? "ログインページへ戻る" : "Return to login page"}
       </Link>
     </form>
   );
