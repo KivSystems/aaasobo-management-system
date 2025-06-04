@@ -6,8 +6,7 @@ const prisma = new PrismaClient();
 async function insertInstructors() {
   await prisma.instructor.create({
     data: {
-      // email: "helen@example.com",
-      email: "kiv-developers@googlegroups.com",
+      email: "helen@example.com",
       name: "Helene Gay Santos",
       nickname: "Helen",
       icon: "helen-1.jpg",
@@ -269,13 +268,11 @@ async function insertCustomers() {
       },
       {
         name: "山田 花",
-        // email: "hana@example.com",
-        email: "kiv-developers@googlegroups.com",
+        email: "hana@example.com",
         password:
           "$2b$12$qbcPqqpR3nKgtCgrusCbQOfMqJJHiMlBSkeClYEeWkKM6Fc6xahD2", // AaasoBo!Hana
         prefecture: "Hokkaido",
-        // emailVerified: "2025-04-11T01:26:02.736Z",
-        emailVerified: null,
+        emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2025-04-01T00:00:00.000Z",
       },
     ],
