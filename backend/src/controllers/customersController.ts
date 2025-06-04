@@ -274,21 +274,6 @@ export const verifyCustomerEmailController = async (
     const isTokenExpired = new Date(existingToken.expires) < new Date();
 
     if (isTokenExpired) {
-      const verificationToken = await generateVerificationToken(
-        existingToken.email,
-      );
-
-      const resendResult = await resendVerificationEmail(
-        verificationToken.email,
-        existingCustomer.name,
-        verificationToken.token,
-      );
-
-      if (!resendResult.success) {
-        await deleteVerificationToken(verificationToken.email);
-        return res.sendStatus(503); // Failed to resend verification email. 503 Service Unavailable
-      }
-
       return res.sendStatus(410); // 410 Gone
     }
 

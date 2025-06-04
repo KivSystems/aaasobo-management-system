@@ -164,19 +164,6 @@ export const updatePasswordController = async (req: Request, res: Response) => {
     const isTokenExpired = new Date(existingToken.expires) < new Date();
 
     if (isTokenExpired) {
-      const passwordResetToken = await generatePasswordResetToken(user.email);
-
-      const sendResult = await sendPasswordResetEmail(
-        passwordResetToken.email,
-        user.name,
-        passwordResetToken.token,
-        userType,
-      );
-
-      if (!sendResult.success) {
-        await deletePasswordResetToken(passwordResetToken.email);
-        return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
-      }
       return res.sendStatus(410); // Token is expired. 410 Gone
     }
 
@@ -191,6 +178,47 @@ export const updatePasswordController = async (req: Request, res: Response) => {
     return res.sendStatus(201);
   } catch (error) {
     console.error("Error updating password", {
+      error,
+      context: {
+        token,
+        userType,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const verifyResetTokenController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { token, userType } = req.body;
+
+  if (!token || !userType) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const existingToken = await getPasswordResetTokenByToken(token);
+    if (!existingToken) {
+      return res.sendStatus(404);
+    }
+
+    const user = await getUserByEmail(userType, existingToken.email);
+    if (!user) {
+      return res.sendStatus(404);
+    }
+
+    const isTokenExpired = new Date(existingToken.expires) < new Date();
+
+    if (isTokenExpired) {
+      return res.sendStatus(410); // Token is expired. 410 Gone
+    }
+
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error("Error verifying password reset token", {
       error,
       context: {
         token,

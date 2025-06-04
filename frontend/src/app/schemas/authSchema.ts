@@ -182,7 +182,18 @@ export const forgotPasswordFormSchema = z.object({
     .min(1, { message: "Email is required" })
     .email({ message: "Invalid email format" }),
   userType: z.enum(["admin", "customer", "instructor"], {
-    message: "Invalid user type.",
+    message: "We couldn't verify the user type. Please try again later.",
+  }),
+});
+
+export const forgotPasswordFormSchemaJa = z.object({
+  email: z
+    .string()
+    .min(1, { message: "メールアドレスを入力してください。" })
+    .email({ message: "メールアドレスの形式が正しくありません。" }),
+  userType: z.enum(["admin", "customer", "instructor"], {
+    message:
+      "ユーザータイプを確認できませんでした。時間をおいて、もう一度お試しください。",
   }),
 });
 
@@ -196,15 +207,37 @@ export const resetPasswordFormSchema = z
       message: "Invalid user type.",
     }),
     password: z.string().min(8, { message: "At least 8 characters long." }),
-    passwordConfirmation: z.string(),
+    passConfirmation: z.string(),
     passwordStrength: z.number(),
   })
-  .refine((data) => data.password === data.passwordConfirmation, {
+  .refine((data) => data.password === data.passConfirmation, {
     message: "Passwords do not match.",
-    path: ["passwordConfirmation"],
+    path: ["passConfirmation"],
   })
   .refine((data) => data.passwordStrength >= 3, {
     message:
       "Your password is too weak. Try using a longer passphrase or a password manager.",
+    path: ["password"],
+  });
+
+export const resetPasswordFormSchemaJa = z
+  .object({
+    token: z
+      .string()
+      .min(1, { message: "トークンが見つかりません。" })
+      .uuid({ message: "無効なトークンです。" }),
+    userType: z.enum(["admin", "customer", "instructor"], {
+      message: "無効なユーザータイプです。",
+    }),
+    password: z.string().min(8, { message: "8文字以上で入力してください。" }),
+    passConfirmation: z.string(),
+    passwordStrength: z.number(),
+  })
+  .refine((data) => data.password === data.passConfirmation, {
+    message: "パスワードが一致しません。",
+    path: ["passConfirmation"],
+  })
+  .refine((data) => data.passwordStrength >= 3, {
+    message: "パスワードの安全性が低過ぎます。",
     path: ["password"],
   });

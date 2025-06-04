@@ -2,9 +2,10 @@ import { ZodFormattedError } from "zod";
 import { ZodIssue } from "zod";
 import {
   GENERAL_ERROR_MESSAGE,
-  GENERAL_ERROR_MESSAGE_JA,
   LOGIN_FAILED_MESSAGE,
   PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR,
+  PASSWORD_SECURITY_CHECK_FAILED_MESSAGE,
+  UNEXPECTED_ERROR_MESSAGE,
 } from "../messages/formValidation";
 
 export function extractRegisterValidationErrors(
@@ -18,8 +19,7 @@ export function extractRegisterValidationErrors(
 
   if (unexpectedError) {
     return {
-      errorMessage:
-        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language ?? "en"],
     };
   }
 
@@ -64,8 +64,7 @@ export function extractLoginValidationErrors(
 
   if (unexpectedError) {
     return {
-      errorMessage:
-        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language],
     };
   }
   return { errorMessage: LOGIN_FAILED_MESSAGE[language] };
@@ -75,7 +74,7 @@ export function extractResetRequestValidationErrors(
   formattedErrors: ZodFormattedError<
     {
       email: string;
-      userType: "admin" | "customer" | "instructor";
+      userType: UserType;
     },
     string
   >,
@@ -87,7 +86,7 @@ export function extractResetRequestValidationErrors(
   }
 
   if (formattedErrors.userType) {
-    errors.errorMessage = GENERAL_ERROR_MESSAGE;
+    errors.errorMessage = formattedErrors.userType._errors[0];
   }
 
   return errors;
@@ -97,31 +96,31 @@ export function extractPasswordResetValidationErrors(
   formattedErrors: ZodFormattedError<
     {
       token: string;
-      userType: "admin" | "customer" | "instructor";
+      userType: UserType;
       password: string;
-      passwordConfirmation: string;
+      passConfirmation: string;
       passwordStrength: number;
     },
     string
   >,
+  language: LanguageType,
 ): ResetPasswordFormState {
   const errors: ResetPasswordFormState = {};
 
   if (formattedErrors.token || formattedErrors.userType) {
-    errors.errorMessage = PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR;
+    errors.errorMessage = PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR[language];
   }
 
   if (formattedErrors.password) {
     errors.password = formattedErrors.password._errors[0];
   }
 
-  if (formattedErrors.passwordConfirmation) {
-    errors.passwordConfirmation =
-      formattedErrors.passwordConfirmation._errors[0];
+  if (formattedErrors.passConfirmation) {
+    errors.passConfirmation = formattedErrors.passConfirmation._errors[0];
   }
 
   if (formattedErrors.passwordStrength) {
-    errors.errorMessage = GENERAL_ERROR_MESSAGE;
+    errors.errorMessage = PASSWORD_SECURITY_CHECK_FAILED_MESSAGE[language];
   }
 
   return errors;
