@@ -78,14 +78,14 @@ function CustomerProfile({
   //   }
   // };
 
-  if (!customerProfile)
-    return (
-      <h3>
-        {language === "ja"
-          ? "プロフィールを読み込めませんでした。"
-          : "Failed to load the profile."}
-      </h3>
-    );
+  // if (!customerProfile)
+  //   return (
+  //     <h3>
+  //       {language === "ja"
+  //         ? "プロフィールを読み込めませんでした。"
+  //         : "Failed to load the profile."}
+  //     </h3>
+  //   );
 
   return (
     <form className={styles.profileCard} action={formAction}>

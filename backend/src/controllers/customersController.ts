@@ -4,7 +4,7 @@ import {
   getCustomerByEmail,
   getCustomerById,
   registerCustomer,
-  updateCustomer,
+  updateCustomerProfile,
   verifyCustomerEmail,
 } from "../services/customersService";
 import {
@@ -129,12 +129,22 @@ export const getCustomerByIdController = async (
   }
 };
 
-export const updateCustomerProfile = async (req: Request, res: Response) => {
+export const updateCustomerProfileController = async (
+  req: Request,
+  res: Response,
+) => {
   const customerId = parseInt(req.params.id);
   const { name, email, prefecture } = req.body;
 
   try {
-    const customer = await updateCustomer(customerId, name, email, prefecture);
+    // get customer's current email
+
+    const customer = await updateCustomerProfile(
+      customerId,
+      name,
+      email,
+      prefecture,
+    );
 
     res.status(200).json({
       message: "Customer is updated successfully",

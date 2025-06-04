@@ -45,20 +45,19 @@ export const getCustomerById = async (
   }
 };
 
-// PATCH customer data
-export const editCustomer = async (
-  customerId: number,
-  customerName: string,
-  customerEmail: string,
-  customerPrefecture: string,
+export const updateCustomerProfile = async (
+  id: number,
+  name: string,
+  email: string,
+  prefecture: string,
 ) => {
   // Define the data to be sent to the server side.
-  const customerURL = `${BACKEND_ORIGIN}/customers/${customerId}`;
+  const customerURL = `${BACKEND_ORIGIN}/customers/${id}`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
-    name: customerName,
-    email: customerEmail,
-    prefecture: customerPrefecture,
+    name,
+    email,
+    prefecture,
   });
 
   const response = await fetch(customerURL, {

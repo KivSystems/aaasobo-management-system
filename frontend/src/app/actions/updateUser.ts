@@ -13,7 +13,7 @@ import {
   customerProfileSchema,
   customerProfileSchemaJa,
 } from "../schemas/customerDashboardSchemas.ts";
-import { editCustomer } from "../helper/api/customersApi";
+import { updateCustomerProfile } from "../helper/api/customersApi";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -148,7 +148,7 @@ export async function updateCustomerProfileAction(
     return extractUpdateValidationErrors(validationErrors);
   }
 
-  const responseMessage = await editCustomer(
+  const responseMessage = await updateCustomerProfile(
     id,
     parsedForm.data.name,
     parsedForm.data.email,

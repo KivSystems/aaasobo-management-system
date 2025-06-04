@@ -16,7 +16,7 @@ export const getCustomerById = async (customerId: number) => {
   return customerWithoutPassword;
 };
 
-export const updateCustomer = async (
+export const updateCustomerProfile = async (
   id: number,
   name: string,
   email: string,
