@@ -14,6 +14,7 @@ import {
   customerProfileSchemaJa,
 } from "../schemas/customerDashboardSchemas.ts";
 import { updateCustomerProfile } from "../helper/api/customersApi";
+import { revalidatePath } from "next/cache";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -114,21 +115,25 @@ export async function updateCustomerProfileAction(
   prevState: UpdateFormState | undefined,
   formData: FormData,
 ): Promise<UpdateFormState> {
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const prefecture = formData.get("prefecture");
+  const updatedName = formData.get("name");
+  const updatedEmail = formData.get("email");
+  const updatedPrefecture = formData.get("prefecture");
   // Hidden input tag fields
   const id = Number(formData.get("id"));
-  const oldName = formData.get("oldName");
-  const oldEmail = formData.get("oldEmail");
-  const oldPrefecture = formData.get("oldPrefecture");
+  const currentName = formData.get("currentName");
+  const currentEmail = formData.get("currentEmail");
+  const currentPrefecture = formData.get("currentPrefecture");
   const language = formData.get("language") as LanguageType;
 
   const schema =
     language === "ja" ? customerProfileSchemaJa : customerProfileSchema;
 
   // Check if there are any changes
-  if (name === oldName && email === oldEmail && prefecture === oldPrefecture) {
+  if (
+    updatedName === currentName &&
+    updatedEmail === currentEmail &&
+    updatedPrefecture === currentPrefecture
+  ) {
     return {
       errorMessage:
         language === "ja"
@@ -138,9 +143,9 @@ export async function updateCustomerProfileAction(
   }
 
   const parsedForm = schema.safeParse({
-    name,
-    email,
-    prefecture,
+    name: updatedName,
+    email: updatedEmail,
+    prefecture: updatedPrefecture,
   });
 
   if (!parsedForm.success) {
@@ -148,14 +153,16 @@ export async function updateCustomerProfileAction(
     return extractUpdateValidationErrors(validationErrors);
   }
 
-  const responseMessage = await updateCustomerProfile(
+  const updateResultMessage = await updateCustomerProfile(
     id,
     parsedForm.data.name,
     parsedForm.data.email,
     parsedForm.data.prefecture,
+    language,
   );
 
   // TODO: RevalidatePath
+  revalidatePath(`/admins/customer-list/${id}/profile`);
 
-  return responseMessage;
+  return updateResultMessage;
 }

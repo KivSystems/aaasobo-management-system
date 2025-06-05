@@ -135,23 +135,64 @@ export const updateCustomerProfileController = async (
 ) => {
   const customerId = parseInt(req.params.id);
   const { name, email, prefecture } = req.body;
+  const updatedEmail = email.trim().toLowerCase();
 
   try {
-    // get customer's current email
+    const currentCustomerProfile = await getCustomerById(customerId);
 
-    const customer = await updateCustomerProfile(
-      customerId,
+    if (!currentCustomerProfile) {
+      return res.sendStatus(404);
+    }
+
+    const currentEmail = currentCustomerProfile.email;
+
+    const emailUpdated = updatedEmail !== currentEmail;
+
+    if (emailUpdated) {
+      const verificationToken = await generateVerificationToken(updatedEmail);
+
+      const resendResult = await resendVerificationEmail(
+        verificationToken.email,
+        name,
+        verificationToken.token,
+      );
+
+      if (!resendResult.success) {
+        await deleteVerificationToken(verificationToken.email);
+        return res.sendStatus(503); // Failed to resend verification email. 503 Service Unavailable
+      }
+
+      await updateCustomerProfile(customerId, {
+        name,
+        email: updatedEmail,
+        prefecture,
+        emailVerified: null,
+      });
+
+      return res.status(200).json({
+        emailUpdated,
+      });
+    }
+
+    await updateCustomerProfile(customerId, {
       name,
-      email,
+      email: updatedEmail,
       prefecture,
-    );
+      emailVerified: null,
+    });
 
     res.status(200).json({
-      message: "Customer is updated successfully",
-      customer,
+      emailUpdated,
     });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    console.error("Error updating customer profile", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 

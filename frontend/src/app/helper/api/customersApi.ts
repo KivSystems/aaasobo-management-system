@@ -3,6 +3,10 @@ import {
   FAILED_TO_FETCH_CUSTOMER_PROFILE,
   FAILED_TO_FETCH_REBOOKABLE_CLASSES,
   FAILED_TO_FETCH_UPCOMING_CLASSES,
+  PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE,
+  PROFILE_UPDATE_FAILED_MESSAGE,
+  PROFILE_UPDATE_SUCCESS_MESSAGE,
+  PROFILE_UPDATED_VERIFICATION_EMAIL_SENT,
 } from "../messages/customerDashboard";
 import {
   CONFIRMATION_EMAIL_SEND_FAILURE,
@@ -48,8 +52,8 @@ export const updateCustomerProfile = async (
   name: string,
   email: string,
   prefecture: string,
-) => {
-  // Define the data to be sent to the server side.
+  language: LanguageType,
+): Promise<{ successMessage: string } | { errorMessage: string }> => {
   const customerURL = `${BACKEND_ORIGIN}/customers/${id}`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
@@ -58,19 +62,41 @@ export const updateCustomerProfile = async (
     prefecture,
   });
 
-  const response = await fetch(customerURL, {
-    method: "PATCH",
-    headers,
-    body,
-  });
+  try {
+    const response = await fetch(customerURL, {
+      method: "PATCH",
+      headers,
+      body,
+    });
 
-  const data = await response.json();
+    if (response.status === 503) {
+      return {
+        errorMessage:
+          PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE[language],
+      };
+    }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.emailUpdated) {
+      return {
+        successMessage: PROFILE_UPDATED_VERIFICATION_EMAIL_SENT[language],
+      };
+    }
+
+    return {
+      successMessage: PROFILE_UPDATE_SUCCESS_MESSAGE[language],
+    };
+  } catch (error) {
+    console.error("API error while updating customer profile:", error);
+    return {
+      errorMessage: PROFILE_UPDATE_FAILED_MESSAGE[language],
+    };
   }
-
-  return data;
 };
 
 type Response<E> =

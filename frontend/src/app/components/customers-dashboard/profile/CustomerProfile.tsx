@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./CustomerProfile.module.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
@@ -33,6 +33,15 @@ function CustomerProfile({
     customerProfile.prefecture,
     language,
   );
+
+  const isError = !!localMessages.errorMessage;
+  const isSuccess = !!localMessages.successMessage;
+
+  useEffect(() => {
+    if (profileUpdateResult !== undefined) {
+      setIsEditing(false);
+    }
+  }, [profileUpdateResult]);
 
   // const handleFormSubmit = async (e: React.FormEvent) => {
   //   e.preventDefault();
@@ -154,16 +163,14 @@ function CustomerProfile({
       </label>
 
       <div className={styles.messageWrapper}>
-        {localMessages.errorMessage && (
+        {(isError || isSuccess) && (
           <FormValidationMessage
-            type="error"
-            message={localMessages.errorMessage}
-          />
-        )}
-        {localMessages.successMessage && (
-          <FormValidationMessage
-            type="success"
-            message={localMessages.successMessage}
+            type={isSuccess ? "success" : "error"}
+            message={
+              isError
+                ? localMessages.errorMessage
+                : localMessages.successMessage
+            }
           />
         )}
       </div>
@@ -195,6 +202,7 @@ function CustomerProfile({
             btnText="Edit"
             onClick={() => {
               setIsEditing(true);
+              clearErrorMessage("errorMessage");
             }}
           />
         </div>
@@ -202,15 +210,19 @@ function CustomerProfile({
 
       {/* Hidden fields to include in form submission */}
       <input type="hidden" name="id" value={customerProfile.id ?? ""} />
-      <input type="hidden" name="oldName" value={customerProfile.name ?? ""} />
       <input
         type="hidden"
-        name="oldEmail"
+        name="currentName"
+        value={customerProfile.name ?? ""}
+      />
+      <input
+        type="hidden"
+        name="currentEmail"
         value={customerProfile.email ?? ""}
       />
       <input
         type="hidden"
-        name="oldPrefecture"
+        name="currentPrefecture"
         value={customerProfile.prefecture ?? ""}
       />
       <input type="hidden" name="language" value={language ?? "en"} />

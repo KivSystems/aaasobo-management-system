@@ -18,29 +18,46 @@ export const getCustomerById = async (customerId: number) => {
 
 export const updateCustomerProfile = async (
   id: number,
-  name: string,
-  email: string,
-  prefecture: string,
+  dataToUpdate: {
+    name?: string;
+    email?: string;
+    prefecture?: string;
+    emailVerified?: Date | null;
+  },
 ) => {
-  try {
-    // Update the Customer data.
-    const customer = await prisma.customer.update({
-      where: {
-        id,
-      },
-      data: {
-        name,
-        email,
-        prefecture,
-      },
-    });
-
-    return customer;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to update the customer data.");
-  }
+  const customer = await prisma.customer.update({
+    where: {
+      id,
+    },
+    data: dataToUpdate,
+  });
 };
+
+// export const updateCustomerProfile = async (
+//   id: number,
+//   name: string,
+//   email: string,
+//   prefecture: string,
+// ) => {
+//   try {
+//     // Update the Customer data.
+//     const customer = await prisma.customer.update({
+//       where: {
+//         id,
+//       },
+//       data: {
+//         name,
+//         email,
+//         prefecture,
+//       },
+//     });
+
+//     return customer;
+//   } catch (error) {
+//     console.error("Database Error:", error);
+//     throw new Error("Failed to update the customer data.");
+//   }
+// };
 
 // Fetch all customers information
 export const getAllCustomers = async () => {
