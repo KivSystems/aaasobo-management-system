@@ -168,7 +168,7 @@ export const userLoginSchema = z.object({
     .string()
     .email("Please enter a valid email address.")
     .min(1, "Email is required."),
-  password: z.string().min(4, "At least 8 characters long."),
+  password: z.string().min(8, "At least 8 characters long."),
   userType: z.enum(["admin", "customer", "instructor"], {
     message: "Invalid user type.",
   }),
