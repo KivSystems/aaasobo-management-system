@@ -15,6 +15,8 @@ import {
 } from "../schemas/customerDashboardSchemas.ts";
 import { updateCustomerProfile } from "../helper/api/customersApi";
 import { revalidatePath } from "next/cache";
+import { NO_CHANGES_MADE_MESSAGE } from "../helper/messages/customerDashboard";
+import { getCustomerSession } from "../helper/auth/sessionUtils";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -119,11 +121,27 @@ export async function updateCustomerProfileAction(
   const updatedEmail = formData.get("email");
   const updatedPrefecture = formData.get("prefecture");
   // Hidden input tag fields
-  const id = Number(formData.get("id"));
   const currentName = formData.get("currentName");
   const currentEmail = formData.get("currentEmail");
   const currentPrefecture = formData.get("currentPrefecture");
   const language = formData.get("language") as LanguageType;
+  const id = Number(formData.get("id")); // The form includes "id" (customer ID) only when submitted by an admin.
+
+  let customerId;
+
+  // If "id" is present (only submitted by an admin), use it as the customerId.
+  // Otherwise, retrieve the customer ID from the session for security.
+  if (id) {
+    customerId = id;
+  } else {
+    const session = await getCustomerSession();
+
+    if (!session) {
+      throw new Error("Unauthorized / 認証されていません");
+    }
+
+    customerId = Number(session.user.id);
+  }
 
   const schema =
     language === "ja" ? customerProfileSchemaJa : customerProfileSchema;
@@ -135,10 +153,7 @@ export async function updateCustomerProfileAction(
     updatedPrefecture === currentPrefecture
   ) {
     return {
-      errorMessage:
-        language === "ja"
-          ? "変更された項目がありません。"
-          : "No changes were made.",
+      errorMessage: NO_CHANGES_MADE_MESSAGE[language],
     };
   }
 
@@ -154,15 +169,18 @@ export async function updateCustomerProfileAction(
   }
 
   const updateResultMessage = await updateCustomerProfile(
-    id,
+    customerId,
     parsedForm.data.name,
     parsedForm.data.email,
     parsedForm.data.prefecture,
     language,
   );
 
-  // TODO: RevalidatePath
-  revalidatePath(`/admins/customer-list/${id}/profile`);
+  const path = id
+    ? `/admins/customer-list/${customerId}`
+    : `/customers/${customerId}/profile`;
+
+  revalidatePath(path);
 
   return updateResultMessage;
 }
