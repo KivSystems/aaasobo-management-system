@@ -1,7 +1,5 @@
 "use client";
 
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import EditChildProfile from "@/app/components/customers-dashboard/children-profiles/EditChildProfile";
 
 function Page({ params }: { params: { customerId: string; childId: string } }) {
@@ -15,7 +13,7 @@ function Page({ params }: { params: { customerId: string; childId: string } }) {
   }
 
   // Check the authentication of the admin.
-  const { isAuthenticated } = useContext(AuthContext);
+  const isAuthenticated = true;
 
   return (
     <>

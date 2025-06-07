@@ -1,7 +1,5 @@
 "use client";
 
-import { useContext, useEffect } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/ClassDetails";
 
 const Page = ({
@@ -16,7 +14,7 @@ const Page = ({
   }
 
   // Check the authentication of the admin.
-  const { isAuthenticated } = useContext(AuthContext);
+  const isAuthenticated = true;
 
   return (
     <ClassDetails

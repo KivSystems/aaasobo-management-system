@@ -2,8 +2,6 @@
 
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import AdminProfile from "@/app/components/admins-dashboard/AdminProfile";
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
@@ -18,7 +16,7 @@ export default function AdminTabs({
   const activeTabName = "activeAdminTab";
 
   // Check the authentication of the admin.
-  const { isAuthenticated } = useContext(AuthContext);
+  const isAuthenticated = true;
 
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect("activeAdminTab");

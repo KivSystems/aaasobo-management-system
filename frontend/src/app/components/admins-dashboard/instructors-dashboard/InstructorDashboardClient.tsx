@@ -2,8 +2,6 @@
 
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import InstructorProfile from "@/app/components/instructors-dashboard/instructor-profile/InstructorProfile";
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
 import AvailabilityCalendar from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/AvailabilityCalendar";
 import InstructorSchedule from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/InstructorSchedule";
@@ -26,7 +24,7 @@ export default function InstructorTabs({
   const activeTabName = "activeInstructorTab";
 
   // Check the authentication of the admin.
-  const { isAuthenticated } = useContext(AuthContext);
+  const isAuthenticated = true;
 
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect(

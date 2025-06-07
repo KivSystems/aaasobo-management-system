@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import InstructorSearch from "@/app/components/admins-dashboard/InstructorSearch";
 import InstructorCalendarForAdmin from "@/app/components/admins-dashboard/InstructorCalendarForAdmin";
 
@@ -10,7 +9,7 @@ const Page = () => {
   const [instructorName, setInstructorName] = useState<string | null>(null);
 
   // Check the authentication of the admin.
-  const { isAuthenticated } = useContext(AuthContext);
+  const isAuthenticated = true;
 
   const handleSendInstructor = async (id: number, name: string) => {
     localStorage.setItem("activeInstructor", [String(id), name].join(","));

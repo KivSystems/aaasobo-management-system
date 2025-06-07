@@ -1,7 +1,5 @@
 "use client";
 
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import CustomerProfile from "@/app/components/customers-dashboard/profile/CustomerProfile";
 import ChildrenProfiles from "@/app/components/customers-dashboard/children-profiles/ChildrenProfiles";
@@ -24,7 +22,7 @@ function CustomerDashboardClient({
   const activeTabName = "activeCustomerTab";
 
   // Check authentication
-  const { isAuthenticated } = useContext(AuthContext);
+  const isAuthenticated = true;
 
   // Get the active tab from local storage
   const { initialActiveTab, isTabInitialized } =
