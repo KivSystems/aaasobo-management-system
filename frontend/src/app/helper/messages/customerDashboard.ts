@@ -103,9 +103,14 @@ export const CANCELED_BY_CUSTOMER_NOTICE = {
 };
 
 // Profile page
+export const NO_CHANGES_MADE_MESSAGE = {
+  ja: "変更された項目がありません。",
+  en: "No changes were made.",
+};
+
 export const PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE = {
-  ja: "新しいメールアドレスへの認証リンクの送信に失敗したため、プロフィールを更新できませんでした。時間をおいて再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "We couldn't update your profile because the verification link couldn't be sent to your new email. Please try again later. If the issue continues, contact us at contact@aaasobo.org.",
+  ja: "新しいメールアドレスへ認証リンクを送信できなかったため、プロフィールを更新できませんでした。メールアドレスをご確認のうえ、再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't update your profile because we were unable to send a verification link to your new email address. Please check your email address and try again. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
 export const PROFILE_UPDATED_VERIFICATION_EMAIL_SENT = {

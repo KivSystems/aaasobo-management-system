@@ -145,10 +145,14 @@ export const updateCustomerProfileController = async (
     }
 
     const currentEmail = currentCustomerProfile.email;
+    const isEmailUpdated = updatedEmail !== currentEmail;
 
-    const emailUpdated = updatedEmail !== currentEmail;
+    if (isEmailUpdated) {
+      const existingCustomer = await getCustomerByEmail(updatedEmail);
+      if (existingCustomer) {
+        return res.sendStatus(409); // Conflict: email already registered
+      }
 
-    if (emailUpdated) {
       const verificationToken = await generateVerificationToken(updatedEmail);
 
       const resendResult = await resendVerificationEmail(
@@ -159,30 +163,21 @@ export const updateCustomerProfileController = async (
 
       if (!resendResult.success) {
         await deleteVerificationToken(verificationToken.email);
-        return res.sendStatus(503); // Failed to resend verification email. 503 Service Unavailable
+        return res.sendStatus(503); // Service Unavailable:failed to resend verification email
       }
-
-      await updateCustomerProfile(customerId, {
-        name,
-        email: updatedEmail,
-        prefecture,
-        emailVerified: null,
-      });
-
-      return res.status(200).json({
-        emailUpdated,
-      });
     }
 
     await updateCustomerProfile(customerId, {
       name,
       email: updatedEmail,
       prefecture,
-      emailVerified: null,
+      emailVerified: isEmailUpdated
+        ? null
+        : currentCustomerProfile.emailVerified,
     });
 
     res.status(200).json({
-      emailUpdated,
+      isEmailUpdated,
     });
   } catch (error) {
     console.error("Error updating customer profile", {

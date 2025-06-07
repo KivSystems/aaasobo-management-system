@@ -28,9 +28,7 @@ export const getCustomerById = async (
   try {
     const customerProfileURL = `${BACKEND_ORIGIN}/customers/${customerId}/customer`;
     const response = await fetch(customerProfileURL, {
-      // TODO: Remove this line before production to use cached data
       cache: "no-store",
-      next: { tags: ["customer-profile"] },
     });
 
     if (!response.ok) {
@@ -53,7 +51,7 @@ export const updateCustomerProfile = async (
   email: string,
   prefecture: string,
   language: LanguageType,
-): Promise<{ successMessage: string } | { errorMessage: string }> => {
+): Promise<UpdateFormState> => {
   const customerURL = `${BACKEND_ORIGIN}/customers/${id}`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
@@ -69,6 +67,10 @@ export const updateCustomerProfile = async (
       body,
     });
 
+    if (response.status === 409) {
+      return { email: EMAIL_ALREADY_REGISTERED_ERROR[language] };
+    }
+
     if (response.status === 503) {
       return {
         errorMessage:
@@ -82,7 +84,7 @@ export const updateCustomerProfile = async (
 
     const data = await response.json();
 
-    if (data.emailUpdated) {
+    if (data.isEmailUpdated) {
       return {
         successMessage: PROFILE_UPDATED_VERIFICATION_EMAIL_SENT[language],
       };

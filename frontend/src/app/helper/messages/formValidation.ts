@@ -60,8 +60,8 @@ export const EMAIL_VERIFICATION_RESENT_NOTICE = {
 
 // EmailVerificationForm
 export const EMAIL_VERIFICATION_SUCCESS_MESSAGE = {
-  ja: "メールアドレスが認証されました。ログインページからログインしてください。",
-  en: "Your email address has been verified. Please log in from the login page.",
+  ja: "メールアドレスの認証が完了しました。ご登録のメールアドレスで、ログインページからログインできます。",
+  en: "Your email address has been successfully verified. You can now log in from the login page using your registered email address.",
 };
 
 export const EMAIL_VERIFICATION_FAILED_MESSAGE = {
