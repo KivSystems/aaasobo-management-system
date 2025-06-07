@@ -3,6 +3,7 @@ import Image from "next/image";
 import NavLinks from "./NavLinks";
 import LogOut from "./LogOut";
 import UserName from "./UserName";
+import { getAdminById } from "@/app/helper/api/adminsApi";
 import { getCustomerById } from "@/app/helper/api/customersApi";
 import { getInstructorProfile } from "@/app/helper/api/instructorsApi";
 import LanguageSwitcher from "../../elements/languageSwitcher/LanguageSwitcher";
@@ -15,12 +16,23 @@ export default async function SideNav({
   userType: "admin" | "customer" | "instructor";
 }) {
   let userName = "Admin";
-  if (userType === "customer") {
-    const customer = await getCustomerById(userId);
-    userName = customer.name;
-  } else {
-    const instructor = await getInstructorProfile(userId);
-    userName = instructor.nickname;
+  switch (userType) {
+    case "admin":
+      const response = await getAdminById(userId);
+      if ("admin" in response) {
+        userName = response.admin.name;
+      } else {
+        console.error("Failed to fetch admin:", response.message);
+      }
+      break;
+    case "customer":
+      const customer = await getCustomerById(userId);
+      userName = customer.name;
+      break;
+    case "instructor":
+      const instructor = await getInstructorProfile(userId);
+      userName = instructor.nickname;
+      break;
   }
 
   return (

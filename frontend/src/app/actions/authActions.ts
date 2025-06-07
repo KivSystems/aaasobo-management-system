@@ -43,16 +43,15 @@ export async function authenticate(
 
     let redirectUrl = "";
     switch (parsedForm.data.userType) {
+      case "admin":
+        redirectUrl = `/admins/${userId}/calendar`;
+        break;
       case "customer":
         redirectUrl = `/customers/${userId}/classes`;
         break;
       case "instructor":
         redirectUrl = `/instructors/${userId}/class-schedule`;
         break;
-      case "admin":
-        redirectUrl = `/admins/${userId}/calendar`;
-        break;
-      default:
     }
 
     await signIn("credentials", {

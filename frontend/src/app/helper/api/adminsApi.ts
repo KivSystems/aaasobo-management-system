@@ -11,7 +11,7 @@ const BASE_URL = `${BACKEND_ORIGIN}/admins`;
 
 export type Response<T> = T | { message: string };
 
-export const getAdmin = async (
+export const getAdminById = async (
   id: number,
 ): Promise<Response<{ admin: Admin }>> => {
   const apiUrl = `${BASE_URL}/admin-list/${id}`;
