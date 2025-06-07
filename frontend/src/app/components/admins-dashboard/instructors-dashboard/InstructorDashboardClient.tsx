@@ -5,8 +5,8 @@ import InstructorProfile from "@/app/components/instructors-dashboard/instructor
 import { useContext } from "react";
 import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
-import AvailabilityCalendar from "../../../admins/(authenticated)/instructor-list/[instructorId]/AvailabilityCalendar";
-import InstructorSchedule from "../../../admins/(authenticated)/instructor-list/[instructorId]/InstructorSchedule";
+import AvailabilityCalendar from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/AvailabilityCalendar";
+import InstructorSchedule from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/InstructorSchedule";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function InstructorTabs({
