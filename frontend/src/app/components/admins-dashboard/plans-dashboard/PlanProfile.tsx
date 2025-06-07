@@ -3,7 +3,8 @@
 import styles from "./PlanProfile.module.scss";
 import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
-import { updateUser } from "@/app/actions/updateUser";
+// TODO: Uncomment the import when the updateData action is implemented
+// import { updateData } from "@/app/actions/updateData";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
@@ -22,7 +23,8 @@ function PlanProfile({
   plan: Plan | string;
   isAdminAuthenticated?: boolean;
 }) {
-  const [updateResultState, formAction] = useFormState(updateUser, {});
+  // TODO: Uncomment the import when the updatePlanAction action is implemented
+  // const [updateResultState, formAction] = useFormState(updatePlanAction, {});
   const [previousPlan, setPreviousPlan] = useState<Plan | null>(
     typeof plan !== "string" ? plan : null,
   );
@@ -51,20 +53,21 @@ function PlanProfile({
     }
   };
 
-  useEffect(() => {
-    if (updateResultState !== undefined) {
-      if ("plan" in updateResultState) {
-        const result = updateResultState as { plan: Plan };
-        toast.success("Profile updated successfully!");
-        setIsEditing(false);
-        setPreviousPlan(result.plan);
-        setLatestPlan(result.plan);
-      } else {
-        const result = updateResultState as { errorMessage: string };
-        toast.error(result.errorMessage);
-      }
-    }
-  }, [updateResultState]);
+  // TODO: Uncomment the useEffect when the updateResultState is available
+  // useEffect(() => {
+  //   if (updateResultState !== undefined) {
+  //     if ("plan" in updateResultState) {
+  //       const result = updateResultState as { plan: Plan };
+  //       toast.success("Profile updated successfully!");
+  //       setIsEditing(false);
+  //       setPreviousPlan(result.plan);
+  //       setLatestPlan(result.plan);
+  //     } else {
+  //       const result = updateResultState as { errorMessage: string };
+  //       toast.error(result.errorMessage);
+  //     }
+  //   }
+  // }, [updateResultState]);
 
   if (typeof plan === "string") {
     return <p>{plan}</p>;
@@ -74,7 +77,9 @@ function PlanProfile({
     <>
       <div className={styles.container}>
         {latestPlan ? (
-          <form action={formAction} className={styles.profileCard}>
+          // TODO: Uncomment the formAction when the updatePlanAction action is implemented
+          // <form action={formAction} className={styles.profileCard}>
+          <div className={styles.profileCard}>
             {/* Plan name */}
             <div className={styles.planName__nameSection}>
               <p className={styles.planName__text}>Plan</p>
@@ -163,7 +168,7 @@ function PlanProfile({
                 )}
               </>
             ) : null}
-          </form>
+          </div>
         ) : (
           <Loading />
         )}
