@@ -9,6 +9,7 @@ import {
   instructorUpdateSchema,
 } from "../schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
+import { getCookie } from "../../middleware";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -30,10 +31,14 @@ export async function updateAdminAction(
       return extractUpdateValidationErrors(validationErrors);
     }
 
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
     const response = await updateAdmin(
       id,
       parsedForm.data.name,
       parsedForm.data.email,
+      cookie,
     );
 
     // Refresh cached admin data for the admin list page
@@ -81,6 +86,10 @@ export async function updateInstructorAction(
       return extractUpdateValidationErrors(validationErrors);
     }
 
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
+    // Call the API to update the instructor data
     const response = await updateInstructor(
       id,
       parsedForm.data.name,
@@ -91,6 +100,7 @@ export async function updateInstructorAction(
       parsedForm.data.meetingId,
       parsedForm.data.passcode,
       parsedForm.data.introductionURL,
+      cookie,
     );
 
     // Refresh cached instructor data for the instructor list page

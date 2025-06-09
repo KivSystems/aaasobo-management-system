@@ -15,7 +15,7 @@ export default async function SideNav({
   userId: number;
   userType: "admin" | "customer" | "instructor";
 }) {
-  let userName = "Admin";
+  let userName = "Unauthenticated User";
   switch (userType) {
     case "admin":
       const response = await getAdminById(userId);

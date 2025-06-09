@@ -10,7 +10,6 @@ import {
   getRebookableClassesController,
   verifyCustomerEmailController,
 } from "../../src/controllers/customersController";
-import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
 import {
   type RequestWithId,
   parseId,
@@ -40,4 +39,3 @@ customersRouter.get("/:id/classes", parseId, (req, res) =>
 customersRouter.patch("/:id", updateCustomerProfile);
 
 customersRouter.post("/:id/subscription", registerSubscriptionController);
-customersRouter.get("/:id/authentication", authenticateCustomerSession);

@@ -11,7 +11,8 @@ import {
   adminRegisterSchema,
   customerRegisterSchemaJa,
 } from "../schemas/authSchema";
-import { revalidateAdminList } from "./revalidate";
+import { revalidateInstructorList, revalidateAdminList } from "./revalidate";
+import { getCookie } from "../../middleware";
 
 export async function registerUser(
   prevState: RegisterFormState | undefined,
@@ -36,6 +37,9 @@ export async function registerUser(
     );
     const userType = formData.get("userType");
     const language = formData.get("language") as LanguageType;
+
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
 
     let parsedForm;
     let response;
@@ -89,6 +93,7 @@ export async function registerUser(
           const validationErrors = parsedForm.error.errors;
           return extractRegisterValidationErrors(validationErrors);
         }
+
         response = await registerInstructor({
           name: parsedForm.data.name,
           nickname: parsedForm.data.nickname,
@@ -99,8 +104,12 @@ export async function registerUser(
           meetingId: parsedForm.data.meetingId,
           passcode: parsedForm.data.passcode,
           introductionURL: parsedForm.data.introductionURL,
+          cookie,
         });
-        // TODO: Add revalidation logic for instructor list
+
+        // Refresh cached instructor data for the instructor list page
+        revalidateInstructorList();
+
         return response;
 
       case "admin":
@@ -116,12 +125,17 @@ export async function registerUser(
           const validationErrors = parsedForm.error.errors;
           return extractRegisterValidationErrors(validationErrors);
         }
+
         response = await registerAdmin({
           name: parsedForm.data.name,
           email: parsedForm.data.email,
           password: parsedForm.data.password,
+          cookie,
         });
+
+        // Refresh cached admin data for the admin list page
         await revalidateAdminList();
+
         return response;
 
       default:

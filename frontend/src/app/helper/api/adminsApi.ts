@@ -134,12 +134,13 @@ export const registerAdmin = async (userData: {
   name: string;
   email: string;
   password: string;
+  cookie: string;
 }): Promise<RegisterFormState> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/admins/register`;
+    const registerURL = `${BACKEND_ORIGIN}/admins/admin-list/register`;
     const response = await fetch(registerURL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Cookie: userData.cookie },
       body: JSON.stringify(userData),
     });
 
@@ -167,11 +168,12 @@ export const updateAdmin = async (
   adminId: number,
   adminName: string,
   adminEmail: string,
+  cookie: string,
 ): Promise<UpdateFormState> => {
   try {
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/${adminId}`;
-    const headers = { "Content-Type": "application/json" };
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
     const body = JSON.stringify({
       name: adminName,
       email: adminEmail,
