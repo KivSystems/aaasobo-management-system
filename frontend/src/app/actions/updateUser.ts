@@ -3,16 +3,16 @@
 import { updateAdmin } from "@/app/helper/api/adminsApi";
 import { updateInstructor } from "@/app/helper/api/instructorsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { extractUpdateValidationErrors } from "../helper/utils/validationErrorUtils";
+import {
+  extractCustomerProfileUpdateErrors,
+  extractUpdateValidationErrors,
+} from "../helper/utils/validationErrorUtils";
 import {
   adminUpdateSchema,
   instructorUpdateSchema,
 } from "../schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
-import {
-  customerProfileSchema,
-  customerProfileSchemaJa,
-} from "../schemas/customerDashboardSchemas.ts";
+import { customerProfileSchema } from "../schemas/customerDashboardSchemas.ts";
 import { updateCustomerProfile } from "../helper/api/customersApi";
 import { revalidatePath } from "next/cache";
 import { NO_CHANGES_MADE_MESSAGE } from "../helper/messages/customerDashboard";
@@ -114,9 +114,9 @@ export async function updateInstructorAction(
 }
 
 export async function updateCustomerProfileAction(
-  prevState: UpdateFormState | undefined,
+  prevState: LocalizedMessages | undefined,
   formData: FormData,
-): Promise<UpdateFormState> {
+): Promise<LocalizedMessages> {
   const updatedName = formData.get("name");
   const updatedEmail = formData.get("email");
   const updatedPrefecture = formData.get("prefecture");
@@ -143,9 +143,6 @@ export async function updateCustomerProfileAction(
     customerId = Number(session.user.id);
   }
 
-  const schema =
-    language === "ja" ? customerProfileSchemaJa : customerProfileSchema;
-
   // Check if there are any changes
   if (
     updatedName === currentName &&
@@ -153,11 +150,13 @@ export async function updateCustomerProfileAction(
     updatedPrefecture === currentPrefecture
   ) {
     return {
-      errorMessage: NO_CHANGES_MADE_MESSAGE[language],
+      // errorMessage: NO_CHANGES_MADE_MESSAGE[language],
+      errorMessage: NO_CHANGES_MADE_MESSAGE,
     };
   }
 
-  const parsedForm = schema.safeParse({
+  // const parsedForm = schema.safeParse({
+  const parsedForm = customerProfileSchema.safeParse({
     name: updatedName,
     email: updatedEmail,
     prefecture: updatedPrefecture,
@@ -165,7 +164,7 @@ export async function updateCustomerProfileAction(
 
   if (!parsedForm.success) {
     const validationErrors = parsedForm.error.errors;
-    return extractUpdateValidationErrors(validationErrors);
+    return extractCustomerProfileUpdateErrors(validationErrors);
   }
 
   const updateResultMessage = await updateCustomerProfile(
@@ -173,7 +172,6 @@ export async function updateCustomerProfileAction(
     parsedForm.data.name,
     parsedForm.data.email,
     parsedForm.data.prefecture,
-    language,
   );
 
   const path = id

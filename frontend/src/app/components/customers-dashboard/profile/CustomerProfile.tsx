@@ -26,9 +26,9 @@ function CustomerProfile({
   );
   const [isEditing, setIsEditing] = useState(false);
 
-  const { localMessages, clearErrorMessage } =
-    useFormMessages(profileUpdateResult);
   const { language } = useLanguage();
+  const { localMessages, clearErrorMessage } =
+    useFormMessages<LocalizedMessages>(profileUpdateResult);
 
   const localizedCustomerPrefecture = getLocalizedPrefecture(
     customerProfile.prefecture,
@@ -66,7 +66,7 @@ function CustomerProfile({
               defaultValue={customerProfile.name}
               className={styles.customerName__inputField}
               onChange={() => clearErrorMessage("name")}
-              error={localMessages.name}
+              error={localMessages.name?.[language]}
             />
           ) : (
             <div
@@ -91,7 +91,7 @@ function CustomerProfile({
             defaultValue={customerProfile.email}
             className={styles.email__inputField}
             onChange={() => clearErrorMessage("email")}
-            error={localMessages.email}
+            error={localMessages.email?.[language]}
           />
         ) : (
           <div className={styles.email__name}>
@@ -109,7 +109,7 @@ function CustomerProfile({
         {isEditing ? (
           <PrefectureSelect
             clearErrorMessage={clearErrorMessage}
-            errorMessage={localMessages.prefecture}
+            errorMessage={localMessages.prefecture?.[language]}
             language={language}
             defaultValue={customerProfile.prefecture}
             className="customerProfile"
@@ -128,8 +128,8 @@ function CustomerProfile({
             type={isError ? "error" : "success"}
             message={
               isError
-                ? localMessages.errorMessage
-                : localMessages.successMessage
+                ? localMessages.errorMessage[language]
+                : localMessages.successMessage[language]
             }
           />
         )}
@@ -143,7 +143,7 @@ function CustomerProfile({
             type="button"
             onClick={(e) => {
               e.preventDefault();
-              clearErrorMessage("errorMessage");
+              clearErrorMessage("all");
               setIsEditing(false);
             }}
           />
@@ -163,7 +163,7 @@ function CustomerProfile({
             onClick={(e) => {
               e.preventDefault();
               setIsEditing(true);
-              clearErrorMessage("errorMessage");
+              clearErrorMessage("all");
             }}
           />
         </div>

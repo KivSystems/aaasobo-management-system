@@ -50,8 +50,7 @@ export const updateCustomerProfile = async (
   name: string,
   email: string,
   prefecture: string,
-  language: LanguageType,
-): Promise<UpdateFormState> => {
+): Promise<LocalizedMessages> => {
   const customerURL = `${BACKEND_ORIGIN}/customers/${id}`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
@@ -68,13 +67,12 @@ export const updateCustomerProfile = async (
     });
 
     if (response.status === 409) {
-      return { email: EMAIL_ALREADY_REGISTERED_ERROR[language] };
+      return { email: EMAIL_ALREADY_REGISTERED_ERROR };
     }
 
     if (response.status === 503) {
       return {
-        errorMessage:
-          PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE[language],
+        errorMessage: PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE,
       };
     }
 
@@ -86,17 +84,17 @@ export const updateCustomerProfile = async (
 
     if (data.isEmailUpdated) {
       return {
-        successMessage: PROFILE_UPDATED_VERIFICATION_EMAIL_SENT[language],
+        successMessage: PROFILE_UPDATED_VERIFICATION_EMAIL_SENT,
       };
     }
 
     return {
-      successMessage: PROFILE_UPDATE_SUCCESS_MESSAGE[language],
+      successMessage: PROFILE_UPDATE_SUCCESS_MESSAGE,
     };
   } catch (error) {
     console.error("API error while updating customer profile:", error);
     return {
-      errorMessage: PROFILE_UPDATE_FAILED_MESSAGE[language],
+      errorMessage: PROFILE_UPDATE_FAILED_MESSAGE,
     };
   }
 };

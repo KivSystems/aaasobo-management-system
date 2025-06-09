@@ -144,8 +144,10 @@ export const updateCustomerProfileController = async (
       return res.sendStatus(404);
     }
 
-    const currentEmail = currentCustomerProfile.email;
-    const isEmailUpdated = updatedEmail !== currentEmail;
+    const isNameUpdated = name !== currentCustomerProfile.name;
+    const isEmailUpdated = updatedEmail !== currentCustomerProfile.email;
+    const isPrefectureUpdated =
+      prefecture !== currentCustomerProfile.prefecture;
 
     if (isEmailUpdated) {
       const existingCustomer = await getCustomerByEmail(updatedEmail);
@@ -168,12 +170,10 @@ export const updateCustomerProfileController = async (
     }
 
     await updateCustomerProfile(customerId, {
-      name,
-      email: updatedEmail,
-      prefecture,
-      emailVerified: isEmailUpdated
-        ? null
-        : currentCustomerProfile.emailVerified,
+      ...(isNameUpdated && { name }),
+      ...(isEmailUpdated && { email: updatedEmail }),
+      ...(isPrefectureUpdated && { prefecture }),
+      ...(isEmailUpdated && { emailVerified: null }),
     });
 
     res.status(200).json({
