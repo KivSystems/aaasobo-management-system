@@ -9,9 +9,9 @@ import {
 } from "../schemas/authSchema";
 
 export async function resetPassword(
-  prevState: ResetPasswordFormState | undefined,
+  prevState: StringMessages | undefined,
   formData: FormData,
-): Promise<ResetPasswordFormState> {
+): Promise<StringMessages> {
   const token = formData.get("token");
   const userType = formData.get("userType");
   const password = formData.get("password");

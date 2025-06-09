@@ -226,14 +226,6 @@ type RegisterFormState = {
   language?: LanguageType;
 };
 
-type ResetPasswordFormState = {
-  errorMessageWithResetLink?: string;
-  password?: string;
-  passConfirmation?: string;
-  errorMessage?: string;
-  successMessage?: string;
-};
-
 type UpdateFormState = {
   name?: string;
   nickname?: string;
@@ -335,10 +327,15 @@ type RebookableClassListProps = RebookingModalProps & {
   language: LanguageType;
 };
 
+type LocalizedMessage = {
+  ja: string;
+  en: string;
+};
+
 type TokenVerificationResult = {
   valid: boolean;
   needsResetLink: boolean;
-  message: { ja: string; en: string };
+  message: LocalizedMessage;
 };
 
 type ResetPasswordFormProps = {
@@ -354,3 +351,8 @@ type ClassDetailProps = {
   handleModalClose: () => void;
   language: LanguageType;
 };
+
+type StringMessages = Record<string, string>;
+type LocalizedMessages = Record<string, LocalizedMessage>;
+
+type FormResult = StringMessages | LocalizedMessages;
