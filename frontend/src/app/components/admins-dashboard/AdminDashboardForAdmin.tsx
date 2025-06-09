@@ -2,8 +2,10 @@ import AdminTabs from "@/app/components/admins-dashboard/AdminDashboardClient";
 import { getAdminById } from "@/app/helper/api/adminsApi";
 
 export default async function AdminDashboardForAdmin({
+  userId,
   adminId,
 }: {
+  userId: number;
   adminId: number;
 }) {
   // Fetch admin's data
@@ -15,5 +17,5 @@ export default async function AdminDashboardForAdmin({
     admin = data.admin;
   }
 
-  return <AdminTabs adminId={adminId} admin={admin} />;
+  return <AdminTabs userId={userId} adminId={adminId} admin={admin} />;
 }

@@ -8,20 +8,22 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
 function CustomerDashboardClient({
+  userId,
   customerId,
   classCalendarComponent,
 }: {
+  userId: number;
   customerId: number;
   classCalendarComponent: React.ReactNode;
 }) {
   const breadcrumb = [
     "Customer List",
-    `/admins/customer-list`,
+    `/admins/${userId}/customer-list`,
     `ID: ${customerId}`,
   ];
   const activeTabName = "activeCustomerTab";
 
-  // Check authentication
+  // Set the authentication status as true.
   const isAuthenticated = true;
 
   // Get the active tab from local storage

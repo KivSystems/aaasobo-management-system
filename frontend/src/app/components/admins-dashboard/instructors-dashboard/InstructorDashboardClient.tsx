@@ -8,22 +8,24 @@ import InstructorSchedule from "../../../admins/(authenticated)/[id]/instructor-
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function InstructorTabs({
+  userId,
   instructorId,
   instructor,
   classScheduleComponent,
 }: {
+  userId: number;
   instructorId: number;
   instructor: Instructor | string;
   classScheduleComponent: React.ReactNode;
 }) {
   const breadcrumb = [
     "Instructor List",
-    `/admins/instructor-list`,
+    `/admins/${userId}/instructor-list`,
     `ID: ${instructorId}`,
   ];
   const activeTabName = "activeInstructorTab";
 
-  // Check the authentication of the admin.
+  // Set the authentication status as true.
   const isAuthenticated = true;
 
   // Get the active tab from the local storage.

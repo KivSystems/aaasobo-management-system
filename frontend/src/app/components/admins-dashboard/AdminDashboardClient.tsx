@@ -6,16 +6,22 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function AdminTabs({
+  userId,
   adminId,
   admin,
 }: {
+  userId: number;
   adminId: number;
   admin: Admin | string;
 }) {
-  const breadcrumb = ["Admin List", `/admins/admin-list`, `ID: ${adminId}`];
+  const breadcrumb = [
+    "Admin List",
+    `/admins/${userId}/admin-list`,
+    `ID: ${adminId}`,
+  ];
   const activeTabName = "activeAdminTab";
 
-  // Check the authentication of the admin.
+  // Set the authentication status as true.
   const isAuthenticated = true;
 
   // Get the active tab from the local storage.

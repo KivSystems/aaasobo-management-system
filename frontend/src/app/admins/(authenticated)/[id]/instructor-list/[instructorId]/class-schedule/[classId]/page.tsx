@@ -13,7 +13,7 @@ const Page = ({
     throw new Error("Invalid classId");
   }
 
-  // Check the authentication of the admin.
+  // Set the authentication status as true.
   const isAuthenticated = true;
 
   return (

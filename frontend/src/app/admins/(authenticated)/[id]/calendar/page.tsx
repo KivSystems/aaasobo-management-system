@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import InstructorSearch from "@/app/components/admins-dashboard/InstructorSearch";
 import InstructorCalendarForAdmin from "@/app/components/admins-dashboard/InstructorCalendarForAdmin";
 
@@ -8,7 +8,7 @@ const Page = () => {
   const [instructorId, setInstructorId] = useState<number | null>(null);
   const [instructorName, setInstructorName] = useState<string | null>(null);
 
-  // Check the authentication of the admin.
+  // Set the authentication status as true.
   const isAuthenticated = true;
 
   const handleSendInstructor = async (id: number, name: string) => {

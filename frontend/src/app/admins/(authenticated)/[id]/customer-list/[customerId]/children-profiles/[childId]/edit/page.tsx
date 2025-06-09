@@ -12,7 +12,7 @@ function Page({ params }: { params: { customerId: string; childId: string } }) {
     throw new Error("Invalid childId");
   }
 
-  // Check the authentication of the admin.
+  // Set the authentication status as true.
   const isAuthenticated = true;
 
   return (

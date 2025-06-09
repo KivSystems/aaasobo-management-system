@@ -6,17 +6,22 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function PlanTabs({
+  userId,
   planId,
   plan,
 }: {
+  userId: number;
   planId: number;
   plan: Plan | string;
 }) {
-  const breadcrumb = ["Plan List", `/admins/plan-list`, `ID: ${planId}`];
+  const breadcrumb = [
+    "Plan List",
+    `/admins/${userId}/plan-list`,
+    `ID: ${planId}`,
+  ];
   const activeTabName = "activePlanTab";
 
-  // TODO: Update the logic using NextAuth.
-  // Check the authentication of the admin.
+  // Set the authentication status as true.
   const isAuthenticated = true;
 
   // Get the active tab from the local storage.
