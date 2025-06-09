@@ -256,6 +256,7 @@ async function insertCustomers() {
           "$2b$12$GFM.a0hEjl/0/U3IjO057esEr7l.NMKZSeRC7c1he6wzDvoIW4oxy", // AaasoBo!Alice
         prefecture: "青森県 / Aomori",
         createdAt: "2024-08-01T00:00:00.000Z",
+        updatedAt: "2024-08-10T00:00:00.000Z",
       },
       {
         name: "Bob",
@@ -265,6 +266,7 @@ async function insertCustomers() {
         prefecture: "北海道 / Hokkaido",
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2024-08-01T00:00:00.000Z",
+        updatedAt: "2024-08-10T00:00:00.000Z",
       },
       {
         name: "山田 花",
@@ -274,6 +276,7 @@ async function insertCustomers() {
         prefecture: "北海道 / Hokkaido",
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2025-04-01T00:00:00.000Z",
+        updatedAt: "2024-08-10T00:00:00.000Z",
       },
     ],
   });
