@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 
-export function useFormMessages(
-  formResult: Record<string, string> | undefined,
+export function useFormMessages<T extends FormResult>(
+  formResult: T | undefined,
 ) {
-  const [localMessages, setLocalMessages] = useState<Record<string, string>>(
-    {},
-  );
+  const [localMessages, setLocalMessages] = useState<T>({} as T);
 
   useEffect(() => {
-    setLocalMessages(formResult ?? {});
+    setLocalMessages(formResult ?? ({} as T));
   }, [formResult]);
 
   const clearErrorMessage = (field: string) => {
     setLocalMessages((prev) => {
+      if (field === "all") {
+        return {} as T;
+      }
+
       if (!prev[field] && !prev.successMessage && !prev.errorMessage) {
         return prev;
       }

@@ -254,26 +254,29 @@ async function insertCustomers() {
         emailVerified: "2025-03-08T14:31:26.816Z",
         password:
           "$2b$12$GFM.a0hEjl/0/U3IjO057esEr7l.NMKZSeRC7c1he6wzDvoIW4oxy", // AaasoBo!Alice
-        prefecture: "Aomori",
+        prefecture: "青森県 / Aomori",
         createdAt: "2024-08-01T00:00:00.000Z",
+        updatedAt: "2024-08-10T00:00:00.000Z",
       },
       {
         name: "Bob",
         email: "bob@example.com",
         password:
           "$2b$12$txZ49345mBu/RNVfnKFw9.VahiO1wj4z.6aeKckM50LYkd2Upz3eC", // AaasoBo!Bob
-        prefecture: "Hokkaido",
+        prefecture: "北海道 / Hokkaido",
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2024-08-01T00:00:00.000Z",
+        updatedAt: "2024-08-10T00:00:00.000Z",
       },
       {
         name: "山田 花",
         email: "hana@example.com",
         password:
           "$2b$12$qbcPqqpR3nKgtCgrusCbQOfMqJJHiMlBSkeClYEeWkKM6Fc6xahD2", // AaasoBo!Hana
-        prefecture: "Hokkaido",
+        prefecture: "北海道 / Hokkaido",
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2025-04-01T00:00:00.000Z",
+        updatedAt: "2024-08-10T00:00:00.000Z",
       },
     ],
   });

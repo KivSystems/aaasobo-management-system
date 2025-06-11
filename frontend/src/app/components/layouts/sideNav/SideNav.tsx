@@ -12,7 +12,7 @@ export default async function SideNav({
   userType,
 }: {
   userId: number;
-  userType: "admin" | "customer" | "instructor";
+  userType: UserType;
 }) {
   let userName = "Admin";
   if (userType === "customer") {

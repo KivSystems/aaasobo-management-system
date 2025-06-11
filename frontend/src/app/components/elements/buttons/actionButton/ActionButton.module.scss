@@ -253,7 +253,8 @@
 
 .deleteChild,
 .cancelEditingChild,
-.cancelEditingInstructor {
+.cancelEditingInstructor,
+.cancelEditingCustomer {
   background-color: #d9d9d9;
   transition:
     background-color 0.3s ease,
@@ -275,10 +276,16 @@
   }
 }
 
+.cancelEditingCustomer {
+  height: 40px;
+}
+
 .editChild,
 .editInstructor,
+.editCustomer,
 .saveChild,
-.saveInstructor {
+.saveInstructor,
+.saveCustomer {
   background-color: $green-success;
   transition:
     background-color 0.3s ease,
@@ -298,6 +305,18 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(38, 143, 255, 0.5);
   }
+}
+
+.editCustomer {
+  width: 160px;
+  height: 40px;
+  padding: 0.5rem;
+}
+
+.saveCustomer {
+  width: 130px;
+  height: 40px;
+  padding: 0.5rem;
 }
 
 .rebookClass,

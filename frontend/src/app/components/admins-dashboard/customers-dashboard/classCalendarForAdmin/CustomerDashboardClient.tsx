@@ -12,9 +12,11 @@ import Loading from "@/app/components/elements/loading/Loading";
 function CustomerDashboardClient({
   customerId,
   classCalendarComponent,
+  customerProfile,
 }: {
   customerId: number;
   classCalendarComponent: React.ReactNode;
+  customerProfile: CustomerProfile;
 }) {
   const breadcrumb = [
     "Customer List",
@@ -37,7 +39,12 @@ function CustomerDashboardClient({
     },
     {
       label: "Customer's Profile",
-      content: <CustomerProfile customerId={customerId} />,
+      content: (
+        <CustomerProfile
+          customerProfile={customerProfile}
+          isAdminAuthenticated={isAuthenticated}
+        />
+      ),
     },
     {
       label: "Children's Profile",

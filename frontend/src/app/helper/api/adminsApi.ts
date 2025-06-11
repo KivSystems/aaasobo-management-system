@@ -184,7 +184,7 @@ export const updateAdmin = async (
     });
 
     if (response.status === 409) {
-      return { email: EMAIL_ALREADY_REGISTERED_ERROR };
+      return { email: EMAIL_ALREADY_REGISTERED_ERROR.en };
     }
 
     const data = await response.json();

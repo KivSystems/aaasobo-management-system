@@ -36,7 +36,6 @@ const RegisterForm = ({
     undefined,
   );
   const [password, onPasswordChange] = useInput();
-  const [selectedPrefecture, setSelectedPrefecture] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { localMessages, clearErrorMessage } =
     useFormMessages(registerResultState);
@@ -117,10 +116,8 @@ const RegisterForm = ({
             language={language}
           />
           <PrefectureSelect
-            selectedPrefecture={selectedPrefecture}
-            setSelectedPrefecture={setSelectedPrefecture}
             clearErrorMessage={clearErrorMessage}
-            localMessages={localMessages}
+            errorMessage={localMessages.prefecture}
             language={language!}
           />
           <PrivacyPolicyAgreement

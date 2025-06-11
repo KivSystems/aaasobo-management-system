@@ -3,6 +3,10 @@ import {
   FAILED_TO_FETCH_CUSTOMER_PROFILE,
   FAILED_TO_FETCH_REBOOKABLE_CLASSES,
   FAILED_TO_FETCH_UPCOMING_CLASSES,
+  PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE,
+  PROFILE_UPDATE_FAILED_MESSAGE,
+  PROFILE_UPDATE_SUCCESS_MESSAGE,
+  PROFILE_UPDATED_VERIFICATION_EMAIL_SENT,
 } from "../messages/customerDashboard";
 import {
   CONFIRMATION_EMAIL_SEND_FAILURE,
@@ -24,9 +28,7 @@ export const getCustomerById = async (
   try {
     const customerProfileURL = `${BACKEND_ORIGIN}/customers/${customerId}/customer`;
     const response = await fetch(customerProfileURL, {
-      // TODO: Remove this line before production to use cached data
       cache: "no-store",
-      next: { tags: ["customer-profile"] },
     });
 
     if (!response.ok) {
@@ -43,35 +45,58 @@ export const getCustomerById = async (
   }
 };
 
-// PATCH customer data
-export const editCustomer = async (
-  customerId: number,
-  customerName: string,
-  customerEmail: string,
-  customerPrefecture: string,
-) => {
-  // Define the data to be sent to the server side.
-  const customerURL = `${BACKEND_ORIGIN}/customers/${customerId}`;
+export const updateCustomerProfile = async (
+  id: number,
+  name: string,
+  email: string,
+  prefecture: string,
+): Promise<LocalizedMessages> => {
+  const customerURL = `${BACKEND_ORIGIN}/customers/${id}`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
-    name: customerName,
-    email: customerEmail,
-    prefecture: customerPrefecture,
+    name,
+    email,
+    prefecture,
   });
 
-  const response = await fetch(customerURL, {
-    method: "PATCH",
-    headers,
-    body,
-  });
+  try {
+    const response = await fetch(customerURL, {
+      method: "PATCH",
+      headers,
+      body,
+    });
 
-  const data = await response.json();
+    if (response.status === 409) {
+      return { email: EMAIL_ALREADY_REGISTERED_ERROR };
+    }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    if (response.status === 503) {
+      return {
+        errorMessage: PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE,
+      };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.isEmailUpdated) {
+      return {
+        successMessage: PROFILE_UPDATED_VERIFICATION_EMAIL_SENT,
+      };
+    }
+
+    return {
+      successMessage: PROFILE_UPDATE_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while updating customer profile:", error);
+    return {
+      errorMessage: PROFILE_UPDATE_FAILED_MESSAGE,
+    };
   }
-
-  return data;
 };
 
 type Response<E> =
