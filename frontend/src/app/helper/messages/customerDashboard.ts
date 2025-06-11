@@ -1,11 +1,14 @@
 export const FAILED_TO_FETCH_REBOOKABLE_CLASSES =
   "We couldn't load your available classes to rebook. Please refresh the page or try again later. / 振替予約可能クラスの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
+export const FAILED_TO_FETCH_REBOOKABLE_INSTRUCTORS =
+  "We couldn't load available instructors to rebook. Please refresh the page or try again later. / 振替予約可能なインストラクター情報を取得できませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
+
 export const INVALID_CUSTOMER_ID =
   "We encountered an issue while processing your ID. Please refresh the page or try again later. / カスタマーIDの処理中に問題が発生しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const INVALID_CLASS_ID =
-  "We encountered an issue while processing the class ID. Please try again later. / クラスIDの処理中に問題が発生しました。後ほどもう一度お試しください。";
+  "We encountered an issue while processing the class ID. Please refresh the page or try again later. / クラスIDの処理中に問題が発生しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const FAILED_TO_FETCH_UPCOMING_CLASSES =
   "We couldn't load your upcoming classes. Please refresh the page or try again later. / 予約済みクラスの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";

@@ -12,6 +12,11 @@ import {
   getClassesByCustomerIdController,
   updateClassController,
 } from "../../src/controllers/classesController";
+import {
+  type RequestWithId,
+  parseId,
+} from "../../src/middlewares/parseId.middleware";
+import { getInstructorAvailabilitiesController } from "../controllers/instructorsAvailabilityController";
 
 export const classesRouter = express.Router();
 
@@ -19,6 +24,10 @@ export const classesRouter = express.Router();
 
 classesRouter.get("/", getAllClassesController);
 classesRouter.get("/:id", getClassesByCustomerIdController);
+classesRouter.get("/:id/instructor-availabilities", parseId, (req, res) =>
+  getInstructorAvailabilitiesController(req as RequestWithId, res),
+);
+
 classesRouter.get("/class/:id", getClassByIdController);
 
 classesRouter.post("/create-classes", createClassesForMonthController);

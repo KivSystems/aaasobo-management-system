@@ -189,6 +189,8 @@ export const updateClass = async (
         data: fieldsToUpdate,
       });
 
+      // TODO: if updatedClass.status === "canceledByInstructor", updated instructor unavailability
+
       // Delete existing classAttendance records
       await prisma.classAttendance.deleteMany({
         where: { classId: id },
@@ -719,4 +721,12 @@ export const getClassStatus = async (classId: number) => {
   });
 
   return classData?.status;
+};
+
+export const getRebookableUntil = async (classId: number) => {
+  const classData = await prisma.class.findUnique({
+    where: { id: classId },
+  });
+
+  return classData?.rebookableUntil;
 };

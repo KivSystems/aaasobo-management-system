@@ -4,6 +4,7 @@ import {
   FAILED_TO_CANCEL_CLASSES,
   FAILED_TO_CANCEL_INVALID_CLASS,
   FAILED_TO_CANCEL_INVALID_CLASSES,
+  FAILED_TO_FETCH_REBOOKABLE_INSTRUCTORS,
   SELECTED_CLASSES_CANCELLATION_SUCCESS,
 } from "../messages/customerDashboard";
 
@@ -294,5 +295,30 @@ export const cancelClasses = async (classIds: number[]) => {
   } catch (error) {
     console.error("API error while canceling classes:", error);
     return { success: false, message: FAILED_TO_CANCEL_CLASSES };
+  }
+};
+
+export const getInstructorAvailabilities = async (
+  classId: number,
+  // TODO: update the type
+): Promise<InstructorAvailability[] | []> => {
+  try {
+    const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/instructor-availabilities`;
+    const response = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "API error while fetching rebookable instructor availabilities:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_REBOOKABLE_INSTRUCTORS);
   }
 };

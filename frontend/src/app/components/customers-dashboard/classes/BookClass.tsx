@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { getInstructors } from "@/app/helper/api/instructorsApi";
 import { getChildrenByCustomerId } from "@/app/helper/api/childrenApi";

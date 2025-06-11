@@ -79,7 +79,8 @@ export const getCalendarAvailabilities = async (instructorId: number) => {
         gte: effectiveFrom,
       },
       status: {
-        in: ["booked", "canceledByInstructor"],
+        // TODO: once the updateClass service function has been updated, remove "canceledByInstructor"
+        in: ["booked", "rebooked", "canceledByInstructor"],
       },
     },
     select: {
@@ -133,4 +134,40 @@ export const getCalendarAvailabilities = async (instructorId: number) => {
   });
 
   return formattedAvailabilities;
+};
+
+type InstructorAvailability = {
+  instructorId: number;
+  dateTime: Date;
+};
+
+/**
+ * Fetches all instructors' available time slots between now (+3 hours) and a given date (rebookableUntil).
+ * Only includes slots where:
+ * - The instructor is not marked as unavailable
+ * - There are no existing classes that are booked or rebooked at those times
+ */
+export const getInstructorAvailabilities = async (
+  rebookableUntil: Date,
+): Promise<InstructorAvailability[]> => {
+  const effectiveFrom = nHoursLater(3);
+
+  const availableSlots = await prisma.$queryRaw<InstructorAvailability[]>`
+    SELECT ia."instructorId", ia."dateTime"
+    FROM "InstructorAvailability" ia
+    WHERE ia."dateTime" BETWEEN ${effectiveFrom} AND ${rebookableUntil}
+      AND NOT EXISTS (
+        SELECT 1 FROM "InstructorUnavailability" iu
+        WHERE iu."instructorId" = ia."instructorId"
+          AND iu."dateTime" = ia."dateTime"
+      )
+      AND NOT EXISTS (
+        SELECT 1 FROM "Class" c
+        WHERE c."instructorId" = ia."instructorId"
+          AND c."dateTime" = ia."dateTime"
+          AND c."status" IN ('booked', 'rebooked')
+      )
+  `;
+
+  return availableSlots;
 };

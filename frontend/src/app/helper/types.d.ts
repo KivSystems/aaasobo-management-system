@@ -354,3 +354,8 @@ type ClassDetailProps = {
   handleModalClose: () => void;
   language: LanguageType;
 };
+
+type InstructorAvailability = {
+  instructorId: number;
+  dateTime: string;
+};
