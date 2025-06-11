@@ -150,12 +150,10 @@ export async function updateCustomerProfileAction(
     updatedPrefecture === currentPrefecture
   ) {
     return {
-      // errorMessage: NO_CHANGES_MADE_MESSAGE[language],
       errorMessage: NO_CHANGES_MADE_MESSAGE,
     };
   }
 
-  // const parsedForm = schema.safeParse({
   const parsedForm = customerProfileSchema.safeParse({
     name: updatedName,
     email: updatedEmail,
