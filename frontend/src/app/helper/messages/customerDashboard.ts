@@ -104,3 +104,29 @@ export const CANCELED_BY_CUSTOMER_NOTICE = {
   ja: "前日まで（日本時間基準）にキャンセルされたクラスは、180日間振替可能です。当日キャンセルは振替できませんのでご了承ください。",
   en: "Cancellations made by the day before (Japan time) are rebookable within 180 days. For multiple cancellations, the period starts from the original booking. Same-day cancellations aren't rebookable.",
 };
+
+// Profile page
+export const NO_CHANGES_MADE_MESSAGE = {
+  ja: "変更された項目がありません。",
+  en: "No changes were made.",
+};
+
+export const PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE = {
+  ja: "新しいメールアドレスへ認証リンクを送信できなかったため、プロフィールを更新できませんでした。メールアドレスをご確認のうえ、再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't update your profile because we were unable to send a verification link to your new email address. Please check your email address and try again. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const PROFILE_UPDATED_VERIFICATION_EMAIL_SENT = {
+  ja: "プロフィールの更新が完了しました。新しいメールアドレス宛に認証リンクを送信しましたので、メール内のボタンをクリックして認証を完了してください。",
+  en: "Your profile has been updated. A verification link has been sent to your new email address. Please click the button in the email to complete the verification.",
+};
+
+export const PROFILE_UPDATE_SUCCESS_MESSAGE = {
+  ja: "プロフィールの更新が完了しました。",
+  en: "Your profile has been updated.",
+};
+
+export const PROFILE_UPDATE_FAILED_MESSAGE = {
+  ja: "プロフィールを更新できませんでした。時間をおいて、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't update your profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
+};

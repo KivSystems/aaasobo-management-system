@@ -100,7 +100,7 @@ export const updateUserPassword = async (
   userType: UserType,
   password: string,
   language: LanguageType,
-): Promise<ResetPasswordFormState> => {
+): Promise<StringMessages> => {
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
     const response = await fetch(apiURL, {

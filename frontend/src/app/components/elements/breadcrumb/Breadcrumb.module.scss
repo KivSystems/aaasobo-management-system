@@ -30,3 +30,19 @@
     color: #555;
   }
 }
+
+// Individual styles for each class
+.customerProfile {
+  &.ja,
+  &.en {
+    .breadcrumb__item {
+      font-size: 1.4rem;
+    }
+  }
+
+  &.ja {
+    .breadcrumb__item {
+      font-weight: 600;
+    }
+  }
+}

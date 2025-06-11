@@ -78,8 +78,8 @@ export function extractResetRequestValidationErrors(
     },
     string
   >,
-): ForgotPasswordFormState {
-  const errors: ResetPasswordFormState = {};
+): StringMessages {
+  const errors: StringMessages = {};
 
   if (formattedErrors.email) {
     errors.errorMessage = formattedErrors.email._errors[0];
@@ -104,8 +104,8 @@ export function extractPasswordResetValidationErrors(
     string
   >,
   language: LanguageType,
-): ResetPasswordFormState {
-  const errors: ResetPasswordFormState = {};
+): StringMessages {
+  const errors: StringMessages = {};
 
   if (formattedErrors.token || formattedErrors.userType) {
     errors.errorMessage = PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR[language];
@@ -123,5 +123,27 @@ export function extractPasswordResetValidationErrors(
     errors.errorMessage = PASSWORD_SECURITY_CHECK_FAILED_MESSAGE[language];
   }
 
+  return errors;
+}
+
+export function extractCustomerProfileUpdateErrors(
+  validationErrors: ZodIssue[],
+): LocalizedMessages {
+  const unexpectedError = validationErrors.some(
+    (error) => error.path[0] === "userType",
+  );
+
+  if (unexpectedError) {
+    return { errorMessage: UNEXPECTED_ERROR_MESSAGE };
+  }
+
+  const errors: LocalizedMessages = {};
+  validationErrors.forEach((err) => {
+    if (err.path[0]) {
+      const [messageJa, messageEn] = err.message.split(" / ");
+      const errorMessage = { ja: messageJa, en: messageEn };
+      errors[err.path[0]] = errorMessage;
+    }
+  });
   return errors;
 }
