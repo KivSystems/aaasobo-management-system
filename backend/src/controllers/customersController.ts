@@ -4,7 +4,7 @@ import {
   getCustomerByEmail,
   getCustomerById,
   registerCustomer,
-  updateCustomer,
+  updateCustomerProfile,
   verifyCustomerEmail,
 } from "../services/customersService";
 import {
@@ -129,19 +129,65 @@ export const getCustomerByIdController = async (
   }
 };
 
-export const updateCustomerProfile = async (req: Request, res: Response) => {
+export const updateCustomerProfileController = async (
+  req: Request,
+  res: Response,
+) => {
   const customerId = parseInt(req.params.id);
   const { name, email, prefecture } = req.body;
+  const updatedEmail = email.trim().toLowerCase();
 
   try {
-    const customer = await updateCustomer(customerId, name, email, prefecture);
+    const currentCustomerProfile = await getCustomerById(customerId);
+
+    if (!currentCustomerProfile) {
+      return res.sendStatus(404);
+    }
+
+    const isNameUpdated = name !== currentCustomerProfile.name;
+    const isEmailUpdated = updatedEmail !== currentCustomerProfile.email;
+    const isPrefectureUpdated =
+      prefecture !== currentCustomerProfile.prefecture;
+
+    if (isEmailUpdated) {
+      const existingCustomer = await getCustomerByEmail(updatedEmail);
+      if (existingCustomer) {
+        return res.sendStatus(409); // Conflict: email already registered
+      }
+
+      const verificationToken = await generateVerificationToken(updatedEmail);
+
+      const resendResult = await resendVerificationEmail(
+        verificationToken.email,
+        name,
+        verificationToken.token,
+      );
+
+      if (!resendResult.success) {
+        await deleteVerificationToken(verificationToken.email);
+        return res.sendStatus(503); // Service Unavailable:failed to resend verification email
+      }
+    }
+
+    await updateCustomerProfile(customerId, {
+      ...(isNameUpdated && { name }),
+      ...(isEmailUpdated && { email: updatedEmail }),
+      ...(isPrefectureUpdated && { prefecture }),
+      ...(isEmailUpdated && { emailVerified: null }),
+    });
 
     res.status(200).json({
-      message: "Customer is updated successfully",
-      customer,
+      isEmailUpdated,
     });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    console.error("Error updating customer profile", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 

@@ -28,16 +28,18 @@
   }
 }
 
-.errorText {
+.errorText,
+.successText {
   font-size: 13px;
-  color: #d93025;
   margin-bottom: unset !important;
 }
 
+.errorText {
+  color: #d93025;
+}
+
 .successText {
-  font-size: 13px;
   color: #188038;
-  margin-bottom: unset !important;
 }
 
 // Custom styling for error messages in text inputs

@@ -2,7 +2,7 @@ import express from "express";
 import {
   getSubscriptionsByIdController,
   registerCustomerController,
-  updateCustomerProfile,
+  updateCustomerProfileController,
   registerSubscriptionController,
   getUpcomingClassesController,
   getCustomerByIdController,
@@ -36,6 +36,6 @@ customersRouter.get("/:id/classes", parseId, (req, res) =>
   getClassesController(req as RequestWithId, res),
 );
 
-customersRouter.patch("/:id", updateCustomerProfile);
+customersRouter.patch("/:id", updateCustomerProfileController);
 
 customersRouter.post("/:id/subscription", registerSubscriptionController);

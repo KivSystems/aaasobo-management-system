@@ -11,10 +11,12 @@ function CustomerDashboardClient({
   userId,
   customerId,
   classCalendarComponent,
+  customerProfile,
 }: {
   userId: number;
   customerId: number;
   classCalendarComponent: React.ReactNode;
+  customerProfile: CustomerProfile;
 }) {
   const breadcrumb = [
     "Customer List",
@@ -37,7 +39,12 @@ function CustomerDashboardClient({
     },
     {
       label: "Customer's Profile",
-      content: <CustomerProfile customerId={customerId} />,
+      content: (
+        <CustomerProfile
+          customerProfile={customerProfile}
+          isAdminAuthenticated={isAuthenticated}
+        />
+      ),
     },
     {
       label: "Children's Profile",

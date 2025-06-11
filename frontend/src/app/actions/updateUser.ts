@@ -3,13 +3,21 @@
 import { updateAdmin } from "@/app/helper/api/adminsApi";
 import { updateInstructor } from "@/app/helper/api/instructorsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { extractUpdateValidationErrors } from "../helper/utils/validationErrorUtils";
+import {
+  extractCustomerProfileUpdateErrors,
+  extractUpdateValidationErrors,
+} from "../helper/utils/validationErrorUtils";
 import {
   adminUpdateSchema,
   instructorUpdateSchema,
 } from "../schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
 import { getCookie } from "../../middleware";
+import { customerProfileSchema } from "../schemas/customerDashboardSchemas.ts";
+import { updateCustomerProfile } from "../helper/api/customersApi";
+import { revalidatePath } from "next/cache";
+import { NO_CHANGES_MADE_MESSAGE } from "../helper/messages/customerDashboard";
+import { getCustomerSession } from "../helper/auth/sessionUtils";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -113,4 +121,72 @@ export async function updateInstructorAction(
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
   }
+}
+
+export async function updateCustomerProfileAction(
+  prevState: LocalizedMessages | undefined,
+  formData: FormData,
+): Promise<LocalizedMessages> {
+  const updatedName = formData.get("name");
+  const updatedEmail = formData.get("email");
+  const updatedPrefecture = formData.get("prefecture");
+  // Hidden input tag fields
+  const currentName = formData.get("currentName");
+  const currentEmail = formData.get("currentEmail");
+  const currentPrefecture = formData.get("currentPrefecture");
+  const language = formData.get("language") as LanguageType;
+  const id = Number(formData.get("id")); // The form includes "id" (customer ID) only when submitted by an admin.
+
+  let customerId;
+
+  // If "id" is present (only submitted by an admin), use it as the customerId.
+  // Otherwise, retrieve the customer ID from the session for security.
+  if (id) {
+    customerId = id;
+  } else {
+    const session = await getCustomerSession();
+
+    if (!session) {
+      throw new Error("Unauthorized / 認証されていません");
+    }
+
+    customerId = Number(session.user.id);
+  }
+
+  // Check if there are any changes
+  if (
+    updatedName === currentName &&
+    updatedEmail === currentEmail &&
+    updatedPrefecture === currentPrefecture
+  ) {
+    return {
+      errorMessage: NO_CHANGES_MADE_MESSAGE,
+    };
+  }
+
+  const parsedForm = customerProfileSchema.safeParse({
+    name: updatedName,
+    email: updatedEmail,
+    prefecture: updatedPrefecture,
+  });
+
+  if (!parsedForm.success) {
+    const validationErrors = parsedForm.error.errors;
+    return extractCustomerProfileUpdateErrors(validationErrors);
+  }
+
+  const updateResultMessage = await updateCustomerProfile(
+    customerId,
+    parsedForm.data.name,
+    parsedForm.data.email,
+    parsedForm.data.prefecture,
+  );
+
+  const path = id
+    ? `/admins/customer-list/${customerId}`
+    : `/customers/${customerId}/profile`;
+
+  revalidatePath(path);
+
+  return updateResultMessage;
 }

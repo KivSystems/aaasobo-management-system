@@ -2,198 +2,196 @@
 
 import styles from "./CustomerProfile.module.scss";
 import { useEffect, useState } from "react";
-import { getCustomerById, editCustomer } from "@/app/helper/api/customersApi";
-import InputField from "../../elements/inputField/InputField";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
-import { prefectures } from "@/app/helper/data/data";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import { CheckIcon } from "@heroicons/react/24/outline";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Loading from "../../elements/loading/Loading";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useFormState } from "react-dom";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
+import { updateCustomerProfileAction } from "@/app/actions/updateUser";
+import InputField from "../../elements/inputField/InputField";
+import PrefectureSelect from "../../features/registerForm/prefectureSelect/PrefectureSelect";
+import { getLocalizedPrefecture } from "@/app/helper/utils/stringUtils";
+import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
-function CustomerProfile({ customerId }: { customerId: number }) {
-  const [customer, setCustomer] = useState<Customer | undefined>();
-  const [latestCustomerData, setLatestCustomerData] = useState<
-    Customer | undefined
-  >();
+function CustomerProfile({
+  customerProfile,
+  isAdminAuthenticated,
+}: {
+  customerProfile: CustomerProfile;
+  isAdminAuthenticated?: boolean;
+}) {
+  const [profileUpdateResult, formAction] = useFormState(
+    updateCustomerProfileAction,
+    undefined,
+  );
   const [isEditing, setIsEditing] = useState(false);
 
+  const { language } = useLanguage();
+  const { localMessages, clearErrorMessage } =
+    useFormMessages<LocalizedMessages>(profileUpdateResult);
+
+  const localizedCustomerPrefecture = getLocalizedPrefecture(
+    customerProfile.prefecture,
+    language,
+  );
+
+  const isError = !!localMessages.errorMessage;
+  const isSuccess = !!localMessages.successMessage;
+
+  // If the profile update was successful, exit editing mode.
   useEffect(() => {
-    const fetchCustomer = async () => {
-      try {
-        const customerData = await getCustomerById(customerId);
-        setCustomer(customerData);
-        setLatestCustomerData(customerData);
-      } catch (error) {
-        console.error(error);
+    if (profileUpdateResult !== undefined) {
+      if (profileUpdateResult.successMessage) {
+        setIsEditing(false);
       }
-    };
-    fetchCustomer();
-  }, [customerId]);
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!customer) return;
-
-    // Check if there are any changes
-    if (
-      customer.name === latestCustomerData?.name &&
-      customer.email === latestCustomerData?.email &&
-      customer.prefecture === latestCustomerData?.prefecture
-    ) {
-      return alert("No changes were made.");
     }
-
-    // Validate email format
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(customer.email)) {
-      return alert("Please enter a valid email address.");
-    }
-
-    try {
-      const data = await editCustomer(
-        customerId,
-        customer.name,
-        customer.email,
-        customer.prefecture,
-      );
-      toast.success("Profile edited successfully!");
-
-      setIsEditing(false);
-      setCustomer(data.customer);
-      setLatestCustomerData(data.customer);
-    } catch (error) {
-      console.error("Failed to edit customer data:", error);
-    }
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof Customer,
-  ) => {
-    if (customer) {
-      setCustomer({ ...customer, [field]: e.target.value });
-    }
-  };
-
-  const handleCancelClick = () => {
-    if (latestCustomerData) {
-      setCustomer(latestCustomerData);
-      setIsEditing(false);
-    }
-  };
+  }, [profileUpdateResult]);
 
   return (
-    <>
-      {customer ? (
-        <form className={styles.profileCard} onSubmit={handleFormSubmit}>
-          {/* Customer Name */}
-          <label className={styles.customerName}>
-            <div className={styles.customerName__profileIconContainer}>
-              <UserCircleIcon className={styles.customerName__profileIcon} />
-            </div>
+    <form className={styles.profileCard} action={formAction}>
+      {/* Customer Name */}
+      <label className={styles.customerName}>
+        <div className={styles.customerName__profileIconContainer}>
+          <UserCircleIcon className={styles.customerName__profileIcon} />
+        </div>
 
-            <div className={styles.customerName__nameSection}>
-              <p className={styles.customerName__text}>Name</p>
-              {isEditing ? (
-                <InputField
-                  name="name"
-                  value={customer.name}
-                  onChange={(e) => handleInputChange(e, "name")}
-                  className={`${styles.customerName__inputField} ${isEditing ? styles.editable : ""}`}
-                />
-              ) : (
-                <div className={styles.customerName__name}>{customer.name}</div>
-              )}
-            </div>
-          </label>
-
-          {/* Customer email */}
-          <label className={styles.email}>
-            <div className={styles.email__title}>e-mail</div>
-            {isEditing ? (
-              <InputField
-                name="email"
-                type="email"
-                value={customer.email}
-                onChange={(e) => handleInputChange(e, "email")}
-                className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-              />
-            ) : (
-              <div className={styles.email__name}>{customer.email}</div>
-            )}
-          </label>
-
-          {/* Customer prefecture */}
-          <label className={styles.customerHome}>
-            <div className={styles.customerHome__title}>
-              Prefecture of residence
-            </div>
-
-            {isEditing ? (
-              <select
-                className={`${styles.customerHome__inputField} ${isEditing ? styles.editable : ""}`}
-                value={customer.prefecture}
-                onChange={(e) => {
-                  setCustomer({
-                    ...customer,
-                    prefecture: e.target.value,
-                  });
-                }}
-                required
-              >
-                {prefectures.map((prefecture) => (
-                  <option key={prefecture} value={prefecture}>
-                    {prefecture}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div className={styles.customerHome__name}>
-                {customer.prefecture}
-              </div>
-            )}
-          </label>
-
+        <div className={styles.customerName__nameSection}>
+          <p className={styles.customerName__text}>
+            {language === "ja" ? "名前" : "Name"}
+          </p>
           {isEditing ? (
-            <div className={styles.buttons}>
-              <ActionButton
-                className="cancelEditingChild"
-                btnText="Cancel"
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleCancelClick();
-                }}
-              />
-
-              <ActionButton
-                className="saveChild"
-                btnText="Save"
-                type="submit"
-                Icon={CheckIcon}
-              />
-            </div>
+            <InputField
+              name="name"
+              type="text"
+              defaultValue={customerProfile.name}
+              className={styles.customerName__inputField}
+              onChange={() => clearErrorMessage("name")}
+              error={localMessages.name?.[language]}
+            />
           ) : (
-            <div className={styles.buttons}>
-              <ActionButton
-                className="editChild"
-                btnText="Edit"
-                onClick={handleEditClick}
-              />
+            <div
+              className={styles.customerName__name}
+              title={customerProfile.name}
+            >
+              {customerProfile.name}
             </div>
           )}
-        </form>
+        </div>
+      </label>
+
+      {/* Customer email */}
+      <label className={styles.email}>
+        <div className={styles.email__title}>
+          {language === "ja" ? "メール" : "e-mail"}
+        </div>
+        {isEditing ? (
+          <InputField
+            name="email"
+            type="email"
+            defaultValue={customerProfile.email}
+            className={styles.email__inputField}
+            onChange={() => clearErrorMessage("email")}
+            error={localMessages.email?.[language]}
+          />
+        ) : (
+          <div className={styles.email__name}>
+            <span title={customerProfile.email}>{customerProfile.email}</span>
+          </div>
+        )}
+      </label>
+
+      {/* Customer prefecture */}
+      <label className={styles.customerHome}>
+        <div className={styles.customerHome__title}>
+          {language === "ja" ? "お住まいの都道府県" : "Prefecture of residence"}
+        </div>
+
+        {isEditing ? (
+          <PrefectureSelect
+            clearErrorMessage={clearErrorMessage}
+            errorMessage={localMessages.prefecture?.[language]}
+            language={language}
+            defaultValue={customerProfile.prefecture}
+            className="customerProfile"
+            withIcon={false}
+          />
+        ) : (
+          <div className={styles.customerHome__name}>
+            {localizedCustomerPrefecture}
+          </div>
+        )}
+      </label>
+
+      <div className={styles.messageWrapper}>
+        {(isError || isSuccess) && (
+          <FormValidationMessage
+            type={isError ? "error" : "success"}
+            message={
+              isError
+                ? localMessages.errorMessage[language]
+                : localMessages.successMessage[language]
+            }
+          />
+        )}
+      </div>
+
+      {isEditing ? (
+        <div className={styles.buttons}>
+          <ActionButton
+            className="cancelEditingCustomer"
+            btnText={language === "ja" ? "キャンセル" : "Cancel"}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              clearErrorMessage("all");
+              setIsEditing(false);
+            }}
+          />
+
+          <ActionButton
+            className="saveCustomer"
+            btnText={language === "ja" ? "変更を保存" : "Save"}
+            type="submit"
+          />
+        </div>
       ) : (
-        <Loading />
+        <div className={styles.buttons}>
+          <ActionButton
+            className="editCustomer"
+            btnText={language === "ja" ? "プロフィールを編集" : "Edit Profile"}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsEditing(true);
+              clearErrorMessage("all");
+            }}
+          />
+        </div>
       )}
-    </>
+
+      {/* Hidden fields to include in form submission */}
+
+      {/* For security, pass the customer ID through a hidden input only if the admin is authenticated */}
+      {isAdminAuthenticated && (
+        <input type="hidden" name="id" value={customerProfile.id ?? ""} />
+      )}
+      <input
+        type="hidden"
+        name="currentName"
+        value={customerProfile.name ?? ""}
+      />
+      <input
+        type="hidden"
+        name="currentEmail"
+        value={customerProfile.email ?? ""}
+      />
+      <input
+        type="hidden"
+        name="currentPrefecture"
+        value={customerProfile.prefecture ?? ""}
+      />
+      <input type="hidden" name="language" value={language ?? "en"} />
+    </form>
   );
 }
 
