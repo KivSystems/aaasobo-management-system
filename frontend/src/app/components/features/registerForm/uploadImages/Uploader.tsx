@@ -9,6 +9,7 @@ function Uploader() {
   // const [data, setData] = useState<{ image: string | null }>({ image: null });
   const [files, setFiles] = useState<FileList | null>(null);
   const [fileName, setFileName] = useState<string>("");
+  const [isDragging, setIsDragging] = useState<boolean>(false);
   // const [dragActive, setDragActive] = useState<boolean>(false);
   // const [saving, setSaving] = useState<boolean>(false);
 
@@ -69,6 +70,17 @@ function Uploader() {
     const url = URL.createObjectURL(e.dataTransfer.files?.[0] as Blob);
     setFiles(droppedFile);
     setFileName(url);
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
   };
 
   const handleRemoveFile = () => {
@@ -76,22 +88,16 @@ function Uploader() {
     setFileName("");
   };
 
-  console.log(files && files[0]);
-  console.log(fileName);
-
   return (
     <section className={styles.dragDrop}>
-      <p>
+      <p className={styles.label}>
         Instructor profile image<span className={styles.required}>*</span>
       </p>
       <div
-        className={`${styles.documentUploader} ${
-          files && files.length > 0
-            ? `${styles.uploadBox} active`
-            : `${styles.uploadBox}`
-        }`}
+        className={`${styles.documentUploader} ${isDragging ? styles.dragging : ""}`}
         onDrop={handleDrop}
-        onDragOver={(event) => event.preventDefault()}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
       >
         <PhotoIcon width={50} height={50} color="#ccc" />
         <div className={styles.uploadInfo}>

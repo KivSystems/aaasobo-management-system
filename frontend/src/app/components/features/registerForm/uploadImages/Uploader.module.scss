@@ -6,6 +6,10 @@
   gap: 0.25rem;
   margin-bottom: 1rem;
 
+  .label {
+    font-size: 15px;
+  }
+
   .required {
     color: $red-alert;
     font-size: 0.8rem;
@@ -23,10 +27,10 @@
     gap: 10px;
     border-radius: 8px;
 
-    // &.active {
-    //   border-color: #6dc24b;
-    //   border: 2px dashed $blue_primary;
-    // }
+    &.dragging {
+      border: 3px dashed $blue_primary;
+      background-color: $light-purple;
+    }
 
     .uploadInfo {
       display: flex;
