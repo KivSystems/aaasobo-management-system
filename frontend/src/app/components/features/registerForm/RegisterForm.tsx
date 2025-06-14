@@ -23,6 +23,7 @@ import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
 import PrefectureSelect from "./prefectureSelect/PrefectureSelect";
 import PrivacyPolicyAgreement from "./privacyPolicyAgreement/PrivacyPolicyAgreement";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
+import Uploader from "./uploadImages/Uploader";
 
 const RegisterForm = ({ userType }: { userType: UserType }) => {
   const [registerResultState, formAction] = useFormState(
@@ -138,7 +139,7 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
 
       {userType === "instructor" && (
         <>
-          <TextInput
+          {/* <TextInput
             id="icon"
             label="Icon"
             type="text"
@@ -147,7 +148,8 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
             icon={<PhotoIcon className={styles.icon} />}
             inputRequired
             onChange={() => clearErrorMessage("icon")}
-          />
+          /> */}
+          <Uploader />
           <TextInput
             id="classURL"
             label="Class URL"
