@@ -113,3 +113,17 @@ export const getAllChildren = async () => {
     throw new Error("Failed to fetch all children.");
   }
 };
+
+export const getChildProfiles = async (customerId: number) => {
+  const children = await prisma.children.findMany({
+    where: { customerId },
+  });
+  const childProfiles = children.map((child) => ({
+    id: child.id,
+    name: child.name,
+    birthdate: child.birthdate,
+    personalInfo: child.personalInfo,
+  }));
+
+  return childProfiles;
+};

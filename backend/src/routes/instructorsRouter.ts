@@ -11,6 +11,7 @@ import {
   getInstructorProfileController,
   updateInstructorProfile,
   getCalendarClassesController,
+  getInstructorProfilesController,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -32,6 +33,7 @@ export const instructorsRouter = express.Router();
 // http://localhost:4000/instructors
 
 instructorsRouter.get("/", getAllInstructorsAvailabilitiesController);
+instructorsRouter.get("/profiles", getInstructorProfilesController);
 instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),

@@ -70,7 +70,7 @@ export const createClass = async (
     status: Status;
     subscriptionId: number;
     recurringClassId: number;
-    rebookableUntil: string;
+    rebookableUntil: string | Date;
     updatedAt: Date;
     classCode: string;
   },
@@ -100,12 +100,14 @@ export const createClass = async (
 // Delete a class in the DB
 export const deleteClass = async (classId: number) => {
   try {
-    await prisma.classAttendance.deleteMany({
-      where: { classId },
-    });
-    const deletedClass = await prisma.class.delete({
-      where: { id: classId },
-    });
+    const [_, deletedClass] = await prisma.$transaction([
+      prisma.classAttendance.deleteMany({
+        where: { classId },
+      }),
+      prisma.class.delete({
+        where: { id: classId },
+      }),
+    ]);
 
     return deletedClass;
   } catch (error) {
@@ -182,38 +184,34 @@ export const updateClass = async (
   },
 ) => {
   const { childrenIds, ...fieldsToUpdate } = classData;
-  try {
-    const updatedClass = await prisma.$transaction(async (prisma) => {
-      const updatedClass = await prisma.class.update({
-        where: { id },
-        data: fieldsToUpdate,
-      });
 
-      // TODO: if updatedClass.status === "canceledByInstructor", updated instructor unavailability
-
-      // Delete existing classAttendance records
-      await prisma.classAttendance.deleteMany({
-        where: { classId: id },
-      });
-
-      // Add new classAttendance records if childrenIds is provided
-      if (childrenIds) {
-        await prisma.classAttendance.createMany({
-          data: childrenIds.map((childId) => ({
-            classId: id,
-            childrenId: childId,
-          })),
-        });
-      }
-
-      return updatedClass;
+  const updatedClass = await prisma.$transaction(async (prisma) => {
+    const updatedClass = await prisma.class.update({
+      where: { id },
+      data: fieldsToUpdate,
     });
 
+    // TODO: if updatedClass.status === "canceledByInstructor", updated instructor unavailability
+
+    // Delete existing classAttendance records
+    await prisma.classAttendance.deleteMany({
+      where: { classId: id },
+    });
+
+    // Add new classAttendance records if childrenIds is provided
+    if (childrenIds) {
+      await prisma.classAttendance.createMany({
+        data: childrenIds.map((childId) => ({
+          classId: id,
+          childrenId: childId,
+        })),
+      });
+    }
+
     return updatedClass;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to update a class.");
-  }
+  });
+
+  return updatedClass;
 };
 
 export async function countClassesOfSubscription(
@@ -336,67 +334,57 @@ export const getExcludedClasses = async (
 };
 
 // Check if the instructor is already booked at the specified date and time
-export const isInstructorBooked = async (
+export const checkInstructorConflicts = async (
   instructorId: number,
   dateTime: string,
 ): Promise<boolean> => {
-  try {
-    const existingBooking = await prisma.class.findFirst({
-      where: {
-        instructorId,
-        dateTime: new Date(dateTime),
-        NOT: {
-          status: "canceledByCustomer", // if the class status is 'canceledByCustomer, which means the time slot is available (not booked)
-        },
+  const existingBooking = await prisma.class.findFirst({
+    where: {
+      instructorId,
+      dateTime: new Date(dateTime),
+      status: {
+        in: ["booked", "rebooked", "canceledByInstructor"],
       },
-    });
-    return existingBooking !== null;
-  } catch (error) {
-    console.error("Error checking instructor booking:", error);
-    throw new Error("Failed to check instructor availability.");
-  }
+    },
+  });
+  return existingBooking !== null;
 };
 
 // Check if the selected children have another class with another instructor at the same dateTime
 // If there are conflicting classes, return the array of the children's names
-export const checkForChildrenWithConflictingClasses = async (
-  dateTime: Date,
+export const checkChildConflicts = async (
+  dateTime: string,
   childrenIds: number[],
 ) => {
-  try {
-    const conflictingClasses = await prisma.class.findMany({
-      where: {
-        dateTime,
-        classAttendance: {
-          some: {
-            childrenId: {
-              in: childrenIds,
-            },
+  const conflictingClasses = await prisma.class.findMany({
+    where: {
+      dateTime,
+      classAttendance: {
+        some: {
+          childrenId: {
+            in: childrenIds,
           },
         },
       },
-      include: {
-        classAttendance: {
-          include: {
-            children: true,
-          },
+    },
+    include: {
+      classAttendance: {
+        include: {
+          children: true,
         },
       },
-    });
+    },
+  });
 
-    // Filter out names of the selected children that have conflicts
-    const childrenWithConflictingClasses: string[] = conflictingClasses.flatMap(
-      (eachClass) =>
-        eachClass.classAttendance
-          .filter((attendance) => childrenIds.includes(attendance.childrenId))
-          .map((attendance) => attendance.children.name),
-    );
+  // Filter out names of the selected children that have conflicts
+  const conflictingChildren: string[] = conflictingClasses.flatMap(
+    (eachClass) =>
+      eachClass.classAttendance
+        .filter((attendance) => childrenIds.includes(attendance.childrenId))
+        .map((attendance) => attendance.children.name),
+  );
 
-    return childrenWithConflictingClasses;
-  } catch (error) {
-    console.error("Service Error:", error);
-    throw new Error("Failed to check for conflicting classes.");
-  }
+  return conflictingChildren;
 };
 
 // Check if there is a class that is already booked at the same dateTime as the newlly booked class
@@ -404,21 +392,18 @@ export const checkDoubleBooking = async (
   customerId: number,
   dateTime: Date,
 ): Promise<boolean> => {
-  try {
-    const alreadyBookedClass = await prisma.class.findFirst({
-      where: {
-        customerId,
-        dateTime,
-        status: "booked",
+  const alreadyBookedClass = await prisma.class.findFirst({
+    where: {
+      customerId,
+      dateTime,
+      status: {
+        in: ["booked", "rebooked"],
       },
-    });
+    },
+  });
 
-    // Return true if a booked class is found, otherwise false
-    return alreadyBookedClass !== null;
-  } catch (error) {
-    console.error("Service Error:", error);
-    throw new Error("Failed to check class booking.");
-  }
+  // Return true if a booked class is found, otherwise false
+  return alreadyBookedClass !== null;
 };
 
 export const getRebookableClasses = async (customerId: number) => {
@@ -575,16 +560,17 @@ export const createCanceledClasses = async ({
       })),
     });
     // Add the Class Attendance to the ClassAttendance Table based on the Class ID.
-    await tx.classAttendance.createMany({
-      data: createdClasses
-        .map((createdClass) => {
-          return childrenIds.map((childrenId) => ({
-            classId: createdClass.id,
-            childrenId,
-          }));
-        })
-        .flat(),
-    });
+    // NOTE(to Saeka): Do we need to create ClassAttendance records for classes that were unable to be booked as regular classes? I temporarily commented out the following logic. (Shingo)
+    // await tx.classAttendance.createMany({
+    //   data: createdClasses
+    //     .map((createdClass) => {
+    //       return childrenIds.map((childrenId) => ({
+    //         classId: createdClass.id,
+    //         childrenId,
+    //       }));
+    //     })
+    //     .flat(),
+    // });
 
     return createdClasses;
   } catch (error) {
@@ -715,18 +701,67 @@ export const getCalendarClasses = async (instructorId: number) => {
   return instructorCalendarClasses;
 };
 
-export const getClassStatus = async (classId: number) => {
-  const classData = await prisma.class.findUnique({
-    where: { id: classId },
-  });
-
-  return classData?.status;
-};
-
 export const getRebookableUntil = async (classId: number) => {
   const classData = await prisma.class.findUnique({
     where: { id: classId },
   });
 
   return classData?.rebookableUntil;
+};
+
+export const getClassToRebook = async (classId: number) => {
+  const classData = await prisma.class.findUnique({
+    where: { id: classId },
+  });
+
+  return {
+    status: classData?.status,
+    recurringClassId: classData?.recurringClassId,
+    rebookableUntil: classData?.rebookableUntil,
+    classCode: classData?.classCode,
+  };
+};
+
+export const rebookClass = async (
+  oldClass: { id: number; status: Status },
+  newClass: {
+    dateTime: Date;
+    instructorId: number;
+    customerId: number;
+    status: Status;
+    subscriptionId: number;
+    recurringClassId: number;
+    rebookableUntil: string | Date;
+    classCode: string;
+    updatedAt: Date;
+  },
+  childrenToAttend: number[],
+) => {
+  return await prisma.$transaction(async (tx) => {
+    // Step 1: Update or delete the old class to be rebooked.
+    // If the old class status is "canceled", update the rebookableUntil field to null to prevent further rebooking.
+    if (
+      oldClass.status === "canceledByCustomer" ||
+      oldClass.status === "canceledByInstructor"
+    ) {
+      await tx.class.update({
+        where: { id: oldClass.id },
+        data: { rebookableUntil: null },
+      });
+      // If the old class status is "pending", the cancelation history is not necessary, so delete the class.
+    } else if (oldClass.status === "pending") {
+      await tx.class.delete({ where: { id: oldClass.id } });
+    }
+
+    // Step 2: Create a new "rebooked" class and classAttendance records.
+    const newRebookedClass = await tx.class.create({
+      data: newClass,
+    });
+    await tx.classAttendance.createMany({
+      data: childrenToAttend.map((childrenId) => ({
+        classId: newRebookedClass.id,
+        childrenId,
+      })),
+    });
+  });
 };

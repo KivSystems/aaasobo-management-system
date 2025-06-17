@@ -9,6 +9,7 @@ import {
   getClassesController,
   getRebookableClassesController,
   verifyCustomerEmailController,
+  getChildProfilesController,
 } from "../../src/controllers/customersController";
 import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
 import {
@@ -35,6 +36,9 @@ customersRouter.get("/:id/upcoming-classes", parseId, (req, res) =>
 );
 customersRouter.get("/:id/classes", parseId, (req, res) =>
   getClassesController(req as RequestWithId, res),
+);
+customersRouter.get("/:id/child-profiles", parseId, (req, res) =>
+  getChildProfilesController(req as RequestWithId, res),
 );
 
 customersRouter.patch("/:id", updateCustomerProfileController);

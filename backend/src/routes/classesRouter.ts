@@ -2,14 +2,14 @@ import express from "express";
 import {
   cancelClassController,
   cancelClassesController,
-  checkChildrenAvailabilityController,
+  checkChildConflictsController,
   checkDoubleBookingController,
-  createClassController,
   createClassesForMonthController,
   deleteClassController,
   getAllClassesController,
   getClassByIdController,
   getClassesByCustomerIdController,
+  rebookClassController,
   updateClassController,
 } from "../../src/controllers/classesController";
 import {
@@ -30,13 +30,12 @@ classesRouter.get("/:id/instructor-availabilities", parseId, (req, res) =>
 
 classesRouter.get("/class/:id", getClassByIdController);
 
-classesRouter.post("/create-classes", createClassesForMonthController);
-classesRouter.post("/", createClassController);
-classesRouter.post("/check-double-booking", checkDoubleBookingController);
-classesRouter.post(
-  "/check-children-availability",
-  checkChildrenAvailabilityController,
+classesRouter.post("/:id/rebook", parseId, (req, res) =>
+  rebookClassController(req as RequestWithId, res),
 );
+classesRouter.post("/create-classes", createClassesForMonthController);
+classesRouter.post("/check-double-booking", checkDoubleBookingController);
+classesRouter.post("/check-child-conflicts", checkChildConflictsController);
 classesRouter.post("/cancel-classes", cancelClassesController);
 
 classesRouter.delete("/:id", deleteClassController);
