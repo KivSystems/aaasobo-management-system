@@ -2,8 +2,10 @@ import PlanTabs from "@/app/components/admins-dashboard/plans-dashboard/PlanDash
 import { getPlanById } from "@/app/helper/api/plansApi";
 
 export default async function PlanDashboardForAdmin({
+  userId,
   planId,
 }: {
+  userId: number;
   planId: number;
 }) {
   // Fetch plan data
@@ -15,5 +17,5 @@ export default async function PlanDashboardForAdmin({
     plan = data.plan;
   }
 
-  return <PlanTabs planId={planId} plan={plan} />;
+  return <PlanTabs userId={userId} planId={planId} plan={plan} />;
 }

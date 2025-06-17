@@ -11,7 +11,6 @@ import {
   verifyCustomerEmailController,
   getChildProfilesController,
 } from "../../src/controllers/customersController";
-import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
 import {
   type RequestWithId,
   parseId,
@@ -44,4 +43,3 @@ customersRouter.get("/:id/child-profiles", parseId, (req, res) =>
 customersRouter.patch("/:id", updateCustomerProfileController);
 
 customersRouter.post("/:id/subscription", registerSubscriptionController);
-customersRouter.get("/:id/authentication", authenticateCustomerSession);

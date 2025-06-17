@@ -2,24 +2,27 @@
 
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import PlanProfile from "@/app/components/admins-dashboard/plans-dashboard/PlanProfile";
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function PlanTabs({
+  userId,
   planId,
   plan,
 }: {
+  userId: number;
   planId: number;
   plan: Plan | string;
 }) {
-  const breadcrumb = ["Plan List", `/admins/plan-list`, `ID: ${planId}`];
+  const breadcrumb = [
+    "Plan List",
+    `/admins/${userId}/plan-list`,
+    `ID: ${planId}`,
+  ];
   const activeTabName = "activePlanTab";
 
-  // TODO: Update the logic using NextAuth.
-  // Check the authentication of the admin.
-  // const { isAuthenticated } = useContext(AuthContext);
+  // Set the authentication status as true.
+  const isAuthenticated = true;
 
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect("activeAdminTab");
@@ -28,7 +31,9 @@ export default function PlanTabs({
   const tabs = [
     {
       label: "Plan's Profile",
-      content: <PlanProfile plan={plan} isAdminAuthenticated={true} />,
+      content: (
+        <PlanProfile plan={plan} isAdminAuthenticated={isAuthenticated} />
+      ),
     },
   ];
 

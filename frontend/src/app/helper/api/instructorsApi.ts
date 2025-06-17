@@ -82,12 +82,13 @@ export const registerInstructor = async (userData: {
   meetingId: string;
   passcode: string;
   introductionURL: string;
+  cookie: string;
 }): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
     const response = await fetch(registerURL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Cookie: userData.cookie },
       body: JSON.stringify(userData),
     });
 
@@ -129,10 +130,11 @@ export const updateInstructor = async (
   instructorMeetingId: string,
   instructorPasscode: string,
   instructorIntroductionURL: string,
+  cookie: string,
 ) => {
   // Define the data to be sent to the server side.
   const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}`;
-  const headers = { "Content-Type": "application/json" };
+  const headers = { "Content-Type": "application/json", Cookie: cookie };
   const body = JSON.stringify({
     name: instructorName,
     email: instructorEmail,

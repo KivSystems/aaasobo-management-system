@@ -17,11 +17,11 @@ import {
   type RequestWithId,
   parseId,
 } from "../../src/middlewares/parseId.middleware";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
 import {
   createInstructorUnavailability,
   getInstructorUnavailabilities,
 } from "../../src/controllers/instructorsUnavailabilityController";
-import { authenticateInstructorSession } from "../../src/middlewares/auth.middleware";
 import { getInstructorClasses } from "../../src/controllers/classesController";
 import {
   getCalendarAvailabilitiesController,
@@ -38,7 +38,7 @@ instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
 );
-instructorsRouter.patch("/:id", updateInstructorProfile);
+instructorsRouter.patch("/:id", verifyAuthentication, updateInstructorProfile);
 
 instructorsRouter.get("/:id/recurringAvailability", parseId, (req, res) =>
   RecurringAvailability.get(req as RequestWithId, res),
@@ -67,8 +67,6 @@ instructorsRouter.get("/:id/recurringAvailabilityById", parseId, (req, res) =>
   getRecurringAvailabilityById(req as RequestWithId, res),
 );
 instructorsRouter.get("/", getAllInstructorsController);
-
-instructorsRouter.get("/:id/authentication", authenticateInstructorSession);
 
 // TODO: Delete this route after finishing refactoring instructor class details page
 instructorsRouter.get("/:id/classes", parseId, (req, res) => {

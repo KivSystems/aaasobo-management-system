@@ -30,9 +30,9 @@ export const authConfig: NextAuthConfig = {
       const userType = auth?.user?.userType;
       const userId = auth?.user?.id;
 
-      // Check if the user is on customer dashboard (/customers/[id]/...) or instructor dashboard (/instructors/[id]/...)
+      // Check if the user is on customer dashboard (/customers/[id]/...), instructor dashboard (/instructors/[id]/...), or admin dashboard (/admin/[id]/...).
       const matchPath = nextUrl.pathname.match(
-        /^\/(customers|instructors)\/(\d+)(\/.*)?$/,
+        /^\/(customers|instructors|admins)\/(\d+)(\/.*)?$/,
       );
 
       if (!matchPath) {
