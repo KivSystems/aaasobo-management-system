@@ -11,6 +11,7 @@ export default async function RebookingActions({
   customerId: number;
 }) {
   const rebookableClasses = await getRebookableClasses(customerId);
+  // TODO: use getChildProfiles
   const childrenData = await getChildrenByCustomerId(customerId);
   const hasChildProfile = childrenData.length > 0;
 

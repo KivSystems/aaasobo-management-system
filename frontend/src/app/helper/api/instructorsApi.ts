@@ -1,3 +1,4 @@
+import { FAILED_TO_FETCH_INSTRUCTOR_PROFILES } from "../messages/customerDashboard";
 import {
   INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE,
   GENERAL_ERROR_MESSAGE,
@@ -349,6 +350,30 @@ export const getInstructorProfile = async (
   } catch (error) {
     console.error("API error while fetching instructor profile:", error);
     throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILE);
+  }
+};
+
+export const getInstructorProfiles = async (): Promise<
+  InstructorRebookingProfile[]
+> => {
+  try {
+    const apiUrl = `${BASE_URL}/profiles`;
+    const response = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const instructorProfiles = await response.json();
+    return instructorProfiles;
+  } catch (error) {
+    console.error(
+      "API error while fetching instructor profiles for rebooking page:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILES);
   }
 };
 
