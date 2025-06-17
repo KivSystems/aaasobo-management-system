@@ -1,11 +1,14 @@
-import BookClass from "@/app/components/customers-dashboard/classes/BookClass";
+import RebookingForm from "@/app/components/customers-dashboard/classes/rebookingPage/rebookingForm/RebookingForm";
+import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
 import { getInstructorAvailabilities } from "@/app/helper/api/classesApi";
+import { getChildProfiles } from "@/app/helper/api/customersApi";
+import { getInstructorProfiles } from "@/app/helper/api/instructorsApi";
 import {
   INVALID_CLASS_ID,
   INVALID_CUSTOMER_ID,
 } from "@/app/helper/messages/customerDashboard";
 
-async function RebookPage({
+async function RebookingPage({
   params,
 }: {
   params: { id: string; classId: string };
@@ -23,16 +26,31 @@ async function RebookPage({
     throw new Error(INVALID_CLASS_ID);
   }
 
+  // TODO: use promise all
   const instructorAvailabilities = await getInstructorAvailabilities(classId);
+  const instructorProfiles = await getInstructorProfiles();
+  const childProfiles = await getChildProfiles(customerId);
+
+  const breadcrumbLinks = [
+    {
+      href: `/customers/${customerId}/classes`,
+      label: { ja: "クラスカレンダー", en: "Class Calendar" },
+    },
+    { label: { ja: "振替予約ページ", en: "Rebooking Page" } },
+  ];
 
   return (
-    <>
-      <BookClass customerId={customerId} />
-      {instructorAvailabilities.map((availability) => (
-        <h4>{availability.dateTime.toString()}</h4>
-      ))}
-    </>
+    <main>
+      <Breadcrumb links={breadcrumbLinks} className="rebookingPage" />
+      <RebookingForm
+        customerId={customerId}
+        classId={classId}
+        instructorAvailabilities={instructorAvailabilities}
+        instructorProfiles={instructorProfiles}
+        childProfiles={childProfiles}
+      />
+    </main>
   );
 }
 
-export default RebookPage;
+export default RebookingPage;

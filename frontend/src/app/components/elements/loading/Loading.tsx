@@ -2,9 +2,11 @@ import React from "react";
 import Image from "next/image";
 import styles from "./Loading.module.scss";
 
-function Loading() {
+function Loading({ className }: { className?: string }) {
   return (
-    <div className={styles.loadingContainer}>
+    <div
+      className={`${styles.loadingContainer} ${className ? styles[className] : ""}`}
+    >
       <Image
         src={"/images/spinner.svg"}
         width={100}

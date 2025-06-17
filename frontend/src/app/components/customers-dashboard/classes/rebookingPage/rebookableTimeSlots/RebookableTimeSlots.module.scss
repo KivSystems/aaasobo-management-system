@@ -1,0 +1,16 @@
+.dateTimes {
+  margin-bottom: 2rem;
+
+  &__instructor {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+}
