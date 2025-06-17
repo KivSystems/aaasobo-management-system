@@ -1,7 +1,5 @@
 "use client";
 
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import CustomerProfile from "@/app/components/customers-dashboard/profile/CustomerProfile";
 import ChildrenProfiles from "@/app/components/customers-dashboard/children-profiles/ChildrenProfiles";
@@ -10,23 +8,25 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
 function CustomerDashboardClient({
+  userId,
   customerId,
   classCalendarComponent,
   customerProfile,
 }: {
+  userId: number;
   customerId: number;
   classCalendarComponent: React.ReactNode;
   customerProfile: CustomerProfile;
 }) {
   const breadcrumb = [
     "Customer List",
-    `/admins/customer-list`,
+    `/admins/${userId}/customer-list`,
     `ID: ${customerId}`,
   ];
   const activeTabName = "activeCustomerTab";
 
-  // Check authentication
-  const { isAuthenticated } = useContext(AuthContext);
+  // Set the authentication status as true.
+  const isAuthenticated = true;
 
   // Get the active tab from local storage
   const { initialActiveTab, isTabInitialized } =

@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { kv } from "@vercel/kv";
 import { registerAdmin, getAdminByEmail } from "../services/adminsService";
 import {
   getAllAdmins,
@@ -21,57 +20,6 @@ import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
-import bcrypt from "bcrypt";
-import { logout } from "../helper/logout";
-
-// Login Admin
-export const loginAdminController = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  try {
-    // Fetch the admin data using the email.
-    const admin = await getAdminByEmail(email);
-
-    if (!admin) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    // Check if the password is correct or not.
-    const result = await bcrypt.compare(password, admin.password);
-
-    if (!result) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    req.session = {
-      userId: admin.id,
-      userType: "admin",
-    };
-
-    // For production(Save session data to Vercel KV)
-    if (process.env.NODE_ENV === "production") {
-      const sessionId = req.cookies["session-id"];
-      if (sessionId) {
-        await kv.set(sessionId, req.session, { ex: 24 * 60 * 60 });
-      }
-    }
-
-    res.status(200).json({
-      message: "Admin logged in successfully",
-    });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-};
-
-// Logout Admin
-export const logoutAdminController = async (req: Request, res: Response) => {
-  return logout(req, res, "admin");
-};
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {

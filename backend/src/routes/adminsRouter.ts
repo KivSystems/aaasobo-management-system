@@ -1,7 +1,5 @@
 import express from "express";
 import {
-  loginAdminController,
-  logoutAdminController,
   registerAdminController,
   registerInstructorController,
   updateAdminProfileController,
@@ -13,23 +11,23 @@ import {
   getAllPlansController,
   getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
-import {
-  requireAuthentication,
-  authenticateAdminSession,
-} from "../../src/middlewares/auth.middleware";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
 
 export const adminsRouter = express.Router();
 
 // http://localhost:4000/admins
 
-adminsRouter.post("/login", loginAdminController);
-adminsRouter.get("/logout", logoutAdminController);
-// TODO: add authentication middleware to this route
-adminsRouter.post("/register", registerAdminController);
-adminsRouter.patch("/:id", updateAdminProfileController);
-adminsRouter.get("/authentication", authenticateAdminSession);
-// TODO: add authentication middleware to this route
-adminsRouter.post("/instructor-list/register", registerInstructorController);
+adminsRouter.post(
+  "/admin-list/register",
+  verifyAuthentication,
+  registerAdminController,
+);
+adminsRouter.patch("/:id", verifyAuthentication, updateAdminProfileController);
+adminsRouter.post(
+  "/instructor-list/register",
+  verifyAuthentication,
+  registerInstructorController,
+);
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);
 adminsRouter.get("/instructor-list", getAllInstructorsController);

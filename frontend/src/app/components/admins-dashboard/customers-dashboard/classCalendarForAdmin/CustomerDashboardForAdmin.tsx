@@ -4,14 +4,17 @@ import ClassCalendar from "@/app/components/customers-dashboard/classes/ClassCal
 import { getCustomerById } from "@/app/helper/api/customersApi";
 
 export default async function CustomerDashboardForAdmin({
+  userId,
   customerId,
 }: {
+  userId: number;
   customerId: number;
 }) {
   const customerProfile = await getCustomerById(customerId);
 
   return (
     <CustomerDashboardClient
+      userId={userId}
       customerId={customerId}
       classCalendarComponent={
         <ClassCalendar customerId={customerId} isAdminAuthenticated={true} />

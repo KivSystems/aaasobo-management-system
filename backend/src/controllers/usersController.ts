@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import { getAdminByEmail } from "../services/adminsService";
 import {
   getCustomerByEmail,
   updateCustomerPassword,
@@ -26,11 +27,13 @@ import { saltRounds } from "../helper/commonUtils";
 import { Customer } from "@prisma/client";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
-  if (userType === "customer") {
-    return getCustomerByEmail(email);
-  }
-  if (userType === "instructor") {
-    return getInstructorByEmail(email);
+  switch (userType) {
+    case "admin":
+      return getAdminByEmail(email);
+    case "customer":
+      return getCustomerByEmail(email);
+    case "instructor":
+      return getInstructorByEmail(email);
   }
 };
 
