@@ -313,27 +313,6 @@ export const fetchInstructorRecurringAvailabilities = async (
   }
 };
 
-export const fetchInstructorAvailabilitiesForTomorrowAndAfter = async (
-  instructorId: number,
-) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/${instructorId}/availabilities/after-tomorrow`,
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const instructorAvailabilities = await response.json();
-    return instructorAvailabilities.data;
-  } catch (error) {
-    console.error(
-      "Failed to fetch instructor availability date and times:",
-      error,
-    );
-    throw error;
-  }
-};
-
 export const getInstructorProfile = async (
   instructorId: number,
 ): Promise<InstructorProfile> => {

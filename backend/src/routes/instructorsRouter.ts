@@ -23,10 +23,7 @@ import {
   getInstructorUnavailabilities,
 } from "../../src/controllers/instructorsUnavailabilityController";
 import { getInstructorClasses } from "../../src/controllers/classesController";
-import {
-  getCalendarAvailabilitiesController,
-  getInstructorAvailabilitiesTomorrowAndAfter,
-} from "../../src/controllers/instructorsAvailabilityController";
+import { getCalendarAvailabilitiesController } from "../../src/controllers/instructorsAvailabilityController";
 
 export const instructorsRouter = express.Router();
 
@@ -76,13 +73,6 @@ instructorsRouter.get("/:id/classes", parseId, (req, res) => {
 instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
   getCalendarAvailabilitiesController(req as RequestWithId, res);
 });
-instructorsRouter.get(
-  "/:id/availabilities/after-tomorrow",
-  parseId,
-  (req, res) => {
-    getInstructorAvailabilitiesTomorrowAndAfter(req as RequestWithId, res);
-  },
-);
 
 instructorsRouter.get("/:id/calendar-classes", parseId, (req, res) => {
   getCalendarClassesController(req as RequestWithId, res);
