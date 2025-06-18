@@ -26,11 +26,6 @@ async function RebookingPage({
     throw new Error(INVALID_CLASS_ID);
   }
 
-  // TODO: use promise all
-  const instructorAvailabilities = await getInstructorAvailabilities(classId);
-  const instructorProfiles = await getInstructorProfiles();
-  const childProfiles = await getChildProfiles(customerId);
-
   const breadcrumbLinks = [
     {
       href: `/customers/${customerId}/classes`,
@@ -38,6 +33,13 @@ async function RebookingPage({
     },
     { label: { ja: "振替予約ページ", en: "Rebooking Page" } },
   ];
+
+  const [instructorAvailabilities, instructorProfiles, childProfiles] =
+    await Promise.all([
+      getInstructorAvailabilities(classId),
+      getInstructorProfiles(),
+      getChildProfiles(customerId),
+    ]);
 
   return (
     <main>

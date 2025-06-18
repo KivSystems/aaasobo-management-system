@@ -377,12 +377,15 @@ export const checkChildConflicts = async (
   });
 
   // Filter out names of the selected children that have conflicts
-  const conflictingChildren: string[] = conflictingClasses.flatMap(
-    (eachClass) =>
-      eachClass.classAttendance
-        .filter((attendance) => childrenIds.includes(attendance.childrenId))
-        .map((attendance) => attendance.children.name),
-  );
+  const conflictingChildren: string[] = [
+    ...new Set(
+      conflictingClasses.flatMap((eachClass) =>
+        eachClass.classAttendance
+          .filter((attendance) => childrenIds.includes(attendance.childrenId))
+          .map((attendance) => attendance.children.name),
+      ),
+    ),
+  ];
 
   return conflictingChildren;
 };

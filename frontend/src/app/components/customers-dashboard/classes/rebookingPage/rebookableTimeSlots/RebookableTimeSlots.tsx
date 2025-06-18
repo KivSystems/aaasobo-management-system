@@ -4,6 +4,7 @@ import ActionButton from "@/app/components/elements/buttons/actionButton/ActionB
 import styles from "./RebookableTimeSlots.module.scss";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { formatDateTime } from "@/app/helper/utils/dateUtils";
+import { useMemo } from "react";
 
 export default function RebookableTimeSlots({
   setDateTimeToRebook,
@@ -20,23 +21,23 @@ export default function RebookableTimeSlots({
   const nextRebookingStep =
     rebookingOption === "instructor" ? "confirmRebooking" : "selectInstructor";
 
-  let rebookableTimeSlots;
-
-  if (rebookingOption === "instructor") {
-    const selectedInstructorAvailabilities = instructorAvailabilities
-      .filter((a) => a.instructorId === instructorToRebook.id)
-      .map((a) => a.dateTime);
-
-    rebookableTimeSlots = selectedInstructorAvailabilities.sort(
-      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
-    );
-  } else if (rebookingOption === "dateTime") {
-    const instructorAvailableTimeSlots = instructorAvailabilities
-      .map((a) => a.dateTime)
-      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-
-    rebookableTimeSlots = [...new Set(instructorAvailableTimeSlots)];
-  }
+  const rebookableTimeSlots = useMemo(() => {
+    if (rebookingOption === "instructor") {
+      return instructorAvailabilities
+        .filter((a) => a.instructorId === instructorToRebook.id)
+        .map((a) => a.dateTime)
+        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    } else if (rebookingOption === "dateTime") {
+      return [
+        ...new Set(
+          instructorAvailabilities
+            .map((a) => a.dateTime)
+            .sort((a, b) => new Date(a).getTime() - new Date(b).getTime()),
+        ),
+      ];
+    }
+    return [];
+  }, [instructorAvailabilities, instructorToRebook, rebookingOption]);
 
   const selectDateTime = (dateTime: string) => {
     setDateTimeToRebook(dateTime);
