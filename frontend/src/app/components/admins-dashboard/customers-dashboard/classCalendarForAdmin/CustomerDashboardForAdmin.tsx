@@ -1,4 +1,3 @@
-import CustomerProfile from "@/app/components/customers-dashboard/profile/CustomerProfile";
 import CustomerDashboardClient from "./CustomerDashboardClient";
 import ClassCalendar from "@/app/components/customers-dashboard/classes/ClassCalendar";
 import { getCustomerById } from "@/app/helper/api/customersApi";
@@ -17,7 +16,11 @@ export default async function CustomerDashboardForAdmin({
       userId={userId}
       customerId={customerId}
       classCalendarComponent={
-        <ClassCalendar customerId={customerId} isAdminAuthenticated={true} />
+        <ClassCalendar
+          adminId={userId}
+          customerId={customerId}
+          isAdminAuthenticated={true}
+        />
       }
       customerProfile={customerProfile}
     />

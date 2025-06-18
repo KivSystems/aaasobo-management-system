@@ -29,6 +29,7 @@ export default function ConfirmRebooking({
   childProfiles,
   customerId,
   classId,
+  adminId,
   isAdminAuthenticated,
 }: ConfirmRebookingProps) {
   const [selectedChildrenIds, setSelectedChildrenIds] = useState<number[] | []>(
@@ -109,7 +110,7 @@ export default function ConfirmRebooking({
       }
     }
 
-    // Proceed with booking the class
+    // Proceed with rebooking
     const rebookingResult = await rebookClassAction(classId, {
       dateTime: dateTimeToRebook,
       instructorId: instructorToRebook.id,
@@ -130,7 +131,7 @@ export default function ConfirmRebooking({
     // TODO: handle same-day rebooking and send a notification to admins via email
 
     const pathToPush = isAdminAuthenticated
-      ? `/admins/customer-list/${customerId}`
+      ? `/admins/${adminId}/customer-list/${customerId}`
       : `/customers/${customerId}/classes`;
 
     router.push(pathToPush);
@@ -174,12 +175,14 @@ export default function ConfirmRebooking({
           btnText={language === "ja" ? "戻る" : "Back"}
           className="back"
           onClick={() => setRebookingStep(previousRebookingStep)}
+          disabled={isLoading}
         />
 
         <ActionButton
           btnText={language === "ja" ? "クラスを予約" : "Book Class"}
           className="bookBtn"
           onClick={() => handleRebooking()}
+          disabled={isLoading}
         />
       </div>
     </div>

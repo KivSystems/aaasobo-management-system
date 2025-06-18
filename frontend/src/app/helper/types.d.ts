@@ -326,6 +326,7 @@ type RebookingModalControllerProps = {
 };
 
 type RebookingModalProps = {
+  adminId?: number;
   isAdminAuthenticated?: boolean;
   customerId: number;
   rebookableClasses: RebookableClass[] | [];
@@ -382,6 +383,7 @@ type RebookingFormProps = {
   instructorAvailabilities: InstructorAvailability[] | [];
   instructorProfiles: InstructorRebookingProfile[];
   childProfiles: Child[];
+  adminId?: number;
   isAdminAuthenticated?: boolean;
 };
 
@@ -416,6 +418,7 @@ type ConfirmRebookingProps = {
   childProfiles: Child[];
   customerId: number;
   classId: number;
+  adminId?: number;
   isAdminAuthenticated?: boolean;
 };
 

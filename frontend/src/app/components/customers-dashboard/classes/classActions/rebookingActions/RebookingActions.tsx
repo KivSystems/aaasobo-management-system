@@ -4,9 +4,11 @@ import RebookingModalController from "./rebookingModalController/RebookingModalC
 import RebookingModal from "./rebookingModal/RebookingModal";
 
 export default async function RebookingActions({
+  adminId,
   isAdminAuthenticated,
   customerId,
 }: {
+  adminId?: number;
   isAdminAuthenticated?: boolean;
   customerId: number;
 }) {
@@ -22,6 +24,7 @@ export default async function RebookingActions({
       modalContent={
         <RebookingModal
           customerId={customerId}
+          adminId={adminId}
           isAdminAuthenticated={isAdminAuthenticated}
           rebookableClasses={rebookableClasses}
         />

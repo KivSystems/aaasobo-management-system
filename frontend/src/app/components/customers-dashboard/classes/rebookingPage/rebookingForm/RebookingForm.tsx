@@ -13,6 +13,7 @@ export default function RebookingForm({
   instructorAvailabilities,
   instructorProfiles,
   childProfiles,
+  adminId,
   isAdminAuthenticated,
 }: RebookingFormProps) {
   const [rebookingStep, setRebookingStep] =
@@ -69,6 +70,7 @@ export default function RebookingForm({
           childProfiles={childProfiles}
           customerId={customerId}
           classId={classId}
+          adminId={adminId}
           isAdminAuthenticated={isAdminAuthenticated}
         />
       )}
