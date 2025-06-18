@@ -45,6 +45,11 @@ export function getLinks(
       icon: CalendarDaysIcon,
     },
     {
+      name: "Holiday Calendar",
+      href: `/admins/${userId}/holiday-calendar`,
+      icon: CalendarIcon,
+    },
+    {
       name: "Class List",
       href: `/admins/${userId}/class-list`,
       icon: ChatBubbleLeftRightIcon,

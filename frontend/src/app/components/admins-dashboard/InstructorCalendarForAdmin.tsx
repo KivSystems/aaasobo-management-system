@@ -43,7 +43,7 @@ function InstructorCalendarForAdmin({
 
       setInstructorCalendarEvents([...classes, ...instructorAvailabilities]);
       const instructorCreatedAt = instructorProfile.createdAt;
-      const calendarValidRange = getValidRange(instructorCreatedAt);
+      const calendarValidRange = getValidRange(instructorCreatedAt, 3);
       setCalendarValidRange(calendarValidRange);
     } catch (error) {
       setError("Failed to load classes. Please try again.");

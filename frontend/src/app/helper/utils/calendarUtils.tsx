@@ -78,11 +78,10 @@ export const createRenderEventContent = (userType: UserType) => {
   return RenderEventContent;
 };
 
-export const getValidRange = (createdAt: string) => {
+export const getValidRange = (createdAt: string, month: number) => {
   const now = new Date();
-  const end = new Date(now.getFullYear(), now.getMonth() + 3, 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + month, 1);
 
-  // Valid range: from account creation to the end of the month, three months later.
   return {
     start: createdAt.split("T")[0],
     end: end.toISOString().split("T")[0],

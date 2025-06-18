@@ -21,7 +21,7 @@ async function InstructorCalendar({
 
   const instructorCalendarEvents = [...classes, ...availabilities];
   const createdAt: string = profile.createdAt;
-  const validRange = getValidRange(createdAt);
+  const validRange = getValidRange(createdAt, 3);
 
   return (
     <InstructorCalendarClient
