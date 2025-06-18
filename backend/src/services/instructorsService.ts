@@ -428,7 +428,12 @@ export const updateInstructorPassword = async (
 };
 
 export const getInstructorProfiles = async () => {
-  const instructors = await prisma.instructor.findMany();
+  const instructors = await prisma.instructor.findMany({
+    where: {
+      inactiveAt: null, // Exclude instructors who have quit
+    },
+  });
+
   const instructorProfiles = instructors.map((instructor) => ({
     id: instructor.id,
     name: instructor.name,
