@@ -41,62 +41,65 @@ async function insertInstructorAvailabilities() {
   const elian = await getInstructor("Elian");
   await prisma.instructorRecurringAvailability.createMany({
     data: [
-      { startAt: "2025-02-03T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      { startAt: "2025-02-03T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      { startAt: "2025-02-03T08:00:00Z", instructorId: helen.id }, // 17:00 in Japan
-      { startAt: "2025-02-03T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
-      { startAt: "2025-02-03T09:00:00Z", instructorId: helen.id }, // 18:00 in Japan
-      { startAt: "2025-02-03T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
-      { startAt: "2025-02-03T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
-      { startAt: "2025-02-04T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      { startAt: "2025-02-04T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      { startAt: "2025-02-04T08:00:00Z", instructorId: helen.id }, // 17:00 in Japan
-      { startAt: "2025-02-04T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
-      { startAt: "2025-02-04T09:00:00Z", instructorId: helen.id }, // 18:00 in Japan
-      { startAt: "2025-02-04T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
-      { startAt: "2025-02-04T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
-      { startAt: "2025-02-05T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      { startAt: "2025-02-05T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      { startAt: "2025-02-05T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
-      { startAt: "2025-02-05T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
-      { startAt: "2025-02-05T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
-      { startAt: "2025-02-05T10:30:00Z", instructorId: helen.id }, // 19:30 in Japan
-      { startAt: "2025-02-05T11:00:00Z", instructorId: helen.id }, // 20:00 in Japan
-      { startAt: "2025-02-07T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      { startAt: "2025-02-07T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      { startAt: "2025-02-07T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
-      { startAt: "2025-02-07T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
-      { startAt: "2025-02-07T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
-      { startAt: "2025-02-07T10:30:00Z", instructorId: helen.id }, // 19:30 in Japan
-      { startAt: "2025-02-07T11:00:00Z", instructorId: helen.id }, // 20:00 in Japan
-      { startAt: "2025-02-03T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      { startAt: "2025-02-03T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
-      { startAt: "2025-02-03T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
-      { startAt: "2025-02-03T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
-      { startAt: "2025-02-03T09:00:00Z", instructorId: elian.id }, // 18:00 in Japan
-      { startAt: "2025-02-03T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
-      { startAt: "2025-02-03T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
-      { startAt: "2025-02-04T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      { startAt: "2025-02-04T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
-      { startAt: "2025-02-04T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
-      { startAt: "2025-02-04T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
-      { startAt: "2025-02-04T09:00:00Z", instructorId: elian.id }, // 18:00 in Japan
-      { startAt: "2025-02-04T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
-      { startAt: "2025-02-04T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
-      { startAt: "2025-02-05T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      { startAt: "2025-02-05T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
-      { startAt: "2025-02-05T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
-      { startAt: "2025-02-05T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
-      { startAt: "2025-02-05T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
-      { startAt: "2025-02-05T10:30:00Z", instructorId: elian.id }, // 19:30 in Japan
-      { startAt: "2025-02-05T11:00:00Z", instructorId: elian.id }, // 20:00 in Japan
-      { startAt: "2025-02-07T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      { startAt: "2025-02-07T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
-      { startAt: "2025-02-07T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
-      { startAt: "2025-02-07T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
-      { startAt: "2025-02-07T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
-      { startAt: "2025-02-07T10:30:00Z", instructorId: elian.id }, // 19:30 in Japan
-      { startAt: "2025-02-07T11:00:00Z", instructorId: elian.id }, // 20:00 in Japan
+      { startAt: "2025-06-02T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
+      { startAt: "2025-06-02T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
+
+      // { startAt: "2025-02-03T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
+      // { startAt: "2025-02-03T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
+      // { startAt: "2025-02-03T08:00:00Z", instructorId: helen.id }, // 17:00 in Japan
+      // { startAt: "2025-02-03T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
+      // { startAt: "2025-02-03T09:00:00Z", instructorId: helen.id }, // 18:00 in Japan
+      // { startAt: "2025-02-03T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
+      // { startAt: "2025-02-03T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
+      // { startAt: "2025-02-04T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
+      // { startAt: "2025-02-04T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
+      // { startAt: "2025-02-04T08:00:00Z", instructorId: helen.id }, // 17:00 in Japan
+      // { startAt: "2025-02-04T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
+      // { startAt: "2025-02-04T09:00:00Z", instructorId: helen.id }, // 18:00 in Japan
+      // { startAt: "2025-02-04T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
+      // { startAt: "2025-02-04T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
+      // { startAt: "2025-02-05T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
+      // { startAt: "2025-02-05T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
+      // { startAt: "2025-02-05T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
+      // { startAt: "2025-02-05T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
+      // { startAt: "2025-02-05T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
+      // { startAt: "2025-02-05T10:30:00Z", instructorId: helen.id }, // 19:30 in Japan
+      // { startAt: "2025-02-05T11:00:00Z", instructorId: helen.id }, // 20:00 in Japan
+      // { startAt: "2025-02-07T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
+      // { startAt: "2025-02-07T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
+      // { startAt: "2025-02-07T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
+      // { startAt: "2025-02-07T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
+      // { startAt: "2025-02-07T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
+      // { startAt: "2025-02-07T10:30:00Z", instructorId: helen.id }, // 19:30 in Japan
+      // { startAt: "2025-02-07T11:00:00Z", instructorId: helen.id }, // 20:00 in Japan
+      // { startAt: "2025-02-03T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
+      // { startAt: "2025-02-03T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
+      // { startAt: "2025-02-03T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
+      // { startAt: "2025-02-03T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
+      // { startAt: "2025-02-03T09:00:00Z", instructorId: elian.id }, // 18:00 in Japan
+      // { startAt: "2025-02-03T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
+      // { startAt: "2025-02-03T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
+      // { startAt: "2025-02-04T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
+      // { startAt: "2025-02-04T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
+      // { startAt: "2025-02-04T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
+      // { startAt: "2025-02-04T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
+      // { startAt: "2025-02-04T09:00:00Z", instructorId: elian.id }, // 18:00 in Japan
+      // { startAt: "2025-02-04T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
+      // { startAt: "2025-02-04T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
+      // { startAt: "2025-02-05T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
+      // { startAt: "2025-02-05T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
+      // { startAt: "2025-02-05T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
+      // { startAt: "2025-02-05T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
+      // { startAt: "2025-02-05T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
+      // { startAt: "2025-02-05T10:30:00Z", instructorId: elian.id }, // 19:30 in Japan
+      // { startAt: "2025-02-05T11:00:00Z", instructorId: elian.id }, // 20:00 in Japan
+      // { startAt: "2025-02-07T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
+      // { startAt: "2025-02-07T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
+      // { startAt: "2025-02-07T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
+      // { startAt: "2025-02-07T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
+      // { startAt: "2025-02-07T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
+      // { startAt: "2025-02-07T10:30:00Z", instructorId: elian.id }, // 19:30 in Japan
+      // { startAt: "2025-02-07T11:00:00Z", instructorId: elian.id }, // 20:00 in Japan
       // { startAt: "2024-07-01T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
       // { startAt: "2024-07-01T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
       // { startAt: "2024-07-02T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
@@ -128,53 +131,79 @@ async function insertInstructorAvailabilities() {
     });
   };
 
-  await insertAvailabilities(helen.id, "2025-02-03T07:00:00Z", [
-    "2025-02-03T07:00:00Z",
-    "2025-02-10T07:00:00Z",
-    "2025-02-17T07:00:00Z",
-    "2025-02-24T07:00:00Z",
-    "2025-03-03T07:00:00Z",
-    "2025-03-10T07:00:00Z",
-    "2025-03-17T07:00:00Z",
-    "2025-03-24T07:00:00Z",
-    "2025-03-31T07:00:00Z",
+  await insertAvailabilities(helen.id, "2025-06-02T07:00:00Z", [
+    "2025-06-23T07:00:00Z",
+    "2025-06-30T07:00:00Z",
+    "2025-07-07T07:00:00Z",
+    "2025-07-14T07:00:00Z",
+    "2025-07-21T07:00:00Z",
+    "2025-07-28T07:00:00Z",
+    "2025-08-04T07:00:00Z",
+    "2025-08-11T07:00:00Z",
+    "2025-08-18T07:00:00Z",
+    "2025-08-25T07:00:00Z",
   ]);
 
-  await insertAvailabilities(helen.id, "2025-02-03T07:30:00Z", [
-    "2025-02-03T07:30:00Z",
-    "2025-02-10T07:30:00Z",
-    "2025-02-17T07:30:00Z",
-    "2025-02-24T07:30:00Z",
-    "2025-03-03T07:30:00Z",
-    "2025-03-10T07:30:00Z",
-    "2025-03-17T07:30:00Z",
-    "2025-03-24T07:30:00Z",
-    "2025-03-31T07:30:00Z",
+  await insertAvailabilities(elian.id, "2025-06-02T07:00:00Z", [
+    "2025-06-23T07:00:00Z",
+    "2025-06-30T07:00:00Z",
+    "2025-07-07T07:00:00Z",
+    "2025-07-14T07:00:00Z",
+    "2025-07-21T07:00:00Z",
+    "2025-07-28T07:00:00Z",
+    "2025-08-04T07:00:00Z",
+    "2025-08-11T07:00:00Z",
+    "2025-08-18T07:00:00Z",
+    "2025-08-25T07:00:00Z",
   ]);
 
-  await insertAvailabilities(elian.id, "2025-02-03T07:00:00Z", [
-    "2025-02-03T07:00:00Z",
-    "2025-02-10T07:00:00Z",
-    "2025-02-17T07:00:00Z",
-    "2025-02-24T07:00:00Z",
-    "2025-03-03T07:00:00Z",
-    "2025-03-10T07:00:00Z",
-    "2025-03-17T07:00:00Z",
-    "2025-03-24T07:00:00Z",
-    "2025-03-31T07:00:00Z",
-  ]);
+  // await insertAvailabilities(helen.id, "2025-02-03T07:00:00Z", [
+  //   "2025-02-03T07:00:00Z",
+  //   "2025-02-10T07:00:00Z",
+  //   "2025-02-17T07:00:00Z",
+  //   "2025-02-24T07:00:00Z",
+  //   "2025-03-03T07:00:00Z",
+  //   "2025-03-10T07:00:00Z",
+  //   "2025-03-17T07:00:00Z",
+  //   "2025-03-24T07:00:00Z",
+  //   "2025-03-31T07:00:00Z",
+  // ]);
 
-  await insertAvailabilities(elian.id, "2025-02-03T07:30:00Z", [
-    "2025-02-03T07:30:00Z",
-    "2025-02-10T07:30:00Z",
-    "2025-02-17T07:30:00Z",
-    "2025-02-24T07:30:00Z",
-    "2025-03-03T07:30:00Z",
-    "2025-03-10T07:30:00Z",
-    "2025-03-17T07:30:00Z",
-    "2025-03-24T07:30:00Z",
-    "2025-03-31T07:30:00Z",
-  ]);
+  // await insertAvailabilities(helen.id, "2025-02-03T07:30:00Z", [
+  //   "2025-02-03T07:30:00Z",
+  //   "2025-02-10T07:30:00Z",
+  //   "2025-02-17T07:30:00Z",
+  //   "2025-02-24T07:30:00Z",
+  //   "2025-03-03T07:30:00Z",
+  //   "2025-03-10T07:30:00Z",
+  //   "2025-03-17T07:30:00Z",
+  //   "2025-03-24T07:30:00Z",
+  //   "2025-03-31T07:30:00Z",
+  // ]);
+
+  // await insertAvailabilities(elian.id, "2025-02-03T07:00:00Z", [
+  //   "2025-02-03T07:00:00Z",
+  //   "2025-02-10T07:00:00Z",
+  //   "2025-02-17T07:00:00Z",
+  //   "2025-02-24T07:00:00Z",
+  //   "2025-03-03T07:00:00Z",
+  //   "2025-03-10T07:00:00Z",
+  //   "2025-03-17T07:00:00Z",
+  //   "2025-03-24T07:00:00Z",
+  //   "2025-03-31T07:00:00Z",
+  // ]);
+
+  // await insertAvailabilities(elian.id, "2025-02-03T07:30:00Z", [
+  //   "2025-02-03T07:30:00Z",
+  //   "2025-02-10T07:30:00Z",
+  //   "2025-02-17T07:30:00Z",
+  //   "2025-02-24T07:30:00Z",
+  //   "2025-03-03T07:30:00Z",
+  //   "2025-03-10T07:30:00Z",
+  //   "2025-03-17T07:30:00Z",
+  //   "2025-03-24T07:30:00Z",
+  //   "2025-03-31T07:30:00Z",
+  // ]);
 
   // await insertAvailabilities(helen.id, "2024-07-01T07:30:00Z", [
   //   "2024-07-01T07:30:00Z",
