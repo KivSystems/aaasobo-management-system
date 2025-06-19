@@ -45,8 +45,8 @@ export function getLinks(
       icon: CalendarDaysIcon,
     },
     {
-      name: "Holiday Calendar",
-      href: `/admins/${userId}/holiday-calendar`,
+      name: "AaasoBo! Calendar",
+      href: `/admins/${userId}/business-calendar`,
       icon: CalendarIcon,
     },
     {

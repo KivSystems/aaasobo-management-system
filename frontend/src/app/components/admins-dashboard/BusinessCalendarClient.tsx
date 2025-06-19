@@ -5,10 +5,10 @@ import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
 import { EventClickArg } from "@fullcalendar/core";
 
-const HolidayCalendarClient = ({
+const BusinessCalendarClient = ({
   isAdminAuthenticated,
   validRange,
-}: HolidayCalendarClientProps) => {
+}: BusinessCalendarClientProps) => {
   return (
     <FullCalendar
       plugins={[interactionPlugin, multiMonthPlugin]}
@@ -27,4 +27,4 @@ const HolidayCalendarClient = ({
   );
 };
 
-export default HolidayCalendarClient;
+export default BusinessCalendarClient;

@@ -288,7 +288,7 @@ type ClassInfo = { classId: number; classDateTime: string };
 type ClassInfoList = ClassInfo[];
 type SetClassInfoList = React.Dispatch<React.SetStateAction<ClassInfoList>>;
 
-type HolidayCalendarClientProps = {
+type BusinessCalendarClientProps = {
   isAdminAuthenticated?: boolean;
   validRange: {
     start: string;

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./HolidayCalendarForAdmin.module.scss";
+import styles from "./BusinessCalendarForAdmin.module.scss";
 import Loading from "../elements/loading/Loading";
 import { getValidRange } from "@/app/helper/utils/calendarUtils";
-import HolidayCalendarClient from "./HolidayCalendarClient";
+import BusinessCalendarClient from "./BusinessCalendarClient";
 
-function HolidayCalendarForAdmin({
+function BusinessCalendarForAdmin({
   isAdminAuthenticated,
 }: {
   isAdminAuthenticated?: boolean;
@@ -30,7 +30,7 @@ function HolidayCalendarForAdmin({
       {error && <div>{error}</div>}
       {/* {!isLoading && !error && ( */}
       <>
-        <HolidayCalendarClient
+        <BusinessCalendarClient
           validRange={calendarValidRange}
           isAdminAuthenticated={isAdminAuthenticated}
         />
@@ -40,4 +40,4 @@ function HolidayCalendarForAdmin({
   );
 }
 
-export default HolidayCalendarForAdmin;
+export default BusinessCalendarForAdmin;
