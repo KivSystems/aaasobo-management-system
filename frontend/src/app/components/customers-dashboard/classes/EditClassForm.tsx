@@ -6,8 +6,9 @@ import { formatDateTime } from "@/app/helper/utils/dateUtils";
 import { editClass } from "@/app/helper/api/classesApi";
 import { useRouter } from "next/navigation";
 import { useSelect } from "@/app/hooks/useSelect";
+import { getUserSession } from "../../../helper/auth/sessionUtils";
 
-function EditClassForm({
+async function EditClassForm({
   customerId,
   instructors,
   children,
@@ -20,6 +21,13 @@ function EditClassForm({
   editedClass: ClassType;
   isAdminAuthenticated?: boolean;
 }) {
+  // Get the admin ID from the session if the action is admin authenticated
+  const session = await getUserSession("admin");
+  const adminId = session?.user.id ? parseInt(session.user.id) : undefined;
+  if (!adminId && isAdminAuthenticated) {
+    throw new Error("Admin ID is required for authenticated admin actions.");
+  }
+
   const [selectedInstructorId, setSelectedInstructorId] = useState<
     number | null
   >(editedClass.instructor.id);
@@ -80,7 +88,7 @@ function EditClassForm({
       });
 
       if (isAdminAuthenticated) {
-        router.push(`/admins/customer-list/${customerId}`);
+        router.push(`/admins/${adminId}/customer-list/${customerId}`);
         return;
       }
 
@@ -168,7 +176,7 @@ function EditClassForm({
       <div className={styles.actions}>
         {isAdminAuthenticated ? (
           <Link
-            href={`/admins/customer-list/${customerId}/classes/${editedClass.id}`}
+            href={`/admins/${adminId}/customer-list/${customerId}/classes/${editedClass.id}`}
             className={styles.cancelButton}
           >
             Back

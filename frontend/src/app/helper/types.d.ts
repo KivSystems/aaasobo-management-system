@@ -304,6 +304,7 @@ type CustomerCalendarProps = {
 };
 
 type InstructorCalendarClientProps = {
+  adminId?: number;
   instructorId: number;
   isAdminAuthenticated?: boolean;
   instructorCalendarEvents: EventType[];

@@ -1,12 +1,11 @@
-"use client";
-
 import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/ClassDetails";
 
 const Page = ({
   params,
 }: {
-  params: { instructorId: string; classId: string };
+  params: { id: string; instructorId: string; classId: string };
 }) => {
+  const adminId = parseInt(params.id);
   const instructorId = parseInt(params.instructorId);
   const classId = parseInt(params.classId);
   if (isNaN(classId)) {
@@ -18,6 +17,7 @@ const Page = ({
 
   return (
     <ClassDetails
+      adminId={adminId}
       instructorId={instructorId}
       classId={classId}
       isAdminAuthenticated={isAuthenticated}

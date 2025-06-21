@@ -17,7 +17,7 @@ import { customerProfileSchema } from "../schemas/customerDashboardSchemas.ts";
 import { updateCustomerProfile } from "../helper/api/customersApi";
 import { revalidatePath } from "next/cache";
 import { NO_CHANGES_MADE_MESSAGE } from "../helper/messages/customerDashboard";
-import { getCustomerSession } from "../helper/auth/sessionUtils";
+import { getUserSession } from "../helper/auth/sessionUtils";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -144,7 +144,7 @@ export async function updateCustomerProfileAction(
   if (id) {
     customerId = id;
   } else {
-    const session = await getCustomerSession();
+    const session = await getUserSession("customer");
 
     if (!session) {
       throw new Error("Unauthorized / 認証されていません");
@@ -152,6 +152,10 @@ export async function updateCustomerProfileAction(
 
     customerId = Number(session.user.id);
   }
+
+  // Get the admin ID from the session if the action is admin authenticated
+  const session = await getUserSession("admin");
+  const adminId = session?.user.id ? parseInt(session.user.id) : undefined;
 
   // Check if there are any changes
   if (
@@ -183,7 +187,7 @@ export async function updateCustomerProfileAction(
   );
 
   const path = id
-    ? `/admins/customer-list/${customerId}`
+    ? `/admins/${adminId}/customer-list/${customerId}`
     : `/customers/${customerId}/profile`;
 
   revalidatePath(path);

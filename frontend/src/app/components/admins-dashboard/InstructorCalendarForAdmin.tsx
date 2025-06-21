@@ -12,10 +12,12 @@ import { getValidRange } from "@/app/helper/utils/calendarUtils";
 import InstructorCalendarClient from "../instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendarClient";
 
 function InstructorCalendarForAdmin({
+  adminId,
   instructorId,
   name,
   isAdminAuthenticated,
 }: {
+  adminId?: number | null;
   instructorId: number | null;
   name?: string | null;
   isAdminAuthenticated?: boolean;
@@ -74,6 +76,7 @@ function InstructorCalendarForAdmin({
             </span>
           ) : null}
           <InstructorCalendarClient
+            adminId={adminId}
             instructorId={instructorId}
             instructorCalendarEvents={instructorCalendarEvents}
             validRange={calendarValidRange!}
