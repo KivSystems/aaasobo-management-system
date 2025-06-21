@@ -48,3 +48,7 @@ export async function revalidateChildList() {
 export async function revalidatePlanList() {
   revalidateTag("plan-list");
 }
+
+export async function revalidateBusinessSchedule() {
+  revalidateTag("business-schedule");
+}
