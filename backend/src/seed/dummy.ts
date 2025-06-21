@@ -978,6 +978,68 @@ async function insertInstructorUnavailabilities() {
   });
 }
 
+async function insertEvents() {
+  await prisma.event.createMany({
+    data: [
+      {
+        event: "AaasoBo! Holiday",
+        color: "rgb(249, 244, 241)", // Same as Sunday (HEX: #f9f4f1)
+      },
+      {
+        event: "Theme Class Week",
+        color: "rgb(255, 255, 0)",
+      },
+    ],
+  });
+}
+
+async function insertSchedules() {
+  await prisma.schedule.createMany({
+    data: [
+      {
+        date: new Date("2025-01-01T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-01-02T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-01-03T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-01-04T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-01-13T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-14T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-15T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-16T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-17T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-18T00:00:00Z"),
+        eventId: 2,
+      },
+    ],
+  });
+}
+
 async function getCustomer(name: "Alice" | "Bob" | "山田 花") {
   const customer = await prisma.customer.findFirst({
     where: { name },
@@ -1029,6 +1091,7 @@ async function main() {
     await deleteAll("children");
     await deleteAll("subscription");
     await deleteAll("instructorRecurringAvailability");
+    await deleteAll("schedule");
 
     // Independent
     await deleteAll("admins");
@@ -1036,6 +1099,7 @@ async function main() {
     await deleteAll("customer");
     await deleteAll("plan");
     await deleteAll("instructorUnavailability");
+    await deleteAll("event");
   }
 
   {
@@ -1044,11 +1108,13 @@ async function main() {
     await insertCustomers();
     await insertInstructors();
     await insertAdmins();
+    await insertEvents();
 
     // Dependant on the above
     await insertInstructorAvailabilities();
     await insertSubscriptions();
     await insertChildren();
+    await insertSchedules();
 
     // Dependant on the above
     await insertRecurringClasses();
