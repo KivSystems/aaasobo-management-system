@@ -17,7 +17,7 @@ import { customerProfileSchema } from "../schemas/customerDashboardSchemas.ts";
 import { updateCustomerProfile } from "../helper/api/customersApi";
 import { revalidatePath } from "next/cache";
 import { NO_CHANGES_MADE_MESSAGE } from "../helper/messages/customerDashboard";
-import { getUserSession } from "../helper/auth/sessionUtils";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,

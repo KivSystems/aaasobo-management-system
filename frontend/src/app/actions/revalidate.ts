@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
-import { getUserSession } from "../helper/auth/sessionUtils";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 export async function revalidateBookableClasses() {
   revalidateTag("bookable-classes");

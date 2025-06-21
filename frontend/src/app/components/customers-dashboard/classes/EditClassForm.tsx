@@ -6,7 +6,7 @@ import { formatDateTime } from "@/app/helper/utils/dateUtils";
 import { editClass } from "@/app/helper/api/classesApi";
 import { useRouter } from "next/navigation";
 import { useSelect } from "@/app/hooks/useSelect";
-import { getUserSession } from "../../../helper/auth/sessionUtils";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 async function EditClassForm({
   customerId,

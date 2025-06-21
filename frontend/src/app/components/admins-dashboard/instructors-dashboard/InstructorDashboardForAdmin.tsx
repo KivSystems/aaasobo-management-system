@@ -29,6 +29,7 @@ export default async function InstructorDashboardForAdmin({
       instructor={instructor}
       classScheduleComponent={
         <InstructorCalendar
+          adminId={adminId}
           instructorId={instructorId}
           isAdminAuthenticated={true}
         />

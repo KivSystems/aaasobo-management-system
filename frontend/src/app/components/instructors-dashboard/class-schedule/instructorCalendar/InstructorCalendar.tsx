@@ -7,9 +7,11 @@ import { getValidRange } from "@/app/helper/utils/calendarUtils";
 import InstructorCalendarClient from "./InstructorCalendarClient";
 
 async function InstructorCalendar({
+  adminId,
   instructorId,
   isAdminAuthenticated,
 }: {
+  adminId?: number;
   instructorId: number;
   isAdminAuthenticated?: boolean;
 }) {
@@ -25,6 +27,7 @@ async function InstructorCalendar({
 
   return (
     <InstructorCalendarClient
+      adminId={adminId}
       instructorId={instructorId}
       isAdminAuthenticated={isAdminAuthenticated}
       instructorCalendarEvents={instructorCalendarEvents}

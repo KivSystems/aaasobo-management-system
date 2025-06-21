@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { cancelClass, cancelClasses } from "../helper/api/classesApi";
-import { getUserSession } from "../helper/auth/sessionUtils";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 export const cancelSelectedClasses = async (
   classesToCancel: number[],
