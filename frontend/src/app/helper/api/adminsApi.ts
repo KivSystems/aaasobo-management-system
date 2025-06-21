@@ -131,16 +131,19 @@ export const getAllClasses = async () => {
 };
 
 // GET all schedule data
-export const getAllSchedules = async () => {
+export const getAllBusinessSchedules = async () => {
   try {
     const apiUrl = `${BASE_URL}/business-schedule`;
     const response = await fetch(apiUrl, {
-      next: { tags: ["business-schedule"] },
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["business-schedule"] },
+      cache: "no-store",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
+    const data = await response.json();
+
     return data;
   } catch (error) {
     console.error("Failed to fetch schedules:", error);

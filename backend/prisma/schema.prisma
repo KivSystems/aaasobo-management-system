@@ -197,7 +197,7 @@ model Schedule {
 
 model Event {
   id       Int        @id @default(autoincrement())
-  event    String     @unique
+  name     String     @unique
   color    String     @unique
   Schedule Schedule[]
 }

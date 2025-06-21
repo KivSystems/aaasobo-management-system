@@ -7,8 +7,10 @@ import { getValidRange } from "@/app/helper/utils/calendarUtils";
 import BusinessCalendarClient from "./BusinessCalendarClient";
 
 function BusinessCalendarForAdmin({
+  businessSchedule,
   isAdminAuthenticated,
 }: {
+  businessSchedule: BusinessSchedule[];
   isAdminAuthenticated?: boolean;
 }) {
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +33,7 @@ function BusinessCalendarForAdmin({
       {/* {!isLoading && !error && ( */}
       <>
         <BusinessCalendarClient
+          businessSchedule={businessSchedule}
           validRange={calendarValidRange}
           isAdminAuthenticated={isAdminAuthenticated}
         />

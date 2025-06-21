@@ -10,7 +10,7 @@ CREATE TABLE "Schedule" (
 -- CreateTable
 CREATE TABLE "Event" (
     "id" SERIAL NOT NULL,
-    "event" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "color" TEXT NOT NULL,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
@@ -20,7 +20,7 @@ CREATE TABLE "Event" (
 CREATE UNIQUE INDEX "Schedule_date_key" ON "Schedule"("date");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Event_event_key" ON "Event"("event");
+CREATE UNIQUE INDEX "Event_name_key" ON "Event"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Event_color_key" ON "Event"("color");

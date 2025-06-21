@@ -3,12 +3,28 @@
 import FullCalendar from "@fullcalendar/react";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
-import { EventClickArg } from "@fullcalendar/core";
+import {
+  DateSelectArg,
+  EventClickArg,
+  DayCellMountArg,
+} from "@fullcalendar/core";
 
 const BusinessCalendarClient = ({
-  isAdminAuthenticated,
+  businessSchedule,
   validRange,
+  isAdminAuthenticated,
 }: BusinessCalendarClientProps) => {
+  if (!businessSchedule || businessSchedule.length === 0) {
+    return <div>Failed to load AaasoBo! schedule.</div>;
+  }
+
+  // Map to store date to color mapping
+  const dateToColorMap = new Map<string, string>(
+    businessSchedule.map((item) => [item.date, item.color]),
+  );
+
+  // TODO: Implement holiday and event handling function (only for admin)
+
   return (
     <FullCalendar
       plugins={[interactionPlugin, multiMonthPlugin]}
@@ -18,11 +34,26 @@ const BusinessCalendarClient = ({
         center: "title",
         right: "",
       }}
-      multiMonthMinWidth={300}
-      validRange={validRange}
+      timeZone="Asia/Tokyo"
       locale="en"
       contentHeight="auto"
       selectable={true}
+      multiMonthMinWidth={300}
+      showNonCurrentDates={false}
+      validRange={validRange}
+      slotEventOverlap={true}
+      dayCellDidMount={(arg: DayCellMountArg) => {
+        // Skip if the cell is not in the valid range (in previous or next month)
+        if (arg.isOther) {
+          return;
+        }
+        const dateStr = arg.date.toISOString().split("T")[0];
+        const color = dateToColorMap.get(dateStr);
+        // Set background color for the cell
+        if (color) {
+          arg.el.style.backgroundColor = color;
+        }
+      }}
     />
   );
 };

@@ -288,7 +288,15 @@ type ClassInfo = { classId: number; classDateTime: string };
 type ClassInfoList = ClassInfo[];
 type SetClassInfoList = React.Dispatch<React.SetStateAction<ClassInfoList>>;
 
+type BusinessSchedule = {
+  id: number;
+  date: string;
+  name: string;
+  color: string;
+};
+
 type BusinessCalendarClientProps = {
+  businessSchedule?: BusinessSchedule[] | [];
   isAdminAuthenticated?: boolean;
   validRange: {
     start: string;
@@ -304,7 +312,7 @@ type CustomerCalendarProps = {
 };
 
 type InstructorCalendarClientProps = {
-  adminId?: number;
+  adminId?: number | null;
   instructorId: number;
   isAdminAuthenticated?: boolean;
   instructorCalendarEvents: EventType[];
