@@ -14,6 +14,7 @@ function BusinessCalendarForAdmin({
     const now = new Date();
     return new Date(now.getFullYear() - 1, 0, 2).toISOString().split("T")[0];
   })();
+  // Calculate the valid range (from 1 year ago to 1 year later) for the calendar
   const calendarValidRange = getValidRange(firstDayOfPreYear, 24);
 
   return (
