@@ -10,7 +10,6 @@ async function Page({ params }: { params: { instructorId: string } }) {
     throw new Error("Invalid adminId");
   }
   const adminId = parseInt(session.user.id);
-  console.log("Page.tsx adminId from session", adminId);
 
   const instructorId = parseInt(params.instructorId);
   if (isNaN(instructorId)) {
