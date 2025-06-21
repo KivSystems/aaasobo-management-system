@@ -14,6 +14,7 @@ const BusinessCalendarClient = ({
   validRange,
   isAdminAuthenticated,
 }: BusinessCalendarClientProps) => {
+  // Show message if the business schedule is not loaded
   if (!businessSchedule || businessSchedule.length === 0) {
     return <div>Failed to load AaasoBo! schedule.</div>;
   }
@@ -23,7 +24,7 @@ const BusinessCalendarClient = ({
     businessSchedule.map((item) => [item.date, item.color]),
   );
 
-  // TODO: Implement holiday and event handling function (only for admin)
+  // TODO: Implement holiday and event registration and remove functions (only for admin)
 
   return (
     <FullCalendar

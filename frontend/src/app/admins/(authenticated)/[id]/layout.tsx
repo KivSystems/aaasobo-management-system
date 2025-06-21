@@ -11,7 +11,6 @@ export default async function Layout({
 }) {
   // Get the admin id from the URL parameters
   let adminId = parseInt(params.id);
-  console.log("Layout.tsx params.id", params.id);
   if (isNaN(adminId)) {
     // Get admin id from session
     const session = await getUserSession("admin");
@@ -21,7 +20,6 @@ export default async function Layout({
       throw new Error("Invalid adminId");
     }
     adminId = parseInt(session.user.id);
-    console.log("Layout.tsx adminId from session", adminId);
   }
 
   return (
