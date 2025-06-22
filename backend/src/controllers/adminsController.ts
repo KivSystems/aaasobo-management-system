@@ -380,15 +380,15 @@ export const getClassesWithinPeriodController = async (
   res: Response,
 ) => {
   try {
-    // Fetch class data within designated period.
-    const designatedPeriod = 30;
+    // Fetch class data within designated period (31days).
+    const designatedPeriod = 31;
     const designatedPeriodBefore = new Date(
       Date.now() - designatedPeriod * (24 * 60 * 60 * 1000),
     );
     const designatedPeriodAfter = new Date(
       Date.now() + (designatedPeriod + 1) * (24 * 60 * 60 * 1000),
     );
-    // Set the designated period to 30 days converted to "T00:00:00.000Z".
+    // Set the designated period to 31 days converted to "T00:00:00.000Z".
     designatedPeriodBefore.setUTCHours(0, 0, 0, 0);
     designatedPeriodAfter.setUTCHours(0, 0, 0, 0);
 
@@ -399,7 +399,8 @@ export const getClassesWithinPeriodController = async (
 
     // Transform the data structure.
     const data = classes.map((classItem, number) => {
-      const { id, instructor, customer, dateTime, status } = classItem;
+      const { id, instructor, customer, dateTime, status, classCode } =
+        classItem;
       const instructorName = instructor.nickname;
       const customerName = customer.name;
 
@@ -432,6 +433,7 @@ export const getClassesWithinPeriodController = async (
         Date: dateTimeJST.toISOString().slice(0, 10),
         Time: dateTimeJST.toISOString().slice(11, 16),
         Status: statusText,
+        "Class code": classCode,
       };
     });
 
