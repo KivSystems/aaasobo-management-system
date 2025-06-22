@@ -157,7 +157,7 @@ export const getAllAdminsController = async (_: Request, res: Response) => {
 
       return {
         No: number + 1,
-        ID: id,
+        Admin: id,
         Name: name,
         Email: email,
       };
@@ -182,7 +182,7 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Customer: name,
         Email: email,
         Prefecture: prefecture,
       };
@@ -210,7 +210,7 @@ export const getAllInstructorsController = async (
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Instructor: name,
         Nickname: nickname,
         Email: email,
       };
@@ -335,9 +335,9 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Child: name,
         "Customer ID": customer.id,
-        "Customer name": customer.name,
+        Customer: customer.name,
         Birthdate: birthdate?.toISOString().slice(0, 10),
         "Personal info": personalInfo,
       };
