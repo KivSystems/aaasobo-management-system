@@ -24,7 +24,7 @@ $font_size: 0.9rem;
 
   select,
   input {
-    width: 160px;
+    width: 180px;
     padding: 0.5rem;
     border: 1px solid #e5e7eb;
     border-radius: $border_radius;
@@ -45,7 +45,7 @@ $font_size: 0.9rem;
   display: flex;
   gap: 1rem;
 
-  @media (max-width: 680px) {
+  @media (max-width: 730px) {
     flex-direction: column;
     align-items: flex-start;
   }
