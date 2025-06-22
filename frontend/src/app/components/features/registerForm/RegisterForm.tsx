@@ -12,6 +12,8 @@ import {
   KeyIcon,
   LinkIcon,
   PhotoIcon,
+  AcademicCapIcon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import TextInput from "../../elements/textInput/TextInput";
@@ -25,9 +27,11 @@ import PrivacyPolicyAgreement from "./privacyPolicyAgreement/PrivacyPolicyAgreem
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 const RegisterForm = ({
+  categoryType,
   userType,
   language,
 }: {
+  categoryType?: CategoryType;
   userType: UserType;
   language?: LanguageType;
 }) => {
@@ -50,7 +54,6 @@ const RegisterForm = ({
         name="passwordStrength"
         value={passwordStrength ?? ""}
       />
-
       {userType === "customer" && (
         <>
           <TextInput
@@ -127,8 +130,8 @@ const RegisterForm = ({
           <input type="hidden" name="language" value={language ?? "en"} />
         </>
       )}
-
-      {(userType === "admin" || userType === "instructor") && (
+      {((userType === "admin" && !categoryType) ||
+        userType === "instructor") && (
         <>
           <p className={styles.required}>*Required</p>
           <TextInput
@@ -260,7 +263,45 @@ const RegisterForm = ({
           )}
         </>
       )}
-
+      {/* Plan registration (only for admin) */}
+      {userType === "admin" && categoryType === "plan" && (
+        <>
+          <p className={styles.required}>*Required</p>
+          <TextInput
+            id="name"
+            label="Plan name"
+            type="text"
+            name="name"
+            placeholder="e.g., 3,180 yen/month"
+            icon={<AcademicCapIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.name}
+            onChange={() => clearErrorMessage("name")}
+          />
+          <TextInput
+            id="weeklyClassTimes"
+            label="Weekly class times"
+            type="number"
+            name="weeklyClassTimes"
+            placeholder="e.g., 2"
+            icon={<CalendarIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.email}
+            onChange={() => clearErrorMessage("weeklyClassTimes")}
+          />
+          <TextInput
+            id="description"
+            label="Description"
+            type="text"
+            name="description"
+            placeholder="e.g., 2 classes per week"
+            icon={<DocumentTextIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.name}
+            onChange={() => clearErrorMessage("description")}
+          />{" "}
+        </>
+      )}
       <div className={styles.messageWrapper}>
         {localMessages.errorMessage && (
           <FormValidationMessage
@@ -275,14 +316,27 @@ const RegisterForm = ({
           />
         )}
       </div>
-
-      <div className={styles.buttonWrapper}>
-        <ActionButton
-          btnText={language === "ja" ? "アカウント登録" : "Create Account"}
-          className="bookBtn"
-          type="submit"
-        />
-      </div>
+      {!categoryType ? (
+        <div className={styles.buttonWrapper}>
+          <ActionButton
+            btnText={language === "ja" ? "アカウント登録" : "Create Account"}
+            className="bookBtn"
+            type="submit"
+          />
+        </div>
+      ) : (
+        <div className={styles.buttonWrapper}>
+          <ActionButton
+            btnText={`Register ${
+              categoryType
+                ? categoryType.charAt(0).toUpperCase() + categoryType.slice(1)
+                : ""
+            }`}
+            className="bookBtn"
+            type="submit"
+          />
+        </div>
+      )}
     </form>
   );
 };

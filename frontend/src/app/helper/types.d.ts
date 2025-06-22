@@ -209,6 +209,8 @@ type LinkType = {
 
 type UserType = "admin" | "customer" | "instructor";
 
+type CategoryType = "event" | "plan";
+
 type ForgotPasswordFormState = {
   errorMessage?: string;
   successMessage?: string;
