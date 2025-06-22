@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import styles from "./ListTable.module.scss";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import {
   useReactTable,
   getCoreRowModel,
@@ -164,14 +164,6 @@ function ListTable({
     changeOptionColor(event.target);
   };
 
-  // Delete the selected user
-  const handleDeleteClick = (rowId: string | null) => {
-    // TODO: Delete the selected user
-    if (rowId === null) return alert("Something went wrong. Please try again.");
-    const deleteId = parseInt(rowId);
-    console.log("Delete the selected user:", data[deleteId]);
-  };
-
   return (
     <>
       <h1 className={styles.title}>{listType}</h1>
@@ -233,7 +225,6 @@ function ListTable({
                     }[header.column.getIsSorted() as string] ?? "　"}
                   </th>
                 ))}
-                {/* <th></th> */}
               </tr>
             ))}
           </thead>
@@ -251,12 +242,6 @@ function ListTable({
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
-                {/* <td>
-                  <TrashIcon
-                    className={styles.icon}
-                    onClick={() => handleDeleteClick(row.id)}
-                  />
-                </td> */}
               </tr>
             ))}
           </tbody>
