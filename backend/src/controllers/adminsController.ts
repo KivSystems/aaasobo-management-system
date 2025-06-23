@@ -339,7 +339,7 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
         "Customer ID": customer.id,
         Customer: customer.name,
         Birthdate: birthdate?.toISOString().slice(0, 10),
-        "Personal info": personalInfo,
+        "Personal Info": personalInfo,
       };
     });
 
@@ -363,7 +363,7 @@ export const getAllPlansController = async (_: Request, res: Response) => {
         No: number + 1,
         ID: id,
         Plan: name,
-        "Weekly class times": weeklyClassTimes,
+        "Weekly Class Times": weeklyClassTimes,
         Description: description,
       };
     });
@@ -433,7 +433,7 @@ export const getClassesWithinPeriodController = async (
         Date: dateTimeJST.toISOString().slice(0, 10),
         Time: dateTimeJST.toISOString().slice(11, 16),
         Status: statusText,
-        "Class code": classCode,
+        "Class Code": classCode,
       };
     });
 
