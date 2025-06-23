@@ -383,13 +383,14 @@ export const registerPlanController = async (req: Request, res: Response) => {
   }
 
   // Normalize the plan name
-  const normalizedPlanName = name.trim().toLowerCase();
+  const normalizedPlanName = name.toLowerCase().replace(/\s/g, "");
 
   try {
     // Check if the plan with the same name already exists
     const existingPlans = await getAllPlans();
     const planExists = existingPlans.some(
-      (plan) => plan.name.trim().toLowerCase() === normalizedPlanName,
+      (plan) =>
+        plan.name.toLowerCase().replace(/\s/g, "") === normalizedPlanName,
     );
     if (planExists) {
       return res.sendStatus(409);
