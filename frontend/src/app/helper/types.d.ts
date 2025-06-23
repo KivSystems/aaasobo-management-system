@@ -223,6 +223,8 @@ type RegisterFormState = {
   passConfirmation?: string;
   prefecture?: string;
   isAgreed?: string;
+  weeklyClassTimes?: string;
+  description?: string;
   errorMessage?: string;
   successMessage?: string;
   language?: LanguageType;

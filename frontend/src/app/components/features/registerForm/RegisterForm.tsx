@@ -20,6 +20,7 @@ import TextInput from "../../elements/textInput/TextInput";
 import PasswordStrengthMeter from "../../elements/passwordStrengthMeter/PasswordStrengthMeter";
 import { useFormState } from "react-dom";
 import { registerUser } from "@/app/actions/registerUser";
+import { registerContent } from "@/app/actions/registerContent";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
 import PrefectureSelect from "./prefectureSelect/PrefectureSelect";
@@ -35,10 +36,14 @@ const RegisterForm = ({
   userType: UserType;
   language?: LanguageType;
 }) => {
+  // Handle the action based on userType and categoryType
+  const actionHandler =
+    userType === "admin" && categoryType ? registerContent : registerUser;
   const [registerResultState, formAction] = useFormState(
-    registerUser,
+    actionHandler,
     undefined,
   );
+
   const [password, onPasswordChange] = useInput();
   const [showPassword, setShowPassword] = useState(false);
   const { localMessages, clearErrorMessage } =
@@ -49,11 +54,13 @@ const RegisterForm = ({
     <form action={formAction} className={styles.form}>
       {/* Hidden fields to include in form submission */}
       <input type="hidden" name="userType" value={userType ?? ""} />
+      <input type="hidden" name="categoryType" value={categoryType ?? ""} />
       <input
         type="hidden"
         name="passwordStrength"
         value={passwordStrength ?? ""}
       />
+
       {userType === "customer" && (
         <>
           <TextInput
@@ -263,13 +270,14 @@ const RegisterForm = ({
           )}
         </>
       )}
+
       {/* Plan registration (only for admin) */}
       {userType === "admin" && categoryType === "plan" && (
         <>
           <p className={styles.required}>*Required</p>
           <TextInput
             id="name"
-            label="Plan name"
+            label="Plan Name"
             type="text"
             name="name"
             placeholder="e.g., 3,180 yen/month"
@@ -280,13 +288,13 @@ const RegisterForm = ({
           />
           <TextInput
             id="weeklyClassTimes"
-            label="Weekly class times"
+            label="Weekly Class Times"
             type="number"
             name="weeklyClassTimes"
             placeholder="e.g., 2"
             icon={<CalendarIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.email}
+            error={localMessages.weeklyClassTimes}
             onChange={() => clearErrorMessage("weeklyClassTimes")}
           />
           <TextInput
@@ -297,11 +305,13 @@ const RegisterForm = ({
             placeholder="e.g., 2 classes per week"
             icon={<DocumentTextIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.name}
+            error={localMessages.description}
             onChange={() => clearErrorMessage("description")}
           />{" "}
         </>
       )}
+
+      {/* Error and success messages */}
       <div className={styles.messageWrapper}>
         {localMessages.errorMessage && (
           <FormValidationMessage
@@ -316,6 +326,8 @@ const RegisterForm = ({
           />
         )}
       </div>
+
+      {/* Submission Button */}
       {!categoryType ? (
         <div className={styles.buttonWrapper}>
           <ActionButton
