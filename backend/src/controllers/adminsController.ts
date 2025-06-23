@@ -19,7 +19,7 @@ import {
 import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
-import { getAllPlans } from "../services/plansService";
+import { getAllPlans, registerPlan } from "../services/plansService";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -371,6 +371,40 @@ export const getAllPlansController = async (_: Request, res: Response) => {
     res.json({ data });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+// Register a new plan
+export const registerPlanController = async (req: Request, res: Response) => {
+  const { name, weeklyClassTimes, description } = req.body;
+
+  if (!name || !weeklyClassTimes || !description) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize the plan name
+  const normalizedPlanName = name.trim().toLowerCase();
+
+  try {
+    // Check if the plan with the same name already exists
+    const existingPlans = await getAllPlans();
+    const planExists = existingPlans.some(
+      (plan) => plan.name.trim().toLowerCase() === normalizedPlanName,
+    );
+    if (planExists) {
+      return res.sendStatus(409);
+    }
+
+    await registerPlan({
+      name,
+      weeklyClassTimes,
+      description,
+    });
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.error("Error registering a new plan", { error });
+    res.sendStatus(500);
   }
 };
 
