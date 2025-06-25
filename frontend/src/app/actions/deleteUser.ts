@@ -10,7 +10,7 @@ export async function deleteAdminAction(
   formData: FormData,
 ): Promise<DeleteFormState> {
   try {
-    // Hidden input tag fields
+    // Hidden input tag field
     const id = Number(formData.get("id"));
 
     // Get the cookies from the request headers

@@ -156,7 +156,7 @@ function AdminProfile({
               </div>
             </div>
 
-            {/* Hidden input */}
+            {/* Hidden input field */}
             <input type="hidden" name="id" value={latestAdmin.id} />
 
             {/* Action buttons for only admin */}

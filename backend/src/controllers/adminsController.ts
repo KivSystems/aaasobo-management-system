@@ -100,8 +100,8 @@ export const deleteAdminController = async (req: Request, res: Response) => {
       id: deletedAdmin.id,
     });
   } catch (error) {
-    console.error("Failed to delete the child profile:", error);
-    res.status(500).json({ error: "Failed to delete the Admin profile." });
+    console.error("Failed to delete the admin profile:", error);
+    res.status(500).json({ error: "Failed to delete the admin profile." });
   }
 };
 
