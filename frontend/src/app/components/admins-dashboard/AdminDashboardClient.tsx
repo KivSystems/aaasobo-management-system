@@ -32,7 +32,11 @@ export default function AdminTabs({
     {
       label: "Admin's Profile",
       content: (
-        <AdminProfile admin={admin} isAdminAuthenticated={isAuthenticated} />
+        <AdminProfile
+          userId={userId}
+          admin={admin}
+          isAdminAuthenticated={isAuthenticated}
+        />
       ),
     },
   ];
