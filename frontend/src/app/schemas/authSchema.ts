@@ -39,7 +39,17 @@ export const instructorRegisterSchema = z
     password: z.string().min(8, "At least 8 characters long."),
     passConfirmation: z.string(),
     passwordStrength: z.number(),
-    icon: z.string().min(1, "Icon is required."),
+    icon: z
+      .instanceof(File)
+      .refine((file) => file.size > 0, {
+        message: "Instructor profile image is required.",
+      })
+      .refine((file) => file.size <= 5 * 1024 * 1024, {
+        message: "Instructor profile image must be less than 5MB.",
+      })
+      .refine((file) => ["image/png", "image/jpeg"].includes(file.type), {
+        message: "Only JPG and PNG files are allowed.",
+      }),
     classURL: z
       .string()
       .url("Invalid URL format.")

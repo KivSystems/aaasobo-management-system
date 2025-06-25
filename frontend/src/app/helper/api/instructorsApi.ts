@@ -71,23 +71,14 @@ export const getInstructor = async (
 };
 
 // Register instructor data
-export const registerInstructor = async (userData: {
-  name: string;
-  nickname: string;
-  email: string;
-  password: string;
-  icon: string;
-  classURL: string;
-  meetingId: string;
-  passcode: string;
-  introductionURL: string;
-}): Promise<RegisterFormState> => {
+export const registerInstructor = async (
+  userData: FormData,
+): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
     const response = await fetch(registerURL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
+      body: userData,
     });
 
     if (response.status === 409) {

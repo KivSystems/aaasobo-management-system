@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useInput } from "@/app/hooks/useInput";
 import styles from "./RegisterForm.module.scss";
 import {
@@ -11,7 +11,6 @@ import {
   IdentificationIcon,
   KeyIcon,
   LinkIcon,
-  PhotoIcon,
 } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import TextInput from "../../elements/textInput/TextInput";
@@ -36,9 +35,14 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
   const { localMessages, clearErrorMessage } =
     useFormMessages(registerResultState);
   const { passwordStrength, passwordFeedback } = usePasswordStrength(password);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <form action={formAction} className={styles.form}>
+    <form
+      action={formAction}
+      className={styles.form}
+      encType="multipart/form-data"
+    >
       <p className={styles.required}>*Required</p>
       <TextInput
         id="name"
@@ -139,17 +143,26 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
 
       {userType === "instructor" && (
         <>
-          {/* <TextInput
-            id="icon"
-            label="Icon"
-            type="text"
+          <input
+            type="file"
             name="icon"
-            placeholder="e.g., john-1.jpg"
-            icon={<PhotoIcon className={styles.icon} />}
-            inputRequired
-            onChange={() => clearErrorMessage("icon")}
-          /> */}
-          <Uploader />
+            ref={fileInputRef}
+            style={{ display: "none" }}
+          />
+          <Uploader
+            onFileSelect={(file) => {
+              if (fileInputRef.current && file) {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInputRef.current.files = dataTransfer.files;
+              }
+            }}
+            clearFileInputRef={() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+              }
+            }}
+          />
           <TextInput
             id="classURL"
             label="Class URL"
