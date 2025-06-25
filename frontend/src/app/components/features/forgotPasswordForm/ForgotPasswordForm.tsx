@@ -11,6 +11,7 @@ import Link from "next/link";
 import { sendResetEmail } from "@/app/actions/sendResetEmail";
 import { useSearchParams } from "next/navigation";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
+import { getLoginPath } from "@/app/helper/utils/validationUtils";
 
 export default function ForgotPasswordForm({
   language,
@@ -22,6 +23,9 @@ export default function ForgotPasswordForm({
 
   const searchParams = useSearchParams();
   const userType = searchParams.get("type") as UserType;
+
+  // Get the login path based on user type.
+  const loginHref = getLoginPath(userType);
 
   return (
     <form action={formAction} className={styles.form}>
@@ -62,12 +66,7 @@ export default function ForgotPasswordForm({
         )}
       </div>
 
-      <Link
-        className={styles.loginLink}
-        href={
-          userType === "customer" ? "/customers/login" : "/instructors/login"
-        }
-      >
+      <Link className={styles.loginLink} href={loginHref}>
         {language === "ja" ? "ログインページへ戻る" : "Return to login page"}
       </Link>
     </form>
