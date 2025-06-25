@@ -24,7 +24,11 @@ adminsRouter.post(
   registerAdminController,
 );
 adminsRouter.patch("/:id", verifyAuthentication, updateAdminProfileController);
-adminsRouter.delete("/admin-list/:id", deleteAdminController);
+adminsRouter.delete(
+  "/admin-list/:id",
+  verifyAuthentication,
+  deleteAdminController,
+);
 adminsRouter.post(
   "/instructor-list/register",
   verifyAuthentication,
