@@ -20,6 +20,7 @@ import {
   rebookClassAction,
 } from "@/app/actions/rebookingActions";
 import Loading from "@/app/components/elements/loading/Loading";
+import CheckboxInput from "@/app/components/elements/checkboxInput/CheckboxInput";
 
 export default function ConfirmRebooking({
   instructorToRebook,
@@ -150,19 +151,14 @@ export default function ConfirmRebooking({
         )}
       </div>
 
-      <div className={styles.inputWrapper}>
+      <div className={styles.attendingChildren}>
         {childProfiles.map((child) => (
-          <div key={child.id} className={styles.field}>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedChildrenIds.some((id) => id === child.id)}
-                onChange={(event) => handleChildChange(child.id)}
-                className={styles.checkbox}
-              />
-              {child.name}
-            </label>
-          </div>
+          <CheckboxInput
+            key={child.id}
+            label={child.name}
+            checked={selectedChildrenIds.some((id) => id === child.id)}
+            onChange={(event) => handleChildChange(child.id)}
+          />
         ))}
       </div>
 
