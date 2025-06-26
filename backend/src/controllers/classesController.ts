@@ -15,6 +15,7 @@ import {
   updateClass,
   checkInstructorConflicts,
   rebookClass,
+  checkInstructorUnavailability,
 } from "../services/classesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import { prisma } from "../../prisma/prismaClient";
@@ -187,6 +188,15 @@ export const rebookClassController = async (
     if (isInstructorBooked) {
       return res.status(400).json({
         errorType: "instructor conflict",
+      });
+    }
+
+    // Check if the selected instructor is unavailable at the selected date and time
+    const isInstructorUnavailable: boolean =
+      await checkInstructorUnavailability(instructorId, dateTime);
+    if (isInstructorUnavailable) {
+      return res.status(400).json({
+        errorType: "instructor unavailable",
       });
     }
 

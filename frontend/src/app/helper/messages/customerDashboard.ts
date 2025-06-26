@@ -184,6 +184,10 @@ export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
     ja: "申し訳ございませんが、選択された時間はインストラクターがすでに予約されています。お手数ですが、ページを更新して別の時間かインストラクターをお選びください。",
     en: "We're sorry, but the instructor is already booked at the selected time. Please refresh the page and choose a different time or instructor.",
   },
+  "instructor unavailable": {
+    ja: "選択された時間はインストラクターの予定変更により予約できません。お手数ですが、ページを更新して別の時間またはインストラクターをお選びください。",
+    en: "The selected time is no longer available due to a change in the instructor's schedule. Please refresh the page and choose a different time or instructor.",
+  },
   default: {
     ja: "クラスの振替予約中にエラーが発生しました。しばらく時間をおいてから、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
     en: "An error occurred while rebooking the class. Please wait a moment and try again. If the issue persists, feel free to contact us at contact@aaasobo.org.",

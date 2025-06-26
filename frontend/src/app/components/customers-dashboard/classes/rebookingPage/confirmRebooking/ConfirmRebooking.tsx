@@ -14,13 +14,13 @@ import {
   DOUBLE_BOOKING_CONFIRMATION_MESSAGE,
   SELECT_AT_LEAST_ONE_CHILD_MESSAGE,
 } from "@/app/helper/messages/customerDashboard";
-import {
-  checkChildConflictsAction,
-  checkDoubleBookingAction,
-  rebookClassAction,
-} from "@/app/actions/rebookingActions";
 import Loading from "@/app/components/elements/loading/Loading";
 import CheckboxInput from "@/app/components/elements/checkboxInput/CheckboxInput";
+import {
+  checkChildConflicts,
+  checkDoubleBooking,
+  rebookClass,
+} from "@/app/helper/api/classesApi";
 
 export default function ConfirmRebooking({
   instructorToRebook,
@@ -68,7 +68,7 @@ export default function ConfirmRebooking({
     }
 
     // Check if any of the selected children already have a class booked with a different instructor at the same time
-    const conflictsResult = await checkChildConflictsAction(
+    const conflictsResult = await checkChildConflicts(
       dateTimeToRebook,
       selectedChildrenIds,
     );
@@ -91,7 +91,7 @@ export default function ConfirmRebooking({
     }
 
     // Check if there is already a booked class for this customer at the same time
-    const doubleBookingResult = await checkDoubleBookingAction(
+    const doubleBookingResult = await checkDoubleBooking(
       customerId,
       dateTimeToRebook,
     );
@@ -112,7 +112,7 @@ export default function ConfirmRebooking({
     }
 
     // Proceed with rebooking
-    const rebookingResult = await rebookClassAction(classId, {
+    const rebookingResult = await rebookClass(classId, {
       dateTime: dateTimeToRebook,
       instructorId: instructorToRebook.id,
       customerId,
