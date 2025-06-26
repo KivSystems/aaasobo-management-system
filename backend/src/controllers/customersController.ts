@@ -26,14 +26,26 @@ import {
 } from "../services/verificationTokensService";
 import { resendVerificationEmail, sendVerificationEmail } from "../helper/mail";
 import { prisma } from "../../prisma/prismaClient";
+import { deleteChild, registerChild } from "../services/childrenService";
 
 export const registerCustomerController = async (
   req: Request,
   res: Response,
 ) => {
-  const { name, email, password, prefecture } = req.body;
+  const { customerData, childData } = req.body;
 
-  if (!name || !email || !password || !prefecture) {
+  const { email, password, prefecture } = customerData;
+  const { birthdate, personalInfo } = childData;
+
+  if (
+    !customerData.name ||
+    !email ||
+    !password ||
+    !prefecture ||
+    !childData.name ||
+    !birthdate ||
+    !personalInfo
+  ) {
     return res.sendStatus(400);
   }
 
@@ -46,10 +58,23 @@ export const registerCustomerController = async (
       return res.sendStatus(409);
     }
 
-    const { customer, verificationToken } = await prisma.$transaction(
+    const { customer, child, verificationToken } = await prisma.$transaction(
       async (tx) => {
         const customer = await registerCustomer(
-          { name, email: normalizedEmail, password, prefecture },
+          {
+            name: customerData.name,
+            email: normalizedEmail,
+            password,
+            prefecture,
+          },
+          tx,
+        );
+
+        const child = await registerChild(
+          childData.name,
+          `${birthdate}T00:00:00.000Z`,
+          personalInfo,
+          customer.id,
           tx,
         );
 
@@ -58,18 +83,19 @@ export const registerCustomerController = async (
           tx,
         );
 
-        return { customer, verificationToken };
+        return { customer, child, verificationToken };
       },
     );
 
     const sendResult = await sendVerificationEmail(
       verificationToken.email,
-      name,
+      customer.name,
       verificationToken.token,
     );
 
     if (!sendResult.success) {
       await prisma.$transaction(async (tx) => {
+        await deleteChild(tx, child.id);
         await deleteCustomer(customer.id, tx);
         await deleteVerificationToken(normalizedEmail, tx);
       });
@@ -331,6 +357,38 @@ export const verifyCustomerEmailController = async (
       error,
       context: {
         token,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const checkEmailConflictsController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+
+  try {
+    const existingCustomer = await getCustomerByEmail(normalizedEmail);
+    if (existingCustomer) {
+      return res.sendStatus(409);
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error checking email conflicts", {
+      error,
+      context: {
+        email: normalizedEmail,
         time: new Date().toISOString(),
       },
     });

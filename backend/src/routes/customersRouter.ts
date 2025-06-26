@@ -9,6 +9,7 @@ import {
   getClassesController,
   getRebookableClassesController,
   verifyCustomerEmailController,
+  checkEmailConflictsController,
 } from "../../src/controllers/customersController";
 import {
   type RequestWithId,
@@ -20,6 +21,7 @@ export const customersRouter = express.Router();
 // http://localhost:4000/customers
 
 customersRouter.post("/register", registerCustomerController);
+customersRouter.post("/check-email-conflicts", checkEmailConflictsController);
 customersRouter.patch("/verify-email", verifyCustomerEmailController);
 
 customersRouter.get("/:id/subscriptions", getSubscriptionsByIdController);
