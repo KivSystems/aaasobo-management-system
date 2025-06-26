@@ -1,9 +1,13 @@
 import {
+  CHILD_BOOKING_STATUS_ERROR_MESSAGE,
   CLASS_CANCELLATION_SUCCESS,
+  DOUBLE_BOOKING_CHECK_FAILURE,
   FAILED_TO_CANCEL_CLASS,
   FAILED_TO_CANCEL_CLASSES,
   FAILED_TO_CANCEL_INVALID_CLASS,
   FAILED_TO_CANCEL_INVALID_CLASSES,
+  FAILED_TO_FETCH_REBOOKABLE_INSTRUCTORS,
+  REBOOK_CLASS_RESULT_MESSAGES,
   SELECTED_CLASSES_CANCELLATION_SUCCESS,
 } from "../messages/customerDashboard";
 
@@ -46,42 +50,40 @@ export const deleteClass = async (classId: number) => {
   }
 };
 
-// POST class
-export const bookClass = async (classData: {
-  classId: number;
-  dateTime: string;
-  instructorId: number;
-  customerId: number;
-  childrenIds: number[];
-  status: string;
-  recurringClassId: number;
-  rebookableUntil: string;
-  classCode: string;
-}) => {
+export const rebookClass = async (
+  classId: number,
+  classData: {
+    dateTime: string;
+    instructorId: number;
+    customerId: number;
+    childrenIds: number[];
+  },
+): Promise<
+  { successMessage: LocalizedMessage } | { errorMessage: LocalizedMessage }
+> => {
+  const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/rebook`;
   try {
-    const response = await fetch(`${BACKEND_ORIGIN}/classes`, {
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(classData),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.error || `HTTP error. status ${response.status}`,
-      );
+    if (response.ok) {
+      return { successMessage: REBOOK_CLASS_RESULT_MESSAGES.success };
     }
 
-    const result = await response.json();
-    return result;
+    const data = await response.json().catch(() => null);
+    const errorType = data?.errorType;
+
+    const errorMessage =
+      (errorType && REBOOK_CLASS_RESULT_MESSAGES[errorType]) ??
+      REBOOK_CLASS_RESULT_MESSAGES.default;
+
+    return { errorMessage };
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Failed to book class:", error.message);
-      throw new Error(error.message);
-    } else {
-      console.error("An unexpected error occurred:", error);
-      throw new Error("An unexpected error occurred.");
-    }
+    console.error("API error while rebooking a class:", error);
+    return { errorMessage: REBOOK_CLASS_RESULT_MESSAGES.default };
   }
 };
 
@@ -199,79 +201,56 @@ export const createMonthlyClasses = async (data: {
 export const checkDoubleBooking = async (
   customerId: number,
   dateTime: string,
-): Promise<{
-  error?: string;
-  message?: string;
-}> => {
+): Promise<{ isDoubleBooked: boolean } | { message: LocalizedMessage }> => {
+  const apiUrl = `${BACKEND_ORIGIN}/classes/check-double-booking`;
   try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/classes/check-double-booking`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId,
-          dateTime,
-        }),
-      },
-    );
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customerId,
+        dateTime,
+      }),
+    });
 
     if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(
-        errorResponse.error || `HTTP error. status ${response.status}`,
-      );
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    return { isDoubleBooked: data };
   } catch (error) {
-    console.error("API Error:", error);
-    if (error instanceof Error) {
-      return { error: error.message || "Failed to check double booking." };
-    } else {
-      return { error: "An unknown error occurred." };
-    }
+    console.error("API error while checking double booking:", error);
+    return { message: DOUBLE_BOOKING_CHECK_FAILURE };
   }
 };
 
-// Check if the selected children have another class with another instructor
-export const checkChildrenAvailability = async (
+// Check if any of the selected children already have a class booked with a different instructor at the same time
+export const checkChildConflicts = async (
   dateTime: string,
   selectedChildrenIds: number[],
-): Promise<{
-  error?: string;
-  message?: string;
-}> => {
+): Promise<ChildConflictResponse> => {
+  const apiUrl = `${BACKEND_ORIGIN}/classes/check-child-conflicts`;
+
   try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/classes/check-children-availability`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dateTime,
-          selectedChildrenIds,
-        }),
-      },
-    );
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        dateTime,
+        selectedChildrenIds,
+      }),
+    });
 
     if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(
-        errorResponse.error || `HTTP error. status ${response.status}`,
-      );
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    return { conflictingChildren: data };
   } catch (error) {
-    console.error("API Error:", error);
-    if (error instanceof Error) {
-      return {
-        error: error.message || "Failed to check children availability.",
-      };
-    } else {
-      return { error: "An unknown error occurred." };
-    }
+    console.error("API error while checking child conflicts:", error);
+    return { message: CHILD_BOOKING_STATUS_ERROR_MESSAGE };
   }
 };
 
@@ -294,5 +273,30 @@ export const cancelClasses = async (classIds: number[]) => {
   } catch (error) {
     console.error("API error while canceling classes:", error);
     return { success: false, message: FAILED_TO_CANCEL_CLASSES };
+  }
+};
+
+export const getInstructorAvailabilities = async (
+  classId: number,
+): Promise<InstructorAvailability[] | []> => {
+  const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/instructor-availabilities`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "API error while fetching rebookable instructor availabilities:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_REBOOKABLE_INSTRUCTORS);
   }
 };

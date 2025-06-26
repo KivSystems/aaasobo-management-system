@@ -426,3 +426,21 @@ export const updateInstructorPassword = async (
     data: { password: newPassword },
   });
 };
+
+export const getInstructorProfiles = async () => {
+  const instructors = await prisma.instructor.findMany({
+    where: {
+      inactiveAt: null, // Exclude instructors who have quit
+    },
+  });
+
+  const instructorProfiles = instructors.map((instructor) => ({
+    id: instructor.id,
+    name: instructor.name,
+    nickname: instructor.nickname,
+    icon: instructor.icon,
+    introductionURL: instructor.introductionURL,
+  }));
+
+  return instructorProfiles;
+};

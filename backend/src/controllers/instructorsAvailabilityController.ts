@@ -1,9 +1,10 @@
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import { Response } from "express";
 import {
-  fetchInstructorAvailabilitiesTodayAndAfter,
   getCalendarAvailabilities,
+  getInstructorAvailabilities,
 } from "../services/instructorsAvailabilitiesService";
+import { getRebookableUntil } from "../services/classesService";
 
 export const getCalendarAvailabilitiesController = async (
   req: RequestWithId,
@@ -15,7 +16,6 @@ export const getCalendarAvailabilitiesController = async (
     const availabilities = await getCalendarAvailabilities(instructorId);
     res.status(200).json(availabilities);
   } catch (error) {
-    // res.status(500).json({ error });
     console.error("Error getting instructor calendar availabilities", {
       error,
       context: {
@@ -27,19 +27,28 @@ export const getCalendarAvailabilitiesController = async (
   }
 };
 
-export const getInstructorAvailabilitiesTomorrowAndAfter = async (
+export const getInstructorAvailabilitiesController = async (
   req: RequestWithId,
   res: Response,
 ) => {
+  const classId = req.id;
+
   try {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const data = await fetchInstructorAvailabilitiesTodayAndAfter(
-      req.id,
-      tomorrow,
-    );
-    return res.status(200).json({ data });
+    const rebookableUntil = await getRebookableUntil(classId);
+
+    if (!rebookableUntil) {
+      return res.sendStatus(400);
+    }
+
+    const instructorAvailabilities =
+      await getInstructorAvailabilities(rebookableUntil);
+
+    res.status(200).json(instructorAvailabilities);
   } catch (error) {
-    res.status(500).json({ error });
+    console.error(
+      `Error while getting instructor availabilities (class ID: ${classId}):`,
+      error,
+    );
+    res.sendStatus(500);
   }
 };

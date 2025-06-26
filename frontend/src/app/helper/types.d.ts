@@ -29,6 +29,14 @@ type InstructorProfile = {
   createdAt: string;
 };
 
+type InstructorRebookingProfile = {
+  id: number;
+  name: string;
+  nickname: string;
+  icon: string;
+  introductionURL: string;
+};
+
 type Availability = { dateTime: string };
 
 type ClassStatus =
@@ -318,6 +326,7 @@ type RebookingModalControllerProps = {
 };
 
 type RebookingModalProps = {
+  adminId?: number;
   isAdminAuthenticated?: boolean;
   customerId: number;
   rebookableClasses: RebookableClass[] | [];
@@ -352,7 +361,67 @@ type ClassDetailProps = {
   language: LanguageType;
 };
 
+type InstructorAvailability = {
+  instructorId: number;
+  dateTime: string;
+};
+
 type StringMessages = Record<string, string>;
 type LocalizedMessages = Record<string, LocalizedMessage>;
 
 type FormResult = StringMessages | LocalizedMessages;
+
+type RebookingSteps =
+  | "selectOption"
+  | "selectInstructor"
+  | "selectDateTime"
+  | "confirmRebooking";
+
+type RebookingFormProps = {
+  customerId: number;
+  classId: number;
+  instructorAvailabilities: InstructorAvailability[] | [];
+  instructorProfiles: InstructorRebookingProfile[];
+  childProfiles: Child[];
+  adminId?: number;
+  isAdminAuthenticated?: boolean;
+};
+
+type RebookableInstructorsListProps = {
+  instructorProfiles: InstructorRebookingProfile[];
+  instructorAvailabilities: InstructorAvailability[] | [];
+  setInstructorToRebook: (instructor: { id: number; name: string }) => void;
+  rebookingOption: "instructor" | "dateTime";
+  setRebookingStep: (step: RebookingSteps) => void;
+  dateTimeToRebook: string | null;
+};
+
+type RebookableTimeSlotsProps = {
+  setDateTimeToRebook: (dateTime: string) => void;
+  setRebookingStep: (step: RebookingSteps) => void;
+  instructorToRebook: {
+    id: number;
+    name: string;
+  };
+  instructorAvailabilities: InstructorAvailability[] | [];
+  rebookingOption: "instructor" | "dateTime";
+};
+
+type ConfirmRebookingProps = {
+  instructorToRebook: {
+    id: number;
+    name: string;
+  };
+  dateTimeToRebook: string;
+  rebookingOption: "instructor" | "dateTime";
+  setRebookingStep: (step: RebookingSteps) => void;
+  childProfiles: Child[];
+  customerId: number;
+  classId: number;
+  adminId?: number;
+  isAdminAuthenticated?: boolean;
+};
+
+type ChildConflictResponse =
+  | { conflictingChildren: string[] }
+  | { message: LocalizedMessage };

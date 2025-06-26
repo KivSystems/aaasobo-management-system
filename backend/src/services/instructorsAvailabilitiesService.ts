@@ -1,73 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
 import { nHoursLater } from "../helper/dateUtils";
 
-export const fetchInstructorAvailabilitiesTodayAndAfter = async (
-  instructorId: number,
-  startDate: Date,
-) => {
-  try {
-    // Get the dateTime to exclude from the `Class` table
-    const excludedFromClasses = await prisma.class.findMany({
-      where: {
-        instructorId: instructorId,
-        dateTime: {
-          gte: startDate,
-        },
-        status: {
-          in: ["booked", "canceledByInstructor"],
-        },
-      },
-      select: {
-        dateTime: true,
-      },
-    });
-
-    // Get the dateTime to exclude from the `instructorUnavailability` table
-    const excludedFromUnavailability =
-      await prisma.instructorUnavailability.findMany({
-        where: {
-          instructorId: instructorId,
-          dateTime: {
-            gte: startDate,
-          },
-        },
-        select: {
-          dateTime: true,
-        },
-      });
-
-    // Combine the excluded dateTime
-    const excludedDateTimes = [
-      ...excludedFromClasses.map((record) => record.dateTime),
-      ...excludedFromUnavailability.map((record) => record.dateTime),
-    ];
-
-    // Get the availabilities from the `instructorAvailability` table
-    const availabilities = await prisma.instructorAvailability.findMany({
-      where: {
-        instructorId: instructorId,
-        dateTime: {
-          gte: startDate,
-          notIn: excludedDateTimes, // Exclude the dateTime from the list
-        },
-      },
-      orderBy: {
-        dateTime: "asc",
-      },
-    });
-
-    // Convert to an array of dateTime only
-    const dateTimes = availabilities.map(
-      (availability) => availability.dateTime,
-    );
-
-    return dateTimes;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch instructor availabilities.");
-  }
-};
-
 export const getCalendarAvailabilities = async (instructorId: number) => {
   const effectiveFrom = nHoursLater(3);
 
@@ -79,7 +12,8 @@ export const getCalendarAvailabilities = async (instructorId: number) => {
         gte: effectiveFrom,
       },
       status: {
-        in: ["booked", "canceledByInstructor"],
+        // TODO: once the updateClass service function has been updated, remove "canceledByInstructor"
+        in: ["booked", "rebooked", "canceledByInstructor"],
       },
     },
     select: {
@@ -133,4 +67,40 @@ export const getCalendarAvailabilities = async (instructorId: number) => {
   });
 
   return formattedAvailabilities;
+};
+
+type InstructorAvailability = {
+  instructorId: number;
+  dateTime: Date;
+};
+
+/**
+ * Fetches all instructors' available time slots between now (+3 hours) and a given date (rebookableUntil).
+ * Only includes slots where:
+ * - The instructor is not marked as unavailable
+ * - There are no existing classes that are booked or rebooked at those times
+ */
+export const getInstructorAvailabilities = async (
+  rebookableUntil: Date,
+): Promise<InstructorAvailability[]> => {
+  const effectiveFrom = nHoursLater(3);
+
+  const availableSlots = await prisma.$queryRaw<InstructorAvailability[]>`
+    SELECT ia."instructorId", ia."dateTime"
+    FROM "InstructorAvailability" ia
+    WHERE ia."dateTime" BETWEEN ${effectiveFrom} AND ${rebookableUntil}
+      AND NOT EXISTS (
+        SELECT 1 FROM "InstructorUnavailability" iu
+        WHERE iu."instructorId" = ia."instructorId"
+          AND iu."dateTime" = ia."dateTime"
+      )
+      AND NOT EXISTS (
+        SELECT 1 FROM "Class" c
+        WHERE c."instructorId" = ia."instructorId"
+          AND c."dateTime" = ia."dateTime"
+          AND c."status" IN ('booked', 'rebooked')
+      )
+  `;
+
+  return availableSlots;
 };
