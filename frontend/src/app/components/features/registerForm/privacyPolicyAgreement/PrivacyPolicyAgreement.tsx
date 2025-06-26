@@ -1,11 +1,17 @@
 import CheckboxInput from "@/app/components/elements/checkboxInput/CheckboxInput";
 import styles from "./PrivacyPolicyAgreement.module.scss";
+import { ChangeEvent } from "react";
+import FormValidationMessage from "@/app/components/elements/formValidationMessage/FormValidationMessage";
 
 const PrivacyPolicyAgreement = ({
-  localMessages,
+  error,
+  onChange,
+  checked,
   language,
 }: {
-  localMessages: Record<string, string>;
+  error: string;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  checked?: boolean;
   language: LanguageType;
 }) => {
   return (
@@ -20,10 +26,12 @@ const PrivacyPolicyAgreement = ({
       </label>
 
       <CheckboxInput
-        name="isAgreed"
         label={language === "ja" ? "同意する" : "I agree."}
-        error={localMessages.isAgreed}
+        onChange={onChange}
+        checked={checked}
       />
+
+      {error && <FormValidationMessage type="error" message={error} />}
     </div>
   );
 };

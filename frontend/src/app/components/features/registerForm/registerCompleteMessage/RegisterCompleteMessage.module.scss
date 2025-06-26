@@ -1,0 +1,23 @@
+@import "../../../../variables.module.scss";
+
+.complete {
+  text-align: center;
+
+  &__icon {
+    text-align: center;
+    height: 50px;
+    width: 50px;
+    color: $green-success;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 0.5rem;
+
+  }
+}

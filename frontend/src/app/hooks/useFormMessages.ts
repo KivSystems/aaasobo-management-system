@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useFormMessages<T extends FormResult>(
-  formResult: T | undefined,
-) {
+export function useFormMessages<T extends FormResult>(formResult?: T) {
   const [localMessages, setLocalMessages] = useState<T>({} as T);
 
   useEffect(() => {
@@ -28,5 +26,5 @@ export function useFormMessages<T extends FormResult>(
     });
   };
 
-  return { localMessages, clearErrorMessage };
+  return { localMessages, setLocalMessages, clearErrorMessage };
 }

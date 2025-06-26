@@ -12,6 +12,11 @@ export const EMAIL_ALREADY_REGISTERED_ERROR = {
   en: "This email address is already registered. Try a different one.",
 };
 
+export const EMAIL_AVAILABILITY_ERROR = {
+  ja: "このメールアドレスは既に登録されています。「戻る」ボタンで一つ前へ戻り、別のアドレスをお試しください。",
+  en: "This email is already registered. Please go back and try a different one.",
+};
+
 export const SINGLE_ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {
   return (
     "The input value for the following item has already been registered. Please enter a different one: " +
@@ -26,14 +31,9 @@ export const MULTIPLE_ITEMS_ALREADY_REGISTERED_ERROR = (items: string) => {
   );
 };
 
-export const CONFIRMATION_EMAIL_SENT = {
-  ja: "確認メールを送信しました。メール内のボタンをクリックしてアカウントを有効化してください。",
-  en: "We have sent a confirmation email. Please click the button in the email to activate your account.",
-};
-
 export const CONFIRMATION_EMAIL_SEND_FAILURE = {
-  ja: "確認メールの送信に失敗しました。メールアドレスをご確認のうえ、再度「アカウント登録」ボタンをクリックしてみてください。問題が解決しない場合は、contact@aaasobo.org までご連絡ください。ご不便をおかけして申し訳ありません。",
-  en: "We couldn't send the confirmation email. Please check your email address and try again. If the issue persists, contact us at contact@aaasobo.org. We're sorry for the inconvenience.",
+  ja: "確認メールの送信に失敗しました。前の画面に戻ってメールアドレスをご確認のうえ、もう一度「アカウント登録」をお試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't send the confirmation email. Please check your email address and try again. Contact us at contact@aaasobo.org if the issue continues.",
 };
 
 export const INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE =

@@ -1,14 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styles from "./page.module.scss";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import RegisterForm from "@/app/components/features/registerForm/RegisterForm";
+import RegisterCustomerForm from "@/app/components/features/registerForm/registerCustomerForm/RegisterCustomerForm";
+import RegisterChildForm from "@/app/components/features/registerForm/registerChildForm/RegisterChildForm";
+import RegisterCompleteMessage from "@/app/components/features/registerForm/registerCompleteMessage/RegisterCompleteMessage";
 
-function Register() {
+function RegisterCustomerPage() {
+  const [registrationStep, setRegistrationStep] = useState<
+    "customer" | "child" | "complete"
+  >("customer");
+  const [customerData, setCustomerData] = useState<RegisteringCustomer>({
+    name: "",
+    email: "",
+    password: "",
+    prefecture: "",
+    isAgreed: false,
+  });
+  const [childData, setChildData] = useState<RegisteringChild>({
+    name: "",
+    birthdate: "",
+    personalInfo: "",
+  });
   const { language } = useLanguage();
+
+  const fallbackEmail = language === "ja" ? "メールアドレス" : "your email";
+  const emailToShow = customerData.email || fallbackEmail;
 
   return (
     <main>
@@ -22,25 +42,56 @@ function Register() {
             className={styles.logo}
             priority={true}
           />
-          <h2>
-            {language === "ja"
-              ? "無料アカウントを作成"
-              : "Create a free account"}
-          </h2>
-          <p className={styles.paragraph}>
-            {language === "ja"
-              ? "すでにアカウントをお持ちですか？"
-              : "Already a member?"}{" "}
-            <Link href="/customers/login">
-              {language === "ja" ? "ログイン" : "Login"}
-            </Link>
-          </p>
 
-          <RegisterForm userType="customer" language={language} />
+          {(registrationStep === "customer" ||
+            registrationStep === "child") && (
+            <header className={styles.header}>
+              <h1>
+                {language === "ja"
+                  ? "無料アカウントを作成"
+                  : "Create a free account"}
+              </h1>
+              <p>
+                {language === "ja"
+                  ? "すでにアカウントをお持ちですか？"
+                  : "Already a member?"}{" "}
+                <Link href="/customers/login">
+                  {language === "ja" ? "ログイン" : "Login"}
+                </Link>
+              </p>
+            </header>
+          )}
+
+          {registrationStep === "customer" && (
+            <RegisterCustomerForm
+              customerData={customerData}
+              setCustomerData={setCustomerData}
+              onNextStep={() => setRegistrationStep("child")}
+              language={language}
+            />
+          )}
+
+          {registrationStep === "child" && (
+            <RegisterChildForm
+              customerData={customerData}
+              childData={childData}
+              setChildData={setChildData}
+              onPreviousStep={() => setRegistrationStep("customer")}
+              onNextStep={() => setRegistrationStep("complete")}
+              language={language}
+            />
+          )}
+
+          {registrationStep === "complete" && (
+            <RegisterCompleteMessage
+              language={language}
+              emailToShow={emailToShow}
+            />
+          )}
         </div>
       </div>
     </main>
   );
 }
 
-export default Register;
+export default RegisterCustomerPage;

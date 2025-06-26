@@ -1,0 +1,36 @@
+@import "../../../../variables.module.scss";
+
+.buttonWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.messageWrapper {
+  margin: 0 0 1rem 0;
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+
+  &--inputField {
+    pointer-events: none;
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    height: 1.125rem;
+    width: 1.125rem;
+    transform: translateY(-50%);
+    color: #6b7280;
+  }
+}
+
+.form {
+  width: 100%;
+}
+
+.required {
+  color: $red-alert;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}

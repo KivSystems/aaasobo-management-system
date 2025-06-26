@@ -20,8 +20,6 @@ import { useFormState } from "react-dom";
 import { registerUser } from "@/app/actions/registerUser";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
-import PrefectureSelect from "./prefectureSelect/PrefectureSelect";
-import PrivacyPolicyAgreement from "./privacyPolicyAgreement/PrivacyPolicyAgreement";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 const RegisterForm = ({
@@ -50,83 +48,6 @@ const RegisterForm = ({
         name="passwordStrength"
         value={passwordStrength ?? ""}
       />
-
-      {userType === "customer" && (
-        <>
-          <TextInput
-            id="name"
-            type="text"
-            name="name"
-            required
-            placeholder={language === "ja" ? "名前" : "Name"}
-            icon={<UserCircleIcon className={styles.icon} />}
-            error={localMessages.name}
-            onChange={() => clearErrorMessage("name")}
-          />
-          <TextInput
-            id="email"
-            type="email"
-            name="email"
-            required
-            placeholder={language === "ja" ? "メール" : "E-mail"}
-            icon={<EnvelopeIcon className={styles.icon} />}
-            error={localMessages.email}
-            onChange={() => clearErrorMessage("email")}
-          />
-          <TextInput
-            id="password"
-            type="password"
-            name="password"
-            required
-            value={password}
-            placeholder={
-              language === "ja"
-                ? "パスワード(8文字以上)"
-                : "Password (8+ chars)"
-            }
-            onChange={(event) => {
-              onPasswordChange(event);
-              clearErrorMessage("password");
-            }}
-            icon={<LockClosedIcon className={styles.icon} />}
-            minLength={8}
-            error={localMessages.password}
-            showPassword={showPassword}
-            onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
-            language={language}
-          />
-          <PasswordStrengthMeter
-            password={password}
-            passwordStrength={passwordStrength}
-            language={language}
-          />
-          <TextInput
-            id="passConfirmation"
-            type="password"
-            name="passConfirmation"
-            required
-            placeholder={
-              language === "ja" ? "パスワード再入力" : "Re-enter password"
-            }
-            icon={<LockClosedIcon className={styles.icon} />}
-            error={localMessages.passConfirmation}
-            onChange={() => clearErrorMessage("passConfirmation")}
-            showPassword={showPassword}
-            onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
-            language={language}
-          />
-          <PrefectureSelect
-            clearErrorMessage={clearErrorMessage}
-            errorMessage={localMessages.prefecture}
-            language={language!}
-          />
-          <PrivacyPolicyAgreement
-            localMessages={localMessages}
-            language={language!}
-          />
-          <input type="hidden" name="language" value={language ?? "en"} />
-        </>
-      )}
 
       {(userType === "admin" || userType === "instructor") && (
         <>
