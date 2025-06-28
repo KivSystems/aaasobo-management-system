@@ -11,6 +11,7 @@ import {
   getInstructorProfileController,
   updateInstructorProfile,
   getCalendarClassesController,
+  getInstructorProfilesController,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -22,16 +23,14 @@ import {
   getInstructorUnavailabilities,
 } from "../../src/controllers/instructorsUnavailabilityController";
 import { getInstructorClasses } from "../../src/controllers/classesController";
-import {
-  getCalendarAvailabilitiesController,
-  getInstructorAvailabilitiesTomorrowAndAfter,
-} from "../../src/controllers/instructorsAvailabilityController";
+import { getCalendarAvailabilitiesController } from "../../src/controllers/instructorsAvailabilityController";
 
 export const instructorsRouter = express.Router();
 
 // http://localhost:4000/instructors
 
 instructorsRouter.get("/", getAllInstructorsAvailabilitiesController);
+instructorsRouter.get("/profiles", getInstructorProfilesController);
 instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
@@ -74,13 +73,6 @@ instructorsRouter.get("/:id/classes", parseId, (req, res) => {
 instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
   getCalendarAvailabilitiesController(req as RequestWithId, res);
 });
-instructorsRouter.get(
-  "/:id/availabilities/after-tomorrow",
-  parseId,
-  (req, res) => {
-    getInstructorAvailabilitiesTomorrowAndAfter(req as RequestWithId, res);
-  },
-);
 
 instructorsRouter.get("/:id/calendar-classes", parseId, (req, res) => {
   getCalendarClassesController(req as RequestWithId, res);

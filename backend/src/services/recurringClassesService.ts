@@ -250,3 +250,23 @@ export const getValidRecurringClassesByInstructorId = async (
     throw new Error("Failed to fetch recurring classes.");
   }
 };
+
+export const getSubscriptionByRecurringClassId = async (
+  recurringClassId: number,
+) => {
+  const recurringClass = await prisma.recurringClass.findUnique({
+    where: {
+      id: recurringClassId,
+    },
+    select: {
+      subscription: {
+        select: {
+          id: true,
+          endAt: true,
+        },
+      },
+    },
+  });
+
+  return recurringClass?.subscription || null;
+};

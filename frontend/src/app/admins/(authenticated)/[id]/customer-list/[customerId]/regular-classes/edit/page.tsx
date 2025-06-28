@@ -2,7 +2,8 @@
 
 import EditRegularClass from "@/app/components/customers-dashboard/regular-classes/EditRegularClass";
 
-function Page({ params }: { params: { customerId: string } }) {
+function Page({ params }: { params: { id: string; customerId: string } }) {
+  const adminId = parseInt(params.id);
   const customerId = parseInt(params.customerId);
   if (isNaN(customerId)) {
     throw new Error("Invalid customerId");
@@ -13,6 +14,7 @@ function Page({ params }: { params: { customerId: string } }) {
 
   return (
     <EditRegularClass
+      adminId={adminId}
       customerId={customerId}
       isAdminAuthenticated={isAuthenticated}
     />

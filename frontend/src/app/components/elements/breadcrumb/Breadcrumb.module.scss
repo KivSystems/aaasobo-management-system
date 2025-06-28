@@ -46,3 +46,11 @@
     }
   }
 }
+
+.rebookingPage {
+  &.ja {
+    .breadcrumb__item {
+      font-weight: 600;
+    }
+  }
+}

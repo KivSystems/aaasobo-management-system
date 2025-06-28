@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/solid";
 
 const InstructorClassesTable = ({
+  adminId,
   instructorId,
   selectedDateClasses,
   timeZone,
@@ -25,6 +26,7 @@ const InstructorClassesTable = ({
   classDate,
   classId,
 }: {
+  adminId?: number | null;
   instructorId: number;
   selectedDateClasses: InstructorClassDetail[] | null;
   timeZone: string;
@@ -332,7 +334,7 @@ const InstructorClassesTable = ({
                   <div className={styles.instructorClasses__time}>
                     {isAdminAuthenticate ? (
                       <Link
-                        href={`/admins/instructor-list/${instructorId}/class-schedule/${eachClass.id}`}
+                        href={`/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${eachClass.id}`}
                         passHref
                       >
                         {classStartTime}

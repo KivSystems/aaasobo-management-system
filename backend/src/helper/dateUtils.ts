@@ -130,3 +130,7 @@ export function convertDayTimeToUTC(day: Day, time: string) {
 export const nHoursLater = (n: number, dateTime: Date = new Date()) => {
   return new Date(dateTime.getTime() + n * 60 * 60 * 1000);
 };
+
+export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
+  return new Date(dateTime.getTime() - n * 60 * 60 * 1000);
+};

@@ -31,6 +31,7 @@ model Instructor {
   instructorUnavailability        InstructorUnavailability[]
   introductionURL                 String                            @unique
   createdAt                       DateTime                          @default(now())
+  inactiveAt                      DateTime?
 }
 
 model InstructorRecurringAvailability {
@@ -186,4 +187,18 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+model Schedule {
+  id      Int      @id @default(autoincrement())
+  date    DateTime @unique
+  eventId Int
+  event   Event    @relation(fields: [eventId], references: [id])
+}
+
+model Event {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  color    String     @unique
+  Schedule Schedule[]
 }

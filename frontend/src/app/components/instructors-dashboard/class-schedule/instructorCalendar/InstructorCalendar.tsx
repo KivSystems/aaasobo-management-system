@@ -7,9 +7,11 @@ import { getValidRange } from "@/app/helper/utils/calendarUtils";
 import InstructorCalendarClient from "./InstructorCalendarClient";
 
 async function InstructorCalendar({
+  adminId,
   instructorId,
   isAdminAuthenticated,
 }: {
+  adminId?: number;
   instructorId: number;
   isAdminAuthenticated?: boolean;
 }) {
@@ -21,10 +23,11 @@ async function InstructorCalendar({
 
   const instructorCalendarEvents = [...classes, ...availabilities];
   const createdAt: string = profile.createdAt;
-  const validRange = getValidRange(createdAt);
+  const validRange = getValidRange(createdAt, 3);
 
   return (
     <InstructorCalendarClient
+      adminId={adminId}
       instructorId={instructorId}
       isAdminAuthenticated={isAdminAuthenticated}
       instructorCalendarEvents={instructorCalendarEvents}

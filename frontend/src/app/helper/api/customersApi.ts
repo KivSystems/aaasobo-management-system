@@ -1,4 +1,5 @@
 import {
+  FAILED_TO_FETCH_CHILD_PROFILES,
   FAILED_TO_FETCH_CUSTOMER_CLASSES,
   FAILED_TO_FETCH_CUSTOMER_PROFILE,
   FAILED_TO_FETCH_REBOOKABLE_CLASSES,
@@ -188,9 +189,7 @@ export const getUpcomingClasses = async (customerId: number) => {
   try {
     const upcomingClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`;
     const response = await fetch(upcomingClassesURL, {
-      // TODO: Remove this line once "/customers/[id]/classes" revalidation is ensured after every booking or cancellation
       cache: "no-store",
-      next: { tags: ["upcoming-classes"] },
     });
 
     if (!response.ok) {
@@ -288,11 +287,6 @@ export const checkEmailConflicts = async (
         messages: { email: EMAIL_ALREADY_REGISTERED_ERROR[language] },
       };
     }
-
-    if (!response.ok) {
-      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
-    }
-
     return { isValid: true };
   } catch (error) {
     console.error("API error while checking email conflicts:", error);
@@ -300,5 +294,26 @@ export const checkEmailConflicts = async (
       isValid: false,
       messages: { errorMessage: UNEXPECTED_ERROR_MESSAGE[language] },
     };
+  }
+};
+
+export const getChildProfiles = async (
+  customerId: number,
+): Promise<Child[]> => {
+  try {
+    const apiUrl = `${BACKEND_ORIGIN}/customers/${customerId}/child-profiles`;
+    const response = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const childProfiles = await response.json();
+    return childProfiles;
+  } catch (error) {
+    console.error("API error while fetching child profiles:", error);
+    throw new Error(FAILED_TO_FETCH_CHILD_PROFILES);
   }
 };
