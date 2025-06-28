@@ -49,7 +49,7 @@ export const updateAdminPassword = async (id: number, newPassword: string) => {
     data: { password: newPassword },
   });
 };
-  
+
 // Delete the selected admin
 export const deleteAdmin = async (adminId: number) => {
   try {
