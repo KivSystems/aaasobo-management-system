@@ -46,6 +46,12 @@ export const INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE =
 export const ADMIN_REGISTRATION_SUCCESS_MESSAGE =
   "The admin account has been created successfully.";
 
+export const ADMIN_UPDATE_SUCCESS_MESSAGE =
+  "The admin account has been updated successfully.";
+
+export const ADMIN_DELETE_SUCCESS_MESSAGE =
+  "The admin account has been deleted successfully.";
+
 export const CONTENT_REGISTRATION_SUCCESS_MESSAGE = (
   categoryType: CategoryType,
 ) => {

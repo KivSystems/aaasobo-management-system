@@ -4,6 +4,7 @@ import {
   getAllAdmins,
   getAdminById,
   updateAdmin,
+  deleteAdmin,
 } from "../services/adminsService";
 import {
   getAllInstructors,
@@ -81,6 +82,26 @@ export const updateAdminProfileController = async (
     });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
+  }
+};
+
+export const deleteAdminController = async (req: Request, res: Response) => {
+  const adminId = parseInt(req.params.id);
+
+  if (isNaN(adminId)) {
+    return res.status(400).json({ error: "Invalid admin ID." });
+  }
+
+  try {
+    const deletedAdmin = await deleteAdmin(adminId);
+
+    res.status(200).json({
+      message: "The admin profile was deleted successfully",
+      id: deletedAdmin.id,
+    });
+  } catch (error) {
+    console.error("Failed to delete the admin profile:", error);
+    res.status(500).json({ error: "Failed to delete the admin profile." });
   }
 };
 

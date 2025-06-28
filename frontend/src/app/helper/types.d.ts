@@ -250,6 +250,11 @@ type UpdateFormState = {
   successMessage?: string;
 };
 
+type DeleteFormState = {
+  errorMessage?: string;
+  successMessage?: string;
+};
+
 type UpcomingClass = {
   id: number;
   dateTime: string;

@@ -4,6 +4,7 @@ import {
   registerInstructorController,
   registerPlanController,
   updateAdminProfileController,
+  deleteAdminController,
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
@@ -26,6 +27,11 @@ adminsRouter.post(
   registerAdminController,
 );
 adminsRouter.patch("/:id", verifyAuthentication, updateAdminProfileController);
+adminsRouter.delete(
+  "/admin-list/:id",
+  verifyAuthentication,
+  deleteAdminController,
+);
 adminsRouter.post(
   "/instructor-list/register",
   verifyAuthentication,
