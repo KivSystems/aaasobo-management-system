@@ -18,15 +18,15 @@ const Page = async ({
     }
     adminId = parseInt(session.user.id);
   }
+  // Set the authentication status based on the adminId
+  const isAuthenticated: boolean = !isNaN(adminId);
 
+  // Get the instructorId and classId from the URL parameters
   const instructorId = parseInt(params.instructorId);
   const classId = parseInt(params.classId);
   if (isNaN(classId)) {
     throw new Error("Invalid classId");
   }
-
-  // Set the authentication status as true.
-  const isAuthenticated = true;
 
   return (
     <ClassDetails

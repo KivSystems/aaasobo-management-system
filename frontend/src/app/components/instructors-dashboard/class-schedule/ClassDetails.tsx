@@ -20,7 +20,6 @@ function ClassDetails({
   classId: number | null;
   isAdminAuthenticated?: boolean;
 }) {
-  console.log("ClassDetails.tsx adminId", adminId);
   const [classDetail, setClassDetail] = useState<InstructorClassDetail | null>(
     null,
   );

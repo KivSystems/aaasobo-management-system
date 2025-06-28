@@ -78,9 +78,9 @@ export const createRenderEventContent = (userType: UserType) => {
   return RenderEventContent;
 };
 
-export const getValidRange = (createdAt: string, month: number) => {
+export const getValidRange = (createdAt: string, monthsAhead: number) => {
   const now = new Date();
-  const end = new Date(now.getFullYear(), now.getMonth() + month, 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1);
 
   return {
     start: createdAt.split("T")[0],

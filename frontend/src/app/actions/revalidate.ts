@@ -15,13 +15,14 @@ export async function revalidateCustomerCalendar(
   customerId: number,
   isAdminAuthenticated: boolean,
 ) {
-  // Get the admin ID from the session if the action is admin authenticated
-  const session = await getUserSession("admin");
-  const adminId = session?.user.id ? parseInt(session.user.id) : undefined;
+  let path = `/customers/${customerId}/classes`;
 
-  const path = isAdminAuthenticated
-    ? `/admins/${adminId}/customer-list/${customerId}`
-    : `/customers/${customerId}/classes`;
+  if (isAdminAuthenticated) {
+    const session = await getUserSession("admin");
+    const adminId = session?.user.id ? parseInt(session.user.id) : undefined;
+
+    path = `/admins/${adminId}/customer-list/${customerId}`;
+  }
   revalidatePath(path);
 }
 
