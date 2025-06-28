@@ -12,6 +12,10 @@ export const EMAIL_ALREADY_REGISTERED_ERROR = {
   en: "This email address is already registered. Try a different one.",
 };
 
+export const ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {
+  return "This name is already registered. Try a different one.";
+};
+
 export const SINGLE_ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {
   return (
     "The input value for the following item has already been registered. Please enter a different one: " +
@@ -47,6 +51,12 @@ export const ADMIN_UPDATE_SUCCESS_MESSAGE =
 
 export const ADMIN_DELETE_SUCCESS_MESSAGE =
   "The admin account has been deleted successfully.";
+
+export const CONTENT_REGISTRATION_SUCCESS_MESSAGE = (
+  categoryType: CategoryType,
+) => {
+  return `The ${categoryType} has been registered successfully.`;
+};
 
 // LoginForm
 export const LOGIN_FAILED_MESSAGE = {

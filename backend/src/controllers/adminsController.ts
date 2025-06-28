@@ -20,7 +20,7 @@ import {
 import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
-import { getAllPlans } from "../services/plansService";
+import { getAllPlans, registerPlan } from "../services/plansService";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -178,7 +178,7 @@ export const getAllAdminsController = async (_: Request, res: Response) => {
 
       return {
         No: number + 1,
-        ID: id,
+        Admin: id,
         Name: name,
         Email: email,
       };
@@ -203,7 +203,7 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Customer: name,
         Email: email,
         Prefecture: prefecture,
       };
@@ -231,7 +231,7 @@ export const getAllInstructorsController = async (
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Instructor: name,
         Nickname: nickname,
         Email: email,
       };
@@ -356,11 +356,11 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Child: name,
         "Customer ID": customer.id,
-        "Customer name": customer.name,
+        Customer: customer.name,
         Birthdate: birthdate?.toISOString().slice(0, 10),
-        "Personal info": personalInfo,
+        "Personal Info": personalInfo,
       };
     });
 
@@ -384,7 +384,7 @@ export const getAllPlansController = async (_: Request, res: Response) => {
         No: number + 1,
         ID: id,
         Plan: name,
-        "Weekly class times": weeklyClassTimes,
+        "Weekly Class Times": weeklyClassTimes,
         Description: description,
       };
     });
@@ -395,21 +395,56 @@ export const getAllPlansController = async (_: Request, res: Response) => {
   }
 };
 
+// Register a new plan
+export const registerPlanController = async (req: Request, res: Response) => {
+  const { name, weeklyClassTimes, description } = req.body;
+
+  if (!name || !weeklyClassTimes || !description) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize the plan name
+  const normalizedPlanName = name.toLowerCase().replace(/\s/g, "");
+
+  try {
+    // Check if the plan with the same name already exists
+    const existingPlans = await getAllPlans();
+    const planExists = existingPlans.some(
+      (plan) =>
+        plan.name.toLowerCase().replace(/\s/g, "") === normalizedPlanName,
+    );
+    if (planExists) {
+      return res.sendStatus(409);
+    }
+
+    await registerPlan({
+      name,
+      weeklyClassTimes,
+      description,
+    });
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.error("Error registering a new plan", { error });
+    res.sendStatus(500);
+  }
+};
+
 // Get class information within designated period
 export const getClassesWithinPeriodController = async (
   _: Request,
   res: Response,
 ) => {
   try {
-    // Fetch class data within designated period.
-    const designatedPeriod = 30;
+    // Fetch class data within designated period (31days).
+    const designatedPeriod = 31;
     const designatedPeriodBefore = new Date(
       Date.now() - designatedPeriod * (24 * 60 * 60 * 1000),
     );
     const designatedPeriodAfter = new Date(
       Date.now() + (designatedPeriod + 1) * (24 * 60 * 60 * 1000),
     );
-    // Set the designated period to 30 days converted to "T00:00:00.000Z".
+    // Set the designated period to 31 days converted to "T00:00:00.000Z".
     designatedPeriodBefore.setUTCHours(0, 0, 0, 0);
     designatedPeriodAfter.setUTCHours(0, 0, 0, 0);
 
@@ -420,7 +455,8 @@ export const getClassesWithinPeriodController = async (
 
     // Transform the data structure.
     const data = classes.map((classItem, number) => {
-      const { id, instructor, customer, dateTime, status } = classItem;
+      const { id, instructor, customer, dateTime, status, classCode } =
+        classItem;
       const instructorName = instructor.nickname;
       const customerName = customer.name;
 
@@ -453,6 +489,7 @@ export const getClassesWithinPeriodController = async (
         Date: dateTimeJST.toISOString().slice(0, 10),
         Time: dateTimeJST.toISOString().slice(11, 16),
         Status: statusText,
+        "Class Code": classCode,
       };
     });
 

@@ -27,7 +27,9 @@ export const getAllAdmins = async () => {
   try {
     const apiUrl = `${BASE_URL}/admin-list`;
     const response = await fetch(apiUrl, {
-      next: { tags: ["admin-list"] },
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["admin-list"] },
+      cache: "no-store",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -45,7 +47,9 @@ export const getAllInstructors = async () => {
   try {
     const apiUrl = `${BASE_URL}/instructor-list`;
     const response = await fetch(apiUrl, {
-      next: { tags: ["instructor-list"] },
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["instructor-list"] },
+      cache: "no-store",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -63,7 +67,9 @@ export const getAllCustomers = async () => {
   try {
     const apiUrl = `${BASE_URL}/customer-list`;
     const response = await fetch(apiUrl, {
-      next: { tags: ["customer-list"] },
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["customer-list"] },
+      cache: "no-store",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -81,7 +87,9 @@ export const getAllChildren = async () => {
   try {
     const apiUrl = `${BASE_URL}/child-list`;
     const response = await fetch(apiUrl, {
-      next: { tags: ["child-list"] },
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["child-list"] },
+      cache: "no-store",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -99,7 +107,9 @@ export const getAllPlans = async () => {
   try {
     const apiUrl = `${BASE_URL}/plan-list`;
     const response = await fetch(apiUrl, {
-      next: { tags: ["plan-list"] },
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["plan-list"] },
+      cache: "no-store",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -126,6 +136,27 @@ export const getAllClasses = async () => {
     return data;
   } catch (error) {
     console.error("Failed to fetch classes:", error);
+    throw error;
+  }
+};
+
+// GET all schedule data
+export const getAllBusinessSchedules = async () => {
+  try {
+    const apiUrl = `${BASE_URL}/business-schedule`;
+    const response = await fetch(apiUrl, {
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["business-schedule"] },
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch schedules:", error);
     throw error;
   }
 };

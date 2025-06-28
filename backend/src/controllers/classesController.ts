@@ -3,25 +3,25 @@ import {
   cancelClassById,
   cancelClasses,
   checkDoubleBooking,
-  checkForChildrenWithConflictingClasses,
-  createClass,
+  checkChildConflicts,
   createClassesUsingRecurringClassId,
   deleteClass,
   fetchInstructorClasses,
   getAllClasses,
   getClassById,
   getClassesByCustomerId,
-  getClassStatus,
+  getClassToRebook,
   getExcludedClasses,
-  isInstructorBooked,
   updateClass,
+  checkInstructorConflicts,
+  rebookClass,
+  checkInstructorUnavailability,
 } from "../services/classesService";
-import { getSubscriptionById } from "../services/subscriptionsService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import { prisma } from "../../prisma/prismaClient";
 import {
   getValidRecurringClasses,
-  getRecurringClassByRecurringClassId,
+  getSubscriptionByRecurringClassId,
 } from "../services/recurringClassesService";
 import {
   calculateFirstDate,
@@ -29,6 +29,7 @@ import {
   days,
   getFirstDateInMonths,
   getMonthNumber,
+  nHoursBefore,
 } from "../helper/dateUtils";
 
 // GET all classes along with related instructors and customers data
@@ -126,114 +127,106 @@ export const getClassesByCustomerIdController = async (
   }
 };
 
-// POST a new class
-export const createClassController = async (req: Request, res: Response) => {
-  const {
-    classId,
-    dateTime,
-    instructorId,
-    customerId,
-    childrenIds,
-    status,
-    recurringClassId,
-    rebookableUntil,
-    classCode,
-  } = req.body;
+export const rebookClassController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const classId = req.id;
 
-  // Check for missing fields
-  const missingFields: string[] = [];
-  if (!classId) missingFields.push("classId");
-  if (!dateTime) missingFields.push("dateTime");
-  if (!instructorId) missingFields.push("instructorId");
-  if (!customerId) missingFields.push("customerId");
-  if (!childrenIds) missingFields.push("childrenIds");
-  if (!status) missingFields.push("status");
-  if (!recurringClassId) missingFields.push("recurringClassId");
-  if (!rebookableUntil) missingFields.push("rebookableUntil");
-  if (!classCode) missingFields.push("classCode");
+  const { dateTime, instructorId, customerId, childrenIds } = req.body;
 
-  if (missingFields.length > 0) {
+  if (!dateTime || !instructorId || !customerId || !childrenIds) {
     return res.status(400).json({
-      error: `Missing required field(s): ${missingFields.join(", ")}`,
+      errorType: "missing parameters",
+    });
+  }
+
+  const rebookingDeadline = nHoursBefore(3, new Date(dateTime));
+  const isPastRebookingDeadline = new Date() > rebookingDeadline;
+
+  if (isPastRebookingDeadline) {
+    return res.status(403).json({
+      errorType: "past rebooking deadline",
     });
   }
 
   try {
-    // Get subscription id from recurringClass table
-    const subscriptionId = await prisma.$transaction(async (tx) => {
-      const recurringClass = await getRecurringClassByRecurringClassId(
-        tx,
-        recurringClassId,
-      );
-      if (!recurringClass) {
-        throw new Error("Recurring class not found.");
-      }
-      return recurringClass.subscriptionId;
-    });
-
-    if (!subscriptionId) {
-      return res.status(400).json({ error: "No subscription found." });
-    }
-
-    // Get subscription by subscription id
-    const subscription = await getSubscriptionById(subscriptionId);
-
-    if (!subscription) {
-      return res
-        .status(400)
-        .json({ error: "No applicable subscription found." });
-    }
-
-    // Check if the selected instructor is already booked at the selected date and time
-    const instructorBooked: boolean = await isInstructorBooked(
-      instructorId,
-      dateTime,
-    );
-    if (instructorBooked) {
+    const classToRebook = await getClassToRebook(classId);
+    const { status, recurringClassId, rebookableUntil, classCode } =
+      classToRebook;
+    if (!status || !recurringClassId || !rebookableUntil || !classCode) {
       return res.status(400).json({
-        error:
-          "This instructor is already booked at the selected time. Please refresh your browser and try booking for a different time slot.",
+        errorType: "invalid class data",
       });
     }
 
-    // If the class status is "canceled", update the rebookableUntil field to null to prevent further rebooking.
-    // If it's "pending", delete it.
-    const classStatus = await getClassStatus(classId);
+    // Check if subscription exists and whether it's ended
+    const subscription =
+      await getSubscriptionByRecurringClassId(recurringClassId);
 
-    let secondPromise;
-
-    if (
-      classStatus === "canceledByCustomer" ||
-      classStatus === "canceledByInstructor"
-    ) {
-      secondPromise = updateClass(classId, { rebookableUntil: null });
-    } else if (classStatus === "pending") {
-      secondPromise = deleteClass(classId);
+    if (!subscription) {
+      return res.status(404).json({
+        errorType: "no subscription",
+      });
     }
 
-    const [newClass, updatedClass] = await Promise.all([
-      // Create a new "rebooked" class
-      createClass(
-        {
-          dateTime,
-          instructorId,
-          customerId,
-          status,
-          subscriptionId: subscription.id,
-          recurringClassId,
-          rebookableUntil,
-          updatedAt: new Date(),
-          classCode,
-        },
-        childrenIds,
-      ),
-      secondPromise,
-    ]);
+    const hasEnded = subscription.endAt
+      ? new Date(subscription.endAt) < new Date()
+      : false;
 
-    res.status(201).json({ newClass, updatedClass });
+    if (hasEnded) {
+      return res.status(400).json({
+        errorType: "outdated subscription",
+      });
+    }
+
+    // Check if the selected instructor is already booked at the selected date and time
+    const isInstructorBooked: boolean = await checkInstructorConflicts(
+      instructorId,
+      dateTime,
+    );
+    if (isInstructorBooked) {
+      return res.status(400).json({
+        errorType: "instructor conflict",
+      });
+    }
+
+    // Check if the selected instructor is unavailable at the selected date and time
+    const isInstructorUnavailable: boolean =
+      await checkInstructorUnavailability(instructorId, dateTime);
+    if (isInstructorUnavailable) {
+      return res.status(400).json({
+        errorType: "instructor unavailable",
+      });
+    }
+
+    await rebookClass(
+      { id: classId, status },
+      {
+        dateTime,
+        instructorId,
+        customerId,
+        status: "rebooked",
+        subscriptionId: subscription.id,
+        recurringClassId,
+        rebookableUntil,
+        classCode,
+        updatedAt: new Date(),
+      },
+      childrenIds,
+    );
+
+    res.sendStatus(201);
   } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to book class." });
+    console.error("Error rebooking a class", {
+      error,
+      context: {
+        customerId,
+        classId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
@@ -519,7 +512,7 @@ export const createClassesForMonthController = async (
   }
 };
 
-// Check if there is a class that is already booked at the same dateTime as the newlly booked class
+// Check if there is a class that is already booked at the same dateTime as the newly booked class
 export const checkDoubleBookingController = async (
   req: Request,
   res: Response,
@@ -527,61 +520,52 @@ export const checkDoubleBookingController = async (
   const { customerId, dateTime } = req.body;
 
   if (!customerId || !dateTime) {
-    return res
-      .status(400)
-      .json({ error: "customerId and dateTime are required." });
+    return res.sendStatus(400);
   }
 
   try {
-    const isBooked = await checkDoubleBooking(customerId, dateTime);
+    const isDoubleBooked = await checkDoubleBooking(customerId, dateTime);
 
-    if (isBooked) {
-      return res.status(400).json({
-        error: "A class has already been booked at the selected time.",
-      });
-    }
-
-    // No booking found
-    res.status(200).json({ message: "No booked classes found." });
+    res.status(200).json(isDoubleBooked);
   } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to check class booking." });
+    console.error("Error checking double booking", {
+      error,
+      context: {
+        customerId,
+        dateTime,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
-export const checkChildrenAvailabilityController = async (
+export const checkChildConflictsController = async (
   req: Request,
   res: Response,
 ) => {
   const { dateTime, selectedChildrenIds } = req.body;
 
   if (!dateTime || !selectedChildrenIds) {
-    return res
-      .status(400)
-      .json({ error: "dateTime and selectedChildrenIds are required." });
+    return res.sendStatus(400);
   }
 
   try {
-    const childrenWithConflictingClasses =
-      await checkForChildrenWithConflictingClasses(
-        new Date(dateTime),
-        selectedChildrenIds,
-      );
+    const conflictingChildren = await checkChildConflicts(
+      dateTime,
+      selectedChildrenIds,
+    );
 
-    if (childrenWithConflictingClasses.length > 0) {
-      const childrenNames = childrenWithConflictingClasses.join(", ");
-      const conflictMessage = `Child(ren) ${childrenNames} already has/have another class with another instructor at the selected time.`;
-
-      return res.status(400).json({
-        error: conflictMessage,
-      });
-    }
-
-    // No conflicts found
-    res.status(200).json({ message: "No conflicting classes found." });
+    res.status(200).json(conflictingChildren);
   } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to check children availability." });
+    console.error("Error checking children conflicts", {
+      error,
+      context: {
+        childrenIds: selectedChildrenIds,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 

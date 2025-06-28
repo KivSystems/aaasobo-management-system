@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import InstructorSearch from "@/app/components/admins-dashboard/InstructorSearch";
 import InstructorCalendarForAdmin from "@/app/components/admins-dashboard/InstructorCalendarForAdmin";
 
-const Page = () => {
+const Page = (params: { id: string }) => {
+  const adminId = parseInt(params.id);
   const [instructorId, setInstructorId] = useState<number | null>(null);
   const [instructorName, setInstructorName] = useState<string | null>(null);
 
@@ -34,6 +35,7 @@ const Page = () => {
         <InstructorSearch handleSendInstructor={handleSendInstructor} />
       )}
       <InstructorCalendarForAdmin
+        adminId={adminId}
         instructorId={instructorId}
         name={instructorName}
         isAdminAuthenticated={isAuthenticated}

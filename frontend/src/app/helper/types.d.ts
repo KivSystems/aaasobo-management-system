@@ -29,6 +29,14 @@ type InstructorProfile = {
   createdAt: string;
 };
 
+type InstructorRebookingProfile = {
+  id: number;
+  name: string;
+  nickname: string;
+  icon: string;
+  introductionURL: string;
+};
+
 type Availability = { dateTime: string };
 
 type ClassStatus =
@@ -209,6 +217,8 @@ type LinkType = {
 
 type UserType = "admin" | "customer" | "instructor";
 
+type CategoryType = "event" | "plan";
+
 type ForgotPasswordFormState = {
   errorMessage?: string;
   successMessage?: string;
@@ -221,6 +231,8 @@ type RegisterFormState = {
   passConfirmation?: string;
   prefecture?: string;
   isAgreed?: string;
+  weeklyClassTimes?: string;
+  description?: string;
   errorMessage?: string;
   successMessage?: string;
   language?: LanguageType;
@@ -293,6 +305,22 @@ type ClassInfo = { classId: number; classDateTime: string };
 type ClassInfoList = ClassInfo[];
 type SetClassInfoList = React.Dispatch<React.SetStateAction<ClassInfoList>>;
 
+type BusinessSchedule = {
+  id: number;
+  date: string;
+  name: string;
+  color: string;
+};
+
+type BusinessCalendarClientProps = {
+  businessSchedule?: BusinessSchedule[] | [];
+  isAdminAuthenticated?: boolean;
+  validRange: {
+    start: string;
+    end: string;
+  };
+};
+
 type CustomerCalendarProps = {
   isAdminAuthenticated?: boolean;
   customerId: number;
@@ -301,6 +329,7 @@ type CustomerCalendarProps = {
 };
 
 type InstructorCalendarClientProps = {
+  adminId?: number | null;
   instructorId: number;
   isAdminAuthenticated?: boolean;
   instructorCalendarEvents: EventType[];
@@ -323,6 +352,7 @@ type RebookingModalControllerProps = {
 };
 
 type RebookingModalProps = {
+  adminId?: number;
   isAdminAuthenticated?: boolean;
   customerId: number;
   rebookableClasses: RebookableClass[] | [];
@@ -357,7 +387,67 @@ type ClassDetailProps = {
   language: LanguageType;
 };
 
+type InstructorAvailability = {
+  instructorId: number;
+  dateTime: string;
+};
+
 type StringMessages = Record<string, string>;
 type LocalizedMessages = Record<string, LocalizedMessage>;
 
 type FormResult = StringMessages | LocalizedMessages;
+
+type RebookingSteps =
+  | "selectOption"
+  | "selectInstructor"
+  | "selectDateTime"
+  | "confirmRebooking";
+
+type RebookingFormProps = {
+  customerId: number;
+  classId: number;
+  instructorAvailabilities: InstructorAvailability[] | [];
+  instructorProfiles: InstructorRebookingProfile[];
+  childProfiles: Child[];
+  adminId?: number;
+  isAdminAuthenticated?: boolean;
+};
+
+type RebookableInstructorsListProps = {
+  instructorProfiles: InstructorRebookingProfile[];
+  instructorAvailabilities: InstructorAvailability[] | [];
+  setInstructorToRebook: (instructor: { id: number; name: string }) => void;
+  rebookingOption: "instructor" | "dateTime";
+  setRebookingStep: (step: RebookingSteps) => void;
+  dateTimeToRebook: string | null;
+};
+
+type RebookableTimeSlotsProps = {
+  setDateTimeToRebook: (dateTime: string) => void;
+  setRebookingStep: (step: RebookingSteps) => void;
+  instructorToRebook: {
+    id: number;
+    name: string;
+  };
+  instructorAvailabilities: InstructorAvailability[] | [];
+  rebookingOption: "instructor" | "dateTime";
+};
+
+type ConfirmRebookingProps = {
+  instructorToRebook: {
+    id: number;
+    name: string;
+  };
+  dateTimeToRebook: string;
+  rebookingOption: "instructor" | "dateTime";
+  setRebookingStep: (step: RebookingSteps) => void;
+  childProfiles: Child[];
+  customerId: number;
+  classId: number;
+  adminId?: number;
+  isAdminAuthenticated?: boolean;
+};
+
+type ChildConflictResponse =
+  | { conflictingChildren: string[] }
+  | { message: LocalizedMessage };

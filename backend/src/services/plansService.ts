@@ -1,5 +1,16 @@
 import { prisma } from "../../prisma/prismaClient";
 
+// Register a new plan in the DB
+export const registerPlan = async (data: {
+  name: string;
+  weeklyClassTimes: number;
+  description: string;
+}) => {
+  await prisma.plan.create({ data });
+
+  return;
+};
+
 // Fetch all plan data.
 export const getAllPlans = async () => {
   try {

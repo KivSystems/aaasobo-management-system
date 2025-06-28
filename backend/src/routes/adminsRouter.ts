@@ -2,6 +2,7 @@ import express from "express";
 import {
   registerAdminController,
   registerInstructorController,
+  registerPlanController,
   updateAdminProfileController,
   deleteAdminController,
   getAdminController,
@@ -12,6 +13,8 @@ import {
   getAllPlansController,
   getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
+import { getAllSchedulesController } from "../../src/controllers/schedulesController";
+
 import { verifyAuthentication } from "../middlewares/auth.middleware";
 
 export const adminsRouter = express.Router();
@@ -34,6 +37,11 @@ adminsRouter.post(
   verifyAuthentication,
   registerInstructorController,
 );
+adminsRouter.post(
+  "/plan-list/register",
+  verifyAuthentication,
+  registerPlanController,
+);
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);
 adminsRouter.get("/instructor-list", getAllInstructorsController);
@@ -41,3 +49,4 @@ adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
 adminsRouter.get("/class-list", getClassesWithinPeriodController);
+adminsRouter.get("/business-schedule", getAllSchedulesController);

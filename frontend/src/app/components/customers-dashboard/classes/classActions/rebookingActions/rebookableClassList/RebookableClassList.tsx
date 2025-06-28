@@ -12,6 +12,7 @@ import ActionButton from "@/app/components/elements/buttons/actionButton/ActionB
 import { useRouter } from "next/navigation";
 
 export default function RebookableClassList({
+  adminId,
   isAdminAuthenticated,
   customerId,
   rebookableClasses,
@@ -21,7 +22,7 @@ export default function RebookableClassList({
 
   const handleRebook = (id: number, rebookableUntil: Date) => {
     const redirectUrl = isAdminAuthenticated
-      ? `/admins/customer-list/${customerId}/classes/${id}/rebook`
+      ? `/admins/${adminId}/customer-list/${customerId}/classes/${id}/rebook`
       : `/customers/${customerId}/classes/${id}/rebook`;
 
     const now = new Date().getTime();

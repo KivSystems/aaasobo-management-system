@@ -8,6 +8,7 @@ import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
 import { TODAYS_CLASS_REBOOKING_NOTICE } from "@/app/helper/messages/customerDashboard";
 
 export default function RebookingModal({
+  adminId,
   isAdminAuthenticated,
   customerId,
   rebookableClasses,
@@ -31,6 +32,7 @@ export default function RebookingModal({
         }
       >
         <RebookableClassList
+          adminId={adminId}
           isAdminAuthenticated={isAdminAuthenticated}
           customerId={customerId}
           rebookableClasses={rebookableClasses}

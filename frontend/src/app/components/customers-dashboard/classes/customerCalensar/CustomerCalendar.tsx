@@ -33,7 +33,7 @@ export default function CustomerCalendar({
     setIsClassDetailModalOpen(true);
   };
 
-  const validRange = () => getValidRange(createdAt);
+  const validRange = () => getValidRange(createdAt, 3);
   const renderCustomerEventContent = createRenderEventContent("customer");
 
   const handleModalClose = () => {
