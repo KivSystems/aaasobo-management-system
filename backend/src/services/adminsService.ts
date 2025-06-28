@@ -42,6 +42,14 @@ export const updateAdmin = async (id: number, name: string, email: string) => {
   }
 };
 
+// Update the admin password
+export const updateAdminPassword = async (id: number, newPassword: string) => {
+  return await prisma.admins.update({
+    where: { id },
+    data: { password: newPassword },
+  });
+};
+
 // Delete the selected admin
 export const deleteAdmin = async (adminId: number) => {
   try {

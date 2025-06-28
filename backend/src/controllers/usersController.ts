@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { getAdminByEmail } from "../services/adminsService";
+import {
+  getAdminByEmail,
+  updateAdminPassword,
+} from "../services/adminsService";
 import {
   getCustomerByEmail,
   updateCustomerPassword,
@@ -172,10 +175,16 @@ export const updatePasswordController = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    if (userType === "customer") {
-      updateCustomerPassword(user.id, hashedPassword);
-    } else if (userType === "instructor") {
-      updateInstructorPassword(user.id, hashedPassword);
+    switch (userType) {
+      case "admin":
+        await updateAdminPassword(user.id, hashedPassword);
+        break;
+      case "customer":
+        await updateCustomerPassword(user.id, hashedPassword);
+        break;
+      case "instructor":
+        await updateInstructorPassword(user.id, hashedPassword);
+        break;
     }
 
     return res.sendStatus(201);

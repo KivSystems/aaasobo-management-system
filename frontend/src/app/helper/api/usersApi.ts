@@ -100,12 +100,13 @@ export const updateUserPassword = async (
   userType: UserType,
   password: string,
   language: LanguageType,
+  cookie: string,
 ): Promise<StringMessages> => {
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
     const response = await fetch(apiURL, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Cookie: cookie },
       body: JSON.stringify({ token, userType, password }),
     });
 

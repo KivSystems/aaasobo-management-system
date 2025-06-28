@@ -84,3 +84,27 @@ export const validateCancelableClasses = (
 
   return true; // Indicates that cancellation can proceed
 };
+
+// Determine the redirect path based on user type
+export const getLoginPath = (type: UserType): string => {
+  switch (type) {
+    case "admin":
+      return "/admins/login";
+    case "instructor":
+      return "/instructors/login";
+    case "customer":
+      return "/customers/login";
+  }
+};
+
+// Get the forgot password path based on user type
+export const getForgotPasswordPath = (type: UserType): string => {
+  switch (type) {
+    case "admin":
+      return "/auth/forgot-password?type=admin";
+    case "instructor":
+      return "/auth/forgot-password?type=instructor";
+    case "customer":
+      return "/auth/forgot-password?type=customer";
+  }
+};

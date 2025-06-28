@@ -7,6 +7,7 @@ import {
   resetPasswordFormSchema,
   resetPasswordFormSchemaJa,
 } from "../schemas/authSchema";
+import { getCookie } from "../../middleware";
 
 export async function resetPassword(
   prevState: StringMessages | undefined,
@@ -39,11 +40,15 @@ export async function resetPassword(
       return extractPasswordResetValidationErrors(formattedErrors, language);
     }
 
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
     const response = await updateUserPassword(
       parsedForm.data.token,
       parsedForm.data.userType,
       parsedForm.data.password,
       language,
+      cookie,
     );
 
     return response;
