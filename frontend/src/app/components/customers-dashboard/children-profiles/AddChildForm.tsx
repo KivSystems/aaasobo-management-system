@@ -17,9 +17,11 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function AddChildForm({
+  adminId,
   customerId,
   isAdminAuthenticated,
 }: {
+  adminId?: number;
   customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
@@ -45,7 +47,7 @@ function AddChildForm({
       toast.success("Child registered successfully!");
 
       if (isAdminAuthenticated) {
-        router.push(`/admins/customer-list/${customerId}`);
+        router.push(`/admins/${adminId}/customer-list/${customerId}`);
       } else {
         router.push(`/customers/${customerId}/children-profiles`);
       }
@@ -122,7 +124,7 @@ function AddChildForm({
         {isAdminAuthenticated ? (
           <RedirectButton
             btnText="Cancel"
-            linkURL={`/admins/customer-list/${customerId}`}
+            linkURL={`/admins/${adminId}/customer-list/${customerId}`}
             className={styles.cancelBtn}
           />
         ) : (

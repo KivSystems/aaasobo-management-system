@@ -8,19 +8,19 @@ import InstructorSchedule from "../../../admins/(authenticated)/[id]/instructor-
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function InstructorTabs({
-  userId,
+  adminId,
   instructorId,
   instructor,
   classScheduleComponent,
 }: {
-  userId: number;
+  adminId: number;
   instructorId: number;
   instructor: Instructor | string;
   classScheduleComponent: React.ReactNode;
 }) {
   const breadcrumb = [
     "Instructor List",
-    `/admins/${userId}/instructor-list`,
+    `/admins/${adminId}/instructor-list`,
     `ID: ${instructorId}`,
   ];
   const activeTabName = "activeInstructorTab";

@@ -9,9 +9,11 @@ import { CalendarIcon, TagIcon } from "@heroicons/react/24/solid";
 import Loading from "../../elements/loading/Loading";
 
 function EditRegularClass({
+  adminId,
   customerId,
   isAdminAuthenticated,
 }: {
+  adminId?: number;
   customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
@@ -62,6 +64,7 @@ function EditRegularClass({
           </div>
         </div>
         <EditRegularClassForm
+          adminId={adminId}
           customerId={customerId}
           subscriptionId={subscriptionData.id}
           isAdminAuthenticated={isAdminAuthenticated}

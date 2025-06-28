@@ -1,10 +1,13 @@
 import { auth } from "../../../../auth.config";
 
-export async function getCustomerSession() {
+export async function getUserSession(userType?: UserType) {
   const session = await auth();
 
-  // Check if session exists and is a customer
-  if (!session || session.user.userType !== "customer") {
+  if (!session) {
+    return null;
+  }
+
+  if (userType && session.user.userType !== userType) {
     return null;
   }
 

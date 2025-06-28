@@ -1,8 +1,8 @@
 import CustomerDashboardForAdmin from "@/app/components/admins-dashboard/customers-dashboard/classCalendarForAdmin/CustomerDashboardForAdmin";
 
 function Page({ params }: { params: { id: string; customerId: string } }) {
-  const userId = parseInt(params.id);
-  if (isNaN(userId)) {
+  const adminId = parseInt(params.id);
+  if (isNaN(adminId)) {
     throw new Error("Invalid userId");
   }
 
@@ -11,7 +11,9 @@ function Page({ params }: { params: { id: string; customerId: string } }) {
     throw new Error("Invalid customerId");
   }
 
-  return <CustomerDashboardForAdmin userId={userId} customerId={customerId} />;
+  return (
+    <CustomerDashboardForAdmin adminId={adminId} customerId={customerId} />
+  );
 }
 
 export default Page;

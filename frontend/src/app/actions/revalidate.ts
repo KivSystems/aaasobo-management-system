@@ -1,14 +1,20 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 export async function revalidateCustomerCalendar(
   customerId: number,
   isAdminAuthenticated: boolean | undefined,
 ) {
-  const path = isAdminAuthenticated
-    ? `/admins/customer-list/${customerId}`
-    : `/customers/${customerId}/classes`;
+  let path = `/customers/${customerId}/classes`;
+
+  if (isAdminAuthenticated) {
+    const session = await getUserSession("admin");
+    const adminId = session?.user.id ? parseInt(session.user.id) : undefined;
+
+    path = `/admins/${adminId}/customer-list/${customerId}`;
+  }
   revalidatePath(path);
 }
 
@@ -30,4 +36,8 @@ export async function revalidateChildList() {
 
 export async function revalidatePlanList() {
   revalidateTag("plan-list");
+}
+
+export async function revalidateBusinessSchedule() {
+  revalidateTag("business-schedule");
 }

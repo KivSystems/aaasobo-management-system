@@ -10,9 +10,11 @@ import AddSubscription from "@/app/components/customers-dashboard/regular-classe
 import Loading from "../../elements/loading/Loading";
 
 function RegularClasses({
+  adminId,
   customerId,
   isAdminAuthenticated,
 }: {
+  adminId?: number;
   customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
@@ -71,6 +73,7 @@ function RegularClasses({
       )}
       <CurrentSubscription
         subscriptionsData={subscriptionsData}
+        adminId={adminId}
         customerId={customerId}
         isAdminAuthenticated={isAdminAuthenticated}
       />

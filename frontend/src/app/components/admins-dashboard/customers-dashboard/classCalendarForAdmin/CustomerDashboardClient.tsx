@@ -8,19 +8,19 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
 function CustomerDashboardClient({
-  userId,
+  adminId,
   customerId,
   classCalendarComponent,
   customerProfile,
 }: {
-  userId: number;
+  adminId: number;
   customerId: number;
   classCalendarComponent: React.ReactNode;
   customerProfile: CustomerProfile;
 }) {
   const breadcrumb = [
     "Customer List",
-    `/admins/${userId}/customer-list`,
+    `/admins/${adminId}/customer-list`,
     `ID: ${customerId}`,
   ];
   const activeTabName = "activeCustomerTab";
@@ -50,6 +50,7 @@ function CustomerDashboardClient({
       label: "Children's Profile",
       content: (
         <ChildrenProfiles
+          adminId={adminId}
           customerId={customerId}
           isAdminAuthenticated={isAuthenticated}
         />
@@ -59,6 +60,7 @@ function CustomerDashboardClient({
       label: "Regular Classes",
       content: (
         <RegularClasses
+          adminId={adminId}
           customerId={customerId}
           isAdminAuthenticated={isAuthenticated}
         />

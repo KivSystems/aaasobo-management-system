@@ -11,6 +11,8 @@ import {
   getAllPlansController,
   getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
+import { getAllSchedulesController } from "../../src/controllers/schedulesController";
+
 import { verifyAuthentication } from "../middlewares/auth.middleware";
 
 export const adminsRouter = express.Router();
@@ -35,3 +37,4 @@ adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
 adminsRouter.get("/class-list", getClassesWithinPeriodController);
+adminsRouter.get("/business-schedule", getAllSchedulesController);
