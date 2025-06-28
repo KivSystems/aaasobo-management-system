@@ -2,7 +2,9 @@ import express from "express";
 import {
   registerAdminController,
   registerInstructorController,
+  registerPlanController,
   updateAdminProfileController,
+  deleteAdminController,
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
@@ -11,6 +13,8 @@ import {
   getAllPlansController,
   getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
+import { getAllSchedulesController } from "../../src/controllers/schedulesController";
+
 import { verifyAuthentication } from "../middlewares/auth.middleware";
 
 export const adminsRouter = express.Router();
@@ -23,10 +27,20 @@ adminsRouter.post(
   registerAdminController,
 );
 adminsRouter.patch("/:id", verifyAuthentication, updateAdminProfileController);
+adminsRouter.delete(
+  "/admin-list/:id",
+  verifyAuthentication,
+  deleteAdminController,
+);
 adminsRouter.post(
   "/instructor-list/register",
   verifyAuthentication,
   registerInstructorController,
+);
+adminsRouter.post(
+  "/plan-list/register",
+  verifyAuthentication,
+  registerPlanController,
 );
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);
@@ -35,3 +49,4 @@ adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
 adminsRouter.get("/class-list", getClassesWithinPeriodController);
+adminsRouter.get("/business-schedule", getAllSchedulesController);

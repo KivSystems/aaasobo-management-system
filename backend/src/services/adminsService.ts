@@ -49,6 +49,21 @@ export const updateAdminPassword = async (id: number, newPassword: string) => {
     data: { password: newPassword },
   });
 };
+  
+// Delete the selected admin
+export const deleteAdmin = async (adminId: number) => {
+  try {
+    // Delete the Admin data.
+    const admin = await prisma.admins.delete({
+      where: { id: adminId },
+    });
+
+    return admin;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to delete a admin.");
+  }
+};
 
 // Fetch all admins information
 export const getAllAdmins = async () => {

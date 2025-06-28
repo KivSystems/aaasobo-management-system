@@ -1,10 +1,15 @@
 import InstructorDashboardForAdmin from "@/app/components/admins-dashboard/instructors-dashboard/InstructorDashboardForAdmin";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
-function Page({ params }: { params: { id: string; instructorId: string } }) {
-  const userId = parseInt(params.id);
-  if (isNaN(userId)) {
-    throw new Error("Invalid userId");
+async function Page({ params }: { params: { instructorId: string } }) {
+  // Get admin id from session
+  const session = await getUserSession("admin");
+
+  // If session is not found or user id is not present, throw an error
+  if (!session || !session.user.id) {
+    throw new Error("Invalid adminId");
   }
+  const adminId = parseInt(session.user.id);
 
   const instructorId = parseInt(params.instructorId);
   if (isNaN(instructorId)) {
@@ -12,7 +17,10 @@ function Page({ params }: { params: { id: string; instructorId: string } }) {
   }
 
   return (
-    <InstructorDashboardForAdmin userId={userId} instructorId={instructorId} />
+    <InstructorDashboardForAdmin
+      adminId={adminId}
+      instructorId={instructorId}
+    />
   );
 }
 

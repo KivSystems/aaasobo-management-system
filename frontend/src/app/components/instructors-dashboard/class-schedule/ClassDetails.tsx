@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useCallback } from "react";
 import { getClassesByInstructorId } from "@/app/helper/api/classesApi";
 import { formatShortDate } from "@/app/helper/utils/dateUtils";
@@ -8,10 +10,12 @@ import Link from "next/link";
 import Loading from "../../elements/loading/Loading";
 
 function ClassDetails({
+  adminId,
   instructorId,
   classId,
   isAdminAuthenticated,
 }: {
+  adminId?: number | null;
   instructorId: number | null;
   classId: number | null;
   isAdminAuthenticated?: boolean;
@@ -88,7 +92,10 @@ function ClassDetails({
         <ul className={styles.breadcrumb__list}>
           <li className={styles.breadcrumb__item}>
             {isAdminAuthenticated ? (
-              <Link href={`/admins/instructor-list/${instructorId}`} passHref>
+              <Link
+                href={`/admins/${adminId}/instructor-list/${instructorId}`}
+                passHref
+              >
                 Class Schedule
               </Link>
             ) : (
@@ -109,6 +116,7 @@ function ClassDetails({
         <div className={styles.classDetails__classesList}>
           {instructorId !== null && classId !== null ? (
             <InstructorClassesTable
+              adminId={adminId}
               instructorId={instructorId}
               selectedDateClasses={selectedDateClasses}
               timeZone="Asia/Manila"

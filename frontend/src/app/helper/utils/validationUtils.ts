@@ -1,4 +1,3 @@
-import { revalidateUpcomingClasses } from "@/app/actions/revalidate";
 import { CANCELATION_NOT_ALLOWED_MESSAGE } from "../messages/customerDashboard";
 import { isPastPreviousDayDeadline } from "./dateUtils";
 
@@ -79,7 +78,6 @@ export const validateCancelableClasses = (
         ),
     );
 
-    revalidateUpcomingClasses();
     setSelectedClasses(updatedSelectedClasses);
     return false; // Indicates that cancellation should stop
   }

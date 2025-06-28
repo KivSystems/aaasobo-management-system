@@ -22,9 +22,11 @@ import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton
 import Loading from "../../elements/loading/Loading";
 
 function ChildrenProfiles({
+  adminId,
   customerId,
   isAdminAuthenticated,
 }: {
+  adminId?: number;
   customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
@@ -144,7 +146,7 @@ function ChildrenProfiles({
       <div className={styles.addBtn}>
         {isAdminAuthenticated ? (
           <RedirectButton
-            linkURL={`/admins/customer-list/${customerId}/children-profiles/add-child`}
+            linkURL={`/admins/${adminId}/customer-list/${customerId}/children-profiles/add-child`}
             btnText="Add Child"
             className="addBtn"
             Icon={PlusIcon}

@@ -26,6 +26,7 @@ import {
 } from "../services/verificationTokensService";
 import { resendVerificationEmail, sendVerificationEmail } from "../helper/mail";
 import { prisma } from "../../prisma/prismaClient";
+import { getChildProfiles } from "../services/childrenService";
 
 export const registerCustomerController = async (
   req: Request,
@@ -331,6 +332,27 @@ export const verifyCustomerEmailController = async (
       error,
       context: {
         token,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const getChildProfilesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    const childProfiles = await getChildProfiles(customerId);
+    res.status(200).json(childProfiles);
+  } catch (error) {
+    console.error("Error getting child profiles by customer ID", {
+      error,
+      context: {
+        customerId,
         time: new Date().toISOString(),
       },
     });

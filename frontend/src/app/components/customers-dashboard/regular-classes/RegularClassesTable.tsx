@@ -15,10 +15,12 @@ import { CheckCircleIcon, ArrowUpCircleIcon } from "@heroicons/react/24/solid";
 function RegularClassesTable({
   subscriptionId,
   isAdminAuthenticated,
+  adminId,
   customerId,
 }: {
   subscriptionId: number;
   isAdminAuthenticated?: boolean | null;
+  adminId?: number;
   customerId: number;
 }) {
   const [currRecurringClasses, setCurrRecurringClasses] = useState<
@@ -60,7 +62,7 @@ function RegularClassesTable({
   const handleEditRegularClasses = () => {
     if (isAdminAuthenticated) {
       router.push(
-        `/admins/customer-list/${customerId}/regular-classes/edit?subscriptionId=${subscriptionId}`,
+        `/admins/${adminId}/customer-list/${customerId}/regular-classes/edit?subscriptionId=${subscriptionId}`,
       );
       return;
     }

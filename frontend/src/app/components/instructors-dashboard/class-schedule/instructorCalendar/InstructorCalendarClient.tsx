@@ -13,6 +13,7 @@ import {
 } from "@/app/helper/utils/calendarUtils";
 
 const InstructorCalendarClient = ({
+  adminId,
   instructorId,
   isAdminAuthenticated,
   instructorCalendarEvents,
@@ -25,7 +26,7 @@ const InstructorCalendarClient = ({
 
     const classId = clickInfo.event.extendedProps.classId;
     const redirectURL = isAdminAuthenticated
-      ? `/admins/instructor-list/${instructorId}/class-schedule/${classId}`
+      ? `/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${classId}`
       : `/instructors/${instructorId}/class-schedule/${classId}`;
 
     router.push(redirectURL);
