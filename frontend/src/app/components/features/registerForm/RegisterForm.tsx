@@ -12,12 +12,15 @@ import {
   KeyIcon,
   LinkIcon,
   PhotoIcon,
+  AcademicCapIcon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import TextInput from "../../elements/textInput/TextInput";
 import PasswordStrengthMeter from "../../elements/passwordStrengthMeter/PasswordStrengthMeter";
 import { useFormState } from "react-dom";
 import { registerUser } from "@/app/actions/registerUser";
+import { registerContent } from "@/app/actions/registerContent";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
 import PrefectureSelect from "./prefectureSelect/PrefectureSelect";
@@ -25,16 +28,22 @@ import PrivacyPolicyAgreement from "./privacyPolicyAgreement/PrivacyPolicyAgreem
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 const RegisterForm = ({
+  categoryType,
   userType,
   language,
 }: {
+  categoryType?: CategoryType;
   userType: UserType;
   language?: LanguageType;
 }) => {
+  // Handle the action based on userType and categoryType
+  const actionHandler =
+    userType === "admin" && categoryType ? registerContent : registerUser;
   const [registerResultState, formAction] = useFormState(
-    registerUser,
+    actionHandler,
     undefined,
   );
+
   const [password, onPasswordChange] = useInput();
   const [showPassword, setShowPassword] = useState(false);
   const { localMessages, clearErrorMessage } =
@@ -45,6 +54,7 @@ const RegisterForm = ({
     <form action={formAction} className={styles.form}>
       {/* Hidden fields to include in form submission */}
       <input type="hidden" name="userType" value={userType ?? ""} />
+      <input type="hidden" name="categoryType" value={categoryType ?? ""} />
       <input
         type="hidden"
         name="passwordStrength"
@@ -127,8 +137,8 @@ const RegisterForm = ({
           <input type="hidden" name="language" value={language ?? "en"} />
         </>
       )}
-
-      {(userType === "admin" || userType === "instructor") && (
+      {((userType === "admin" && !categoryType) ||
+        userType === "instructor") && (
         <>
           <p className={styles.required}>*Required</p>
           <TextInput
@@ -261,6 +271,47 @@ const RegisterForm = ({
         </>
       )}
 
+      {/* Plan registration (only for admin) */}
+      {userType === "admin" && categoryType === "plan" && (
+        <>
+          <p className={styles.required}>*Required</p>
+          <TextInput
+            id="name"
+            label="Plan Name"
+            type="text"
+            name="name"
+            placeholder="e.g., 3,180 yen/month"
+            icon={<AcademicCapIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.name}
+            onChange={() => clearErrorMessage("name")}
+          />
+          <TextInput
+            id="weeklyClassTimes"
+            label="Weekly Class Times"
+            type="number"
+            name="weeklyClassTimes"
+            placeholder="e.g., 2"
+            icon={<CalendarIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.weeklyClassTimes}
+            onChange={() => clearErrorMessage("weeklyClassTimes")}
+          />
+          <TextInput
+            id="description"
+            label="Description"
+            type="text"
+            name="description"
+            placeholder="e.g., 2 classes per week"
+            icon={<DocumentTextIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.description}
+            onChange={() => clearErrorMessage("description")}
+          />{" "}
+        </>
+      )}
+
+      {/* Error and success messages */}
       <div className={styles.messageWrapper}>
         {localMessages.errorMessage && (
           <FormValidationMessage
@@ -276,13 +327,28 @@ const RegisterForm = ({
         )}
       </div>
 
-      <div className={styles.buttonWrapper}>
-        <ActionButton
-          btnText={language === "ja" ? "アカウント登録" : "Create Account"}
-          className="bookBtn"
-          type="submit"
-        />
-      </div>
+      {/* Submission Button */}
+      {!categoryType ? (
+        <div className={styles.buttonWrapper}>
+          <ActionButton
+            btnText={language === "ja" ? "アカウント登録" : "Create Account"}
+            className="bookBtn"
+            type="submit"
+          />
+        </div>
+      ) : (
+        <div className={styles.buttonWrapper}>
+          <ActionButton
+            btnText={`Register ${
+              categoryType
+                ? categoryType.charAt(0).toUpperCase() + categoryType.slice(1)
+                : ""
+            }`}
+            className="bookBtn"
+            type="submit"
+          />
+        </div>
+      )}
     </form>
   );
 };

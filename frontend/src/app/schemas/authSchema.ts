@@ -128,6 +128,12 @@ export const adminRegisterSchema = z
     path: ["password"],
   });
 
+export const planRegisterSchema = z.object({
+  name: z.string().min(1, "Plan Name is required."),
+  weeklyClassTimes: z.number(),
+  description: z.string().min(1, "Description is required."),
+});
+
 export const instructorUpdateSchema = z.object({
   name: z.string().min(1, "Name is required."),
   nickname: z.string().min(1, "Nickname is required."),

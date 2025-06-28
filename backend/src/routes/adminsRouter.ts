@@ -2,6 +2,7 @@ import express from "express";
 import {
   registerAdminController,
   registerInstructorController,
+  registerPlanController,
   updateAdminProfileController,
   getAdminController,
   getAllAdminsController,
@@ -29,6 +30,11 @@ adminsRouter.post(
   "/instructor-list/register",
   verifyAuthentication,
   registerInstructorController,
+);
+adminsRouter.post(
+  "/plan-list/register",
+  verifyAuthentication,
+  registerPlanController,
 );
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);

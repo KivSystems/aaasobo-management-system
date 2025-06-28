@@ -132,9 +132,9 @@ model ClassAttendance {
 
 model Plan {
   id               Int            @id @default(autoincrement())
-  name             String
-  description      String
+  name             String         @unique
   weeklyClassTimes Int
+  description      String
   subscription     Subscription[]
 }
 

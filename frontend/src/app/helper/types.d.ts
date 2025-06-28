@@ -217,6 +217,8 @@ type LinkType = {
 
 type UserType = "admin" | "customer" | "instructor";
 
+type CategoryType = "event" | "plan";
+
 type ForgotPasswordFormState = {
   errorMessage?: string;
   successMessage?: string;
@@ -229,6 +231,8 @@ type RegisterFormState = {
   passConfirmation?: string;
   prefecture?: string;
   isAgreed?: string;
+  weeklyClassTimes?: string;
+  description?: string;
   errorMessage?: string;
   successMessage?: string;
   language?: LanguageType;
