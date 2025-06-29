@@ -47,12 +47,12 @@ export function getLinks(
     {
       name: "AaasoBo! Calendar",
       href: `/admins/${userId}/business-calendar`,
-      icon: CalendarIcon,
+      icon: CalendarDaysIcon,
     },
     {
       name: "Class List",
       href: `/admins/${userId}/class-list`,
-      icon: ChatBubbleLeftRightIcon,
+      icon: ClipboardDocumentListIcon,
     },
     {
       name: "Admin List",
@@ -62,7 +62,7 @@ export function getLinks(
     {
       name: "Instructor List",
       href: `/admins/${userId}/instructor-list`,
-      icon: ClipboardDocumentListIcon,
+      icon: UsersIcon,
     },
     {
       name: "Customer List",
