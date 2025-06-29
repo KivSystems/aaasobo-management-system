@@ -101,6 +101,29 @@ function ListTable({
               header: key,
               cell: (data) => {
                 const value = data.getValue() as any;
+                // If the item is a color code, display it as a colored box
+                if (key === "Color Code" && typeof value === "string") {
+                  return (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          backgroundColor: value,
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "4px",
+                          border: "1px solid #ccc",
+                        }}
+                      />
+                      <span>{value.toUpperCase()}</span>
+                    </div>
+                  );
+                }
                 // If the item is not a link item, return the value
                 if (!linkItems.includes(key)) {
                   return value;

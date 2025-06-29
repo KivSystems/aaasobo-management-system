@@ -21,6 +21,7 @@ import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans, registerPlan } from "../services/plansService";
+import { getAllEvents } from "../services/eventsService";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -427,6 +428,30 @@ export const registerPlanController = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error registering a new plan", { error });
     res.sendStatus(500);
+  }
+};
+
+// Admin dashboard for displaying all events' information
+export const getAllEventsController = async (_: Request, res: Response) => {
+  try {
+    // Fetch all events data.
+    const events = await getAllEvents();
+
+    // Transform the data structure.
+    const data = events.map((event, number) => {
+      const { id, name, color } = event;
+
+      return {
+        No: number + 1,
+        ID: id,
+        Event: name,
+        "Color Code": color,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 };
 
