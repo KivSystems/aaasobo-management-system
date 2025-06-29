@@ -18,11 +18,27 @@ function CustomerDashboardClient({
   classCalendarComponent: React.ReactNode;
   customerProfile: CustomerProfile;
 }) {
-  const breadcrumb = [
-    "Customer List",
-    `/admins/${adminId}/customer-list`,
-    `ID: ${customerId}`,
-  ];
+  // Get the previous list page from local storage to set the breadcrumb.
+  const previousListPage = localStorage.getItem("previousListPage");
+  let breadcrumb: string[] = [];
+  switch (previousListPage) {
+    case "customer-list":
+      breadcrumb = [
+        "Customer List",
+        `/admins/${adminId}/customer-list`,
+        `ID: ${customerId}`,
+      ];
+      break;
+    case "child-list":
+      breadcrumb = [
+        "Child List",
+        `/admins/${adminId}/child-list`,
+        `Customer ID: ${customerId}`,
+      ];
+      break;
+  }
+
+  // Get the active tab name to set the active tab in the TabFunction component.
   const activeTabName = "activeCustomerTab";
 
   // Set the authentication status as true.
