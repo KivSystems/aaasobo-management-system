@@ -25,7 +25,7 @@ export default function PlanTabs({
   const isAuthenticated = true;
 
   // Get the active tab from the local storage.
-  const { initialActiveTab, isTabInitialized } = useTabSelect("activeAdminTab");
+  const { initialActiveTab, isTabInitialized } = useTabSelect("activePlanTab");
 
   // Tabs with labels and content
   const tabs = [
