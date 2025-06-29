@@ -235,6 +235,31 @@ export const updateAdmin = async (
   }
 };
 
+// DELETE admin data
+export const deleteAdmin = async (adminId: number, cookie: string) => {
+  try {
+    // Define the data to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/admin-list/${adminId}`;
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const response = await fetch(apiURL, {
+      method: "DELETE",
+      headers,
+    });
+
+    if (response.status !== 200) {
+      return { errorMessage: ERROR_PAGE_MESSAGE_EN };
+    }
+    const result = await response.json();
+
+    return result;
+  } catch (error) {
+    console.error("Failed to delete the admin:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
 export const logoutAdmin = async () => {
   try {
     const response = await fetch(`${BASE_URL}/logout`, {

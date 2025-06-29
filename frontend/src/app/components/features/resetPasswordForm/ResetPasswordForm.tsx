@@ -14,6 +14,10 @@ import PasswordStrengthMeter from "../../elements/passwordStrengthMeter/Password
 import { resetPassword } from "@/app/actions/resetPassword";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import {
+  getLoginPath,
+  getForgotPasswordPath,
+} from "@/app/helper/utils/validationUtils";
 
 export default function ResetPasswordForm({
   token,
@@ -36,6 +40,10 @@ export default function ResetPasswordForm({
 
   const { language } = useLanguage();
 
+  // Get login and forgot password paths based on user type.
+  const loginHref = getLoginPath(userType);
+  const forgotPasswordHref = getForgotPasswordPath(userType);
+
   return !tokenVerificationResult.valid ? (
     <>
       <h2 className={styles.title}>
@@ -49,14 +57,7 @@ export default function ResetPasswordForm({
         />
       </div>
       {isErrorWithLink && (
-        <Link
-          className={styles.link}
-          href={
-            userType === "customer"
-              ? "/auth/forgot-password?type=customer"
-              : "/auth/forgot-password?type=instructor"
-          }
-        >
+        <Link className={styles.link} href={forgotPasswordHref}>
           {language === "ja" ? "リンクを再発行" : "Request link"}
         </Link>
       )}
@@ -145,15 +146,7 @@ export default function ResetPasswordForm({
         {(isErrorWithLink || isSuccess) && (
           <Link
             className={styles.link}
-            href={
-              isErrorWithLink
-                ? userType === "customer"
-                  ? "/auth/forgot-password?type=customer"
-                  : "/auth/forgot-password?type=instructor"
-                : userType === "customer"
-                  ? "/customers/login"
-                  : "/instructors/login"
-            }
+            href={isErrorWithLink ? forgotPasswordHref : loginHref}
           >
             {isErrorWithLink
               ? language === "ja"

@@ -4,6 +4,7 @@ import {
   getAllAdmins,
   getAdminById,
   updateAdmin,
+  deleteAdmin,
 } from "../services/adminsService";
 import {
   getAllInstructors,
@@ -19,7 +20,7 @@ import {
 import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
-import { getAllPlans } from "../services/plansService";
+import { getAllPlans, registerPlan } from "../services/plansService";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -81,6 +82,26 @@ export const updateAdminProfileController = async (
     });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
+  }
+};
+
+export const deleteAdminController = async (req: Request, res: Response) => {
+  const adminId = parseInt(req.params.id);
+
+  if (isNaN(adminId)) {
+    return res.status(400).json({ error: "Invalid admin ID." });
+  }
+
+  try {
+    const deletedAdmin = await deleteAdmin(adminId);
+
+    res.status(200).json({
+      message: "The admin profile was deleted successfully",
+      id: deletedAdmin.id,
+    });
+  } catch (error) {
+    console.error("Failed to delete the admin profile:", error);
+    res.status(500).json({ error: "Failed to delete the admin profile." });
   }
 };
 
@@ -371,6 +392,41 @@ export const getAllPlansController = async (_: Request, res: Response) => {
     res.json({ data });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+// Register a new plan
+export const registerPlanController = async (req: Request, res: Response) => {
+  const { name, weeklyClassTimes, description } = req.body;
+
+  if (!name || !weeklyClassTimes || !description) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize the plan name
+  const normalizedPlanName = name.toLowerCase().replace(/\s/g, "");
+
+  try {
+    // Check if the plan with the same name already exists
+    const existingPlans = await getAllPlans();
+    const planExists = existingPlans.some(
+      (plan) =>
+        plan.name.toLowerCase().replace(/\s/g, "") === normalizedPlanName,
+    );
+    if (planExists) {
+      return res.sendStatus(409);
+    }
+
+    await registerPlan({
+      name,
+      weeklyClassTimes,
+      description,
+    });
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.error("Error registering a new plan", { error });
+    res.sendStatus(500);
   }
 };
 

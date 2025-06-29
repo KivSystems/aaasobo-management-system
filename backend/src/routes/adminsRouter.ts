@@ -2,7 +2,9 @@ import express from "express";
 import {
   registerAdminController,
   registerInstructorController,
+  registerPlanController,
   updateAdminProfileController,
+  deleteAdminController,
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
@@ -25,10 +27,20 @@ adminsRouter.post(
   registerAdminController,
 );
 adminsRouter.patch("/:id", verifyAuthentication, updateAdminProfileController);
+adminsRouter.delete(
+  "/admin-list/:id",
+  verifyAuthentication,
+  deleteAdminController,
+);
 adminsRouter.post(
   "/instructor-list/register",
   verifyAuthentication,
   registerInstructorController,
+);
+adminsRouter.post(
+  "/plan-list/register",
+  verifyAuthentication,
+  registerPlanController,
 );
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);
