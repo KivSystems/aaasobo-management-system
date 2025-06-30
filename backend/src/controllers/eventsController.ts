@@ -1,16 +1,5 @@
 import { Request, Response } from "express";
-import { getAllEvents, getEventById } from "../services/eventsService";
-
-// Get all events' information
-export const getAllEventsController = async (_: Request, res: Response) => {
-  try {
-    // Fetch all event data.
-    const data = await getAllEvents();
-    res.json({ data });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-};
+import { getEventById } from "../services/eventsService";
 
 function setErrorResponse(res: Response, error: unknown) {
   return res
