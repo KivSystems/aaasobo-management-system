@@ -127,6 +127,19 @@ $font_size: 0.9rem;
   }
 }
 
+.eventColor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &__colorBox {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+}
+
 .icon {
   cursor: pointer;
   color: #6b7280;

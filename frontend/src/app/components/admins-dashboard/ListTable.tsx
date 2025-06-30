@@ -104,20 +104,11 @@ function ListTable({
                 // If the item is a color code, display it as a colored box
                 if (key === "Color Code" && typeof value === "string") {
                   return (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
+                    <div className={styles.eventColor}>
                       <div
+                        className={styles.eventColor__colorBox}
                         style={{
                           backgroundColor: value,
-                          width: "20px",
-                          height: "20px",
-                          borderRadius: "4px",
-                          border: "1px solid #ccc",
                         }}
                       />
                       <span>{value.toUpperCase()}</span>
