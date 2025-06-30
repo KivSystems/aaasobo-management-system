@@ -10,7 +10,6 @@ export default async function EventDashboardForAdmin({
 }) {
   // Fetch event data
   const data = await getEventById(eventId);
-  console.log("page.tsx event data", data);
   let event = null;
   if ("message" in data) {
     event = data.message;
