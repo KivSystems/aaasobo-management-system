@@ -123,6 +123,12 @@ type Plan = {
   weeklyClassTimes?: number;
 };
 
+type EventType = {
+  id: number;
+  name: string;
+  color: string;
+};
+
 type Subscriptions = {
   subscriptions: Subscription[];
 };
