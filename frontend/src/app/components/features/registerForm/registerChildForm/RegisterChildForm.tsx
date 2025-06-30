@@ -4,7 +4,7 @@ import styles from "./RegisterChildForm.module.scss";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import TextInput from "@/app/components/elements/textInput/TextInput";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import BirthdateInput from "../birthdateInput/BirthdateInput";
 import FormValidationMessage from "@/app/components/elements/formValidationMessage/FormValidationMessage";
 import { extractRegisterValidationErrors } from "@/app/helper/utils/validationErrorUtils";
@@ -89,13 +89,14 @@ export default function RegisterChildForm({
       />
 
       <BirthdateInput
-        onValidDateChange={(date) => {
-          if (date) handleChange("birthdate", date);
-          clearErrorMessage("birthdate");
-        }}
-        {...(childData.birthdate !== "" && {
-          defaultBirthdate: childData.birthdate,
-        })}
+        onValidDateChange={useCallback(
+          (date: string | null) => {
+            if (date) handleChange("birthdate", date);
+            clearErrorMessage("birthdate");
+          },
+          [handleChange, clearErrorMessage],
+        )}
+        defaultBirthdate={childData.birthdate}
         error={localMessages.birthdate}
         language={language}
       />
@@ -131,19 +132,21 @@ export default function RegisterChildForm({
         )}
       </div>
 
-      <ActionButton
-        btnText={language === "ja" ? "戻る" : "Back"}
-        className="backBtn"
-        type="button"
-        onClick={onPreviousStep}
-        disabled={isLoading}
-      />
-      <ActionButton
-        btnText={language === "ja" ? "アカウント登録" : "Create Account"}
-        className="bookBtn"
-        type="submit"
-        disabled={isLoading}
-      />
+      <div className={styles.buttonsWrapper}>
+        <ActionButton
+          btnText={language === "ja" ? "戻る" : "Back"}
+          className="backBtn"
+          type="button"
+          onClick={onPreviousStep}
+          disabled={isLoading}
+        />
+        <ActionButton
+          btnText={language === "ja" ? "アカウント登録" : "Create Account"}
+          className="bookBtn"
+          type="submit"
+          disabled={isLoading}
+        />
+      </div>
     </form>
   );
 }

@@ -29,6 +29,7 @@ const PrivacyPolicyAgreement = ({
         label={language === "ja" ? "同意する" : "I agree."}
         onChange={onChange}
         checked={checked}
+        className="isAgreed"
       />
 
       {error && <FormValidationMessage type="error" message={error} />}

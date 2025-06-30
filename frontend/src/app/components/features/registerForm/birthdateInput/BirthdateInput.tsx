@@ -1,3 +1,4 @@
+import styles from "./BirthdateInput.module.scss";
 import FormValidationMessage from "@/app/components/elements/formValidationMessage/FormValidationMessage";
 import React, { useEffect, useState } from "react";
 
@@ -17,56 +18,63 @@ const BirthdateInput = ({
   const padZero = (val: string) => val.padStart(2, "0");
 
   useEffect(() => {
+    if (year === "" || month === "" || day === "") return;
     const iso = `${year}-${padZero(month)}-${padZero(day)}`;
     onValidDateChange(iso);
-  }, [year, month, day]);
+  }, [year, month, day, onValidDateChange]);
 
   return (
-    <fieldset style={{ border: "none", padding: 0 }}>
+    <fieldset className={styles.birthdateInput}>
       <legend>
         {language === "ja" ? "お子さまの生年月日" : "Child's date of birth"}
         <span>{language === "ja" ? "(半角数字)" : ""}</span>
       </legend>
 
-      <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
-        <input
-          type="text"
-          id="birth-year"
-          value={year}
-          placeholder="2020"
-          onChange={(e) => setYear(e.target.value)}
-          required
-          pattern="^[0-9]{4}$"
-          title="4桁の半角数字で入力してください。"
-          style={{ width: "70px", padding: "4px" }}
-        />
-        <label htmlFor="birth-year">{language === "ja" ? "年" : "Y"}</label>
+      <div className={styles.birthdateInput__group}>
+        <div className={styles.birthdateInput__field}>
+          <input
+            className={`${styles.birthdateInput__input} ${styles["birthdateInput__input--year"]}`}
+            type="text"
+            id="birth-year"
+            value={year}
+            placeholder="2020"
+            onChange={(e) => setYear(e.target.value)}
+            required
+            pattern="^[0-9]{4}$"
+            title="4桁の半角数字で入力してください。"
+          />
+          <label htmlFor="birth-year">{language === "ja" ? "年" : "Y"}</label>
+        </div>
 
-        <input
-          type="text"
-          id="birth-month"
-          value={month}
-          placeholder="02"
-          onChange={(e) => setMonth(e.target.value)}
-          required
-          pattern="^[0-9]{1,2}$"
-          title="半角数字で入力してください。"
-          style={{ width: "50px", padding: "4px" }}
-        />
-        <label htmlFor="birth-month">{language === "ja" ? "月" : "M"}</label>
+        <div className={styles.birthdateInput__field}>
+          <input
+            className={`${styles.birthdateInput__input} ${styles["birthdateInput__input--month"]}`}
+            type="text"
+            id="birth-month"
+            value={month}
+            placeholder="02"
+            onChange={(e) => setMonth(e.target.value)}
+            required
+            pattern="^[0-9]{1,2}$"
+            title="半角数字で入力してください。"
+          />
+          <label htmlFor="birth-month">{language === "ja" ? "月" : "M"}</label>
+        </div>
 
-        <input
-          type="text"
-          id="birth-day"
-          value={day}
-          placeholder="20"
-          onChange={(e) => setDay(e.target.value)}
-          required
-          pattern="^[0-9]{1,2}$"
-          title="半角数字で入力してください。"
-          style={{ width: "50px", padding: "4px" }}
-        />
-        <label htmlFor="birth-day">{language === "ja" ? "日" : "D"}</label>
+        <div className={styles.birthdateInput__field}>
+          <input
+            className={`${styles.birthdateInput__input} ${styles["birthdateInput__input--day"]}`}
+            type="text"
+            id="birth-day"
+            value={day}
+            placeholder="20"
+            onChange={(e) => setDay(e.target.value)}
+            required
+            pattern="^[0-9]{1,2}$"
+            title="半角数字で入力してください。"
+          />
+          <label htmlFor="birth-day">{language === "ja" ? "日" : "D"}</label>
+        </div>
       </div>
 
       {error && (
@@ -80,4 +88,4 @@ const BirthdateInput = ({
   );
 };
 
-export default BirthdateInput;
+export default React.memo(BirthdateInput);

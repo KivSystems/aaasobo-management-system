@@ -6,14 +6,18 @@ export default function CheckboxInput({
   label,
   onChange,
   checked,
+  className,
 }: {
   name?: string;
   label: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   checked?: boolean;
+  className?: string;
 }) {
   return (
-    <div className={styles.checkboxWrapper}>
+    <div
+      className={`${styles.checkboxWrapper} ${className ? styles[className] : ""}`}
+    >
       <label className={styles.label}>
         <input
           type="checkbox"
@@ -22,7 +26,7 @@ export default function CheckboxInput({
           onChange={onChange}
           checked={checked}
         />{" "}
-        {label}
+        <p>{label}</p>
       </label>
     </div>
   );

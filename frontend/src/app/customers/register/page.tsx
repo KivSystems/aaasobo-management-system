@@ -31,64 +31,63 @@ function RegisterCustomerPage() {
   const emailToShow = customerData.email || fallbackEmail;
 
   return (
-    <main>
-      <div className={styles.outsideContainer}>
-        <div className={styles.container}>
-          <Image
-            src={"/images/logo2.svg"}
-            alt="logo"
-            width={100}
-            height={100}
-            className={styles.logo}
-            priority={true}
+    <main className={styles.outsideContainer}>
+      <div
+        className={`${styles.container} ${registrationStep === "complete" ? styles["container--complete"] : ""}`}
+      >
+        <Image
+          src={"/images/logo2.svg"}
+          alt="logo"
+          width={100}
+          height={100}
+          className={styles.logo}
+          priority={true}
+        />
+
+        {(registrationStep === "customer" || registrationStep === "child") && (
+          <header className={styles.header}>
+            <h1>
+              {language === "ja"
+                ? "無料アカウントを作成"
+                : "Create a free account"}
+            </h1>
+            <p>
+              {language === "ja"
+                ? "すでにアカウントをお持ちですか？"
+                : "Already a member?"}{" "}
+              <Link href="/customers/login">
+                {language === "ja" ? "ログイン" : "Login"}
+              </Link>
+            </p>
+          </header>
+        )}
+
+        {registrationStep === "customer" && (
+          <RegisterCustomerForm
+            customerData={customerData}
+            setCustomerData={setCustomerData}
+            onNextStep={() => setRegistrationStep("child")}
+            language={language}
           />
+        )}
 
-          {(registrationStep === "customer" ||
-            registrationStep === "child") && (
-            <header className={styles.header}>
-              <h1>
-                {language === "ja"
-                  ? "無料アカウントを作成"
-                  : "Create a free account"}
-              </h1>
-              <p>
-                {language === "ja"
-                  ? "すでにアカウントをお持ちですか？"
-                  : "Already a member?"}{" "}
-                <Link href="/customers/login">
-                  {language === "ja" ? "ログイン" : "Login"}
-                </Link>
-              </p>
-            </header>
-          )}
+        {registrationStep === "child" && (
+          <RegisterChildForm
+            customerData={customerData}
+            childData={childData}
+            setChildData={setChildData}
+            onPreviousStep={() => setRegistrationStep("customer")}
+            onNextStep={() => setRegistrationStep("complete")}
+            language={language}
+          />
+        )}
 
-          {registrationStep === "customer" && (
-            <RegisterCustomerForm
-              customerData={customerData}
-              setCustomerData={setCustomerData}
-              onNextStep={() => setRegistrationStep("child")}
-              language={language}
-            />
-          )}
-
-          {registrationStep === "child" && (
-            <RegisterChildForm
-              customerData={customerData}
-              childData={childData}
-              setChildData={setChildData}
-              onPreviousStep={() => setRegistrationStep("customer")}
-              onNextStep={() => setRegistrationStep("complete")}
-              language={language}
-            />
-          )}
-
-          {registrationStep === "complete" && (
-            <RegisterCompleteMessage
-              language={language}
-              emailToShow={emailToShow}
-            />
-          )}
-        </div>
+        {registrationStep === "complete" && (
+          <RegisterCompleteMessage
+            language={language}
+            emailToShow={emailToShow}
+          />
+        )}
       </div>
     </main>
   );

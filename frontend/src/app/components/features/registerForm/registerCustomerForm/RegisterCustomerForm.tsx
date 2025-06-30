@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import TextInput from "@/app/components/elements/textInput/TextInput";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
-import { useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import PasswordStrengthMeter from "@/app/components/elements/passwordStrengthMeter/PasswordStrengthMeter";
 import PrefectureSelect from "../prefectureSelect/PrefectureSelect";
 import PrivacyPolicyAgreement from "../privacyPolicyAgreement/PrivacyPolicyAgreement";
@@ -137,10 +137,13 @@ const RegisterCustomerForm = ({
             defaultValue: customerData.prefecture,
           })}
           error={localMessages.prefecture}
-          onChange={(e) => {
-            handleChange("prefecture", e.target.value);
-            clearErrorMessage("prefecture");
-          }}
+          onChange={useCallback(
+            (e) => {
+              handleChange("prefecture", e.target.value);
+              clearErrorMessage("prefecture");
+            },
+            [handleChange, clearErrorMessage],
+          )}
           language={language!}
         />
 

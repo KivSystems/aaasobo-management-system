@@ -5,10 +5,13 @@ export function useFormFieldSetter<T extends object>(
 ) {
   return useCallback(
     <K extends keyof T>(field: K, value: T[K]) => {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
+      setFormData((prev) => {
+        if (prev[field] === value) return prev;
+        return {
+          ...prev,
+          [field]: value,
+        };
+      });
     },
     [setFormData],
   );
