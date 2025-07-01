@@ -239,6 +239,7 @@ type RegisterFormState = {
   isAgreed?: string;
   weeklyClassTimes?: string;
   description?: string;
+  color?: string;
   errorMessage?: string;
   successMessage?: string;
   language?: LanguageType;

@@ -13,7 +13,7 @@ export const EMAIL_ALREADY_REGISTERED_ERROR = {
 };
 
 export const ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {
-  return "This name is already registered. Try a different one.";
+  return `This ${item} is already registered. Try a different one.`;
 };
 
 export const SINGLE_ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {

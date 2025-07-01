@@ -103,7 +103,9 @@ function EventProfile({
                 {isEditing ? (
                   <InputField
                     name="color"
-                    value={latestEvent.color.toUpperCase()}
+                    value={latestEvent.color
+                      .toUpperCase()
+                      .replace(/,\s*/g, ", ")}
                     onChange={(e) => handleInputChange(e, "color")}
                     className={`${styles.eventColor__inputField} ${isEditing ? styles.editable : ""}`}
                   />
@@ -115,7 +117,9 @@ function EventProfile({
                         backgroundColor: latestEvent.color,
                       }}
                     />
-                    <h4>{latestEvent.color.toUpperCase()}</h4>
+                    <h4>
+                      {latestEvent.color.toUpperCase().replace(/,\s*/g, ", ")}
+                    </h4>
                   </div>
                 )}
               </div>

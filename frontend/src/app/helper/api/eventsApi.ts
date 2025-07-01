@@ -24,26 +24,34 @@ export const getEventById = async (
 };
 
 // Register a new event
-export const registerEvent = async (userData: {
+export const registerEvent = async (eventData: {
   name: string;
-  weeklyClassTimes: number;
-  description: string;
+  color: string;
   cookie: string;
 }): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/admins/event-list/register`;
     const response = await fetch(registerURL, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: userData.cookie },
-      body: JSON.stringify(userData),
+      headers: { "Content-Type": "application/json", Cookie: eventData.cookie },
+      body: JSON.stringify(eventData),
     });
 
+    // Handle the duplicated error if the response status is 409
     if (response.status === 409) {
-      return { name: ITEM_ALREADY_REGISTERED_ERROR("Event Name") };
-    }
+      const { items } = await response.json();
 
-    if (!response.ok) {
-      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+      if (items.length === 2) {
+        return {
+          name: ITEM_ALREADY_REGISTERED_ERROR(items[0]),
+          color: ITEM_ALREADY_REGISTERED_ERROR(items[1]),
+        };
+      }
+      if (items.some((item: string) => item.includes("name"))) {
+        return { name: ITEM_ALREADY_REGISTERED_ERROR(items) };
+      } else {
+        return { color: ITEM_ALREADY_REGISTERED_ERROR(items) };
+      }
     }
 
     return {
