@@ -3,6 +3,7 @@ import {
   registerAdminController,
   registerInstructorController,
   registerPlanController,
+  registerEventController,
   updateAdminProfileController,
   deleteAdminController,
   getAdminController,
@@ -42,6 +43,11 @@ adminsRouter.post(
   "/plan-list/register",
   verifyAuthentication,
   registerPlanController,
+);
+adminsRouter.post(
+  "/event-list/register",
+  verifyAuthentication,
+  registerEventController,
 );
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);

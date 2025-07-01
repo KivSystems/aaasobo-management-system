@@ -21,7 +21,7 @@ import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans, registerPlan } from "../services/plansService";
-import { getAllEvents } from "../services/eventsService";
+import { getAllEvents, registerEvent } from "../services/eventsService";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -452,6 +452,52 @@ export const getAllEventsController = async (_: Request, res: Response) => {
     res.json({ data });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+// Register a new event
+export const registerEventController = async (req: Request, res: Response) => {
+  const { name, color } = req.body;
+
+  if (!name || !color) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize the event name and color
+  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedColor = color.toLowerCase().replace(/\s/g, "");
+
+  try {
+    // Check if the event with the same name and color already exists
+    const existingEvents = await getAllEvents();
+    const eventNameExists = existingEvents.some(
+      (event) =>
+        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName,
+    );
+    const eventColorExists = existingEvents.some(
+      (event) =>
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColor,
+    );
+
+    // Collect conflict reasons
+    const conflictItems: string[] = [];
+    if (eventNameExists) conflictItems.push("Event name");
+    if (eventColorExists) conflictItems.push("Color code");
+
+    if (conflictItems.length > 0) {
+      return res.status(409).json({ items: conflictItems });
+    }
+
+    // Register the new event
+    await registerEvent({
+      name,
+      color: normalizedColor,
+    });
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.error("Error registering a new event", { error });
+    res.sendStatus(500);
   }
 };
 
