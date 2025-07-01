@@ -111,7 +111,7 @@ function ListTable({
                           backgroundColor: value,
                         }}
                       />
-                      <span>{value.toUpperCase()}</span>
+                      <span>{value.toUpperCase().replace(/,\s*/g, ", ")}</span>
                     </div>
                   );
                 }
