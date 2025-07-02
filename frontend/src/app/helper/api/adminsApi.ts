@@ -248,7 +248,7 @@ export const updateAdmin = async (
 
     return data;
   } catch (error) {
-    console.error("API error while registering admin:", error);
+    console.error("API error while updating admin:", error);
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
