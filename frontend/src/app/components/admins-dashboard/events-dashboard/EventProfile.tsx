@@ -5,6 +5,11 @@ import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateEventAction } from "@/app/actions/updateContent";
+import { deleteEventAction } from "@/app/actions/deleteContent";
+import {
+  CONTENT_UPDATE_SUCCESS_MESSAGE,
+  CONTENT_DELETE_SUCCESS_MESSAGE,
+} from "@/app/helper/messages/formValidation";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
@@ -19,7 +24,12 @@ function EventProfile({
   event: EventType | string;
   isAdminAuthenticated?: boolean;
 }) {
+  // Use `useFormState` hook for updating an event profile
   const [updateResultState, formAction] = useFormState(updateEventAction, {});
+  // Use `useState` hook and FormData for deleting an event profile
+  const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
+    {},
+  );
   const { localMessages, clearErrorMessage } =
     useFormMessages(updateResultState);
   const [previousEvent, setPreviousEvent] = useState<EventType | null>(
@@ -52,23 +62,51 @@ function EventProfile({
     }
   };
 
+  const handleDeleteClick = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event?",
+    );
+    if (confirmed && latestEvent) {
+      const formData = new FormData();
+      formData.append("id", String(latestEvent.id));
+
+      const result = await deleteEventAction(deleteResultState, formData);
+      setDeleteResultState(result);
+    }
+  };
+
   useEffect(() => {
     if (updateResultState !== undefined) {
       if ("event" in updateResultState && updateResultState.event) {
         const event = updateResultState.event as EventType;
-        toast.success("Profile updated successfully!");
+        toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("event"));
         setIsEditing(false);
         setPreviousEvent(event);
         setLatestEvent(event);
         // Clear updateResultState to avoid re-rendering
         updateResultState.event = null;
         return;
+
+        // Check if the deleteResultState has changed
+      } else if ("id" in deleteResultState && deleteResultState.id) {
+        toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("event"));
+        setIsEditing(false);
+        setLatestEvent(null);
+        // Clear deleteResultState to avoid re-rendering
+        deleteResultState.id = null;
+        return;
+
+        // Show an error message if there is an error in either update or delete operation,
       } else {
-        const result = updateResultState as { errorMessage: string };
-        toast.error(result.errorMessage);
+        const updateResult = updateResultState as { errorMessage: string };
+        const deleteResult = deleteResultState as { errorMessage: string };
+        const errorMessage =
+          updateResult.errorMessage || deleteResult.errorMessage;
+        toast.error(errorMessage);
+        return;
       }
     }
-  }, [updateResultState]);
+  }, [updateResultState, deleteResultState]);
 
   if (typeof event === "string") {
     return <p>{event}</p>;
@@ -136,7 +174,7 @@ function EventProfile({
                   {isEditing ? (
                     <div className={styles.buttons}>
                       <ActionButton
-                        className="cancelEditingInstructor"
+                        className="cancelEditingEvent"
                         btnText="Cancel"
                         type="button"
                         onClick={(e) => {
@@ -144,9 +182,8 @@ function EventProfile({
                           handleCancelClick();
                         }}
                       />
-
                       <ActionButton
-                        className="saveInstructor"
+                        className="saveEvent"
                         btnText="Save"
                         type="submit"
                         Icon={CheckIcon}
@@ -154,11 +191,22 @@ function EventProfile({
                     </div>
                   ) : (
                     <div className={styles.buttons}>
-                      <ActionButton
-                        className="editInstructor"
-                        btnText="Edit"
-                        onClick={handleEditClick}
-                      />
+                      <div>
+                        <ActionButton
+                          className="deleteEvent"
+                          btnText="Delete"
+                          type="button"
+                          onClick={() => handleDeleteClick()}
+                        />
+                      </div>
+                      <div>
+                        <ActionButton
+                          className="editEvent"
+                          btnText="Edit"
+                          type="button"
+                          onClick={handleEditClick}
+                        />
+                      </div>
                     </div>
                   )}
                 </>

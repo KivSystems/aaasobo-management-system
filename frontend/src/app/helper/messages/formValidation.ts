@@ -52,10 +52,21 @@ export const ADMIN_UPDATE_SUCCESS_MESSAGE =
 export const ADMIN_DELETE_SUCCESS_MESSAGE =
   "The admin account has been deleted successfully.";
 
+export const EVENT_DELETE_CONSTRAINT_MESSAGE =
+  "Please remove the event from AaasoBo! Calendar before deleting it.";
+
 export const CONTENT_REGISTRATION_SUCCESS_MESSAGE = (
   categoryType: CategoryType,
 ) => {
   return `The ${categoryType} has been registered successfully.`;
+};
+
+export const CONTENT_UPDATE_SUCCESS_MESSAGE = (categoryType: CategoryType) => {
+  return `The ${categoryType} has been updated successfully.`;
+};
+
+export const CONTENT_DELETE_SUCCESS_MESSAGE = (categoryType: CategoryType) => {
+  return `The ${categoryType} has been deleted successfully.`;
 };
 
 // LoginForm

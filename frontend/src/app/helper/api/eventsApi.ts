@@ -3,6 +3,7 @@ import {
   GENERAL_ERROR_MESSAGE,
   CONTENT_REGISTRATION_SUCCESS_MESSAGE,
 } from "../messages/formValidation";
+import { EVENT_DELETE_CONSTRAINT_MESSAGE } from "../messages/formValidation";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -112,6 +113,31 @@ export const updateEvent = async (
     return data;
   } catch (error) {
     console.error("API error while updating event:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+// DELETE event data
+export const deleteEvent = async (eventId: number, cookie: string) => {
+  try {
+    // Define the data to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/event-list/${eventId}`;
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const response = await fetch(apiURL, {
+      method: "DELETE",
+      headers,
+    });
+
+    if (response.status !== 200) {
+      return { errorMessage: EVENT_DELETE_CONSTRAINT_MESSAGE };
+    }
+    const result = await response.json();
+
+    return result;
+  } catch (error) {
+    console.error("Failed to delete the event:", error);
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
