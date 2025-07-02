@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { registerAdmin, getAdminByEmail } from "../services/adminsService";
 import {
   getAllAdmins,
@@ -21,7 +21,12 @@ import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans, registerPlan } from "../services/plansService";
-import { getAllEvents, registerEvent } from "../services/eventsService";
+import {
+  getAllEvents,
+  getEventById,
+  registerEvent,
+  updateEvent,
+} from "../services/eventsService";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -463,9 +468,9 @@ export const registerEventController = async (req: Request, res: Response) => {
     return res.sendStatus(400);
   }
 
-  // Normalize the event name and color
+  // Normalize the event name and color code
   const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
-  const normalizedColor = color.toLowerCase().replace(/\s/g, "");
+  const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
 
   try {
     // Check if the event with the same name and color already exists
@@ -476,7 +481,7 @@ export const registerEventController = async (req: Request, res: Response) => {
     );
     const eventColorExists = existingEvents.some(
       (event) =>
-        event.color.toLowerCase().replace(/\s/g, "") === normalizedColor,
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode,
     );
 
     // Collect conflict reasons
@@ -491,13 +496,63 @@ export const registerEventController = async (req: Request, res: Response) => {
     // Register the new event
     await registerEvent({
       name,
-      color: normalizedColor,
+      color: normalizedColorCode,
     });
 
     res.sendStatus(201);
   } catch (error) {
     console.error("Error registering a new event", { error });
     res.sendStatus(500);
+  }
+};
+
+// Update the applicable event data
+export const updateEventProfileController = async (
+  req: Request,
+  res: Response,
+) => {
+  const eventId = parseInt(req.params.id);
+  const { name, color } = req.body;
+
+  // Normalize the event name and color code
+  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
+
+  try {
+    if (!name || !color) {
+      return res.sendStatus(400);
+    }
+
+    // Check if the event with the same name and color already exists
+    const existingEvents = await getAllEvents();
+    const eventNameExists = existingEvents.some(
+      (event) =>
+        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName &&
+        event.id !== eventId,
+    );
+    const eventColorExists = existingEvents.some(
+      (event) =>
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode &&
+        event.id !== eventId,
+    );
+
+    // Collect conflict reasons
+    const conflictItems: string[] = [];
+    if (eventNameExists) conflictItems.push("Event name");
+    if (eventColorExists) conflictItems.push("Color code");
+
+    if (conflictItems.length > 0) {
+      return res.status(409).json({ items: conflictItems });
+    }
+
+    const event = await updateEvent(eventId, name, normalizedColorCode);
+
+    res.status(200).json({
+      message: "Event is updated successfully",
+      event,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
   }
 };
 
