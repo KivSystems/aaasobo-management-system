@@ -3,15 +3,11 @@
 import styles from "./EventProfile.module.scss";
 import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
-// TODO: Uncomment the import when the updateData action is implemented
-// import { updateData } from "@/app/actions/updateData";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
+import { updateEventAction } from "@/app/actions/updateContent";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import {
-  CalendarIcon,
-  PencilIcon,
-  CheckIcon,
-} from "@heroicons/react/24/outline";
+import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "@/app/components/elements/loading/Loading";
@@ -23,8 +19,9 @@ function EventProfile({
   event: EventType | string;
   isAdminAuthenticated?: boolean;
 }) {
-  // TODO: Uncomment the import when the updateEventAction action is implemented
-  // const [updateResultState, formAction] = useFormState(updateEventAction, {});
+  const [updateResultState, formAction] = useFormState(updateEventAction, {});
+  const { localMessages, clearErrorMessage } =
+    useFormMessages(updateResultState);
   const [previousEvent, setPreviousEvent] = useState<EventType | null>(
     typeof event !== "string" ? event : null,
   );
@@ -50,24 +47,28 @@ function EventProfile({
     if (latestEvent) {
       setLatestEvent(previousEvent);
       setIsEditing(false);
+      clearErrorMessage("name");
+      clearErrorMessage("color");
     }
   };
 
-  // TODO: Uncomment the useEffect when the updateResultState is available
-  // useEffect(() => {
-  //   if (updateResultState !== undefined) {
-  //     if ("event" in updateResultState) {
-  //       const result = updateResultState as { event: Event };
-  //       toast.success("Profile updated successfully!");
-  //       setIsEditing(false);
-  //       setPreviousEvent(result.event);
-  //       setLatestEvent(result.event);
-  //     } else {
-  //       const result = updateResultState as { errorMessage: string };
-  //       toast.error(result.errorMessage);
-  //     }
-  //   }
-  // }, [updateResultState]);
+  useEffect(() => {
+    if (updateResultState !== undefined) {
+      if ("event" in updateResultState && updateResultState.event) {
+        const event = updateResultState.event as EventType;
+        toast.success("Profile updated successfully!");
+        setIsEditing(false);
+        setPreviousEvent(event);
+        setLatestEvent(event);
+        // Clear updateResultState to avoid re-rendering
+        updateResultState.event = null;
+        return;
+      } else {
+        const result = updateResultState as { errorMessage: string };
+        toast.error(result.errorMessage);
+      }
+    }
+  }, [updateResultState]);
 
   if (typeof event === "string") {
     return <p>{event}</p>;
@@ -77,91 +78,93 @@ function EventProfile({
     <>
       <div className={styles.container}>
         {latestEvent ? (
-          // TODO: Uncomment the formAction when the updateEventAction action is implemented
-          // <form action={formAction} className={styles.profileCard}>
-          <div className={styles.profileCard}>
-            {/* Event name */}
-            <div className={styles.eventName__nameSection}>
-              <p className={styles.eventName__text}>Event</p>
-              {isEditing ? (
-                <InputField
-                  name="name"
-                  value={latestEvent.name}
-                  onChange={(e) => handleInputChange(e, "name")}
-                  className={`${styles.eventName__inputField} ${isEditing ? styles.editable : ""}`}
-                />
-              ) : (
-                <h3 className={styles.eventName__name}>{latestEvent.name}</h3>
-              )}
-            </div>
-
-            {/* Color */}
-            <div className={styles.insideContainer}>
-              <PencilIcon className={styles.icon} />
-              <div>
-                <p className={styles.eventName__text}>Color</p>
+          <form action={formAction} className={styles.profileCard}>
+            <div className={styles.profileCard}>
+              {/* Event name */}
+              <div className={styles.eventName__nameSection}>
+                <p className={styles.eventName__text}>Event</p>
                 {isEditing ? (
                   <InputField
-                    name="color"
-                    value={latestEvent.color
-                      .toUpperCase()
-                      .replace(/,\s*/g, ", ")}
-                    onChange={(e) => handleInputChange(e, "color")}
-                    className={`${styles.eventColor__inputField} ${isEditing ? styles.editable : ""}`}
+                    name="name"
+                    value={latestEvent.name}
+                    error={localMessages.name}
+                    onChange={(e) => handleInputChange(e, "name")}
+                    className={`${styles.eventName__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
-                  <div className={styles.eventColor}>
-                    <div
-                      className={styles.eventColor__colorBox}
-                      style={{
-                        backgroundColor: latestEvent.color,
-                      }}
-                    />
-                    <h4>
-                      {latestEvent.color.toUpperCase().replace(/,\s*/g, ", ")}
-                    </h4>
-                  </div>
+                  <h3 className={styles.eventName__name}>{latestEvent.name}</h3>
                 )}
               </div>
+
+              {/* Color */}
+              <div className={styles.insideContainer}>
+                <PencilIcon className={styles.icon} />
+                <div>
+                  <p className={styles.eventName__text}>Color</p>
+                  {isEditing ? (
+                    <InputField
+                      name="color"
+                      value={latestEvent.color
+                        .toUpperCase()
+                        .replace(/,\s*/g, ", ")}
+                      error={localMessages.color}
+                      onChange={(e) => handleInputChange(e, "color")}
+                      className={`${styles.eventColor__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <div className={styles.eventColor}>
+                      <div
+                        className={styles.eventColor__colorBox}
+                        style={{
+                          backgroundColor: latestEvent.color,
+                        }}
+                      />
+                      <h4>
+                        {latestEvent.color.toUpperCase().replace(/,\s*/g, ", ")}
+                      </h4>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Hidden input field */}
+              <input type="hidden" name="id" value={latestEvent.id} />
+
+              {/* Action buttons for only admin */}
+              {isAdminAuthenticated ? (
+                <>
+                  {isEditing ? (
+                    <div className={styles.buttons}>
+                      <ActionButton
+                        className="cancelEditingInstructor"
+                        btnText="Cancel"
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleCancelClick();
+                        }}
+                      />
+
+                      <ActionButton
+                        className="saveInstructor"
+                        btnText="Save"
+                        type="submit"
+                        Icon={CheckIcon}
+                      />
+                    </div>
+                  ) : (
+                    <div className={styles.buttons}>
+                      <ActionButton
+                        className="editInstructor"
+                        btnText="Edit"
+                        onClick={handleEditClick}
+                      />
+                    </div>
+                  )}
+                </>
+              ) : null}
             </div>
-
-            {/* Hidden input field */}
-            <input type="hidden" name="id" value={latestEvent.id} />
-
-            {/* Action buttons for only admin */}
-            {isAdminAuthenticated ? (
-              <>
-                {isEditing ? (
-                  <div className={styles.buttons}>
-                    <ActionButton
-                      className="cancelEditingInstructor"
-                      btnText="Cancel"
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleCancelClick();
-                      }}
-                    />
-
-                    <ActionButton
-                      className="saveInstructor"
-                      btnText="Save"
-                      type="submit"
-                      Icon={CheckIcon}
-                    />
-                  </div>
-                ) : (
-                  <div className={styles.buttons}>
-                    <ActionButton
-                      className="editInstructor"
-                      btnText="Edit"
-                      onClick={handleEditClick}
-                    />
-                  </div>
-                )}
-              </>
-            ) : null}
-          </div>
+          </form>
         ) : (
           <Loading />
         )}

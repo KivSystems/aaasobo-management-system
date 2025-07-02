@@ -64,3 +64,56 @@ export const registerEvent = async (eventData: {
     };
   }
 };
+
+// Update event item
+export const updateEvent = async (
+  eventId: number,
+  eventName: string,
+  eventColor: string,
+  cookie: string,
+): Promise<UpdateFormState> => {
+  try {
+    // Define the item to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/event-list/update/${eventId}`;
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const body = JSON.stringify({
+      name: eventName,
+      color: eventColor,
+    });
+
+    const response = await fetch(apiURL, {
+      method: "PATCH",
+      headers,
+      body,
+    });
+
+    const data = await response.json();
+
+    // Handle the duplicated error if the response status is 409
+    if (response.status === 409) {
+      const items = data.items;
+      if (items.length === 2) {
+        return {
+          name: ITEM_ALREADY_REGISTERED_ERROR(items[0]),
+          color: ITEM_ALREADY_REGISTERED_ERROR(items[1]),
+        };
+      }
+      if (items.some((item: string) => item.includes("name"))) {
+        return { name: ITEM_ALREADY_REGISTERED_ERROR(items) };
+      } else {
+        return { color: ITEM_ALREADY_REGISTERED_ERROR(items) };
+      }
+    }
+
+    if (response.status !== 200) {
+      return { errorMessage: data.message };
+    }
+
+    return data;
+  } catch (error) {
+    console.error("API error while updating event:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};

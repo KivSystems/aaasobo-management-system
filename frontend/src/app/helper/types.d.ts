@@ -253,6 +253,7 @@ type UpdateFormState = {
   meetingId?: string;
   passcode?: string;
   introductionURL?: string;
+  color?: string;
   errorMessage?: string;
   successMessage?: string;
 };
