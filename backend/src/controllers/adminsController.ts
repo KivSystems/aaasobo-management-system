@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { registerAdmin, getAdminByEmail } from "../services/adminsService";
 import {
   getAllAdmins,
