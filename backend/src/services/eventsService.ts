@@ -10,7 +10,11 @@ export const registerEvent = async (data: { name: string; color: string }) => {
 // Fetch all event data.
 export const getAllEvents = async () => {
   try {
-    return await prisma.event.findMany();
+    return await prisma.event.findMany({
+      orderBy: {
+        id: "asc",
+      },
+    });
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch events.");
@@ -46,5 +50,20 @@ export const updateEvent = async (id: number, name: string, color: string) => {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to update the event data.");
+  }
+};
+
+// Delete the selected event
+export const deleteEvent = async (eventId: number) => {
+  try {
+    // Delete the Event data.
+    const event = await prisma.event.delete({
+      where: { id: eventId },
+    });
+
+    return event;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to delete the event.");
   }
 };

@@ -23,9 +23,9 @@ import { getAllChildren } from "../services/childrenService";
 import { getAllPlans, registerPlan } from "../services/plansService";
 import {
   getAllEvents,
-  getEventById,
   registerEvent,
   updateEvent,
+  deleteEvent,
 } from "../services/eventsService";
 
 // Register Admin
@@ -553,6 +553,27 @@ export const updateEventProfileController = async (
     });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
+  }
+};
+
+// Delete the selected event
+export const deleteEventController = async (req: Request, res: Response) => {
+  const eventId = parseInt(req.params.id);
+
+  if (isNaN(eventId)) {
+    return res.status(400).json({ error: "Invalid event ID." });
+  }
+
+  try {
+    const deletedEvent = await deleteEvent(eventId);
+
+    res.status(200).json({
+      message: "The event was deleted successfully",
+      id: deletedEvent.id,
+    });
+  } catch (error) {
+    console.error("Failed to delete the event:", error);
+    res.status(500).json({ error: "Failed to delete the event." });
   }
 };
 
