@@ -114,3 +114,13 @@ export const deleteCustomer = async (
     },
   });
 };
+
+export const getCustomerContactById = async (id: number) => {
+  return prisma.customer.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      email: true,
+    },
+  });
+};

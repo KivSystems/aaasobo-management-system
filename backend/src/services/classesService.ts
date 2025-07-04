@@ -781,5 +781,7 @@ export const rebookClass = async (
         childrenId,
       })),
     });
+
+    return newRebookedClass;
   });
 };
