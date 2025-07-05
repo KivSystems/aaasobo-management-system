@@ -16,6 +16,7 @@ import {
   requireAuthentication,
   authenticateAdminSession,
 } from "../../src/middlewares/auth.middleware";
+import upload from "../middlewares/upload.middleware";
 
 export const adminsRouter = express.Router();
 
@@ -27,7 +28,11 @@ adminsRouter.get("/logout", logoutAdminController);
 adminsRouter.post("/register", registerAdminController);
 adminsRouter.get("/authentication", authenticateAdminSession);
 // TODO: add authentication middleware to this route
-adminsRouter.post("/instructor-list/register", registerInstructorController);
+adminsRouter.post(
+  "/instructor-list/register",
+  upload.single("icon"),
+  registerInstructorController,
+);
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);
 adminsRouter.get("/instructor-list", getAllInstructorsController);

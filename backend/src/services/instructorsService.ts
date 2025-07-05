@@ -2,27 +2,36 @@ import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { saltRounds } from "../helper/commonUtils";
+import { put } from "@vercel/blob";
 
 // Register a new instructor account in the DB
-export const registerInstructor = async (data: {
-  name: string;
-  nickname: string;
-  email: string;
-  password: string;
-  icon: string;
-  classURL: string;
-  meetingId: string;
-  passcode: string;
-  introductionURL: string;
-}) => {
+export const registerInstructor = async (
+  data: {
+    name: string;
+    nickname: string;
+    email: string;
+    password: string;
+    icon: Express.Multer.File;
+    classURL: string;
+    meetingId: string;
+    passcode: string;
+    introductionURL: string;
+  },
+  tx: Prisma.TransactionClient,
+) => {
   const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
-  await prisma.instructor.create({
+  const blob = await put(data.icon.originalname, data.icon.buffer, {
+    access: "public",
+    addRandomSuffix: true,
+  });
+
+  await tx.instructor.create({
     data: {
       name: data.name,
       email: data.email,
       password: hashedPassword,
-      icon: data.icon,
+      icon: blob.url,
       classURL: data.classURL,
       meetingId: data.meetingId,
       passcode: data.passcode,
@@ -259,15 +268,6 @@ export const getInstructorByNickname = async (
 ): Promise<Instructor | null> => {
   return await prisma.instructor.findUnique({
     where: { nickname },
-  });
-};
-
-// Fetch the instructor by the icon
-export const getInstructorByIcon = async (
-  icon: string,
-): Promise<Instructor | null> => {
-  return await prisma.instructor.findUnique({
-    where: { icon },
   });
 };
 

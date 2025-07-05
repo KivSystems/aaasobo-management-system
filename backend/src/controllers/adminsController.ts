@@ -7,7 +7,6 @@ import {
   registerInstructor,
   getInstructorByEmail,
   getInstructorByNickname,
-  getInstructorByIcon,
   getInstructorByClassURL,
   getInstructorByMeetingId,
   getInstructorByPasscode,
@@ -19,6 +18,7 @@ import { getAllChildren } from "../services/childrenService";
 import { getAllPlans } from "../services/plansService";
 import bcrypt from "bcrypt";
 import { logout } from "../helper/logout";
+import { prisma } from "../../prisma/prismaClient";
 
 // Login Admin
 export const loginAdminController = async (req: Request, res: Response) => {
@@ -242,12 +242,12 @@ export const registerInstructorController = async (
   req: Request,
   res: Response,
 ) => {
+  const icon = req.file;
   const {
     name,
     nickname,
     email,
     password,
-    icon,
     classURL,
     meetingId,
     passcode,
@@ -275,7 +275,6 @@ export const registerInstructorController = async (
   const uniqueChecks = [
     { fn: getInstructorByNickname, value: nickname },
     { fn: getInstructorByEmail, value: normalizedEmail },
-    { fn: getInstructorByIcon, value: icon },
     { fn: getInstructorByClassURL, value: classURL },
     { fn: getInstructorByMeetingId, value: meetingId },
     { fn: getInstructorByPasscode, value: passcode },
@@ -291,7 +290,6 @@ export const registerInstructorController = async (
     const [
       emailExists,
       nicknameExists,
-      iconExists,
       classURLExists,
       meetingIdExists,
       passcodeExists,
@@ -301,7 +299,6 @@ export const registerInstructorController = async (
     // Make list of error items and set the text including each error item
     if (nicknameExists) errorItems = errorItems.concat(", ", "Nickname");
     if (emailExists) errorItems = errorItems.concat(", ", "Email");
-    if (iconExists) errorItems = errorItems.concat(", ", "Icon");
     if (classURLExists) errorItems = errorItems.concat(", ", "Class URL");
     if (meetingIdExists) errorItems = errorItems.concat(", ", "Meeting ID");
     if (passcodeExists) errorItems = errorItems.concat(", ", "Pass Code");
@@ -318,16 +315,21 @@ export const registerInstructorController = async (
       return res.status(409).json({ items: errorItems });
     }
 
-    await registerInstructor({
-      name,
-      nickname,
-      email: normalizedEmail,
-      password,
-      icon,
-      classURL,
-      meetingId,
-      passcode,
-      introductionURL,
+    await prisma.$transaction(async (tx) => {
+      registerInstructor(
+        {
+          name,
+          nickname,
+          email: normalizedEmail,
+          password,
+          icon,
+          classURL,
+          meetingId,
+          passcode,
+          introductionURL,
+        },
+        tx,
+      );
     });
 
     res.sendStatus(201);
