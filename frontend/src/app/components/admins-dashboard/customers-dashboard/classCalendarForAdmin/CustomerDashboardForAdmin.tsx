@@ -16,11 +16,7 @@ export default async function CustomerDashboardForAdmin({
       adminId={adminId}
       customerId={customerId}
       classCalendarComponent={
-        <ClassCalendar
-          adminId={adminId}
-          customerId={customerId}
-          isAdminAuthenticated={true}
-        />
+        <ClassCalendar customerId={customerId} isAdminAuthenticated={true} />
       }
       customerProfile={customerProfile}
     />

@@ -6,11 +6,9 @@ import { getClasses, getCustomerById } from "@/app/helper/api/customersApi";
 
 export default async function ClassCalendar({
   customerId,
-  adminId,
   isAdminAuthenticated,
 }: {
   customerId: number;
-  adminId?: number;
   isAdminAuthenticated?: boolean;
 }) {
   const classes: CustomerClass[] | [] = await getClasses(customerId);
@@ -20,7 +18,6 @@ export default async function ClassCalendar({
   return (
     <main className={styles.calendarContainer}>
       <ClassActions
-        adminId={adminId}
         isAdminAuthenticated={isAdminAuthenticated}
         customerId={customerId}
       />
