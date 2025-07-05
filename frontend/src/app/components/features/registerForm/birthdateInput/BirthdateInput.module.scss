@@ -1,0 +1,42 @@
+@import "../../../../variables.module.scss";
+
+.birthdateInput {
+  border: none;
+  margin-bottom: 1rem;
+
+  legend {
+    font-size: 14px;
+  }
+
+  &__group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__field {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  &__input {
+    border: 1px solid #ccc;
+    border-radius: 0.3rem;
+    padding: 4px;
+
+    &:focus {
+      border-color: $blue_primary;
+      outline: none;
+    }
+
+    &--year {
+      width: 60px;
+    }
+
+    &--month,
+    &--day {
+      width: 40px;
+    }
+  }
+}

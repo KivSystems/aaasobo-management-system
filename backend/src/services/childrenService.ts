@@ -22,23 +22,20 @@ export const registerChild = async (
   birthdate: string,
   personalInfo: string,
   customerId: number,
+  tx?: Prisma.TransactionClient,
 ) => {
-  try {
-    // Insert the Child data into the DB.
-    const child = await prisma.children.create({
-      data: {
-        name,
-        birthdate,
-        personalInfo,
-        customerId,
-      },
-    });
+  const db = tx ?? prisma;
 
-    return child;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to add a child.");
-  }
+  const child = await db.children.create({
+    data: {
+      name,
+      birthdate,
+      personalInfo,
+      customerId,
+    },
+  });
+
+  return child;
 };
 
 export const updateChild = async (
@@ -73,17 +70,11 @@ export const deleteChild = async (
   tx: Prisma.TransactionClient,
   childId: number,
 ) => {
-  try {
-    // Delete the Child data.
-    const child = await tx.children.delete({
-      where: { id: childId },
-    });
+  const child = await tx.children.delete({
+    where: { id: childId },
+  });
 
-    return child;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to delete a child.");
-  }
+  return child;
 };
 
 export const getChildById = async (id: number) => {

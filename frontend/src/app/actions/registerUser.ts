@@ -1,15 +1,12 @@
 "use server";
 
-import { registerCustomer } from "../helper/api/customersApi";
 import { registerInstructor } from "../helper/api/instructorsApi";
 import { registerAdmin } from "../helper/api/adminsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractRegisterValidationErrors } from "../helper/utils/validationErrorUtils";
 import {
-  customerRegisterSchema,
   instructorRegisterSchema,
   adminRegisterSchema,
-  customerRegisterSchemaJa,
 } from "../schemas/authSchema";
 import { revalidateInstructorList, revalidateAdminList } from "./revalidate";
 import { getCookie } from "../../middleware";
@@ -24,8 +21,6 @@ export async function registerUser(
     const email = formData.get("email");
     const password = formData.get("password");
     const passConfirmation = formData.get("passConfirmation");
-    const prefecture = formData.get("prefecture");
-    const isAgreed = formData.get("isAgreed") === "on";
     const icon = formData.get("icon");
     const classURL = formData.get("classURL");
     const meetingId = formData.get("meetingId");
@@ -36,7 +31,6 @@ export async function registerUser(
       10,
     );
     const userType = formData.get("userType");
-    const language = formData.get("language") as LanguageType;
 
     // Get the cookies from the request headers
     const cookie = await getCookie();
@@ -45,35 +39,6 @@ export async function registerUser(
     let response;
 
     switch (userType) {
-      case "customer":
-        const schema =
-          language === "ja" ? customerRegisterSchemaJa : customerRegisterSchema;
-
-        parsedForm = schema.safeParse({
-          name,
-          email,
-          password,
-          passConfirmation,
-          passwordStrength,
-          prefecture,
-          isAgreed,
-          userType,
-        });
-        if (!parsedForm.success) {
-          const validationErrors = parsedForm.error.errors;
-          return extractRegisterValidationErrors(validationErrors, language);
-        }
-        response = await registerCustomer(
-          {
-            name: parsedForm.data.name,
-            email: parsedForm.data.email,
-            password: parsedForm.data.password,
-            prefecture: parsedForm.data.prefecture,
-          },
-          language,
-        );
-        return response;
-
       case "instructor":
         parsedForm = instructorRegisterSchema.safeParse({
           name,

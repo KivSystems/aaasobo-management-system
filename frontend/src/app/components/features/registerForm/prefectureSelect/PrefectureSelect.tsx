@@ -2,28 +2,28 @@ import { prefectures } from "@/app/helper/data/data";
 import styles from "./PrefectureSelect.module.scss";
 import { HomeIcon } from "@heroicons/react/24/outline";
 import FormValidationMessage from "@/app/components/elements/formValidationMessage/FormValidationMessage";
-import { useState } from "react";
+import { ChangeEvent, memo, useState } from "react";
 import { getLocalizedPrefecture } from "@/app/helper/utils/stringUtils";
 
 const PrefectureSelect = ({
-  clearErrorMessage,
-  errorMessage,
+  onChange,
   language,
   defaultValue = language === "ja" ? "都道府県" : "Select a prefecture",
-  className,
   withIcon = true,
+  error,
+  className,
 }: {
-  clearErrorMessage: (field: string) => void;
-  errorMessage?: string;
+  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   language: LanguageType;
   defaultValue?: string;
-  className?: string;
   withIcon?: boolean;
+  error?: string;
+  className?: string;
 }) => {
-  const [isPrefectureSelected, setIsPrefectureSelected] = useState<boolean>(
-    withIcon ? false : true,
-  );
   const placeHolder = language === "ja" ? "都道府県" : "Select a prefecture";
+  const isColorBlack =
+    !withIcon ||
+    (defaultValue !== "都道府県" && defaultValue !== "Select a prefecture");
 
   return (
     <div
@@ -34,13 +34,10 @@ const PrefectureSelect = ({
         <select
           className={styles.select}
           name="prefecture"
-          onChange={(e) => {
-            setIsPrefectureSelected(true);
-            clearErrorMessage("prefecture");
-          }}
+          onChange={onChange}
           required
           defaultValue={defaultValue}
-          style={{ color: isPrefectureSelected ? "black" : "gray" }}
+          style={{ color: isColorBlack ? "black" : "gray" }}
         >
           <option value={placeHolder} disabled>
             {placeHolder}
@@ -59,10 +56,10 @@ const PrefectureSelect = ({
         </select>
       </div>
 
-      {errorMessage && (
+      {error && (
         <FormValidationMessage
           type="error"
-          message={errorMessage}
+          message={error}
           className="textInputError"
         />
       )}
@@ -70,4 +67,4 @@ const PrefectureSelect = ({
   );
 };
 
-export default PrefectureSelect;
+export default memo(PrefectureSelect);
