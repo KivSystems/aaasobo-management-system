@@ -399,6 +399,7 @@ type LocalizedMessages = Record<string, LocalizedMessage>;
 
 type FormResult = StringMessages | LocalizedMessages;
 
+// Types related to RebookingForm
 type RebookingSteps =
   | "selectClass"
   | "selectOption"
@@ -422,6 +423,13 @@ type RebookableClassesListProps = {
   rebookableClasses: RebookableClass[] | [];
   setClassToRebook: Dispatch<SetStateAction<number | null>>;
   setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
+  language: LanguageType;
+};
+
+type RebookableOptionsProps = {
+  selectOption: (option: "instructor" | "dateTime") => void;
+  setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
+  language: LanguageType;
 };
 
 type RebookableInstructorsListProps = {
@@ -431,6 +439,7 @@ type RebookableInstructorsListProps = {
   rebookingOption: "instructor" | "dateTime";
   setRebookingStep: (step: RebookingSteps) => void;
   dateTimeToRebook: string | null;
+  language: LanguageType;
 };
 
 type RebookableTimeSlotsProps = {
@@ -442,6 +451,7 @@ type RebookableTimeSlotsProps = {
   };
   instructorAvailabilities: InstructorAvailability[] | [];
   rebookingOption: "instructor" | "dateTime";
+  language: LanguageType;
 };
 
 type ConfirmRebookingProps = {
@@ -455,7 +465,16 @@ type ConfirmRebookingProps = {
   childProfiles: Child[];
   customerId: number;
   classId: number;
+  rebookableClasses: RebookableClass[] | [];
+  setRebookableClassesNumber: Dispatch<SetStateAction<number>>;
   isAdminAuthenticated?: boolean;
+  language: LanguageType;
+};
+
+type RebookingCompleteMessageProps = {
+  rebookableClassesNumber: number;
+  setRebookingStep: (step: RebookingSteps) => void;
+  language: LanguageType;
 };
 
 type ChildConflictResponse =

@@ -2,7 +2,6 @@
 
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import styles from "./RebookableInstructorsList.module.scss";
-import { useLanguage } from "@/app/contexts/LanguageContext";
 import { formatYearDateTime } from "@/app/helper/utils/dateUtils";
 import { useMemo } from "react";
 
@@ -13,9 +12,8 @@ export default function RebookableInstructorsList({
   rebookingOption,
   setRebookingStep,
   dateTimeToRebook,
+  language,
 }: RebookableInstructorsListProps) {
-  const { language } = useLanguage();
-
   const previousRebookingStep =
     rebookingOption === "instructor" ? "selectOption" : "selectDateTime";
 
@@ -40,24 +38,26 @@ export default function RebookableInstructorsList({
   };
 
   return (
-    <>
+    <div className={styles.rebookableInstructors}>
       {rebookingOption === "dateTime" && (
-        <div className={styles.dateTime}>
+        <div className={styles.rebookableInstructors__dateTime}>
           {formatYearDateTime(
             new Date(dateTimeToRebook!),
             language === "ja" ? "ja-JP" : "en-US",
           )}
         </div>
       )}
-      <div className={styles.instructorsList}>
+      <div className={styles.rebookableInstructors__list}>
         {instructorProfiles.map((instructor) => {
           const isRebookable = rebookableInstructorIds.includes(instructor.id);
           return (
             <div
               key={instructor.id}
-              className={`${styles.instructor} ${!isRebookable ? styles["instructor--notRebookable"] : ""} `}
+              className={`${styles.rebookableInstructors__item} ${!isRebookable ? styles["rebookableInstructors__item--disabled"] : ""} `}
             >
-              <div className={styles.instructor__name}>{instructor.name}</div>
+              <div className={styles.rebookableInstructors__name}>
+                {instructor.name}
+              </div>
 
               {isRebookable ? (
                 <ActionButton
@@ -87,6 +87,6 @@ export default function RebookableInstructorsList({
         className="back"
         onClick={() => setRebookingStep(previousRebookingStep)}
       />
-    </>
+    </div>
   );
 }

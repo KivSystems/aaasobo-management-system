@@ -1,23 +1,18 @@
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import styles from "./RebookingCompleteMessage.module.scss";
 import { REBOOK_CLASS_RESULT_MESSAGES } from "@/app/helper/messages/customerDashboard";
-import { useLanguage } from "@/app/contexts/LanguageContext";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 const RebookingCompleteMessage = ({
-  rebookableClasses,
+  rebookableClassesNumber,
   setRebookingStep,
-}: {
-  rebookableClasses: RebookableClass[] | [];
-  setRebookingStep: (step: RebookingSteps) => void;
-}) => {
-  const { language } = useLanguage();
-  const rebookableClassesNumber = rebookableClasses.length;
+  language,
+}: RebookingCompleteMessageProps) => {
   const hasRebookableClasses = rebookableClassesNumber > 0;
 
   return (
-    <div className={styles.complete}>
-      <CheckCircleIcon className={styles.complete__icon} />
+    <div className={styles.rebookingComplete}>
+      <CheckCircleIcon className={styles.rebookingComplete__icon} />
       <h1>{REBOOK_CLASS_RESULT_MESSAGES.success[language]}</h1>
 
       {hasRebookableClasses && (

@@ -10,6 +10,7 @@ import RebookableClassesList from "./rebookableClassesList/RebookableClassesList
 import { getInstructorAvailabilities } from "@/app/helper/api/classesApi";
 import Loading from "@/app/components/elements/loading/Loading";
 import RebookingCompleteMessage from "./rebookingCompleteMessage/RebookingCompleteMessage";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 
 export default function RebookingForm({
   customerId,
@@ -32,7 +33,11 @@ export default function RebookingForm({
     name: string;
   } | null>(null);
   const [dateTimeToRebook, setDateTimeToRebook] = useState<string | null>(null);
+  const [rebookableClassesNumber, setRebookableClassesNumber] =
+    useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (!classToRebook) return;
@@ -66,11 +71,16 @@ export default function RebookingForm({
           rebookableClasses={rebookableClasses}
           setClassToRebook={setClassToRebook}
           setRebookingStep={setRebookingStep}
+          language={language}
         />
       )}
 
       {rebookingStep === "selectOption" && (
-        <RebookingOptions selectOption={selectOption} />
+        <RebookingOptions
+          selectOption={selectOption}
+          setRebookingStep={setRebookingStep}
+          language={language}
+        />
       )}
 
       {rebookingStep === "selectInstructor" && (
@@ -81,6 +91,7 @@ export default function RebookingForm({
           rebookingOption={rebookingOption!}
           setRebookingStep={setRebookingStep}
           dateTimeToRebook={dateTimeToRebook}
+          language={language}
         />
       )}
 
@@ -91,6 +102,7 @@ export default function RebookingForm({
           instructorToRebook={instructorToRebook!}
           instructorAvailabilities={instructorAvailabilities}
           rebookingOption={rebookingOption!}
+          language={language}
         />
       )}
 
@@ -102,15 +114,19 @@ export default function RebookingForm({
           setRebookingStep={setRebookingStep}
           childProfiles={childProfiles}
           customerId={customerId}
+          rebookableClasses={rebookableClasses}
+          setRebookableClassesNumber={setRebookableClassesNumber}
           classId={classToRebook!}
           isAdminAuthenticated={isAdminAuthenticated}
+          language={language}
         />
       )}
 
       {rebookingStep === "complete" && (
         <RebookingCompleteMessage
-          rebookableClasses={rebookableClasses}
+          rebookableClassesNumber={rebookableClassesNumber}
           setRebookingStep={setRebookingStep}
+          language={language}
         />
       )}
     </div>

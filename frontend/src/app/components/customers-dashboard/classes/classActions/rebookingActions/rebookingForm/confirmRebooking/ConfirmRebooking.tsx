@@ -2,10 +2,8 @@
 
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import styles from "./ConfirmRebooking.module.scss";
-import { useLanguage } from "@/app/contexts/LanguageContext";
 import { formatYearDateTime } from "@/app/helper/utils/dateUtils";
 import { useEffect, useState } from "react";
-import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
 import {
   CONFIRM_BOOKING_WITH_CONFLICT_MESSAGE,
   DOUBLE_BOOKING_CONFIRMATION_MESSAGE,
@@ -17,9 +15,8 @@ import CheckboxInput from "@/app/components/elements/checkboxInput/CheckboxInput
 import {
   checkChildConflicts,
   checkDoubleBooking,
-  rebookClass,
 } from "@/app/helper/api/classesApi";
-import { getUserSession } from "@/app/helper/auth/sessionUtils";
+import { rebookClassWithValidation } from "@/app/actions/rebooking";
 
 export default function ConfirmRebooking({
   instructorToRebook,
@@ -29,13 +26,15 @@ export default function ConfirmRebooking({
   childProfiles,
   customerId,
   classId,
+  rebookableClasses,
+  setRebookableClassesNumber,
   isAdminAuthenticated,
+  language,
 }: ConfirmRebookingProps) {
   const [selectedChildrenIds, setSelectedChildrenIds] = useState<number[] | []>(
     [],
   );
   const [isLoading, setIsLoading] = useState(false);
-  const { language } = useLanguage();
 
   const previousRebookingStep =
     rebookingOption === "instructor" ? "selectDateTime" : "selectInstructor";
@@ -58,34 +57,7 @@ export default function ConfirmRebooking({
   const handleRebooking = async () => {
     setIsLoading(true);
 
-    // Check if the user is authenticated to rebook a class
-    const session = await getUserSession();
-    if (!session) {
-      alert(LOGIN_REQUIRED_MESSAGE[language]);
-      setIsLoading(false);
-      return;
-    }
-
-    let adminId;
-
-    if (session.user.userType === "customer") {
-      if (Number(session.user.id) !== customerId) {
-        alert(LOGIN_REQUIRED_MESSAGE[language]);
-        setIsLoading(false);
-        return;
-      }
-    } else if (session.user.userType === "admin") {
-      adminId = Number(session.user.id);
-      if (!adminId && isAdminAuthenticated) {
-        alert("Admin ID is required for authenticated admin actions.");
-        setIsLoading(false);
-        return;
-      }
-    } else {
-      alert(LOGIN_REQUIRED_MESSAGE[language]);
-      setIsLoading(false);
-      return;
-    }
+    const currentRebookableClassesNumber = rebookableClasses.length;
 
     if (selectedChildrenIds.length === 0) {
       alert(SELECT_AT_LEAST_ONE_CHILD_MESSAGE[language]);
@@ -137,39 +109,46 @@ export default function ConfirmRebooking({
       }
     }
 
-    // Proceed with rebooking
-    const rebookingResult = await rebookClass(classId, {
+    const result = await rebookClassWithValidation({
+      customerId,
+      classId,
       dateTime: dateTimeToRebook,
       instructorId: instructorToRebook.id,
-      customerId,
       childrenIds: selectedChildrenIds,
+      isAdminAuthenticated,
     });
 
-    if ("errorMessage" in rebookingResult) {
-      return alert(rebookingResult.errorMessage[language]);
+    if (result.error) {
+      alert(
+        result.error === "unauthorized"
+          ? LOGIN_REQUIRED_MESSAGE[language]
+          : result.error,
+      );
+      setIsLoading(false);
+      return;
     }
 
-    await revalidateCustomerCalendar(customerId, isAdminAuthenticated);
+    // Decrease the number of rebookable classes by one after successful rebooking
+    setRebookableClassesNumber(currentRebookableClassesNumber - 1);
 
     setIsLoading(false);
-
     setRebookingStep("complete");
   };
 
   return (
-    <div className={styles.confirm}>
-      <div className={styles.confirm__instructor}>
+    <div className={styles.rebookingConfirm}>
+      <div className={styles.rebookingConfirm__instructor}>
         {instructorToRebook.name}
       </div>
 
-      <div className={styles.confirm__dateTime}>
+      <div className={styles.rebookingConfirm__dateTime}>
         {formatYearDateTime(
           new Date(dateTimeToRebook),
           language === "ja" ? "ja-JP" : "en-US",
         )}
       </div>
 
-      <div className={styles.attendingChildren}>
+      <div className={styles.rebookingConfirm__children}>
         {childProfiles.map((child) => (
           <CheckboxInput
             key={child.id}
@@ -180,11 +159,11 @@ export default function ConfirmRebooking({
         ))}
       </div>
 
-      <div className={styles.loadingWrapper}>
+      <div className={styles.rebookingConfirm__loading}>
         {isLoading && <Loading className="rebooking" />}
       </div>
 
-      <div className={styles.buttons}>
+      <div className={styles.rebookingConfirm__buttons}>
         <ActionButton
           btnText={language === "ja" ? "戻る" : "Back"}
           className="back"
