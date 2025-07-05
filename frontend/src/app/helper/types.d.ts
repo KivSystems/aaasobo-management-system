@@ -359,6 +359,8 @@ type RebookingModalProps = {
 };
 
 type RebookableClassListProps = RebookingModalProps & {
+  setClassToRebook: Dispatch<SetStateAction<number | null>>;
+  setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
 };
 
@@ -398,19 +400,28 @@ type LocalizedMessages = Record<string, LocalizedMessage>;
 type FormResult = StringMessages | LocalizedMessages;
 
 type RebookingSteps =
+  | "selectClass"
   | "selectOption"
   | "selectInstructor"
   | "selectDateTime"
-  | "confirmRebooking";
+  | "confirmRebooking"
+  | "complete";
 
 type RebookingFormProps = {
   customerId: number;
-  classId: number;
-  instructorAvailabilities: InstructorAvailability[] | [];
+  classId?: number;
+  rebookableClasses: RebookableClass[] | [];
+  instructorAvailabilities?: InstructorAvailability[] | [];
   instructorProfiles: InstructorRebookingProfile[];
   childProfiles: Child[];
-  adminId?: number;
   isAdminAuthenticated?: boolean;
+};
+
+type RebookableClassesListProps = {
+  customerId: number;
+  rebookableClasses: RebookableClass[] | [];
+  setClassToRebook: Dispatch<SetStateAction<number | null>>;
+  setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
 };
 
 type RebookableInstructorsListProps = {
@@ -444,7 +455,6 @@ type ConfirmRebookingProps = {
   childProfiles: Child[];
   customerId: number;
   classId: number;
-  adminId?: number;
   isAdminAuthenticated?: boolean;
 };
 

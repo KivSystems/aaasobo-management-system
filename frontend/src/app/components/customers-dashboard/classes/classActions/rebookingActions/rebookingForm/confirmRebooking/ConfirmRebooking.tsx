@@ -5,13 +5,11 @@ import styles from "./ConfirmRebooking.module.scss";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { formatYearDateTime } from "@/app/helper/utils/dateUtils";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
-import { useRouter } from "next/navigation";
 import {
   CONFIRM_BOOKING_WITH_CONFLICT_MESSAGE,
   DOUBLE_BOOKING_CONFIRMATION_MESSAGE,
+  LOGIN_REQUIRED_MESSAGE,
   SELECT_AT_LEAST_ONE_CHILD_MESSAGE,
 } from "@/app/helper/messages/customerDashboard";
 import Loading from "@/app/components/elements/loading/Loading";
@@ -21,6 +19,7 @@ import {
   checkDoubleBooking,
   rebookClass,
 } from "@/app/helper/api/classesApi";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 export default function ConfirmRebooking({
   instructorToRebook,
@@ -30,14 +29,12 @@ export default function ConfirmRebooking({
   childProfiles,
   customerId,
   classId,
-  adminId,
   isAdminAuthenticated,
 }: ConfirmRebookingProps) {
   const [selectedChildrenIds, setSelectedChildrenIds] = useState<number[] | []>(
     [],
   );
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const { language } = useLanguage();
 
   const previousRebookingStep =
@@ -60,6 +57,35 @@ export default function ConfirmRebooking({
 
   const handleRebooking = async () => {
     setIsLoading(true);
+
+    // Check if the user is authenticated to rebook a class
+    const session = await getUserSession();
+    if (!session) {
+      alert(LOGIN_REQUIRED_MESSAGE[language]);
+      setIsLoading(false);
+      return;
+    }
+
+    let adminId;
+
+    if (session.user.userType === "customer") {
+      if (Number(session.user.id) !== customerId) {
+        alert(LOGIN_REQUIRED_MESSAGE[language]);
+        setIsLoading(false);
+        return;
+      }
+    } else if (session.user.userType === "admin") {
+      adminId = Number(session.user.id);
+      if (!adminId && isAdminAuthenticated) {
+        alert("Admin ID is required for authenticated admin actions.");
+        setIsLoading(false);
+        return;
+      }
+    } else {
+      alert(LOGIN_REQUIRED_MESSAGE[language]);
+      setIsLoading(false);
+      return;
+    }
 
     if (selectedChildrenIds.length === 0) {
       alert(SELECT_AT_LEAST_ONE_CHILD_MESSAGE[language]);
@@ -119,23 +145,15 @@ export default function ConfirmRebooking({
       childrenIds: selectedChildrenIds,
     });
 
-    setIsLoading(false);
-
     if ("errorMessage" in rebookingResult) {
       return alert(rebookingResult.errorMessage[language]);
     }
 
-    toast.success(rebookingResult.successMessage[language]);
-
     await revalidateCustomerCalendar(customerId, isAdminAuthenticated);
 
-    // TODO: handle same-day rebooking and send a notification to admins via email
+    setIsLoading(false);
 
-    const pathToPush = isAdminAuthenticated
-      ? `/admins/${adminId}/customer-list/${customerId}`
-      : `/customers/${customerId}/classes`;
-
-    router.push(pathToPush);
+    setRebookingStep("complete");
   };
 
   return (

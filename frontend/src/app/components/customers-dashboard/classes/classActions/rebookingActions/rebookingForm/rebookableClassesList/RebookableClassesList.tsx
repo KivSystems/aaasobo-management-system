@@ -1,18 +1,18 @@
 "use client";
 
 import Table from "@/app/components/elements/table/Table";
-import styles from "./RebookingModal.module.scss";
+import styles from "./RebookableClassesList.module.scss";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import RebookableClassList from "../rebookableClassList/RebookableClassList";
 import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
 import { TODAYS_CLASS_REBOOKING_NOTICE } from "@/app/helper/messages/customerDashboard";
+import RebookableClassList from "../../rebookableClassList/RebookableClassList";
 
-export default function RebookingModal({
-  adminId,
-  isAdminAuthenticated,
+export default function RebookableClassesList({
   customerId,
   rebookableClasses,
-}: RebookingModalProps) {
+  setClassToRebook,
+  setRebookingStep,
+}: RebookableClassesListProps) {
   const { language } = useLanguage();
 
   return (
@@ -32,10 +32,10 @@ export default function RebookingModal({
         }
       >
         <RebookableClassList
-          adminId={adminId}
-          isAdminAuthenticated={isAdminAuthenticated}
           customerId={customerId}
           rebookableClasses={rebookableClasses}
+          setClassToRebook={setClassToRebook}
+          setRebookingStep={setRebookingStep}
           language={language}
         />
       </Table>
