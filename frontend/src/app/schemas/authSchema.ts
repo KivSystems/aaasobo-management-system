@@ -1,60 +1,39 @@
 import { z } from "zod";
+import {
+  ALPHABET_ONLY_MESSAGE,
+  EMAIL_INVALID_MESSAGE,
+  EMAIL_REQUIRED_MESSAGE,
+  INVALID_DATE_MESSAGE,
+  NAME_REQUIRED_MESSAGE,
+  PASSWORD_MIN_LENGTH_MESSAGE,
+  PASSWORD_WEAK_MESSAGE,
+  PREFECTURE_REQUIRED_MESSAGE,
+  PRIVACY_POLICY_AGREEMENT_MESSAGE,
+  REQUIRED_MESSAGE,
+} from "../helper/messages/authSchemas";
 
-export const customerRegisterSchema = z
-  .object({
-    name: z.string().min(1, "Name is required."),
-    email: z
-      .string()
-      .email("Please enter a valid email address.")
-      .min(1, "Email is required."),
-    password: z.string().min(8, "At least 8 characters long."),
-    passConfirmation: z.string(),
-    passwordStrength: z.number(),
-    prefecture: z.string().min(1, "Prefecture is required."),
-    isAgreed: z.literal(true, {
-      errorMap: () => ({ message: "You must agree to the privacy policy." }),
-    }),
-    userType: z.enum(["admin", "customer", "instructor"], {
-      message: "Invalid user type.",
-    }),
-  })
-  .refine((data) => data.password === data.passConfirmation, {
-    message: "Passwords do not match.",
-    path: ["passConfirmation"],
-  })
-  .refine((data) => data.passwordStrength >= 3, {
-    message: "Your password is too weak.",
-    path: ["password"],
-  });
-
-export const customerRegisterSchemaJa = z
-  .object({
-    name: z.string().min(1, "名前は必須項目です。"),
-    email: z
-      .string()
-      .email("有効なメールアドレスを入力してください。")
-      .min(1, "メールアドレスは必須項目です。"),
-    password: z.string().min(8, "8文字以上で入力してください。"),
-    passConfirmation: z.string(),
-    passwordStrength: z.number(),
-    prefecture: z.string().min(1, "都道府県は必須項目です。"),
-    isAgreed: z.literal(true, {
-      errorMap: () => ({
-        message: "個人情報の取扱いに同意していただく必要があります。",
+export const createCustomerRegisterSchema = (language: LanguageType) => {
+  return z
+    .object({
+      name: z.string().min(1, NAME_REQUIRED_MESSAGE[language]),
+      email: z
+        .string()
+        .email(EMAIL_INVALID_MESSAGE[language])
+        .min(1, EMAIL_REQUIRED_MESSAGE[language]),
+      password: z.string().min(8, PASSWORD_MIN_LENGTH_MESSAGE[language]),
+      passwordStrength: z.number(),
+      prefecture: z.string().min(1, PREFECTURE_REQUIRED_MESSAGE[language]),
+      isAgreed: z.literal(true, {
+        errorMap: () => ({
+          message: PRIVACY_POLICY_AGREEMENT_MESSAGE[language],
+        }),
       }),
-    }),
-    userType: z.enum(["admin", "customer", "instructor"], {
-      message: "無効なユーザータイプです。",
-    }),
-  })
-  .refine((data) => data.password === data.passConfirmation, {
-    message: "パスワードが一致しません。",
-    path: ["passConfirmation"],
-  })
-  .refine((data) => data.passwordStrength >= 3, {
-    message: "パスワードの安全性が低過ぎます。",
-    path: ["password"],
-  });
+    })
+    .refine((data) => data.passwordStrength >= 3, {
+      message: PASSWORD_WEAK_MESSAGE[language],
+      path: ["password"],
+    });
+};
 
 export const instructorRegisterSchema = z
   .object({
@@ -247,3 +226,37 @@ export const resetPasswordFormSchemaJa = z
     message: "パスワードの安全性が低過ぎます。",
     path: ["password"],
   });
+
+const createBirthdateSchema = (errorMessage: string) =>
+  z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, errorMessage)
+    .refine((val) => {
+      const [y, m, d] = val.split("-").map(Number);
+
+      if (y.toString().length !== 4 || m === 0 || d === 0) return false;
+
+      const date = new Date(y, m - 1, d);
+
+      const today = new Date();
+
+      const isValidDate =
+        date.getFullYear() === y &&
+        date.getMonth() + 1 === m &&
+        date.getDate() === d;
+
+      if (!isValidDate || date > today) return false;
+
+      return true;
+    }, errorMessage);
+
+export const createChildRegisterSchema = (language: LanguageType) => {
+  return z.object({
+    name: z
+      .string()
+      .min(1, REQUIRED_MESSAGE[language])
+      .regex(/^[A-Za-z\s]+$/, { message: ALPHABET_ONLY_MESSAGE[language] }),
+    birthdate: createBirthdateSchema(INVALID_DATE_MESSAGE[language]),
+    personalInfo: z.string().min(1, REQUIRED_MESSAGE[language]),
+  });
+};

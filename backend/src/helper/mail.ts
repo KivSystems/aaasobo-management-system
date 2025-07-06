@@ -13,8 +13,7 @@ export const sendVerificationEmail = async (
 
   try {
     const response: CreateEmailResponse = await resend.emails.send({
-      // TODO: Replace 'onboarding@resend.dev' with KIV's verified email address before going live.
-      from: "onboarding@resend.dev", // Resend-provided email
+      from: "contact@aaasobo.org",
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】メールアドレス認証のお願い / Please confirm your email address",

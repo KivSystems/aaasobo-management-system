@@ -9,6 +9,7 @@ type TextInputProps = {
   label?: string;
   type: string;
   value?: string;
+  defaultValue?: string;
   placeholder: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   icon?: React.ReactNode;
@@ -29,6 +30,7 @@ function TextInput({
   label,
   type,
   value,
+  defaultValue,
   placeholder,
   onChange,
   icon,
@@ -54,6 +56,7 @@ function TextInput({
             id={id}
             type={showPassword ? "text" : type}
             value={value}
+            defaultValue={defaultValue}
             placeholder={placeholder}
             onChange={onChange}
             className={styles.inputField}

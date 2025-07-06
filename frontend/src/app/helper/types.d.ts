@@ -399,6 +399,54 @@ type LocalizedMessages = Record<string, LocalizedMessage>;
 
 type FormResult = StringMessages | LocalizedMessages;
 
+type RegisteringCustomer = {
+  name: string;
+  email: string;
+  password: string;
+  prefecture: string;
+  isAgreed: boolean;
+};
+
+type RegisterCustomerProps = {
+  customerData: RegisteringCustomer;
+  setCustomerData: React.Dispatch<React.SetStateAction<RegisteringCustomer>>;
+  onNextStep: () => void;
+  language: LanguageType;
+};
+
+type RegisteringChild = {
+  name: string;
+  birthdate: string;
+  personalInfo: string;
+};
+
+type RegisterChildProps = {
+  customerData: RegisteringCustomer;
+  childData: RegisteringChild;
+  setChildData: React.Dispatch<React.SetStateAction<RegisteringChild>>;
+  onPreviousStep: () => void;
+  onNextStep: () => void;
+  language: LanguageType;
+};
+
+type BirthdateInputProps = {
+  onValidDateChange: (isoDate: string | null) => void;
+  defaultBirthdate?: string;
+  error?: string;
+  language?: LanguageType;
+};
+
+type TextAreaInputProps = {
+  id?: string;
+  label?: string;
+  defaultValue?: string;
+  placeholder?: string;
+  required?: boolean;
+  error?: string;
+  onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  language?: LanguageType;
+};
+
 // Types related to RebookingForm
 type RebookingSteps =
   | "selectClass"

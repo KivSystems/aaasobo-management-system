@@ -108,8 +108,10 @@ function CustomerProfile({
 
         {isEditing ? (
           <PrefectureSelect
-            clearErrorMessage={clearErrorMessage}
-            errorMessage={localMessages.prefecture?.[language]}
+            error={localMessages.prefecture?.[language]}
+            onChange={(e) => {
+              clearErrorMessage("prefecture");
+            }}
             language={language}
             defaultValue={customerProfile.prefecture}
             className="customerProfile"
