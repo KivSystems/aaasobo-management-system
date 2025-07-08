@@ -123,6 +123,12 @@ type Plan = {
   weeklyClassTimes?: number;
 };
 
+type EventType = {
+  id: number;
+  name: string;
+  color: string;
+};
+
 type Subscriptions = {
   subscriptions: Subscription[];
 };
@@ -233,6 +239,7 @@ type RegisterFormState = {
   isAgreed?: string;
   weeklyClassTimes?: string;
   description?: string;
+  color?: string;
   errorMessage?: string;
   successMessage?: string;
   language?: LanguageType;
@@ -246,6 +253,7 @@ type UpdateFormState = {
   meetingId?: string;
   passcode?: string;
   introductionURL?: string;
+  color?: string;
   errorMessage?: string;
   successMessage?: string;
 };

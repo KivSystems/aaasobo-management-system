@@ -8,6 +8,7 @@ import {
   ClockIcon,
   ChatBubbleLeftRightIcon,
   AcademicCapIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline";
 
 export function getLinks(
@@ -78,6 +79,11 @@ export function getLinks(
       name: "Plan List",
       href: `/admins/${userId}/plan-list`,
       icon: AcademicCapIcon,
+    },
+    {
+      name: "Event List",
+      href: `/admins/${userId}/event-list`,
+      icon: BellIcon,
     },
   ];
 

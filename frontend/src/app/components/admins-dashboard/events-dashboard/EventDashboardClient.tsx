@@ -1,38 +1,38 @@
 "use client";
 
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
-import PlanProfile from "@/app/components/admins-dashboard/plans-dashboard/PlanProfile";
+import EventProfile from "@/app/components/admins-dashboard/events-dashboard/EventProfile";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
-export default function PlanTabs({
+export default function EventTabs({
   userId,
-  planId,
-  plan,
+  eventId,
+  event,
 }: {
   userId: number;
-  planId: number;
-  plan: Plan | string;
+  eventId: number;
+  event: EventType | string;
 }) {
   const breadcrumb = [
-    "Plan List",
-    `/admins/${userId}/plan-list`,
-    `ID: ${planId}`,
+    "Event List",
+    `/admins/${userId}/event-list`,
+    `ID: ${eventId}`,
   ];
-  const activeTabName = "activePlanTab";
+  const activeTabName = "activeEventTab";
 
   // Set the authentication status as true.
   const isAuthenticated = true;
 
   // Get the active tab from the local storage.
-  const { initialActiveTab, isTabInitialized } = useTabSelect("activePlanTab");
+  const { initialActiveTab, isTabInitialized } = useTabSelect("activeEventTab");
 
   // Tabs with labels and content
   const tabs = [
     {
-      label: "Plan's Profile",
+      label: "Event's Profile",
       content: (
-        <PlanProfile plan={plan} isAdminAuthenticated={isAuthenticated} />
+        <EventProfile event={event} isAdminAuthenticated={isAuthenticated} />
       ),
     },
   ];

@@ -1012,16 +1012,16 @@ async function insertEvents() {
     data: [
       {
         name: "AaasoBo! Holiday", // お休み
-        color: "rgb(255, 204, 204)",
-        // color: "rgb(249, 244, 241)", // Same as Sunday (HEX: #f9f4f1)
+        color: "rgb(255,204,204)",
+        // color: "rgb(249,244,241)", // Same as Sunday (HEX: #f9f4f1)
       },
       {
         name: "AaasoBo! Substitute Holiday", // お休み振替対象日
-        color: "rgb(255, 0, 0)",
+        color: "rgb(255,0,0)",
       },
       {
         name: "Theme Class Week", // テーマクラスウィーク
-        color: "rgb(255, 255, 0)",
+        color: "rgb(255,255,0)",
       },
     ],
   });

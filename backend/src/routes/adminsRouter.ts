@@ -3,14 +3,18 @@ import {
   registerAdminController,
   registerInstructorController,
   registerPlanController,
+  registerEventController,
   updateAdminProfileController,
+  updateEventProfileController,
   deleteAdminController,
+  deleteEventController,
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
   getAllCustomersController,
   getAllChildrenController,
   getAllPlansController,
+  getAllEventsController,
   getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
 import { getAllSchedulesController } from "../../src/controllers/schedulesController";
@@ -42,11 +46,28 @@ adminsRouter.post(
   verifyAuthentication,
   registerPlanController,
 );
+
+adminsRouter.post(
+  "/event-list/register",
+  verifyAuthentication,
+  registerEventController,
+);
+adminsRouter.patch(
+  "/event-list/update/:id",
+  verifyAuthentication,
+  updateEventProfileController,
+);
+adminsRouter.delete(
+  "/event-list/:id",
+  verifyAuthentication,
+  deleteEventController,
+);
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);
 adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
+adminsRouter.get("/event-list", getAllEventsController);
 adminsRouter.get("/class-list", getClassesWithinPeriodController);
 adminsRouter.get("/business-schedule", getAllSchedulesController);

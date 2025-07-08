@@ -233,6 +233,35 @@ const RegisterForm = ({
         </>
       )}
 
+      {/* Event registration (only for admin) */}
+      {userType === "admin" && categoryType === "event" && (
+        <>
+          <p className={styles.required}>*Required</p>
+          <TextInput
+            id="name"
+            label="Event Name"
+            type="text"
+            name="eventName"
+            placeholder="e.g., AaasoBo! Event"
+            icon={<AcademicCapIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.name}
+            onChange={() => clearErrorMessage("name")}
+          />
+          <TextInput
+            id="color"
+            label="Color Code"
+            type="text"
+            name="color"
+            placeholder="e.g., RGB(255, 255, 255)"
+            icon={<DocumentTextIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.color}
+            onChange={() => clearErrorMessage("color")}
+          />{" "}
+        </>
+      )}
+
       {/* Error and success messages */}
       <div className={styles.messageWrapper}>
         {localMessages.errorMessage && (
