@@ -13,7 +13,7 @@ export async function registerContent(
   formData: FormData,
 ): Promise<RegisterFormState> {
   try {
-    const name = formData.get("name");
+    const name = formData.get("eventName");
     const weeklyClassTimes = Number(formData.get("weeklyClassTimes"));
     const color = formData.get("color");
     const description = formData.get("description");

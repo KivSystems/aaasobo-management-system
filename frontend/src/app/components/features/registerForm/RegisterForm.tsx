@@ -319,7 +319,7 @@ const RegisterForm = ({
             id="name"
             label="Event Name"
             type="text"
-            name="name"
+            name="eventName"
             placeholder="e.g., AaasoBo! Event"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired

@@ -123,7 +123,7 @@ function EventProfile({
                 <p className={styles.eventName__text}>Event</p>
                 {isEditing ? (
                   <InputField
-                    name="name"
+                    name="eventName"
                     value={latestEvent.name}
                     error={localMessages.name}
                     onChange={(e) => handleInputChange(e, "name")}

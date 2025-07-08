@@ -12,7 +12,7 @@ export async function updateEventAction(
   formData: FormData,
 ): Promise<UpdateFormState> {
   try {
-    const name = formData.get("name");
+    const name = formData.get("eventName");
     const color = formData.get("color");
     // Hidden input tag fields
     const id = Number(formData.get("id"));
