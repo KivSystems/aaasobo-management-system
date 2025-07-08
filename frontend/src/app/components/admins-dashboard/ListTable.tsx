@@ -52,10 +52,14 @@ function ListTable({
           case "Customer List":
             // Set the active tab to the customer calendar tab.
             localStorage.setItem("activeCustomerTab", "0");
+            // Set the previous list page to customer list.
+            localStorage.setItem("previousListPage", "customer-list");
             break;
           case "Child List":
             // Set the active tab to the children profiles tab.
             localStorage.setItem("activeCustomerTab", "2");
+            // Set the previous list page to child list.
+            localStorage.setItem("previousListPage", "child-list");
             break;
           default:
             break;
@@ -166,7 +170,6 @@ function ListTable({
 
   return (
     <>
-      <h1 className={styles.title}>{listType}</h1>
       <div className={styles.container}>
         <div className={styles.topContainer}>
           <div className={styles.filterContainer}>

@@ -178,8 +178,8 @@ export const getAllAdminsController = async (_: Request, res: Response) => {
 
       return {
         No: number + 1,
-        Admin: id,
-        Name: name,
+        ID: id,
+        Admin: name,
         Email: email,
       };
     });
