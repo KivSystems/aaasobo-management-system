@@ -123,7 +123,7 @@ type Plan = {
   weeklyClassTimes?: number;
 };
 
-type EventType = {
+type BusinessEventType = {
   id: number;
   name: string;
   color: string;

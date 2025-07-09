@@ -21,7 +21,7 @@ function EventProfile({
   event,
   isAdminAuthenticated,
 }: {
-  event: EventType | string;
+  event: BusinessEventType | string;
   isAdminAuthenticated?: boolean;
 }) {
   // Use `useFormState` hook for updating an event profile
@@ -32,10 +32,10 @@ function EventProfile({
   );
   const { localMessages, clearErrorMessage } =
     useFormMessages(updateResultState);
-  const [previousEvent, setPreviousEvent] = useState<EventType | null>(
+  const [previousEvent, setPreviousEvent] = useState<BusinessEventType | null>(
     typeof event !== "string" ? event : null,
   );
-  const [latestEvent, setLatestEvent] = useState<EventType | null>(
+  const [latestEvent, setLatestEvent] = useState<BusinessEventType | null>(
     typeof event !== "string" ? event : null,
   );
   const [isEditing, setIsEditing] = useState(false);
@@ -46,7 +46,7 @@ function EventProfile({
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof EventType,
+    field: keyof BusinessEventType,
   ) => {
     if (latestEvent) {
       setLatestEvent({ ...latestEvent, [field]: e.target.value });
@@ -78,7 +78,7 @@ function EventProfile({
   useEffect(() => {
     if (updateResultState !== undefined) {
       if ("event" in updateResultState && updateResultState.event) {
-        const event = updateResultState.event as EventType;
+        const event = updateResultState.event as BusinessEventType;
         toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("event"));
         setIsEditing(false);
         setPreviousEvent(event);
