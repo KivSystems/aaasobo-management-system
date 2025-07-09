@@ -15,9 +15,9 @@ export type Response<T> = T | { message: string };
 // Get event by ID
 export const getEventById = async (
   id: number,
-): Promise<Response<{ event: EventType }>> => {
+): Promise<Response<{ event: BusinessEventType }>> => {
   const apiUrl = `${BASE_URL}/${id}`;
-  const data: Response<{ event: EventType }> = await fetch(apiUrl, {
+  const data: Response<{ event: BusinessEventType }> = await fetch(apiUrl, {
     cache: "no-store",
   }).then((res) => res.json());
 

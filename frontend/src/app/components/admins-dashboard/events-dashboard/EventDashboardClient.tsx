@@ -12,7 +12,7 @@ export default function EventTabs({
 }: {
   userId: number;
   eventId: number;
-  event: EventType | string;
+  event: BusinessEventType | string;
 }) {
   const breadcrumb = [
     "Event List",
