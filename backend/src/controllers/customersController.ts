@@ -15,6 +15,7 @@ import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import {
+  createFreeTrialClass,
   getCustomerClasses,
   getRebookableClasses,
   getUpcomingClasses,
@@ -83,6 +84,9 @@ export const registerCustomerController = async (
           normalizedEmail,
           tx,
         );
+
+        // Create a free trial class
+        await createFreeTrialClass({ tx, customerId: customer.id });
 
         return { customer, child, verificationToken };
       },

@@ -152,25 +152,6 @@ export const checkIfChildHasCompletedClass = async (
   }
 };
 
-// Fetch a class by class id along with related instructors, customers, and children data
-export const getClassById = async (classId: number) => {
-  try {
-    const classData = await prisma.class.findUnique({
-      where: { id: classId },
-      include: {
-        instructor: true,
-        customer: true,
-        classAttendance: { include: { children: true } },
-      },
-    });
-
-    return classData;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch a class.");
-  }
-};
-
 // Update/Edit a class
 export const updateClass = async (
   id: number,
@@ -630,19 +611,27 @@ export const getCustomerClasses = async (customerId: number) => {
       },
     },
   });
+
+  // All returned classes are non-pending, so both dateTime and instructor are guaranteed to exist
   const customerClasses = classes.map((classItem) => {
-    const start = classItem.dateTime;
+    const start = classItem.dateTime!;
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const statusColorMap: Partial<Record<Status, string>> = {
-      booked: "#e8f1fb",
-      rebooked: "#E7FBD9",
+      booked: "#FFEBEF", // Cherry Blossom
+      rebooked: "#FFFACD", // Gentle, light yellow
       canceledByCustomer: "#FFEBE0",
       canceledByInstructor: "#FFEBE0",
       completed: "#B5C4AB",
     };
 
-    const color = statusColorMap[classItem.status] ?? "#FFFFFF";
+    const isBookedOrRebooked =
+      classItem.status === "booked" || classItem.status === "rebooked";
+
+    const color =
+      classItem.isFreeTrial && isBookedOrRebooked
+        ? "#E7FBD9" // green
+        : statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)
@@ -654,16 +643,17 @@ export const getCustomerClasses = async (customerId: number) => {
       end,
       title: childrenNames,
       color,
-      instructorIcon: classItem.instructor.icon,
-      instructorNickname: classItem.instructor.nickname,
-      instructorName: classItem.instructor.name,
-      instructorClassURL: classItem.instructor.classURL,
-      instructorMeetingId: classItem.instructor.meetingId,
-      instructorPasscode: classItem.instructor.passcode,
+      instructorIcon: classItem.instructor!.icon,
+      instructorNickname: classItem.instructor!.nickname,
+      instructorName: classItem.instructor!.name,
+      instructorClassURL: classItem.instructor!.classURL,
+      instructorMeetingId: classItem.instructor!.meetingId,
+      instructorPasscode: classItem.instructor!.passcode,
       classStatus: classItem.status,
       rebookableUntil: classItem.rebookableUntil,
       classCode: classItem.classCode,
       updatedAt: classItem.updatedAt,
+      isFreeTrial: classItem.isFreeTrial,
     };
   });
   return customerClasses;
@@ -693,7 +683,7 @@ export const getCalendarClasses = async (instructorId: number) => {
     },
   });
   const instructorCalendarClasses = classes.map((classItem) => {
-    const start = classItem.dateTime;
+    const start = classItem.dateTime!; // Guaranteed to exist for non-pending classes
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const color =
@@ -724,7 +714,10 @@ export const getRebookableUntil = async (classId: number) => {
     where: { id: classId },
   });
 
-  return classData?.rebookableUntil;
+  return {
+    rebookableUntil: classData?.rebookableUntil,
+    isFreeTrial: classData?.isFreeTrial,
+  };
 };
 
 export const getClassToRebook = async (classId: number) => {
@@ -737,6 +730,7 @@ export const getClassToRebook = async (classId: number) => {
     recurringClassId: classData?.recurringClassId,
     rebookableUntil: classData?.rebookableUntil,
     classCode: classData?.classCode,
+    isFreeTrial: classData?.isFreeTrial,
   };
 };
 
@@ -747,11 +741,12 @@ export const rebookClass = async (
     instructorId: number;
     customerId: number;
     status: Status;
-    subscriptionId: number;
-    recurringClassId: number;
+    subscriptionId?: number;
+    recurringClassId?: number;
     rebookableUntil: string | Date;
     classCode: string;
     updatedAt: Date;
+    isFreeTrial: boolean;
   },
   childrenToAttend: number[],
 ) => {
@@ -782,4 +777,25 @@ export const rebookClass = async (
       })),
     });
   });
+};
+
+export const createFreeTrialClass = async ({
+  tx,
+  customerId,
+}: {
+  tx: Prisma.TransactionClient;
+  customerId: number;
+}) => {
+  const createdClass = await tx.class.create({
+    data: {
+      customerId,
+      status: "pending",
+      rebookableUntil: nHoursLater(180 * 24, new Date()), // 180 days (* 24 hours) after now
+      updatedAt: new Date(),
+      classCode: `ft-${customerId}`, // "ft" = free trial
+      isFreeTrial: true,
+    },
+  });
+
+  return createdClass;
 };

@@ -457,12 +457,25 @@ export const getClassesWithinPeriodController = async (
     const data = classes.map((classItem, number) => {
       const { id, instructor, customer, dateTime, status, classCode } =
         classItem;
-      const instructorName = instructor.nickname;
+
+      // For free trial classes with "pending" status, no instructor is selected yet — return "pending".
+      const instructorName = instructor?.nickname ?? "pending";
       const customerName = customer.name;
 
-      // Convert dateTime from UTC to JST (Add 9 hours).
-      const dateTimeUTC = new Date(dateTime);
-      const dateTimeJST = new Date(dateTimeUTC.getTime() + 9 * 60 * 60 * 1000);
+      // For free trial classes with "pending" status, no dateTime is selected yet — return "pending".
+      let date = "pending";
+      let time = "pending";
+
+      if (dateTime) {
+        // Convert dateTime from UTC to JST (Add 9 hours).
+        const dateTimeUTC = new Date(dateTime);
+        const dateTimeJST = new Date(
+          dateTimeUTC.getTime() + 9 * 60 * 60 * 1000,
+        );
+
+        date = dateTimeJST.toISOString().slice(0, 10);
+        time = dateTimeJST.toISOString().slice(11, 16);
+      }
 
       // Format the displayed status.
       let statusText = "";
@@ -486,8 +499,8 @@ export const getClassesWithinPeriodController = async (
         ID: id,
         Instructor: instructorName,
         Customer: customerName,
-        Date: dateTimeJST.toISOString().slice(0, 10),
-        Time: dateTimeJST.toISOString().slice(11, 16),
+        Date: date,
+        Time: time,
         Status: statusText,
         "Class Code": classCode,
       };
