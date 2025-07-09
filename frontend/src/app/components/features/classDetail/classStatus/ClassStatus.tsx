@@ -7,9 +7,11 @@ import styles from "./ClassStatus.module.scss";
 
 const ClassStatus = ({
   status,
+  isFreeTrial,
   language,
 }: {
   status: ClassStatus;
+  isFreeTrial: boolean;
   language?: LanguageType;
 }) => {
   const languageClass = language === "ja" ? styles.ja : styles.en;
@@ -32,19 +34,21 @@ const ClassStatus = ({
     completed: { ja: "終了", en: "Completed" },
     canceledByCustomer: { ja: "キャンセル", en: "Canceled" },
     canceledByInstructor: { ja: "キャンセル", en: "Canceled by Instructor" },
+    freeTrial: { ja: "無料トライアルクラス", en: "Free Trial Class" },
   };
 
   const renderStatusLabel = () => {
     return (
-      statusLabelMap[status]?.[language === "ja" ? "ja" : "en"] ??
-      (language === "ja" ? "不明なクラス" : "Unknown Status")
+      statusLabelMap[isFreeTrial ? "freeTrial" : status]?.[
+        language === "ja" ? "ja" : "en"
+      ] ?? (language === "ja" ? "不明なクラス" : "Unknown Status")
     );
   };
 
   return (
     <div className={styles.classStatus}>
       <IconComponent
-        className={`${styles.classStatus__icon} ${styles[status]}`}
+        className={`${styles.classStatus__icon} ${styles[isFreeTrial ? "freeTrial" : status]}`}
       />
       <div className={`${styles.classStatus__label} ${languageClass}`}>
         {renderStatusLabel()}

@@ -87,21 +87,6 @@ export const rebookClass = async (
   }
 };
 
-// GET a class by id
-export const getClassById = async (classId: number) => {
-  try {
-    const response = await fetch(`${BACKEND_ORIGIN}/classes/class/${classId}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const classData = await response.json();
-    return classData;
-  } catch (error) {
-    console.error("Failed to fetch a class:", error);
-    throw error;
-  }
-};
-
 // PATCH a class date
 export const editClass = async (
   id: number,

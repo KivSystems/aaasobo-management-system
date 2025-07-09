@@ -8,7 +8,6 @@ import {
   deleteClass,
   fetchInstructorClasses,
   getAllClasses,
-  getClassById,
   getClassesByCustomerId,
   getClassToRebook,
   getExcludedClasses,
@@ -49,9 +48,10 @@ export const getAllClassesController = async (_: Request, res: Response) => {
           name: customer.name,
           email: customer.email,
         },
+        // Pending free trial classes don't have an instructor yet, so use fallback values when instructor is missing
         instructor: {
-          id: instructor.id,
-          name: instructor.name,
+          id: instructor?.id ?? null,
+          name: instructor?.name ?? "pending",
         },
         status,
         recurringClassId,
@@ -97,14 +97,15 @@ export const getClassesByCustomerIdController = async (
           name: customer.name,
           email: customer.email,
         },
+        // Pending free trial classes do not have an instructor yet, so use fallback values
         instructor: {
-          id: instructor.id,
-          name: instructor.name,
-          icon: instructor.icon,
-          classURL: instructor.classURL,
-          nickname: instructor.nickname,
-          meetingId: instructor.meetingId,
-          passcode: instructor.passcode,
+          id: instructor?.id ?? null,
+          name: instructor?.name ?? "pending",
+          icon: instructor?.icon ?? null,
+          classURL: instructor?.classURL ?? null,
+          nickname: instructor?.nickname ?? null,
+          meetingId: instructor?.meetingId ?? null,
+          passcode: instructor?.passcode ?? null,
         },
         classAttendance: {
           children: classAttendance.map((classAttendance) => ({
@@ -141,43 +142,61 @@ export const rebookClassController = async (
     });
   }
 
-  const rebookingDeadline = nHoursBefore(3, new Date(dateTime));
-  const isPastRebookingDeadline = new Date() > rebookingDeadline;
-
-  if (isPastRebookingDeadline) {
-    return res.status(403).json({
-      errorType: "past rebooking deadline",
-    });
-  }
-
   try {
     const classToRebook = await getClassToRebook(classId);
-    const { status, recurringClassId, rebookableUntil, classCode } =
-      classToRebook;
-    if (!status || !recurringClassId || !rebookableUntil || !classCode) {
+    const {
+      status,
+      recurringClassId,
+      rebookableUntil,
+      classCode,
+      isFreeTrial,
+    } = classToRebook;
+
+    if (!status || !rebookableUntil || !classCode || !isFreeTrial) {
       return res.status(400).json({
         errorType: "invalid class data",
       });
     }
 
-    // Check if subscription exists and whether it's ended
-    const subscription =
-      await getSubscriptionByRecurringClassId(recurringClassId);
+    // Rebooking deadline: 72 hours before the class starts for free trial classes, and 3 hours before the class starts for regular classes
+    const rebookingDeadline = isFreeTrial
+      ? nHoursBefore(72, new Date(dateTime))
+      : nHoursBefore(3, new Date(dateTime));
+    const isPastRebookingDeadline = new Date() > rebookingDeadline;
 
-    if (!subscription) {
-      return res.status(404).json({
-        errorType: "no subscription",
+    if (isPastRebookingDeadline) {
+      return res.status(403).json({
+        errorType: "past rebooking deadline",
       });
     }
 
-    const hasEnded = subscription.endAt
-      ? new Date(subscription.endAt) < new Date()
-      : false;
+    // For non-freeTrial classes, check subscription validity
+    let subscription;
+    if (!isFreeTrial) {
+      if (!recurringClassId) {
+        return res.status(400).json({
+          errorType: "invalid class data",
+        });
+      }
 
-    if (hasEnded) {
-      return res.status(400).json({
-        errorType: "outdated subscription",
-      });
+      // Check if subscription exists and whether it's ended
+      subscription = await getSubscriptionByRecurringClassId(recurringClassId);
+
+      if (!subscription) {
+        return res.status(404).json({
+          errorType: "no subscription",
+        });
+      }
+
+      const hasEnded = subscription.endAt
+        ? new Date(subscription.endAt) < new Date()
+        : false;
+
+      if (hasEnded) {
+        return res.status(400).json({
+          errorType: "outdated subscription",
+        });
+      }
     }
 
     // Check if the selected instructor is already booked at the selected date and time
@@ -200,19 +219,25 @@ export const rebookClassController = async (
       });
     }
 
-    await rebookClass(
+    const newClassToRebook: any = {
+      dateTime,
+      instructorId,
+      customerId,
+      status: "rebooked",
+      rebookableUntil,
+      classCode,
+      updatedAt: new Date(),
+      isFreeTrial: !!isFreeTrial,
+    };
+
+    if (!isFreeTrial) {
+      newClassToRebook.subscriptionId = subscription!.id;
+      newClassToRebook.recurringClassId = recurringClassId!;
+    }
+
+    const newClass = await rebookClass(
       { id: classId, status },
-      {
-        dateTime,
-        instructorId,
-        customerId,
-        status: "rebooked",
-        subscriptionId: subscription.id,
-        recurringClassId,
-        rebookableUntil,
-        classCode,
-        updatedAt: new Date(),
-      },
+      newClassToRebook,
       childrenIds,
     );
 
@@ -259,51 +284,6 @@ export const deleteClassController = async (req: Request, res: Response) => {
   }
 };
 
-// GET a class by class id along with related instructors, customers, and children data
-export const getClassByIdController = async (req: Request, res: Response) => {
-  const classId = Number(req.params.id);
-
-  if (isNaN(classId)) {
-    return res.status(400).json({ error: "Invalid class ID" });
-  }
-
-  try {
-    const classData = await getClassById(classId);
-
-    if (!classData) {
-      return res.status(404).json({ error: "Class not found" });
-    }
-
-    const formattedClassData = {
-      id: classData.id,
-      dateTime: classData.dateTime,
-      customer: {
-        id: classData.customer.id,
-        name: classData.customer.name,
-        email: classData.customer.email,
-      },
-      instructor: {
-        id: classData.instructor.id,
-        name: classData.instructor.name,
-        icon: classData.instructor.icon,
-        classURL: classData.instructor.classURL,
-      },
-      classAttendance: {
-        children: classData.classAttendance.map((classAttendance) => ({
-          id: classAttendance.children.id,
-          name: classAttendance.children.name,
-        })),
-      },
-      status: classData.status,
-    };
-
-    res.json(formattedClassData);
-  } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to fetch a class." });
-  }
-};
-
 // Update[Edit] a class
 export const updateClassController = async (req: Request, res: Response) => {
   const classId = parseInt(req.params.id);
@@ -342,6 +322,7 @@ export const cancelClassController = async (req: Request, res: Response) => {
   }
 };
 
+// TODO: Delete this controller after finishing refactoring instructor class details page
 export const getInstructorClasses = async (
   req: RequestWithId,
   res: Response,
@@ -357,9 +338,10 @@ export const getInstructorClasses = async (
         id,
         dateTime,
         customerName: customer.name,
-        classURL: instructor.classURL,
-        meetingId: instructor.meetingId,
-        passcode: instructor.passcode,
+        // Pending free trial classes do not have an instructor yet, so use fallback values
+        classURL: instructor?.classURL ?? null,
+        meetingId: instructor?.meetingId ?? null,
+        passcode: instructor?.passcode ?? null,
         attendingChildren: classAttendance.map((classAttendance) => ({
           id: classAttendance.children.id,
           name: classAttendance.children.name,
@@ -471,7 +453,7 @@ export const createClassesForMonthController = async (
           // if you find the same dateTime and instructor id as in the excludedClass, skip it.
           const isExistingClass = excludedClasses.some((excludedClass) => {
             const excludedClassDateTimesStr = new Date(
-              excludedClass.dateTime,
+              excludedClass.dateTime!, // All "excludedClasses" are selected by dateTime, so dateTime is guaranteed to exist.
             ).toISOString();
             const dateTimesStr = dateTimes.map((date) =>
               new Date(date).toISOString(),

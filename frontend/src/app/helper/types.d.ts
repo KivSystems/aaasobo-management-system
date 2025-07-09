@@ -46,7 +46,8 @@ type ClassStatus =
   | "canceledByCustomer"
   | "canceledByInstructor"
   | "pending"
-  | "rebooked";
+  | "rebooked"
+  | "freeTrial";
 
 type ClassType = {
   id: number;
@@ -104,6 +105,7 @@ type CustomerClass = {
   rebookableUntil: string;
   classCode: string;
   updatedAt: string;
+  isFreeTrial: boolean;
 };
 
 type Child = {
