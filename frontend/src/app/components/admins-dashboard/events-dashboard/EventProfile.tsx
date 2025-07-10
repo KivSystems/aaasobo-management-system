@@ -40,6 +40,9 @@ function EventProfile({
   );
   const [isEditing, setIsEditing] = useState(false);
 
+  // Define event IDs that should be disabled for editing or deleting
+  const disabledEventIds = [1, 2, 3];
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -197,6 +200,7 @@ function EventProfile({
                           btnText="Delete"
                           type="button"
                           onClick={() => handleDeleteClick()}
+                          disabled={disabledEventIds.includes(event.id)}
                         />
                       </div>
                       <div>
@@ -205,6 +209,7 @@ function EventProfile({
                           btnText="Edit"
                           type="button"
                           onClick={handleEditClick}
+                          disabled={disabledEventIds.includes(event.id)}
                         />
                       </div>
                     </div>
