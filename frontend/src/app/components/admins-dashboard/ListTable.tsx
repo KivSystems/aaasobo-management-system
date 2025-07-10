@@ -52,10 +52,14 @@ function ListTable({
           case "Customer List":
             // Set the active tab to the customer calendar tab.
             localStorage.setItem("activeCustomerTab", "0");
+            // Set the previous list page to customer list.
+            localStorage.setItem("previousListPage", "customer-list");
             break;
           case "Child List":
             // Set the active tab to the children profiles tab.
             localStorage.setItem("activeCustomerTab", "2");
+            // Set the previous list page to child list.
+            localStorage.setItem("previousListPage", "child-list");
             break;
           default:
             break;
@@ -101,6 +105,20 @@ function ListTable({
               header: key,
               cell: (data) => {
                 const value = data.getValue() as any;
+                // If the item is a color code, display it as a colored box
+                if (key === "Color Code" && typeof value === "string") {
+                  return (
+                    <div className={styles.eventColor}>
+                      <div
+                        className={styles.eventColor__colorBox}
+                        style={{
+                          backgroundColor: value,
+                        }}
+                      />
+                      <span>{value.toUpperCase().replace(/,\s*/g, ", ")}</span>
+                    </div>
+                  );
+                }
                 // If the item is not a link item, return the value
                 if (!linkItems.includes(key)) {
                   return value;
@@ -166,7 +184,6 @@ function ListTable({
 
   return (
     <>
-      <h1 className={styles.title}>{listType}</h1>
       <div className={styles.container}>
         <div className={styles.topContainer}>
           <div className={styles.filterContainer}>

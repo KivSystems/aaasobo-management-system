@@ -1,8 +1,10 @@
 .modal {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 2rem;
-  max-width: 620px;
+  min-height: 150px;
+  width: 620px;
 
   &__title {
     text-align: center;

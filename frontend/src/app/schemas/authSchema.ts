@@ -113,6 +113,16 @@ export const planRegisterSchema = z.object({
   description: z.string().min(1, "Description is required."),
 });
 
+export const eventRegisterSchema = z.object({
+  name: z.string().min(1, "Event Name is required."),
+  color: z.string().min(1, "Color Code is required."),
+});
+
+export const eventUpdateSchema = z.object({
+  name: z.string().min(1, "Event Name is required."),
+  color: z.string().min(1, "Color Code is required."),
+});
+
 export const instructorUpdateSchema = z.object({
   name: z.string().min(1, "Name is required."),
   nickname: z.string().min(1, "Nickname is required."),

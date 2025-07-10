@@ -3,11 +3,9 @@ import CancelClassesActions from "./cancelClassesActions/CancelClassesActions";
 import RebookingActions from "./rebookingActions/RebookingActions";
 
 export default async function ClassActions({
-  adminId,
   isAdminAuthenticated,
   customerId,
 }: {
-  adminId?: number;
   isAdminAuthenticated?: boolean;
   customerId: number;
 }) {
@@ -22,7 +20,6 @@ export default async function ClassActions({
 
           <RebookingActions
             customerId={customerId}
-            adminId={adminId}
             isAdminAuthenticated={isAdminAuthenticated}
           />
         </div>

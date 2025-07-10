@@ -21,6 +21,12 @@ import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import { getAllPlans, registerPlan } from "../services/plansService";
+import {
+  getAllEvents,
+  registerEvent,
+  updateEvent,
+  deleteEvent,
+} from "../services/eventsService";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -178,8 +184,8 @@ export const getAllAdminsController = async (_: Request, res: Response) => {
 
       return {
         No: number + 1,
-        Admin: id,
-        Name: name,
+        ID: id,
+        Admin: name,
         Email: email,
       };
     });
@@ -427,6 +433,147 @@ export const registerPlanController = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error registering a new plan", { error });
     res.sendStatus(500);
+  }
+};
+
+// Admin dashboard for displaying all events' information
+export const getAllEventsController = async (_: Request, res: Response) => {
+  try {
+    // Fetch all events data.
+    const events = await getAllEvents();
+
+    // Transform the data structure.
+    const data = events.map((event, number) => {
+      const { id, name, color } = event;
+
+      return {
+        No: number + 1,
+        ID: id,
+        Event: name,
+        "Color Code": color,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Register a new event
+export const registerEventController = async (req: Request, res: Response) => {
+  const { name, color } = req.body;
+
+  if (!name || !color) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize the event name and color code
+  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
+
+  try {
+    // Check if the event with the same name and color already exists
+    const existingEvents = await getAllEvents();
+    const eventNameExists = existingEvents.some(
+      (event) =>
+        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName,
+    );
+    const eventColorExists = existingEvents.some(
+      (event) =>
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode,
+    );
+
+    // Collect conflict reasons
+    const conflictItems: string[] = [];
+    if (eventNameExists) conflictItems.push("Event name");
+    if (eventColorExists) conflictItems.push("Color code");
+
+    if (conflictItems.length > 0) {
+      return res.status(409).json({ items: conflictItems });
+    }
+
+    // Register the new event
+    await registerEvent({
+      name,
+      color: normalizedColorCode,
+    });
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.error("Error registering a new event", { error });
+    res.sendStatus(500);
+  }
+};
+
+// Update the applicable event data
+export const updateEventProfileController = async (
+  req: Request,
+  res: Response,
+) => {
+  const eventId = parseInt(req.params.id);
+  const { name, color } = req.body;
+
+  // Normalize the event name and color code
+  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
+
+  try {
+    if (!name || !color) {
+      return res.sendStatus(400);
+    }
+
+    // Check if the event with the same name and color already exists
+    const existingEvents = await getAllEvents();
+    const eventNameExists = existingEvents.some(
+      (event) =>
+        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName &&
+        event.id !== eventId,
+    );
+    const eventColorExists = existingEvents.some(
+      (event) =>
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode &&
+        event.id !== eventId,
+    );
+
+    // Collect conflict reasons
+    const conflictItems: string[] = [];
+    if (eventNameExists) conflictItems.push("Event name");
+    if (eventColorExists) conflictItems.push("Color code");
+
+    if (conflictItems.length > 0) {
+      return res.status(409).json({ items: conflictItems });
+    }
+
+    const event = await updateEvent(eventId, name, normalizedColorCode);
+
+    res.status(200).json({
+      message: "Event is updated successfully",
+      event,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
+  }
+};
+
+// Delete the selected event
+export const deleteEventController = async (req: Request, res: Response) => {
+  const eventId = parseInt(req.params.id);
+
+  if (isNaN(eventId)) {
+    return res.status(400).json({ error: "Invalid event ID." });
+  }
+
+  try {
+    const deletedEvent = await deleteEvent(eventId);
+
+    res.status(200).json({
+      message: "The event was deleted successfully",
+      id: deletedEvent.id,
+    });
+  } catch (error) {
+    console.error("Failed to delete the event:", error);
+    res.status(500).json({ error: "Failed to delete the event." });
   }
 };
 

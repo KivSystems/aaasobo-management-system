@@ -134,3 +134,35 @@ export const nHoursLater = (n: number, dateTime: Date = new Date()) => {
 export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
   return new Date(dateTime.getTime() - n * 60 * 60 * 1000);
 };
+
+export function isSameLocalDate(
+  utcDateTime: Date | string,
+  timeZone: string,
+): boolean {
+  const localToday = new Date().toLocaleDateString("en-CA", { timeZone });
+  const localTarget = new Date(utcDateTime).toLocaleDateString("en-CA", {
+    timeZone,
+  });
+
+  return localToday === localTarget;
+}
+
+// Formats a UTC date into a localized year, date and time string based on the specified locale and time zone.: e.g., "Thu, January 11 at 09:30", "1月11日(木) 9:30"
+export const formatYearDateTime = (
+  utcDate: Date | string,
+  locale: string = "ja-JP",
+  timeZone: string = "Asia/Tokyo",
+): string => {
+  const date = new Date(utcDate);
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    weekday: "short",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+};

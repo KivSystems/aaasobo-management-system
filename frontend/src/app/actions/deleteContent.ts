@@ -1,0 +1,32 @@
+"use server";
+
+import { deleteEvent } from "@/app/helper/api/eventsApi";
+import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
+import { revalidateEventList } from "./revalidate";
+import { getCookie } from "../../middleware";
+
+export async function deleteEventAction(
+  prevState: DeleteFormState | undefined,
+  formData: FormData,
+): Promise<DeleteFormState> {
+  try {
+    // Hidden input tag field
+    const id = Number(formData.get("id"));
+
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
+    // Delete the event using the API
+    const response = await deleteEvent(id, cookie);
+
+    // Refresh cached event data for the event list page
+    revalidateEventList();
+
+    return response;
+  } catch (error) {
+    console.error("Unexpected error in deleteContent server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+}

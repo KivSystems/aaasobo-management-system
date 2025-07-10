@@ -134,10 +134,7 @@ export const PROFILE_UPDATE_FAILED_MESSAGE = {
   en: "We couldn't update your profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
-// RebookingPage
-export const INVALID_CLASS_ID =
-  "We encountered an issue while processing the class ID. Please refresh the page or try again later. / クラスIDの処理中に問題が発生しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
-
+// Rebooking modal
 export const SELECT_AT_LEAST_ONE_CHILD_MESSAGE = {
   ja: "参加するお子様を少なくとも1人選択してください。",
   en: "Please select at least one child to attend.",
@@ -165,12 +162,12 @@ export const DOUBLE_BOOKING_CONFIRMATION_MESSAGE = {
 
 export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
   success: {
-    ja: "クラスの振替予約が完了しました。",
-    en: "Your class has been successfully rebooked.",
+    ja: "クラスの振替予約が完了しました！",
+    en: "Your class has been successfully rebooked!",
   },
   "past rebooking deadline": {
-    ja: "振替予約は、クラス開始の3時間前まで可能です。ご予約時点で締切を過ぎていたため、振替ができませんでした。お手数ですが、別のクラスをご検討ください。",
-    en: "Rebooking is only available up to three hours before the class. As the deadline had passed, we couldn't complete your request. Please choose a different class.",
+    ja: "振替予約は、クラス開始の3時間前まで可能です。ご予約時点で締切を過ぎていたため、振替ができませんでした。お手数ですが、ページを更新し別のクラスをご検討ください。",
+    en: "Rebooking is available until 3 hours before the class starts. The deadline has passed, so please refresh the page and choose another class.",
   },
   "no subscription": {
     ja: "ご契約情報が確認できなかったため、振替予約を完了できませんでした。ご不明な点がございましたら、contact@aaasobo.org までお気軽にお問い合わせください。",
@@ -192,4 +189,9 @@ export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
     ja: "クラスの振替予約中にエラーが発生しました。しばらく時間をおいてから、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
     en: "An error occurred while rebooking the class. Please wait a moment and try again. If the issue persists, feel free to contact us at contact@aaasobo.org.",
   },
+};
+
+export const LOGIN_REQUIRED_MESSAGE = {
+  ja: "続行するには、ログインしてください。",
+  en: "Please log in to continue.",
 };

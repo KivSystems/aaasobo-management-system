@@ -8,6 +8,7 @@ import {
   ClockIcon,
   ChatBubbleLeftRightIcon,
   AcademicCapIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline";
 
 export function getLinks(
@@ -47,12 +48,12 @@ export function getLinks(
     {
       name: "AaasoBo! Calendar",
       href: `/admins/${userId}/business-calendar`,
-      icon: CalendarIcon,
+      icon: CalendarDaysIcon,
     },
     {
       name: "Class List",
       href: `/admins/${userId}/class-list`,
-      icon: ChatBubbleLeftRightIcon,
+      icon: ClipboardDocumentListIcon,
     },
     {
       name: "Admin List",
@@ -62,7 +63,7 @@ export function getLinks(
     {
       name: "Instructor List",
       href: `/admins/${userId}/instructor-list`,
-      icon: ClipboardDocumentListIcon,
+      icon: UsersIcon,
     },
     {
       name: "Customer List",
@@ -78,6 +79,11 @@ export function getLinks(
       name: "Plan List",
       href: `/admins/${userId}/plan-list`,
       icon: AcademicCapIcon,
+    },
+    {
+      name: "Event List",
+      href: `/admins/${userId}/event-list`,
+      icon: BellIcon,
     },
   ];
 

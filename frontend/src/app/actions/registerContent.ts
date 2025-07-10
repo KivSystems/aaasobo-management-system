@@ -1,10 +1,11 @@
 "use server";
 
 import { registerPlan } from "../helper/api/plansApi";
+import { registerEvent } from "../helper/api/eventsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractRegisterValidationErrors } from "../helper/utils/validationErrorUtils";
-import { planRegisterSchema } from "../schemas/authSchema";
-import { revalidatePlanList } from "./revalidate";
+import { planRegisterSchema, eventRegisterSchema } from "../schemas/authSchema";
+import { revalidatePlanList, revalidateEventList } from "./revalidate";
 import { getCookie } from "../../middleware";
 
 export async function registerContent(
@@ -12,8 +13,9 @@ export async function registerContent(
   formData: FormData,
 ): Promise<RegisterFormState> {
   try {
-    const name = formData.get("name");
+    const name = formData.get("eventName");
     const weeklyClassTimes = Number(formData.get("weeklyClassTimes"));
+    const color = formData.get("color");
     const description = formData.get("description");
     const categoryType = formData.get("categoryType");
 
@@ -29,7 +31,6 @@ export async function registerContent(
           name,
           weeklyClassTimes,
           description,
-          cookie,
         });
         if (!parsedForm.success) {
           const validationErrors = parsedForm.error.errors;
@@ -45,6 +46,27 @@ export async function registerContent(
 
         // Refresh cached admin data for the admin list page
         await revalidatePlanList();
+
+        return response;
+
+      case "event":
+        parsedForm = eventRegisterSchema.safeParse({
+          name,
+          color,
+        });
+        if (!parsedForm.success) {
+          const validationErrors = parsedForm.error.errors;
+          return extractRegisterValidationErrors(validationErrors);
+        }
+
+        response = await registerEvent({
+          name: parsedForm.data.name,
+          color: parsedForm.data.color,
+          cookie,
+        });
+
+        // Refresh cached admin data for the admin list page
+        await revalidateEventList();
 
         return response;
 

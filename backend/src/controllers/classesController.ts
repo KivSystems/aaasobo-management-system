@@ -26,10 +26,19 @@ import {
   calculateFirstDate,
   createDatesBetween,
   days,
+  formatYearDateTime,
   getFirstDateInMonths,
   getMonthNumber,
+  isSameLocalDate,
   nHoursBefore,
 } from "../helper/dateUtils";
+import { getInstructorContactById } from "../services/instructorsService";
+import { getCustomerContactById } from "../services/customersService";
+import { getChildrenNamesByIds } from "../services/childrenService";
+import {
+  sendAdminSameDayRebookEmail,
+  sendInstructorSameDayRebookEmail,
+} from "../helper/mail";
 
 // GET all classes along with related instructors and customers data
 export const getAllClassesController = async (_: Request, res: Response) => {
@@ -240,6 +249,61 @@ export const rebookClassController = async (
       newClassToRebook,
       childrenIds,
     );
+
+    // Check if the rebooked date is today; if so, send notification emails to the admin and instructor
+    const isSameDay = isSameLocalDate(dateTime, "Asia/Tokyo");
+
+    if (isSameDay) {
+      try {
+        const instructor = await getInstructorContactById(
+          newClass.instructorId!, // Guaranteed to exist for a newly created rebooked class
+        );
+        const customer = await getCustomerContactById(newClass.customerId);
+        const children = await getChildrenNamesByIds(childrenIds);
+
+        if (!instructor || !customer || !children) {
+          console.error(
+            "Missing required data for sending same-day rebooking emails",
+            {
+              instructor,
+              customer,
+              children,
+              classId,
+            },
+          );
+          return;
+        }
+
+        await sendAdminSameDayRebookEmail({
+          classCode: newClass.classCode,
+          dateTime: formatYearDateTime(newClass.dateTime!), // Guaranteed to exist for a newly created rebooked class
+          instructorName: instructor.name,
+          instructorEmail: instructor.email,
+          customerName: customer.name,
+          customerEmail: customer.email,
+          children,
+        });
+
+        await sendInstructorSameDayRebookEmail({
+          classCode: newClass.classCode,
+          dateTime: formatYearDateTime(newClass.dateTime!, "en-US"), // Guaranteed to exist for a newly created rebooked class
+          instructorName: instructor.name,
+          instructorEmail: instructor.email,
+          children,
+        });
+      } catch (emailError) {
+        console.error("Failed to send same-day rebooking notification email", {
+          emailError,
+          context: {
+            emailError,
+            classId,
+            classDate: dateTime,
+            instructorId,
+            time: new Date().toISOString(),
+          },
+        });
+      }
+    }
 
     res.sendStatus(201);
   } catch (error) {

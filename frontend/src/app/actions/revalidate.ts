@@ -38,6 +38,10 @@ export async function revalidatePlanList() {
   revalidateTag("plan-list");
 }
 
+export async function revalidateEventList() {
+  revalidateTag("event-list");
+}
+
 export async function revalidateBusinessSchedule() {
   revalidateTag("business-schedule");
 }

@@ -122,6 +122,26 @@ export const getAllPlans = async () => {
   }
 };
 
+// GET all events data
+export const getAllEvents = async () => {
+  try {
+    const apiUrl = `${BASE_URL}/event-list`;
+    const response = await fetch(apiUrl, {
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["event-list"] },
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const { data } = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch events:", error);
+    throw error;
+  }
+};
+
 // GET all class data
 export const getAllClasses = async () => {
   try {
@@ -228,7 +248,7 @@ export const updateAdmin = async (
 
     return data;
   } catch (error) {
-    console.error("API error while registering admin:", error);
+    console.error("API error while updating admin:", error);
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
     };

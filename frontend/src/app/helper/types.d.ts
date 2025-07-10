@@ -125,6 +125,12 @@ type Plan = {
   weeklyClassTimes?: number;
 };
 
+type BusinessEventType = {
+  id: number;
+  name: string;
+  color: string;
+};
+
 type Subscriptions = {
   subscriptions: Subscription[];
 };
@@ -235,6 +241,7 @@ type RegisterFormState = {
   isAgreed?: string;
   weeklyClassTimes?: string;
   description?: string;
+  color?: string;
   errorMessage?: string;
   successMessage?: string;
   language?: LanguageType;
@@ -248,6 +255,7 @@ type UpdateFormState = {
   meetingId?: string;
   passcode?: string;
   introductionURL?: string;
+  color?: string;
   errorMessage?: string;
   successMessage?: string;
 };
@@ -361,6 +369,8 @@ type RebookingModalProps = {
 };
 
 type RebookableClassListProps = RebookingModalProps & {
+  setClassToRebook: Dispatch<SetStateAction<number | null>>;
+  setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
 };
 
@@ -447,20 +457,37 @@ type TextAreaInputProps = {
   language?: LanguageType;
 };
 
+// Types related to RebookingForm
 type RebookingSteps =
+  | "selectClass"
   | "selectOption"
   | "selectInstructor"
   | "selectDateTime"
-  | "confirmRebooking";
+  | "confirmRebooking"
+  | "complete";
 
 type RebookingFormProps = {
   customerId: number;
-  classId: number;
-  instructorAvailabilities: InstructorAvailability[] | [];
+  classId?: number;
+  rebookableClasses: RebookableClass[] | [];
+  instructorAvailabilities?: InstructorAvailability[] | [];
   instructorProfiles: InstructorRebookingProfile[];
   childProfiles: Child[];
-  adminId?: number;
   isAdminAuthenticated?: boolean;
+};
+
+type RebookableClassesListProps = {
+  customerId: number;
+  rebookableClasses: RebookableClass[] | [];
+  setClassToRebook: Dispatch<SetStateAction<number | null>>;
+  setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
+  language: LanguageType;
+};
+
+type RebookableOptionsProps = {
+  selectOption: (option: "instructor" | "dateTime") => void;
+  setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
+  language: LanguageType;
 };
 
 type RebookableInstructorsListProps = {
@@ -470,6 +497,7 @@ type RebookableInstructorsListProps = {
   rebookingOption: "instructor" | "dateTime";
   setRebookingStep: (step: RebookingSteps) => void;
   dateTimeToRebook: string | null;
+  language: LanguageType;
 };
 
 type RebookableTimeSlotsProps = {
@@ -481,6 +509,7 @@ type RebookableTimeSlotsProps = {
   };
   instructorAvailabilities: InstructorAvailability[] | [];
   rebookingOption: "instructor" | "dateTime";
+  language: LanguageType;
 };
 
 type ConfirmRebookingProps = {
@@ -494,8 +523,16 @@ type ConfirmRebookingProps = {
   childProfiles: Child[];
   customerId: number;
   classId: number;
-  adminId?: number;
+  rebookableClasses: RebookableClass[] | [];
+  setRebookableClassesNumber: Dispatch<SetStateAction<number>>;
   isAdminAuthenticated?: boolean;
+  language: LanguageType;
+};
+
+type RebookingCompleteMessageProps = {
+  rebookableClassesNumber: number;
+  setRebookingStep: (step: RebookingSteps) => void;
+  language: LanguageType;
 };
 
 type ChildConflictResponse =
