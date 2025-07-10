@@ -10,6 +10,7 @@ import {
   CONTENT_UPDATE_SUCCESS_MESSAGE,
   CONTENT_DELETE_SUCCESS_MESSAGE,
 } from "@/app/helper/messages/formValidation";
+import { defaultEventIds } from "@/app/helper/data/data";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
@@ -39,9 +40,6 @@ function EventProfile({
     typeof event !== "string" ? event : null,
   );
   const [isEditing, setIsEditing] = useState(false);
-
-  // Define event IDs that should be disabled for editing or deleting
-  const disabledEventIds = [1, 2, 3];
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -114,6 +112,9 @@ function EventProfile({
   if (typeof event === "string") {
     return <p>{event}</p>;
   }
+
+  // Check if the event is one of the default events
+  const isEventDisabled = defaultEventIds.includes(event.id);
 
   return (
     <>
@@ -200,7 +201,7 @@ function EventProfile({
                           btnText="Delete"
                           type="button"
                           onClick={() => handleDeleteClick()}
-                          disabled={disabledEventIds.includes(event.id)}
+                          disabled={isEventDisabled}
                         />
                       </div>
                       <div>
@@ -209,7 +210,7 @@ function EventProfile({
                           btnText="Edit"
                           type="button"
                           onClick={handleEditClick}
-                          disabled={disabledEventIds.includes(event.id)}
+                          disabled={isEventDisabled}
                         />
                       </div>
                     </div>
