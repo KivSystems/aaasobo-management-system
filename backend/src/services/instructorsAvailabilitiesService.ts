@@ -79,6 +79,8 @@ type InstructorAvailability = {
  * Only includes slots where:
  * - The instructor is not marked as unavailable
  * - There are no existing classes that are booked or rebooked at those times
+ * - Excludes any instructor availability falling on dates marked as events named "AaasoBo! Holiday".
+ *   This exclusion is based on matching the date (ignoring time) between InstructorAvailability.dateTime and Schedule.date.
  */
 export const getInstructorAvailabilities = async (
   rebookableUntil: Date,
@@ -88,7 +90,7 @@ export const getInstructorAvailabilities = async (
   const availableSlots = await prisma.$queryRaw<InstructorAvailability[]>`
     SELECT ia."instructorId", ia."dateTime"
     FROM "InstructorAvailability" ia
-    WHERE ia."dateTime" BETWEEN ${effectiveFrom} AND ${rebookableUntil}
+    WHERE ia."dateTime" BETWEEN ${effectiveFrom.toISOString()}::timestamp AND ${rebookableUntil.toISOString()}::timestamp
       AND NOT EXISTS (
         SELECT 1 FROM "InstructorUnavailability" iu
         WHERE iu."instructorId" = ia."instructorId"
@@ -100,6 +102,12 @@ export const getInstructorAvailabilities = async (
           AND c."dateTime" = ia."dateTime"
           AND c."status" IN ('booked', 'rebooked')
       )
+      AND NOT EXISTS (
+      SELECT 1 FROM "Schedule" s
+      JOIN "Event" e ON e."id" = s."eventId"
+      WHERE ia."dateTime"::date = s."date"
+        AND e."name" = 'AaasoBo! Holiday'
+    )
   `;
 
   return availableSlots;
