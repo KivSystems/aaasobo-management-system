@@ -1013,8 +1013,7 @@ async function insertEvents() {
     data: [
       {
         name: "AaasoBo! Holiday", // お休み
-        color: "rgb(255,204,204)",
-        // color: "rgb(249,244,241)", // Same as Sunday (HEX: #f9f4f1)
+        color: "rgb(250,215,205)",
       },
       {
         name: "AaasoBo! Substitute Holiday", // お休み振替対象日
@@ -1048,6 +1047,14 @@ async function insertSchedules() {
         eventId: 1,
       },
       {
+        date: new Date("2025-01-05T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-01-12T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-01-13T00:00:00Z"),
         eventId: 3,
       },
@@ -1070,6 +1077,22 @@ async function insertSchedules() {
       {
         date: new Date("2025-01-18T00:00:00Z"),
         eventId: 3,
+      },
+      {
+        date: new Date("2025-01-19T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-01-26T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-02-02T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-02-09T00:00:00Z"),
+        eventId: 1,
       },
       {
         date: new Date("2025-02-10T00:00:00Z"),
@@ -1096,6 +1119,22 @@ async function insertSchedules() {
         eventId: 3,
       },
       {
+        date: new Date("2025-02-16T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-02-23T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-03-02T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-03-09T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-03-10T00:00:00Z"),
         eventId: 3,
       },
@@ -1120,6 +1159,18 @@ async function insertSchedules() {
         eventId: 3,
       },
       {
+        date: new Date("2025-03-16T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-03-23T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-03-30T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-03-31T00:00:00Z"),
         eventId: 1,
       },
@@ -1129,6 +1180,14 @@ async function insertSchedules() {
       },
       {
         date: new Date("2025-04-02T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-04-06T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-04-13T00:00:00Z"),
         eventId: 1,
       },
       {
@@ -1154,6 +1213,14 @@ async function insertSchedules() {
       {
         date: new Date("2025-04-19T00:00:00Z"),
         eventId: 3,
+      },
+      {
+        date: new Date("2025-04-20T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-04-27T00:00:00Z"),
+        eventId: 1,
       },
       {
         date: new Date("2025-04-29T00:00:00Z"),
@@ -1188,6 +1255,10 @@ async function insertSchedules() {
         eventId: 2,
       },
       {
+        date: new Date("2025-05-11T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-05-12T00:00:00Z"),
         eventId: 3,
       },
@@ -1214,6 +1285,26 @@ async function insertSchedules() {
       {
         date: new Date("2025-05-17T00:00:00Z"),
         eventId: 3,
+      },
+      {
+        date: new Date("2025-05-18T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-05-25T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-06-01T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-06-08T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-06-15T00:00:00Z"),
+        eventId: 1,
       },
       {
         date: new Date("2025-06-16T00:00:00Z"),
@@ -1244,6 +1335,22 @@ async function insertSchedules() {
         eventId: 3,
       },
       {
+        date: new Date("2025-06-22T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-06-29T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-07-06T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-07-13T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-07-14T00:00:00Z"),
         eventId: 3,
       },
@@ -1270,6 +1377,18 @@ async function insertSchedules() {
       {
         date: new Date("2025-07-19T00:00:00Z"),
         eventId: 3,
+      },
+      {
+        date: new Date("2025-07-20T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-07-27T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-08-03T00:00:00Z"),
+        eventId: 1,
       },
       {
         date: new Date("2025-08-04T00:00:00Z"),
@@ -1300,6 +1419,10 @@ async function insertSchedules() {
         eventId: 3,
       },
       {
+        date: new Date("2025-08-10T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-08-11T00:00:00Z"),
         eventId: 1,
       },
@@ -1321,6 +1444,26 @@ async function insertSchedules() {
       },
       {
         date: new Date("2025-08-16T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-08-17T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-08-24T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-08-31T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-09-07T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-09-14T00:00:00Z"),
         eventId: 1,
       },
       {
@@ -1348,6 +1491,26 @@ async function insertSchedules() {
         eventId: 3,
       },
       {
+        date: new Date("2025-09-21T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-09-28T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-10-05T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-10-12T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-10-19T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-10-20T00:00:00Z"),
         eventId: 3,
       },
@@ -1372,6 +1535,10 @@ async function insertSchedules() {
         eventId: 3,
       },
       {
+        date: new Date("2025-10-26T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-10-30T00:00:00Z"),
         eventId: 1,
       },
@@ -1381,6 +1548,18 @@ async function insertSchedules() {
       },
       {
         date: new Date("2025-11-01T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-11-02T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-11-09T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-11-16T00:00:00Z"),
         eventId: 1,
       },
       {
@@ -1408,6 +1587,22 @@ async function insertSchedules() {
         eventId: 3,
       },
       {
+        date: new Date("2025-11-23T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-11-30T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-12-07T00:00:00Z"),
+        eventId: 1,
+      },
+      {
+        date: new Date("2025-12-14T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-12-17T00:00:00Z"),
         eventId: 3,
       },
@@ -1424,6 +1619,10 @@ async function insertSchedules() {
         eventId: 3,
       },
       {
+        date: new Date("2025-12-21T00:00:00Z"),
+        eventId: 1,
+      },
+      {
         date: new Date("2025-12-22T00:00:00Z"),
         eventId: 3,
       },
@@ -1438,6 +1637,10 @@ async function insertSchedules() {
       {
         date: new Date("2025-12-25T00:00:00Z"),
         eventId: 2,
+      },
+      {
+        date: new Date("2025-12-28T00:00:00Z"),
+        eventId: 1,
       },
       {
         date: new Date("2025-12-29T00:00:00Z"),
