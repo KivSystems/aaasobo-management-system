@@ -2,7 +2,6 @@
 
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import styles from "./RebookableTimeSlots.module.scss";
-import { useLanguage } from "@/app/contexts/LanguageContext";
 import { formatDateTime } from "@/app/helper/utils/dateUtils";
 import { useMemo } from "react";
 
@@ -12,9 +11,8 @@ export default function RebookableTimeSlots({
   instructorToRebook,
   instructorAvailabilities,
   rebookingOption,
+  language,
 }: RebookableTimeSlotsProps) {
-  const { language } = useLanguage();
-
   const previousRebookingStep =
     rebookingOption === "instructor" ? "selectInstructor" : "selectOption";
 
@@ -45,14 +43,14 @@ export default function RebookableTimeSlots({
   };
 
   return (
-    <div className={styles.dateTimes}>
+    <div className={styles.rebookableSlots}>
       {rebookingOption === "instructor" && (
-        <div className={styles.dateTimes__instructor}>
+        <div className={styles.rebookableSlots__instructor}>
           {instructorToRebook.name}
         </div>
       )}
 
-      <div className={styles.dateTimes__list}>
+      <div className={styles.rebookableSlots__list}>
         {rebookableTimeSlots?.map((s, i) => {
           return (
             <ActionButton

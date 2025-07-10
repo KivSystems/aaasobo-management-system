@@ -444,3 +444,13 @@ export const getInstructorProfiles = async () => {
 
   return instructorProfiles;
 };
+
+export const getInstructorContactById = async (id: number) => {
+  return prisma.instructor.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      email: true,
+    },
+  });
+};

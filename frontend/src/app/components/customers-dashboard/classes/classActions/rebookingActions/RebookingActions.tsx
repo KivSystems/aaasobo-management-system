@@ -1,32 +1,38 @@
-import { getRebookableClasses } from "@/app/helper/api/customersApi";
-import { getChildrenByCustomerId } from "@/app/helper/api/childrenApi";
+import {
+  getChildProfiles,
+  getRebookableClasses,
+} from "@/app/helper/api/customersApi";
 import RebookingModalController from "./rebookingModalController/RebookingModalController";
-import RebookingModal from "./rebookingModal/RebookingModal";
+import RebookingForm from "./rebookingForm/RebookingForm";
+import { getInstructorProfiles } from "@/app/helper/api/instructorsApi";
 
 export default async function RebookingActions({
-  adminId,
   isAdminAuthenticated,
   customerId,
 }: {
-  adminId?: number;
   isAdminAuthenticated?: boolean;
   customerId: number;
 }) {
-  const rebookableClasses = await getRebookableClasses(customerId);
-  // TODO: use getChildProfiles
-  const childrenData = await getChildrenByCustomerId(customerId);
-  const hasChildProfile = childrenData.length > 0;
+  const [rebookableClasses, instructorProfiles, childProfiles] =
+    await Promise.all([
+      getRebookableClasses(customerId),
+      getInstructorProfiles(),
+      getChildProfiles(customerId),
+    ]);
+
+  const hasChildProfile = childProfiles.length > 0;
 
   return (
     <RebookingModalController
       rebookableClasses={rebookableClasses}
       hasChildProfile={hasChildProfile}
       modalContent={
-        <RebookingModal
+        <RebookingForm
           customerId={customerId}
-          adminId={adminId}
-          isAdminAuthenticated={isAdminAuthenticated}
           rebookableClasses={rebookableClasses}
+          instructorProfiles={instructorProfiles}
+          childProfiles={childProfiles}
+          isAdminAuthenticated={isAdminAuthenticated}
         />
       }
     />

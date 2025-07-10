@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 async function insertInstructors() {
   await prisma.instructor.create({
     data: {
-      email: "helen@example.com",
+      // email: "helen@example.com",
+      email: "kiv-developers@googlegroups.com",
       name: "Helene Gay Santos",
       nickname: "Helen",
       icon: "helen-1.jpg",
@@ -429,7 +430,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-06-08T00:00:00Z",
+        dateTime: "2025-07-02T00:00:00Z",
         status: "booked",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -441,7 +442,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-06-08T00:30:00Z",
+        dateTime: "2025-07-02T00:30:00Z",
         status: "rebooked",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -453,7 +454,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-06-08T01:00:00Z",
+        dateTime: "2025-07-02T01:00:00Z",
         status: "canceledByCustomer",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -465,7 +466,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-06-08T01:00:00Z",
+        dateTime: "2025-07-02T01:00:00Z",
         status: "canceledByInstructor",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -477,7 +478,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-06-08T01:00:00Z",
+        dateTime: "2025-07-02T01:00:00Z",
         status: "completed",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,

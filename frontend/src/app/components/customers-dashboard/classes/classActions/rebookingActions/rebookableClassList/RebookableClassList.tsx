@@ -9,22 +9,14 @@ import {
 } from "@/app/helper/utils/dateUtils";
 import { REBOOKING_TOO_LATE_NOTICE } from "@/app/helper/messages/customerDashboard";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
-import { useRouter } from "next/navigation";
 
 export default function RebookableClassList({
-  adminId,
-  isAdminAuthenticated,
-  customerId,
   rebookableClasses,
+  setClassToRebook,
+  setRebookingStep,
   language,
 }: RebookableClassListProps) {
-  const router = useRouter();
-
   const handleRebook = (id: number, rebookableUntil: Date) => {
-    const redirectUrl = isAdminAuthenticated
-      ? `/admins/${adminId}/customer-list/${customerId}/classes/${id}/rebook`
-      : `/customers/${customerId}/classes/${id}/rebook`;
-
     const now = new Date().getTime();
     const rebookingDeadline = nHoursBefore(
       3,
@@ -35,7 +27,8 @@ export default function RebookableClassList({
       return alert(REBOOKING_TOO_LATE_NOTICE[language]);
     }
 
-    router.push(redirectUrl);
+    setClassToRebook(id);
+    setRebookingStep("selectOption");
   };
 
   return (

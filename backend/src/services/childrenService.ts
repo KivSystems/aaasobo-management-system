@@ -118,3 +118,20 @@ export const getChildProfiles = async (customerId: number) => {
 
   return childProfiles;
 };
+
+export const getChildrenNamesByIds = async (
+  childrenIds: number[],
+): Promise<string> => {
+  const children = await prisma.children.findMany({
+    where: {
+      id: {
+        in: childrenIds,
+      },
+    },
+    select: {
+      name: true,
+    },
+  });
+
+  return children.map((child) => child.name).join(", ");
+};
