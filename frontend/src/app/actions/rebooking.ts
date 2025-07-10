@@ -11,6 +11,7 @@ export async function rebookClassWithValidation({
   instructorId,
   childrenIds,
   isAdminAuthenticated,
+  language,
 }: {
   customerId: number;
   classId: number;
@@ -18,6 +19,7 @@ export async function rebookClassWithValidation({
   instructorId: number;
   childrenIds: number[];
   isAdminAuthenticated?: boolean;
+  language: LanguageType;
 }) {
   const session = await getUserSession();
 
@@ -46,7 +48,7 @@ export async function rebookClassWithValidation({
   });
 
   if ("errorMessage" in result) {
-    return { error: result.errorMessage };
+    return { error: result.errorMessage[language] };
   }
 
   await revalidateCustomerCalendar(customerId, isAdminAuthenticated);

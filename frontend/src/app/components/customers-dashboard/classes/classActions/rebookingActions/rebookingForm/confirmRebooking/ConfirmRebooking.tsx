@@ -116,6 +116,7 @@ export default function ConfirmRebooking({
       instructorId: instructorToRebook.id,
       childrenIds: selectedChildrenIds,
       isAdminAuthenticated,
+      language,
     });
 
     if (result.error) {

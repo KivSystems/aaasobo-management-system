@@ -166,8 +166,8 @@ export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
     en: "Your class has been successfully rebooked!",
   },
   "past rebooking deadline": {
-    ja: "振替予約は、クラス開始の3時間前まで可能です。ご予約時点で締切を過ぎていたため、振替ができませんでした。お手数ですが、別のクラスをご検討ください。",
-    en: "Rebooking is only available up to three hours before the class. As the deadline had passed, we couldn't complete your request. Please choose a different class.",
+    ja: "振替予約は、クラス開始の3時間前まで可能です。ご予約時点で締切を過ぎていたため、振替ができませんでした。お手数ですが、ページを更新し別のクラスをご検討ください。",
+    en: "Rebooking is available until 3 hours before the class starts. The deadline has passed, so please refresh the page and choose another class.",
   },
   "no subscription": {
     ja: "ご契約情報が確認できなかったため、振替予約を完了できませんでした。ご不明な点がございましたら、contact@aaasobo.org までお気軽にお問い合わせください。",
