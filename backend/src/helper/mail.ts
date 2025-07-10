@@ -316,7 +316,7 @@ export const sendAdminSameDayRebookEmail = async (data: {
   try {
     const response: CreateEmailResponse = await resend.emails.send({
       from: "contact@aaasobo.org",
-      to: "kiv-developers@googlegroups.com",
+      to: "contact@aaasobo.org",
       subject: "【AaasoBo!】当日クラスの予約が入りました。",
       html: `
   <div style="font-family: 'Helvetica Neue', sans-serif; font-size: 16px; line-height: 1.6; color: #333;">
