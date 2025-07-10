@@ -14,9 +14,12 @@ body {
 }
 
 // Styling for the calendar ------------------------------
+.fc-day-sat {
+  color: #1c52d6 !important;
+}
+
 .fc-day-sun {
-  background-color: #f9f4f1 !important;
-  color: red !important;
+  color: #d61c1c !important;
 }
 
 .fc-event {
