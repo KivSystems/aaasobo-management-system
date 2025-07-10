@@ -1,3 +1,5 @@
+export const defaultEventIds = [1, 2, 3];
+
 export const prefectures = [
   "海外 / Overseas",
   "北海道 / Hokkaido",

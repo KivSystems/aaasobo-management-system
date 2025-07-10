@@ -10,6 +10,7 @@ import {
   CONTENT_UPDATE_SUCCESS_MESSAGE,
   CONTENT_DELETE_SUCCESS_MESSAGE,
 } from "@/app/helper/messages/formValidation";
+import { defaultEventIds } from "@/app/helper/data/data";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
@@ -112,6 +113,9 @@ function EventProfile({
     return <p>{event}</p>;
   }
 
+  // Check if the event is one of the default events
+  const isEventDisabled = defaultEventIds.includes(event.id);
+
   return (
     <>
       <div className={styles.container}>
@@ -197,6 +201,7 @@ function EventProfile({
                           btnText="Delete"
                           type="button"
                           onClick={() => handleDeleteClick()}
+                          disabled={isEventDisabled}
                         />
                       </div>
                       <div>
@@ -205,6 +210,7 @@ function EventProfile({
                           btnText="Edit"
                           type="button"
                           onClick={handleEditClick}
+                          disabled={isEventDisabled}
                         />
                       </div>
                     </div>
