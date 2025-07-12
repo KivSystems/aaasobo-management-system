@@ -62,17 +62,18 @@ model InstructorUnavailability {
 }
 
 model Customer {
-  id            Int            @id @default(autoincrement())
-  name          String
-  email         String         @unique
-  emailVerified DateTime?
-  password      String
-  classes       Class[]
-  children      Children[]
-  subscription  Subscription[]
-  prefecture    String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id             Int            @id @default(autoincrement())
+  name           String
+  email          String         @unique
+  emailVerified  DateTime?
+  password       String
+  classes        Class[]
+  children       Children[]
+  subscription   Subscription[]
+  prefecture     String
+  hasSeenWelcome Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model Class {
@@ -102,6 +103,7 @@ enum Status {
   canceledByInstructor
   pending
   rebooked
+  declined
 }
 
 model Admins {
