@@ -605,13 +605,13 @@ export const getClassesWithinPeriodController = async (
       const { id, instructor, customer, dateTime, status, classCode } =
         classItem;
 
-      // For free trial classes with "pending" status, no instructor is selected yet — return "pending".
-      const instructorName = instructor?.nickname ?? "pending";
+      // If the free trial class status is "pending" or "declined" before booking, an instructor is not assigned — return "Not Set".
+      const instructorName = instructor?.nickname ?? "Not Set";
       const customerName = customer.name;
 
-      // For free trial classes with "pending" status, no dateTime is selected yet — return "pending".
-      let date = "pending";
-      let time = "pending";
+      // If the free trial class status is "pending" or "declined" before booking, no dateTime is selected — return "Not Set".
+      let date = "Not Set";
+      let time = "Not Set";
 
       if (dateTime) {
         // Convert dateTime from UTC to JST (Add 9 hours).
@@ -638,6 +638,15 @@ export const getClassesWithinPeriodController = async (
           break;
         case "canceledByInstructor":
           statusText = "Canceled(Instructor)";
+          break;
+        case "rebooked":
+          statusText = "Rebooked";
+          break;
+        case "pending":
+          statusText = "Pending";
+          break;
+        case "declined":
+          statusText = "Declined";
           break;
       }
 
