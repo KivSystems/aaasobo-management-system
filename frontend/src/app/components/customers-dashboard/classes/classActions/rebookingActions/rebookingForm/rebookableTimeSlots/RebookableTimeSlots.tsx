@@ -44,27 +44,37 @@ export default function RebookableTimeSlots({
 
   return (
     <div className={styles.rebookableSlots}>
-      {rebookingOption === "instructor" && (
-        <div className={styles.rebookableSlots__instructor}>
-          {instructorToRebook.name}
-        </div>
-      )}
+      {instructorAvailabilities.length === 0 ? (
+        <p className={styles.noInstructorMessage}>
+          {language === "ja"
+            ? "予約可能なクラスがありません。"
+            : "No classes available for booking."}
+        </p>
+      ) : (
+        <>
+          {rebookingOption === "instructor" && (
+            <div className={styles.rebookableSlots__instructor}>
+              {instructorToRebook.name}
+            </div>
+          )}
 
-      <div className={styles.rebookableSlots__list}>
-        {rebookableTimeSlots?.map((s, i) => {
-          return (
-            <ActionButton
-              key={i}
-              btnText={formatDateTime(
-                new Date(s),
-                language === "ja" ? "ja-JP" : "en-US",
-              )}
-              className="bookBtn"
-              onClick={() => selectDateTime(s)}
-            />
-          );
-        })}
-      </div>
+          <div className={styles.rebookableSlots__list}>
+            {rebookableTimeSlots?.map((s, i) => {
+              return (
+                <ActionButton
+                  key={i}
+                  btnText={formatDateTime(
+                    new Date(s),
+                    language === "ja" ? "ja-JP" : "en-US",
+                  )}
+                  className="bookBtn"
+                  onClick={() => selectDateTime(s)}
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
 
       <ActionButton
         btnText={language === "ja" ? "戻る" : "Back"}

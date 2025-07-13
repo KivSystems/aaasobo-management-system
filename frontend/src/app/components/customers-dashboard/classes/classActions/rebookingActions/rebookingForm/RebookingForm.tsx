@@ -39,8 +39,6 @@ export default function RebookingForm({
 
   const { language } = useLanguage();
 
-  const noInstructorAvailable = instructorAvailabilities.length === 0;
-
   useEffect(() => {
     if (!classToRebook) return;
 
@@ -83,7 +81,6 @@ export default function RebookingForm({
           selectOption={selectOption}
           setRebookingStep={setRebookingStep}
           language={language}
-          noInstructorAvailable={noInstructorAvailable}
         />
       )}
 

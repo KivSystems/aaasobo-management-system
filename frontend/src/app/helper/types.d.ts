@@ -491,7 +491,6 @@ type RebookableOptionsProps = {
   selectOption: (option: "instructor" | "dateTime") => void;
   setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
-  noInstructorAvailable: boolean;
 };
 
 type RebookableInstructorsListProps = {
