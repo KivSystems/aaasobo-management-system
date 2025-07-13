@@ -4,7 +4,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface ModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   children?: React.ReactNode;
   className?: string;
 }
@@ -17,15 +17,31 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const isWelcomeModal = className === "welcomeModal";
+
+  const handleOverlayClick = () => {
+    if (!isWelcomeModal && onClose) {
+      onClose();
+    }
+  };
+
+  const handleCloseClick = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
     <div
       className={`${styles.modalOverlay} ${className ? styles[className] : ""} `}
-      onClick={onClose}
+      onClick={handleOverlayClick}
     >
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.closeButton} onClick={onClose}>
-          <XMarkIcon strokeWidth={2.5} />
-        </div>
+        {!isWelcomeModal && onClose && (
+          <div className={styles.closeButton} onClick={handleCloseClick}>
+            <XMarkIcon strokeWidth={2.5} />
+          </div>
+        )}
         {children}
       </div>
     </div>

@@ -4,6 +4,9 @@ import {
   FAILED_TO_FETCH_CUSTOMER_PROFILE,
   FAILED_TO_FETCH_REBOOKABLE_CLASSES,
   FAILED_TO_FETCH_UPCOMING_CLASSES,
+  FREE_TRIAL_ALREADY_REMOVED_MESSAGE,
+  FREE_TRIAL_REMOVE_ERROR_MESSAGE,
+  FREE_TRIAL_REMOVE_SUCCESS_MESSAGE,
   PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE,
   PROFILE_UPDATE_FAILED_MESSAGE,
   PROFILE_UPDATE_SUCCESS_MESSAGE,
@@ -315,5 +318,52 @@ export const getChildProfiles = async (
   } catch (error) {
     console.error("API error while fetching child profiles:", error);
     throw new Error(FAILED_TO_FETCH_CHILD_PROFILES);
+  }
+};
+
+export const markWelcomeSeen = async (customerId: number): Promise<void> => {
+  const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/seen-welcome`;
+  const headers = { "Content-Type": "application/json" };
+
+  try {
+    const response = await fetch(apiURL, {
+      method: "PATCH",
+      headers,
+    });
+
+    if (!response.ok) {
+      console.error(
+        `Failed to update welcome status: ${response.status} ${response.statusText}`,
+      );
+    }
+  } catch (error) {
+    console.error("API error while marking welcome message as seen:", error);
+  }
+};
+
+export const declineFreeTrialClass = async (
+  customerId: number,
+): Promise<{ success: boolean; message: LocalizedMessage }> => {
+  const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/free-trial/decline`;
+  const headers = { "Content-Type": "application/json" };
+
+  try {
+    const response = await fetch(apiURL, {
+      method: "PATCH",
+      headers,
+    });
+
+    if (response.status === 404) {
+      return { success: false, message: FREE_TRIAL_ALREADY_REMOVED_MESSAGE };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return { success: true, message: FREE_TRIAL_REMOVE_SUCCESS_MESSAGE };
+  } catch (error) {
+    console.error("API error while declining free trial class:", error);
+    return { success: false, message: FREE_TRIAL_REMOVE_ERROR_MESSAGE };
   }
 };

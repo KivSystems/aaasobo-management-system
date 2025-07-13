@@ -339,6 +339,7 @@ async function insertCustomers() {
         password:
           "$2b$12$GFM.a0hEjl/0/U3IjO057esEr7l.NMKZSeRC7c1he6wzDvoIW4oxy", // AaasoBo!Alice
         prefecture: "青森県 / Aomori",
+        hasSeenWelcome: true,
         createdAt: "2024-08-01T00:00:00.000Z",
         updatedAt: "2024-08-10T00:00:00.000Z",
       },
@@ -348,6 +349,7 @@ async function insertCustomers() {
         password:
           "$2b$12$txZ49345mBu/RNVfnKFw9.VahiO1wj4z.6aeKckM50LYkd2Upz3eC", // AaasoBo!Bob
         prefecture: "北海道 / Hokkaido",
+        hasSeenWelcome: true,
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2024-08-01T00:00:00.000Z",
         updatedAt: "2024-08-10T00:00:00.000Z",
@@ -358,6 +360,7 @@ async function insertCustomers() {
         password:
           "$2b$12$qbcPqqpR3nKgtCgrusCbQOfMqJJHiMlBSkeClYEeWkKM6Fc6xahD2", // AaasoBo!Hana
         prefecture: "北海道 / Hokkaido",
+        hasSeenWelcome: true,
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2025-04-01T00:00:00.000Z",
         updatedAt: "2024-08-10T00:00:00.000Z",
@@ -545,19 +548,6 @@ async function insertClasses() {
         updatedAt: "2025-05-20T07:00:00Z",
         classCode: "1-4",
         isFreeTrial: false,
-      },
-      {
-        instructorId: helen.id,
-        customerId: alice.id,
-        dateTime: "2025-07-30T01:30:00Z",
-        status: "rebooked",
-        subscriptionId: alice.subscription[0].id,
-        recurringClassId: 1,
-        rebookableUntil: "2025-10-30T09:00:00Z",
-        createdAt: "2025-05-20T07:00:00Z",
-        updatedAt: "2025-05-20T07:00:00Z",
-        classCode: "ft-1",
-        isFreeTrial: true,
       },
       {
         customerId: alice.id,
@@ -836,11 +826,6 @@ async function insertClassAttendance() {
       { classId: classes[2].id, childrenId: children[0].id },
       { classId: classes[3].id, childrenId: children[0].id },
       { classId: classes[4].id, childrenId: children[0].id },
-      { classId: classes[5].id, childrenId: children[0].id },
-      { classId: classes[5].id, childrenId: children[1].id },
-      // { classId: classes[5].id, childrenId: children[0].id },
-      // { classId: classes[6].id, childrenId: children[0].id },
-      // { classId: classes[7].id, childrenId: children[0].id },
     ],
   });
 
