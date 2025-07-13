@@ -7,26 +7,37 @@ export default function RebookingOptions({
   selectOption,
   setRebookingStep,
   language,
+  noInstructorAvailable,
 }: RebookableOptionsProps) {
   return (
     <div className={styles.rebookingOptions}>
-      <div className={styles.rebookingOptions__options}>
-        <ActionButton
-          btnText={
-            language === "ja"
-              ? "インストラクターから予約"
-              : "Book with Instructor"
-          }
-          className="rescheduleBtn"
-          onClick={() => selectOption("instructor")}
-        />
+      {!noInstructorAvailable && (
+        <div className={styles.rebookingOptions__options}>
+          <ActionButton
+            btnText={
+              language === "ja"
+                ? "インストラクターから予約"
+                : "Book with Instructor"
+            }
+            className="rescheduleBtn"
+            onClick={() => selectOption("instructor")}
+          />
 
-        <ActionButton
-          btnText={language === "ja" ? "日時から予約" : "Book by Date & Time"}
-          className="rescheduleBtn"
-          onClick={() => selectOption("dateTime")}
-        />
-      </div>
+          <ActionButton
+            btnText={language === "ja" ? "日時から予約" : "Book by Date & Time"}
+            className="rescheduleBtn"
+            onClick={() => selectOption("dateTime")}
+          />
+        </div>
+      )}
+
+      {noInstructorAvailable && (
+        <p className={styles.noInstructorMessage}>
+          {language === "ja"
+            ? "予約可能なクラスがありません。"
+            : "No classes available for booking."}
+        </p>
+      )}
 
       <ActionButton
         btnText={language === "ja" ? "戻る" : "Back"}

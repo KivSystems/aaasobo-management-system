@@ -161,7 +161,7 @@ export const rebookClassController = async (
       isFreeTrial,
     } = classToRebook;
 
-    if (!status || !rebookableUntil || !classCode || !isFreeTrial) {
+    if (!status || !rebookableUntil || !classCode) {
       return res.status(400).json({
         errorType: "invalid class data",
       });

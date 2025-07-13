@@ -105,7 +105,7 @@ export default function RebookableClassList({
                       </>
                     ) : (
                       <>
-                        ※ If you don't need a free trial class,&nbsp;
+                        {`※ If you don't need a free trial class, `}
                         <button
                           className={styles.listItem__link}
                           onClick={() =>

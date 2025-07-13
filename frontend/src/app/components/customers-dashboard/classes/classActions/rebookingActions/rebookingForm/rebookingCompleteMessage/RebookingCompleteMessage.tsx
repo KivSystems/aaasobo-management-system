@@ -10,6 +10,11 @@ const RebookingCompleteMessage = ({
 }: RebookingCompleteMessageProps) => {
   const hasRebookableClasses = rebookableClassesNumber > 0;
 
+  const BOOKABLE_CLASSES_NUMBER =
+    language === "ja"
+      ? "現在の予約可能クラス数"
+      : "Current number of bookable classes";
+
   return (
     <div className={styles.rebookingComplete}>
       <CheckCircleIcon className={styles.rebookingComplete__icon} />
@@ -17,7 +22,7 @@ const RebookingCompleteMessage = ({
 
       {hasRebookableClasses && (
         <>
-          <p>{`現在の振替可能クラス数：${rebookableClassesNumber}`}</p>
+          <p>{`${BOOKABLE_CLASSES_NUMBER}：${rebookableClassesNumber}`}</p>
 
           <ActionButton
             btnText={

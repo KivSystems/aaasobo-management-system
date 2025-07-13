@@ -87,7 +87,8 @@
 
 .bookBtn,
 .addBtn,
-.submitBtn {
+.submitBtn,
+.startBtn {
   background-color: $blue_primary;
   transition:
     background-color 0.3s ease,
@@ -353,4 +354,10 @@
 
 .selectRebookingClass {
   width: 80px;
+}
+
+.startBtn {
+  padding: 0.6rem 2rem;
+  font-size: 1rem;
+  border-radius: 9999px;
 }

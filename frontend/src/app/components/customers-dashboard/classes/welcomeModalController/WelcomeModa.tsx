@@ -64,7 +64,7 @@ export default function WelcomeModal({
           </>
         ) : (
           <>
-            If you don't need a free trial class,&nbsp;
+            {`※ If you don't need a free trial class, `}
             <span
               className={styles.welcomeModal__link}
               onClick={() =>

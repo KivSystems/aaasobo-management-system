@@ -3,6 +3,7 @@
 import { rebookClass } from "../helper/api/classesApi";
 import { getUserSession } from "../helper/auth/sessionUtils";
 import { revalidateCustomerCalendar } from "./revalidate";
+import { validateSession } from "./validateSession";
 
 export async function rebookClassWithValidation({
   customerId,
@@ -21,23 +22,13 @@ export async function rebookClassWithValidation({
   isAdminAuthenticated?: boolean;
   language: LanguageType;
 }) {
-  const session = await getUserSession();
+  const { isValid, error } = await validateSession(
+    customerId,
+    isAdminAuthenticated,
+  );
 
-  if (!session) {
-    return { error: "unauthorized" };
-  }
-
-  if (session.user.userType === "customer") {
-    if (Number(session.user.id) !== customerId) {
-      return { error: "unauthorized" };
-    }
-  } else if (session.user.userType === "admin") {
-    const adminId = Number(session.user.id);
-    if (!adminId && isAdminAuthenticated) {
-      return { error: "Admin ID is required for authenticated admin actions." };
-    }
-  } else {
-    return { error: "unauthorized" };
+  if (!isValid) {
+    return { error };
   }
 
   const result = await rebookClass(classId, {
@@ -47,7 +38,7 @@ export async function rebookClassWithValidation({
     childrenIds,
   });
 
-  if ("errorMessage" in result) {
+  if (!result.success) {
     return { error: result.errorMessage[language] };
   }
 
