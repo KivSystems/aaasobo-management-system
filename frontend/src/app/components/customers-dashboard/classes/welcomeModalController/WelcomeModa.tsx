@@ -45,41 +45,22 @@ export default function WelcomeModal({
         - {FREE_TRIAL_BOOKING_INSTRUCTION_MESSAGE[language]}
       </p>
       <p className={styles.welcomeModal__declineClass}>
-        {language === "ja" ? (
-          <>
-            ※ 無料トライアルクラスが不要な方は、
-            <span
-              className={styles.welcomeModal__link}
-              onClick={() =>
-                confirmAndDeclineFreeTrialClass({
-                  customerId,
-                  isAdminAuthenticated,
-                  language,
-                })
-              }
-            >
-              こちら
-            </span>
-            をクリックしてください。
-          </>
-        ) : (
-          <>
-            {`※ If you don't need a free trial class, `}
-            <span
-              className={styles.welcomeModal__link}
-              onClick={() =>
-                confirmAndDeclineFreeTrialClass({
-                  customerId,
-                  isAdminAuthenticated,
-                  language,
-                })
-              }
-            >
-              click here
-            </span>
-            .
-          </>
-        )}
+        {language === "ja"
+          ? "※ 無料トライアルクラスが不要な方は、"
+          : "※ If you don't need a free trial class, "}
+        <span
+          className={styles.welcomeModal__link}
+          onClick={() =>
+            confirmAndDeclineFreeTrialClass({
+              customerId,
+              isAdminAuthenticated,
+              language,
+            })
+          }
+        >
+          {language === "ja" ? "こちら" : "click here"}
+        </span>
+        {language === "ja" ? "をクリックしてください。" : "."}
       </p>
 
       <p className={styles.welcomeModal__description}>
