@@ -87,40 +87,23 @@ export default function RebookableClassList({
                 {bookableDateTime}
                 {isFreeTrial && (
                   <p className={styles.listItem__declineClass}>
-                    {language === "ja" ? (
-                      <>
-                        ※ 無料トライアルが不要な方は、
-                        <button
-                          className={styles.listItem__link}
-                          onClick={() =>
-                            confirmAndDeclineFreeTrialClass({
-                              customerId,
-                              isAdminAuthenticated,
-                              language,
-                            })
-                          }
-                        >
-                          こちら
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        {`※ If you don't need a free trial class, `}
-                        <button
-                          className={styles.listItem__link}
-                          onClick={() =>
-                            confirmAndDeclineFreeTrialClass({
-                              customerId,
-                              isAdminAuthenticated,
-                              language,
-                            })
-                          }
-                        >
-                          click here
-                        </button>
-                        .
-                      </>
-                    )}
+                    {language === "ja"
+                      ? "※ 無料トライアルが不要な方は、"
+                      : "※ If you don't need a free trial class, "}
+                    <button
+                      className={styles.listItem__link}
+                      onClick={() =>
+                        confirmAndDeclineFreeTrialClass({
+                          customerId,
+                          isAdminAuthenticated,
+                          language,
+                          classCode: classItem.classCode,
+                        })
+                      }
+                    >
+                      {language === "ja" ? "こちら" : "click here"}
+                    </button>
+                    {language === "en" && "."}
                   </p>
                 )}
               </>

@@ -343,6 +343,7 @@ export const markWelcomeSeen = async (customerId: number): Promise<void> => {
 
 export const declineFreeTrialClass = async (
   customerId: number,
+  classCode?: string,
 ): Promise<{ success: boolean; message: LocalizedMessage }> => {
   const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/free-trial/decline`;
   const headers = { "Content-Type": "application/json" };
@@ -351,6 +352,7 @@ export const declineFreeTrialClass = async (
     const response = await fetch(apiURL, {
       method: "PATCH",
       headers,
+      body: JSON.stringify({ classCode }),
     });
 
     if (response.status === 404) {

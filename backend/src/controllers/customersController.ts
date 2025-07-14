@@ -449,9 +449,10 @@ export const declineFreeTrialClassController = async (
   res: Response,
 ) => {
   const customerId = req.id;
+  const { classCode } = req.body;
 
   try {
-    const updatedClass = await declineFreeTrialClass(customerId);
+    const updatedClass = await declineFreeTrialClass(customerId, classCode);
 
     if (updatedClass.count === 0) {
       res.sendStatus(404);

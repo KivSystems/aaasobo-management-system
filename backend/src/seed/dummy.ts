@@ -558,6 +558,15 @@ async function insertClasses() {
         classCode: "ft-0",
         isFreeTrial: true,
       },
+      {
+        customerId: alice.id,
+        status: "pending",
+        rebookableUntil: "2025-10-30T09:00:00Z",
+        createdAt: "2025-05-20T07:00:00Z",
+        updatedAt: "2025-05-20T07:00:00Z",
+        classCode: "ft-0-2",
+        isFreeTrial: true,
+      },
       // {
       //   instructorId: helen.id,
       //   customerId: bob.id,

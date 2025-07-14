@@ -10,10 +10,12 @@ export const confirmAndDeclineFreeTrialClass = async ({
   customerId,
   isAdminAuthenticated,
   language,
+  classCode,
 }: {
   customerId: number;
   isAdminAuthenticated?: boolean;
   language: LanguageType;
+  classCode?: string;
 }) => {
   const { isValid, error } = await validateSession(
     customerId,
@@ -31,7 +33,10 @@ export const confirmAndDeclineFreeTrialClass = async ({
   );
   if (!confirmed) return;
 
-  const { success, message } = await declineFreeTrialClass(customerId);
+  const { success, message } = await declineFreeTrialClass(
+    customerId,
+    classCode,
+  );
 
   if (success) {
     revalidateCustomerCalendar(customerId, isAdminAuthenticated);

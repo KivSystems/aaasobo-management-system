@@ -57,10 +57,10 @@ export const getAllClassesController = async (_: Request, res: Response) => {
           name: customer.name,
           email: customer.email,
         },
-        // Pending free trial classes don't have an instructor yet, so use fallback values when instructor is missing
+        // "Pending" or "declined" free trial classes don't have an instructor, so use fallback values when instructor is missing
         instructor: {
           id: instructor?.id ?? null,
-          name: instructor?.name ?? "pending",
+          name: instructor?.name ?? "Not Set",
         },
         status,
         recurringClassId,
@@ -106,10 +106,10 @@ export const getClassesByCustomerIdController = async (
           name: customer.name,
           email: customer.email,
         },
-        // Pending free trial classes do not have an instructor yet, so use fallback values
+        // "Pending" or "declined" free trial classes don't have an instructor, so use fallback values when instructor is missing
         instructor: {
           id: instructor?.id ?? null,
-          name: instructor?.name ?? "pending",
+          name: instructor?.name ?? "Not Set",
           icon: instructor?.icon ?? null,
           classURL: instructor?.classURL ?? null,
           nickname: instructor?.nickname ?? null,
@@ -402,7 +402,7 @@ export const getInstructorClasses = async (
         id,
         dateTime,
         customerName: customer.name,
-        // Pending free trial classes do not have an instructor yet, so use fallback values
+        // "Pending" or "declined" free trial classes do not have an instructor, so use fallback values
         classURL: instructor?.classURL ?? null,
         meetingId: instructor?.meetingId ?? null,
         passcode: instructor?.passcode ?? null,

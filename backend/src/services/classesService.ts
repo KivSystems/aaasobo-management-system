@@ -804,18 +804,32 @@ export const createFreeTrialClass = async ({
   return createdClass;
 };
 
-export const declineFreeTrialClass = async (customerId: number) => {
-  const updatedClass = await prisma.class.updateMany({
-    where: {
-      customerId,
-      isFreeTrial: true,
-      status: {
-        in: ["pending", "canceledByCustomer", "canceledByInstructor"],
-      },
+export const declineFreeTrialClass = async (
+  customerId: number,
+  classCode?: string,
+) => {
+  const baseConditions = {
+    customerId,
+    isFreeTrial: true,
+    status: {
+      in: [
+        Status.pending,
+        Status.canceledByCustomer,
+        Status.canceledByInstructor,
+      ],
     },
+  };
+
+  const whereClause = classCode
+    ? { ...baseConditions, classCode }
+    : baseConditions;
+
+  const updatedClass = await prisma.class.updateMany({
+    where: whereClause,
     data: {
-      status: "declined",
+      status: Status.declined,
       updatedAt: new Date(),
+      rebookableUntil: null,
     },
   });
 
