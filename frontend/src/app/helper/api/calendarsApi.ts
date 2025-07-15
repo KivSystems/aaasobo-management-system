@@ -28,7 +28,7 @@ export const updateBusinessSchedule = async (
 
     const data = await response.json();
 
-    if (response.status !== 200) {
+    if (!response.ok) {
       return { errorMessage: data.message };
     }
 

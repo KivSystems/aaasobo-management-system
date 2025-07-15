@@ -38,7 +38,7 @@ export const updateBusinessScheduleController = async (
   const { startDate, endDate } = req.body;
 
   if (!startDate || isNaN(eventId)) {
-    return res.sendStatus(400).json({
+    return res.status(400).json({
       error: "Invalid date or event ID.",
     });
   }
