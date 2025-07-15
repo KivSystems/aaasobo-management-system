@@ -173,6 +173,7 @@ const BusinessCalendarClient = ({
             selectedDates={selectedDates}
             events={events}
             localMessages={localMessages}
+            clearErrorMessage={clearErrorMessage}
           />
         </form>
       </Modal>

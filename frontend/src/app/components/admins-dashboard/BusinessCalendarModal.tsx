@@ -14,11 +14,17 @@ const BusinessCalendarModal = ({
   selectedDates,
   events,
   localMessages,
+  clearErrorMessage,
 }: {
   selectedDates: string[];
   events: BusinessEventType[];
   localMessages: UpdateFormState;
+  clearErrorMessage: (field: string) => void;
 }) => {
+  const handleSelectChange = () => {
+    clearErrorMessage("eventId");
+  };
+
   return (
     <div className={styles.modalContent}>
       <h2>Schedule Update</h2>
@@ -36,7 +42,11 @@ const BusinessCalendarModal = ({
           </div>
           <div className={styles.eventSelector}>
             <BellIcon className={styles.icon} />
-            <select name="eventId" className={styles.eventSelect}>
+            <select
+              name="eventId"
+              className={styles.eventSelect}
+              onChange={handleSelectChange}
+            >
               <option value="default">Select Event</option>
               {events.map((event) => (
                 <option key={event.id} value={event.id}>
@@ -45,7 +55,6 @@ const BusinessCalendarModal = ({
               ))}
             </select>
           </div>
-
           <div className={styles.actionButton}>
             <ActionButton
               className="saveEvent"
