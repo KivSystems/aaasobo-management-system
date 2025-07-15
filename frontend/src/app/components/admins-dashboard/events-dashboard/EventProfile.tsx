@@ -119,7 +119,7 @@ function EventProfile({
   return (
     <>
       <div className={styles.container}>
-        {latestEvent ? (
+        {latestEvent && latestEvent.color ? (
           <form action={formAction} className={styles.profileCard}>
             <div className={styles.profileCard}>
               {/* Event name */}
