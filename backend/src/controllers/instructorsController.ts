@@ -29,6 +29,7 @@ import {
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import { getCalendarClasses } from "../services/classesService";
+import { head } from "@vercel/blob";
 
 // Fetch all the instructors and their availabilities
 export const getAllInstructorsAvailabilitiesController = async (
@@ -125,6 +126,8 @@ export const getInstructor = async (req: Request, res: Response) => {
     if (!instructor) {
       return res.status(404).json({ message: "Instructor not found." });
     }
+    const blob = await head(instructor.icon);
+
     return res.status(200).json({
       instructor: {
         id: instructor.id,
@@ -133,7 +136,7 @@ export const getInstructor = async (req: Request, res: Response) => {
         unavailabilities: instructor.instructorUnavailability,
         nickname: instructor.nickname,
         email: instructor.email,
-        icon: instructor.icon,
+        icon: blob,
         classURL: instructor.classURL,
         meetingId: instructor.meetingId,
         passcode: instructor.passcode,

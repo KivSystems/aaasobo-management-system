@@ -5,20 +5,17 @@ import { saltRounds } from "../helper/commonUtils";
 import { put } from "@vercel/blob";
 
 // Register a new instructor account in the DB
-export const registerInstructor = async (
-  data: {
-    name: string;
-    nickname: string;
-    email: string;
-    password: string;
-    icon: Express.Multer.File;
-    classURL: string;
-    meetingId: string;
-    passcode: string;
-    introductionURL: string;
-  },
-  tx: Prisma.TransactionClient,
-) => {
+export const registerInstructor = async (data: {
+  name: string;
+  nickname: string;
+  email: string;
+  password: string;
+  icon: Express.Multer.File;
+  classURL: string;
+  meetingId: string;
+  passcode: string;
+  introductionURL: string;
+}) => {
   const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
   const blob = await put(data.icon.originalname, data.icon.buffer, {
@@ -26,7 +23,7 @@ export const registerInstructor = async (
     addRandomSuffix: true,
   });
 
-  await tx.instructor.create({
+  await prisma.instructor.create({
     data: {
       name: data.name,
       email: data.email,

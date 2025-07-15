@@ -16,7 +16,7 @@ type Instructor = {
   email: string;
   nickname: string;
   classURL: string;
-  icon: File;
+  icon: { url: string };
   meetingId: string;
   passcode: string;
   introductionURL: string;

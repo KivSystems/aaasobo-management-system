@@ -315,21 +315,18 @@ export const registerInstructorController = async (
       return res.status(409).json({ items: errorItems });
     }
 
-    await prisma.$transaction(async (tx) => {
-      registerInstructor(
-        {
-          name,
-          nickname,
-          email: normalizedEmail,
-          password,
-          icon,
-          classURL,
-          meetingId,
-          passcode,
-          introductionURL,
-        },
-        tx,
-      );
+    await prisma.$transaction(async () => {
+      registerInstructor({
+        name,
+        nickname,
+        email: normalizedEmail,
+        password,
+        icon,
+        classURL,
+        meetingId,
+        passcode,
+        introductionURL,
+      });
     });
 
     res.sendStatus(201);

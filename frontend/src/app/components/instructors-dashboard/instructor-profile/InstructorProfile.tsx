@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import styles from "./InstructorProfile.module.scss";
 import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
@@ -81,12 +80,9 @@ function InstructorProfile({
       <div className={styles.container}>
         {latestInstructor ? (
           <form action={formAction} className={styles.profileCard}>
-            <Image
-              src={`/instructors/${latestInstructor.icon}`}
+            <img
+              src={latestInstructor?.icon.url}
               alt={latestInstructor.name}
-              width={100}
-              height={100}
-              priority
               className={styles.pic}
             />
 
@@ -237,7 +233,11 @@ function InstructorProfile({
             {/* Hidden input fields */}
             <input type="hidden" name="userType" value="instructor" />
             <input type="hidden" name="id" value={latestInstructor.id} />
-            <input type="hidden" name="icon" value={latestInstructor.icon} />
+            <input
+              type="hidden"
+              name="icon"
+              value={latestInstructor.icon.url}
+            />
 
             {/* Action buttons for only admin */}
             {isAdminAuthenticated ? (
