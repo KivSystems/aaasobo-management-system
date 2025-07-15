@@ -126,7 +126,7 @@ type Plan = {
 type BusinessEventType = {
   id: number;
   name: string;
-  color: string;
+  color?: string;
 };
 
 type Subscriptions = {
@@ -223,7 +223,7 @@ type LinkType = {
 
 type UserType = "admin" | "customer" | "instructor";
 
-type CategoryType = "event" | "plan";
+type CategoryType = "event" | "plan" | "schedule";
 
 type ForgotPasswordFormState = {
   errorMessage?: string;
@@ -254,6 +254,7 @@ type UpdateFormState = {
   passcode?: string;
   introductionURL?: string;
   color?: string;
+  eventId?: string;
   errorMessage?: string;
   successMessage?: string;
 };
@@ -322,6 +323,7 @@ type BusinessSchedule = {
 
 type BusinessCalendarClientProps = {
   businessSchedule?: BusinessSchedule[] | [];
+  events?: BusinessEventType[] | [];
   isAdminAuthenticated?: boolean;
   validRange: {
     start: string;

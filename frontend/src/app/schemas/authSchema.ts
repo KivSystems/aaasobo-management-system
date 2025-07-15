@@ -123,6 +123,15 @@ export const eventUpdateSchema = z.object({
   color: z.string().min(1, "Color Code is required."),
 });
 
+export const scheduleUpdateSchema = z.object({
+  eventId: z
+    .number({
+      required_error: "Event ID must be a number.",
+      invalid_type_error: "Please select one event.",
+    })
+    .min(0, "Event ID is required."),
+});
+
 export const instructorUpdateSchema = z.object({
   name: z.string().min(1, "Name is required."),
   nickname: z.string().min(1, "Nickname is required."),
