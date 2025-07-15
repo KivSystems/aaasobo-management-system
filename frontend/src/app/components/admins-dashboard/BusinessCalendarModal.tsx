@@ -27,7 +27,7 @@ const BusinessCalendarModal = ({
 
   return (
     <div className={styles.modalContent}>
-      <h2>Schedule Update</h2>
+      <h2>Update Schedule</h2>
       {selectedDates && (
         <>
           <InputField name="startDate" value={selectedDates[0]} type="hidden" />
