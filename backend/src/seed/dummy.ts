@@ -1013,15 +1013,15 @@ async function insertEvents() {
     data: [
       {
         name: "AaasoBo! Holiday", // お休み
-        color: "rgb(250,215,205)",
+        color: "#FAD7CD",
       },
       {
         name: "AaasoBo! Substitute Holiday", // お休み振替対象日
-        color: "rgb(255,0,0)",
+        color: "#FF0000",
       },
       {
         name: "Theme Class Week", // テーマクラスウィーク
-        color: "rgb(255,255,0)",
+        color: "#FFFF00",
       },
     ],
   });
