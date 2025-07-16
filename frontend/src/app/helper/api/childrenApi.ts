@@ -1,3 +1,9 @@
+import {
+  NO_CHANGES_MADE_MESSAGE,
+  PROFILE_UPDATE_FAILED_MESSAGE,
+  PROFILE_UPDATE_SUCCESS_MESSAGE,
+} from "../messages/customerDashboard";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
@@ -65,15 +71,13 @@ export const addChild = async (
   return data;
 };
 
-// PATCH a child date
-export const editChild = async (
+export const updateChildProfile = async (
   childId: number,
   childName: string,
   childBirthdate: string,
   childInfo: string,
   customerId: number,
-) => {
-  // Define the data to be sent to the server side.
+): Promise<LocalizedMessages> => {
   const childrenURL = `${BACKEND_ORIGIN}/children/${childId}`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
@@ -83,19 +87,34 @@ export const editChild = async (
     customerId: Number(customerId),
   });
 
-  const response = await fetch(childrenURL, {
-    method: "PATCH",
-    headers,
-    body,
-  });
+  try {
+    const response = await fetch(childrenURL, {
+      method: "PATCH",
+      headers,
+      body,
+    });
 
-  const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+
+    if (data.message === "no_change") {
+      return {
+        errorMessage: NO_CHANGES_MADE_MESSAGE,
+      };
+    }
+
+    return {
+      successMessage: PROFILE_UPDATE_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while updating child profile:", error);
+    return {
+      errorMessage: PROFILE_UPDATE_FAILED_MESSAGE,
+    };
   }
-
-  return data;
 };
 
 // DELETE a child data by child id

@@ -438,7 +438,7 @@ type RegisterChildProps = {
 };
 
 type BirthdateInputProps = {
-  onValidDateChange: (isoDate: string | null) => void;
+  onValidDateChange?: (isoDate: string | null) => void;
   defaultBirthdate?: string;
   error?: string;
   language?: LanguageType;
@@ -453,6 +453,8 @@ type TextAreaInputProps = {
   error?: string;
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   language?: LanguageType;
+  name?: string;
+  className?: string;
 };
 
 // Types related to RebookingForm

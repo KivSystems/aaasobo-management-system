@@ -17,7 +17,7 @@ async function CustomerProfilePage({ params }: { params: { id: string } }) {
     <main>
       <Breadcrumb
         links={[{ label: { ja: "プロフィール", en: "Profile" } }]}
-        className="customerProfile"
+        className="profile"
       />
       <CustomerProfile customerProfile={customerProfile} />
     </main>

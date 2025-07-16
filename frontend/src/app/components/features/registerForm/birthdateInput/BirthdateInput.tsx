@@ -14,22 +14,22 @@ const BirthdateInput = ({
   const [year, setYear] = useState(defaultYear ?? "");
   const [month, setMonth] = useState(defaultMonth ?? "");
   const [day, setDay] = useState(defaultDay ?? "");
+  const [localIsoDate, setLocalIsoDate] = useState<string | null>(null);
 
   const padZero = (val: string) => val.padStart(2, "0");
 
   useEffect(() => {
     if (year === "" || month === "" || day === "") return;
     const iso = `${year}-${padZero(month)}-${padZero(day)}`;
-    onValidDateChange(iso);
+    if (onValidDateChange) {
+      onValidDateChange(iso);
+    } else {
+      setLocalIsoDate(iso);
+    }
   }, [year, month, day, onValidDateChange]);
 
   return (
     <fieldset className={styles.birthdateInput}>
-      <legend>
-        {language === "ja" ? "お子さまの生年月日" : "Child's date of birth"}
-        <span>{language === "ja" ? "(半角数字)" : ""}</span>
-      </legend>
-
       <div className={styles.birthdateInput__group}>
         <div className={styles.birthdateInput__field}>
           <input
@@ -76,6 +76,11 @@ const BirthdateInput = ({
           <label htmlFor="birth-day">{language === "ja" ? "日" : "D"}</label>
         </div>
       </div>
+
+      {/* Hidden input for form submission (only used if onValidDateChange is not passed) */}
+      {!onValidDateChange && localIsoDate && (
+        <input type="hidden" name="birthdate" value={localIsoDate ?? ""} />
+      )}
 
       {error && (
         <FormValidationMessage

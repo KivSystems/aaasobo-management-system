@@ -38,32 +38,23 @@ export const registerChild = async (
   return child;
 };
 
-export const updateChild = async (
+export const updateChildProfile = async (
   childId: number,
-  name: string,
-  birthdate: string,
-  personalInfo: string,
-  customerId: number,
+  dataToUpdate: {
+    name: string;
+    birthdate: string;
+    personalInfo: string;
+    customerId: number;
+  },
 ) => {
-  try {
-    // Update the Child data.
-    const child = await prisma.children.update({
-      where: {
-        id: childId,
-      },
-      data: {
-        name,
-        birthdate,
-        personalInfo,
-        customerId,
-      },
-    });
+  const child = await prisma.children.update({
+    where: {
+      id: childId,
+    },
+    data: dataToUpdate,
+  });
 
-    return child;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to update a child.");
-  }
+  return child;
 };
 
 export const deleteChild = async (
@@ -78,16 +69,11 @@ export const deleteChild = async (
 };
 
 export const getChildById = async (id: number) => {
-  try {
-    const child = await prisma.children.findUnique({
-      where: { id },
-    });
+  const child = await prisma.children.findUnique({
+    where: { id },
+  });
 
-    return child;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch child.");
-  }
+  return child;
 };
 
 export const getAllChildren = async () => {
@@ -108,6 +94,7 @@ export const getAllChildren = async () => {
 export const getChildProfiles = async (customerId: number) => {
   const children = await prisma.children.findMany({
     where: { customerId },
+    orderBy: { id: "asc" },
   });
   const childProfiles = children.map((child) => ({
     id: child.id,

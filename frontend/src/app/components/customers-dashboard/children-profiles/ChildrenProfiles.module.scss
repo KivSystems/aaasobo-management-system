@@ -57,12 +57,14 @@
   &__text {
     font-size: 16px;
     font-weight: 300;
+    color: #3c4043;
   }
   &__inputField {
     font-size: 20px;
     font-weight: 400;
     font-family: var(--font-poppins), sans-serif;
-    padding: 3px;
+    padding: 3px 6px;
+    border: 1px solid #ccc;
     border-radius: 6px;
     width: 100%;
   }
@@ -77,10 +79,12 @@
   background-color: #f2f2f2;
   border-radius: 6px;
   padding: 10px;
+  min-height: 70px;
 
   &__text {
     font-size: 14px;
     font-weight: 300;
+    color: #3c4043;
   }
 
   &__inputField {
@@ -104,6 +108,7 @@
   &__text {
     font-size: 14px;
     font-weight: 300;
+    color: #3c4043;
   }
 
   &__inputField {
@@ -126,4 +131,8 @@
 .addBtn {
   margin-top: 10px;
   margin-bottom: 20px;
+}
+
+.messageWrapper {
+  margin-bottom: 1rem;
 }

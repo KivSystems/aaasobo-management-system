@@ -4,7 +4,7 @@ import {
   getChildById,
   getChildren,
   registerChild,
-  updateChild,
+  updateChildProfile,
 } from "../services/childrenService";
 import { deleteAttendancesByChildId } from "../services/classAttendancesService";
 import {
@@ -12,6 +12,7 @@ import {
   checkIfChildHasCompletedClass,
 } from "../services/classesService";
 import { prisma } from "../../prisma/prismaClient";
+import { RequestWithId } from "../middlewares/parseId.middleware";
 
 export const getChildrenController = async (req: Request, res: Response) => {
   const customerId = req.query.customerId as string;
@@ -48,25 +49,56 @@ export const registerChildController = async (req: Request, res: Response) => {
   }
 };
 
-export const updateChildController = async (req: Request, res: Response) => {
-  const childId = parseInt(req.params.id);
+export const updateChildProfileController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const childId = req.id;
   const { name, birthdate, personalInfo, customerId } = req.body;
 
+  if (!name || !birthdate || !personalInfo || !customerId) {
+    return res.sendStatus(400);
+  }
+
+  const formattedBirthdate = `${birthdate}T00:00:00.000Z`;
+
   try {
-    const child = await updateChild(
-      childId,
+    const childToUpdate = await getChildById(childId);
+    if (!childToUpdate) {
+      return res.sendStatus(404);
+    }
+
+    if (childToUpdate.customerId !== customerId) {
+      return res.sendStatus(403);
+    }
+
+    const isUnchanged =
+      childToUpdate.name === name &&
+      childToUpdate.birthdate?.toISOString() === formattedBirthdate &&
+      childToUpdate.personalInfo === personalInfo;
+
+    if (isUnchanged) {
+      return res.status(200).json({ message: "no_change" });
+    }
+
+    await updateChildProfile(childId, {
       name,
-      birthdate,
+      birthdate: formattedBirthdate,
       personalInfo,
       customerId,
-    );
-
-    res.status(200).json({
-      message: "Child is updated successfully",
-      child,
     });
+
+    res.status(200).json({ message: "updated" });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    console.error("Error updating child profile", {
+      error,
+      context: {
+        customerId,
+        childId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
