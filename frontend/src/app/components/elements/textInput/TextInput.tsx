@@ -10,7 +10,7 @@ type TextInputProps = {
   type: string;
   value?: string;
   defaultValue?: string;
-  placeholder: string;
+  placeholder?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   icon?: React.ReactNode;
   inputRequired?: boolean;
