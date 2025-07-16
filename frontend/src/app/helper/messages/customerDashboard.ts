@@ -8,7 +8,7 @@ export const FAILED_TO_FETCH_INSTRUCTOR_PROFILES =
   "We couldn't load instructors' profiles. Please refresh the page or try again later. / インストラクター情報を取得できませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const FAILED_TO_FETCH_CHILD_PROFILES =
-  "We couldn't load your children' profiles. Please refresh the page or try again later. / お子様のプロフィールを取得できませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
+  "We couldn't load your children' profiles. Please refresh the page or try again later. / お子さまのプロフィールを取得できませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
 export const INVALID_CUSTOMER_ID =
   "We encountered an issue while processing your ID. Please refresh the page or try again later. / カスタマーIDの処理中に問題が発生しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
@@ -63,7 +63,7 @@ export const REBOOKING_TOO_LATE_NOTICE = {
 };
 
 export const CHILD_PROFILE_REQUIRED_MESSAGE = {
-  ja: "お子様のプロフィールが未登録のため、振替予約を行うことができません。サイドメニューの「お子様プロフィール」からプロフィールを登録のうえ、再度振替予約を行ってください。",
+  ja: "お子さまのプロフィールが未登録のため、振替予約を行うことができません。サイドメニューの「お子さまプロフィール」からプロフィールを登録のうえ、再度振替予約を行ってください。",
   en: "You cannot rebook a class because your child's profile has not been registered. Please go to 'Child Profile' in the side menu to register the profile, then try rebooking again.",
 };
 
@@ -136,17 +136,17 @@ export const PROFILE_UPDATE_FAILED_MESSAGE = {
 
 // Rebooking modal
 export const SELECT_AT_LEAST_ONE_CHILD_MESSAGE = {
-  ja: "参加するお子様を少なくとも1人選択してください。",
+  ja: "参加するお子さまを少なくとも1人選択してください。",
   en: "Please select at least one child to attend.",
 };
 
 export const CHILD_BOOKING_STATUS_ERROR_MESSAGE = {
-  ja: "お子様のクラス予約状況の確認ができませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。",
+  ja: "お子さまのクラス予約状況の確認ができませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。",
   en: "We couldn't check your child's class booking status. Please reload the page or try again after some time.",
 };
 
 export const CONFIRM_BOOKING_WITH_CONFLICT_MESSAGE = {
-  ja: "下記のお子様は、すでに同じ時間に別のクラスを予約しています。このまま予約を続けてもよろしいですか？",
+  ja: "下記のお子さまは、すでに同じ時間に別のクラスを予約しています。このまま予約を続けてもよろしいですか？",
   en: "The following child(ren) already have another class. Would you like to continue booking?",
 };
 
@@ -194,4 +194,35 @@ export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
 export const LOGIN_REQUIRED_MESSAGE = {
   ja: "続行するには、ログインしてください。",
   en: "Please log in to continue.",
+};
+
+// childrenProfiles
+export const CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE = {
+  ja: "少なくとも1人のお子さまのプロフィールが必要なため、このプロフィールは削除できません。",
+  en: "You must have at least one child profile, so this profile cannot be deleted.",
+};
+
+export const CONFIRM_DELETE_CHILD_PROFILE_MESSAGE = {
+  ja: "本当にこのお子さまのプロフィールを削除してもよろしいですか？",
+  en: "Are you sure you want to delete this child's profile?",
+};
+
+export const PROFILE_DELETE_SUCCESS_MESSAGE = {
+  ja: "プロフィールの削除が完了しました。",
+  en: "The profile has been deleted.",
+};
+
+export const PROFILE_DELETE_FAILED_MESSAGE = {
+  ja: "プロフィールを削除できませんでした。時間をおいて、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't delete the profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const PROFILE_DELETE_BLOCKED_BY_PAST_CLASS_MESSAGE = {
+  ja: "お子さまが過去に参加されたクラスがあるため、このプロフィールは削除できません。",
+  en: "This profile cannot be deleted because your child has attended a past class.",
+};
+
+export const PROFILE_DELETE_BLOCKED_BY_BOOKED_CLASS_MESSAGE = {
+  ja: "お子さまに予約済みのクラスがあるため、このプロフィールは削除できません。",
+  en: "This profile cannot be deleted because your child has a booked class.",
 };

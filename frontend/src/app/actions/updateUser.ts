@@ -246,7 +246,7 @@ export async function updateChildProfileAction(
   const path =
     loggedInUserType === "admin"
       ? `/admins/${loggedInUserId}/customer-list/${customerId}`
-      : `/customers/${loggedInUserId}/profile`;
+      : `/customers/${loggedInUserId}/children-profiles`;
 
   revalidatePath(path);
 

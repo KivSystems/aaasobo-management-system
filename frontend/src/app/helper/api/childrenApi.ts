@@ -1,5 +1,9 @@
 import {
   NO_CHANGES_MADE_MESSAGE,
+  PROFILE_DELETE_BLOCKED_BY_BOOKED_CLASS_MESSAGE,
+  PROFILE_DELETE_BLOCKED_BY_PAST_CLASS_MESSAGE,
+  PROFILE_DELETE_FAILED_MESSAGE,
+  PROFILE_DELETE_SUCCESS_MESSAGE,
   PROFILE_UPDATE_FAILED_MESSAGE,
   PROFILE_UPDATE_SUCCESS_MESSAGE,
 } from "../messages/customerDashboard";
@@ -117,10 +121,10 @@ export const updateChildProfile = async (
   }
 };
 
-// DELETE a child data by child id
-export const deleteChild = async (childId: number) => {
+export const deleteChild = async (
+  childId: number,
+): Promise<LocalizedMessages> => {
   try {
-    // Define the data to be sent to the server side.
     const childrenURL = `${BACKEND_ORIGIN}/children/${childId}`;
     const headers = { "Content-Type": "application/json" };
 
@@ -129,15 +133,33 @@ export const deleteChild = async (childId: number) => {
       headers,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error);
-    }
-    const result = await response.json();
+    if (response.status === 409) {
+      const data = await response.json();
 
-    return result;
+      if (data.message === "has_completed_class") {
+        return {
+          errorMessage: PROFILE_DELETE_BLOCKED_BY_PAST_CLASS_MESSAGE,
+        };
+      }
+
+      if (data.message === "has_booked_class") {
+        return {
+          errorMessage: PROFILE_DELETE_BLOCKED_BY_BOOKED_CLASS_MESSAGE,
+        };
+      }
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      successMessage: PROFILE_DELETE_SUCCESS_MESSAGE,
+    };
   } catch (error) {
-    console.error("Failed to delete the child profile:", error);
-    throw error;
+    console.error("API error while deleting child profile:", error);
+    return {
+      errorMessage: PROFILE_DELETE_FAILED_MESSAGE,
+    };
   }
 };

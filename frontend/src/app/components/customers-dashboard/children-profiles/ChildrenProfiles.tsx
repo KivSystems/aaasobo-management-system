@@ -1,7 +1,6 @@
 "use client";
 
 import styles from "./ChildrenProfiles.module.scss";
-import { deleteChild } from "@/app/helper/api/childrenApi";
 import {
   PlusIcon,
   UserCircleIcon as UserCircleSolid,
@@ -20,6 +19,11 @@ import { useFormMessages } from "@/app/hooks/useFormMessages";
 import BirthdateInput from "../../features/registerForm/birthdateInput/BirthdateInput";
 import TextAreaInput from "../../elements/textAreaInput/TextAreaInput";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
+import {
+  CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE,
+  CONFIRM_DELETE_CHILD_PROFILE_MESSAGE,
+} from "@/app/helper/messages/customerDashboard";
+import { deleteChildProfileAction } from "@/app/actions/deleteUser";
 
 function ChildrenProfiles({
   customerId,
@@ -39,7 +43,6 @@ function ChildrenProfiles({
   const { localMessages, clearErrorMessage } =
     useFormMessages<LocalizedMessages>(profileUpdateResult);
 
-  const [children, setChildren] = useState<Child[] | undefined>([]);
   const [editingChildId, setEditingChildId] = useState<number | null>(null);
   const [editingSuccessChildId, setEditingSuccessChildId] = useState<
     number | null
@@ -65,25 +68,22 @@ function ChildrenProfiles({
   }, [profileUpdateResult]);
 
   const handleDeleteClick = async (childId: number) => {
+    const hasOnlyOneChild = childProfiles.length === 1;
+
+    if (hasOnlyOneChild)
+      return alert(CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE[language]);
+
     const confirmed = window.confirm(
-      "Are you sure you want to delete this child's profile?",
+      CONFIRM_DELETE_CHILD_PROFILE_MESSAGE[language],
     );
     if (!confirmed) return;
 
-    try {
-      const deletedChildData = await deleteChild(childId);
-      setChildren((prevChildren) =>
-        prevChildren?.filter((child) => child.id !== childId),
-      );
+    const resultMessage = await deleteChildProfileAction(childId, customerId);
 
-      toast.success(deletedChildData.message);
-    } catch (error) {
-      console.error("Failed to delete the child profile:", error);
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("An unknown error occurred.");
-      }
+    if (resultMessage.successMessage) {
+      toast.success(resultMessage.successMessage[language]);
+    } else if (resultMessage.errorMessage) {
+      alert(resultMessage.errorMessage[language]);
     }
   };
 
@@ -92,7 +92,7 @@ function ChildrenProfiles({
       <div className={styles.addBtn}>
         <RedirectButton
           linkURL={addChildUrl}
-          btnText={language === "ja" ? "お子様を追加" : "Add Child"}
+          btnText={language === "ja" ? "お子さまを追加" : "Add Child"}
           className="addBtn"
           Icon={PlusIcon}
         />
@@ -228,7 +228,7 @@ function ChildrenProfiles({
               <div className={styles.childCard__buttons}>
                 <ActionButton
                   className="deleteChild"
-                  btnText="Delete"
+                  btnText={language === "ja" ? "削除" : "Delete"}
                   onClick={() => handleDeleteClick(child.id)}
                   disabled={editingChildId !== null}
                 />

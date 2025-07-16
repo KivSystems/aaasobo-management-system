@@ -6,11 +6,11 @@ import {
   registerChild,
   updateChildProfile,
 } from "../services/childrenService";
-import { deleteAttendancesByChildId } from "../services/classAttendancesService";
 import {
   checkIfChildHasBookedClass,
   checkIfChildHasCompletedClass,
-} from "../services/classesService";
+  deleteAttendancesByChildId,
+} from "../services/classAttendancesService";
 import { prisma } from "../../prisma/prismaClient";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 
@@ -102,55 +102,40 @@ export const updateChildProfileController = async (
   }
 };
 
-// DELETE a child profile by the child's id
-enum ErrorMessages {
-  completedClass = "Cannot delete this child's profile because the child has attended a class before.",
-  bookedClass = "Cannot delete this child's profile because the child is currently enrolled in booked classes.",
-}
-
-export const deleteChildController = async (req: Request, res: Response) => {
-  const childId = parseInt(req.params.id);
-
-  if (isNaN(childId)) {
-    return res.status(400).json({ error: "Invalid child ID." });
-  }
+export const deleteChildController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const childId = req.id;
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const hasCompletedClass = await checkIfChildHasCompletedClass(
-        tx,
-        childId,
-      );
-      if (hasCompletedClass) {
-        throw new Error(ErrorMessages.completedClass);
-      }
-      const hasBookedClass = await checkIfChildHasBookedClass(tx, childId);
-      if (hasBookedClass) {
-        throw new Error(ErrorMessages.bookedClass);
-      }
+    const hasCompletedClass = await checkIfChildHasCompletedClass(childId);
+    if (hasCompletedClass) {
+      return res.status(409).json({ message: "has_completed_class" });
+    }
 
+    const hasBookedClass = await checkIfChildHasBookedClass(childId);
+    if (hasBookedClass) {
+      return res.status(409).json({ message: "has_booked_class" });
+    }
+
+    await prisma.$transaction(async (tx) => {
       await deleteAttendancesByChildId(tx, childId);
-
-      const deletedChild = await deleteChild(tx, childId);
-
-      return deletedChild;
+      await deleteChild(tx, childId);
     });
 
     res.status(200).json({
-      message: "The child profile was deleted successfully",
-      deletedChild: result,
+      message: "deleted",
     });
   } catch (error) {
-    console.error("Failed to delete the child profile:", error);
-
-    if (
-      error instanceof Error &&
-      Object.values(ErrorMessages).includes(error.message as ErrorMessages)
-    ) {
-      return res.status(409).json({ error: error.message });
-    }
-
-    res.status(500).json({ error: "Failed to delete the child profile." });
+    console.error("Error deleting child", {
+      error,
+      context: {
+        childId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 

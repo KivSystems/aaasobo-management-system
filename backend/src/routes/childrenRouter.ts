@@ -21,4 +21,6 @@ childrenRouter.post("/", registerChildController);
 childrenRouter.patch("/:id", parseId, (req, res) =>
   updateChildProfileController(req as RequestWithId, res),
 );
-childrenRouter.delete("/:id", deleteChildController);
+childrenRouter.delete("/:id", parseId, (req, res) =>
+  deleteChildController(req as RequestWithId, res),
+);

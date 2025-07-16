@@ -17,7 +17,7 @@ async function ChildrenProfilesPage({ params }: { params: { id: string } }) {
     <main>
       <Breadcrumb
         links={[
-          { label: { ja: "お子様プロフィール", en: "Children's Profiles" } },
+          { label: { ja: "お子さまプロフィール", en: "Children's Profiles" } },
         ]}
         className="profile"
       />
