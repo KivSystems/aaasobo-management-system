@@ -1,7 +1,4 @@
 import { vi } from "vitest";
-import bcrypt from "bcrypt";
-
-const saltRounds = 12;
 
 export const createMockPrisma = () => {
   const mock = {
@@ -90,7 +87,3 @@ export const createTestInstructor = () => ({
   updatedAt: new Date(),
   inactiveAt: null,
 });
-
-export const hashPassword = (password: string) => {
-  return bcrypt.hashSync(password, saltRounds);
-};
