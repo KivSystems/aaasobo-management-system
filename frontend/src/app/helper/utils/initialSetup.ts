@@ -1,5 +1,3 @@
-"use client";
-
 export const initialSetup = (userType: UserType) => {
   switch (userType) {
     case "admin":

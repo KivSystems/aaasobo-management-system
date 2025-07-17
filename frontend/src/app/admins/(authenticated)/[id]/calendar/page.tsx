@@ -14,7 +14,9 @@ const Page = ({ params }: { params: { id: string } }) => {
   const isAuthenticated = true;
 
   // Perform initial setup for the admin user
-  initialSetup("admin");
+  useEffect(() => {
+    initialSetup("admin");
+  }, []);
 
   const handleSendInstructor = async (id: number, name: string) => {
     localStorage.setItem("activeInstructor", [String(id), name].join(","));

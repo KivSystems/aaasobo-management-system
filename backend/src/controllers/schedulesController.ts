@@ -109,7 +109,7 @@ export const updateSundayColorController = async (
     for (
       let d = new Date(firstSunday);
       d.getFullYear() === nextYear;
-      d.setDate(d.getDate() + 7)
+      d = new Date(d.setDate(d.getDate() + 7))
     ) {
       dateList.push(convertToISOString(d.toISOString().split("T")[0]));
     }
