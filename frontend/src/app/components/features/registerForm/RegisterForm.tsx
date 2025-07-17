@@ -44,6 +44,7 @@ const RegisterForm = ({
 
   const [password, onPasswordChange] = useInput();
   const [showPassword, setShowPassword] = useState(false);
+  const [colorValue, setColorValue] = useState("#000000"); // Default color value
   const { localMessages, clearErrorMessage } =
     useFormMessages(registerResultState);
   const { passwordStrength } = usePasswordStrength(password);
@@ -248,17 +249,25 @@ const RegisterForm = ({
             error={localMessages.name}
             onChange={() => clearErrorMessage("name")}
           />
-          <TextInput
-            id="color"
-            label="Color Code"
-            type="text"
-            name="color"
-            placeholder="e.g., RGB(255, 255, 255)"
-            icon={<DocumentTextIcon className={styles.icon} />}
-            inputRequired
-            error={localMessages.color}
-            onChange={() => clearErrorMessage("color")}
-          />{" "}
+          <div className={styles.eventColor}>
+            <TextInput
+              id="color"
+              label="Color Code"
+              type="color"
+              name="color"
+              value={colorValue}
+              icon={<DocumentTextIcon className={styles.icon} />}
+              inputRequired
+              error={localMessages.color}
+              onChange={(e) => {
+                setColorValue(e.target.value);
+                clearErrorMessage("color");
+              }}
+            />
+            <div className={styles.eventColor__text}>
+              {colorValue.toUpperCase()}
+            </div>
+          </div>
         </>
       )}
 
