@@ -1,4 +1,5 @@
-export const defaultEventIds = [1, 2, 3];
+export const holidayEventId = 2;
+export const defaultEventIds = [1, 2, 3, 4];
 
 export const prefectures = [
   "海外 / Overseas",
