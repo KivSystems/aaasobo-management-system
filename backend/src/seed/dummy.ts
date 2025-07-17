@@ -1012,6 +1012,10 @@ async function insertEvents() {
   await prisma.event.createMany({
     data: [
       {
+        name: "Regular Class Day",
+        color: "#FFFFFF",
+      },
+      {
         name: "AaasoBo! Holiday", // お休み
         color: "rgb(250,215,205)",
       },
@@ -1032,627 +1036,627 @@ async function insertSchedules() {
     data: [
       {
         date: new Date("2025-01-01T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-01-02T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-01-03T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-01-04T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-01-05T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-01-12T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-01-13T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-01-14T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-01-15T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-01-16T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-01-17T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-01-18T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-01-19T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-01-26T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-02-02T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-02-09T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-02-10T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-02-11T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-02-12T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-02-13T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-02-14T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-02-15T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-02-16T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-02-23T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-03-02T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-03-09T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-03-10T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-03-11T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-03-12T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-03-13T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-03-14T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-03-15T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-03-16T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-03-23T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-03-30T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-03-31T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-04-01T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-04-02T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-04-06T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-04-13T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-04-14T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-04-15T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-04-16T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-04-17T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-04-18T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-04-19T00:00:00Z"),
-        eventId: 3,
-      },
-      {
-        date: new Date("2025-04-20T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-04-27T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-04-29T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-04-30T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-05-01T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-05-02T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-05-03T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-05-04T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-05-05T00:00:00Z"),
-        eventId: 1,
-      },
-      {
-        date: new Date("2025-05-06T00:00:00Z"),
         eventId: 2,
       },
       {
+        date: new Date("2025-01-02T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-03T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-04T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-05T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-12T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-13T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-01-14T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-01-15T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-01-16T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-01-17T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-01-18T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-01-19T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-01-26T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-02-02T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-02-09T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-02-10T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-02-11T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-02-12T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-02-13T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-02-14T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-02-15T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-02-16T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-02-23T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-03-02T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-03-09T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-03-10T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-03-11T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-03-12T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-03-13T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-03-14T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-03-15T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-03-16T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-03-23T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-03-30T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-03-31T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-04-01T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-04-02T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-04-06T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-04-13T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-04-14T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-04-15T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-04-16T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-04-17T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-04-18T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-04-19T00:00:00Z"),
+        eventId: 4,
+      },
+      {
+        date: new Date("2025-04-20T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-04-27T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-04-29T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-04-30T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-05-01T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-05-02T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-05-03T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-05-04T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-05-05T00:00:00Z"),
+        eventId: 2,
+      },
+      {
+        date: new Date("2025-05-06T00:00:00Z"),
+        eventId: 3,
+      },
+      {
         date: new Date("2025-05-11T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-05-12T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-05-13T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-05-14T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-05-15T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-05-16T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-05-17T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-05-18T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-05-25T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-06-01T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-06-08T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-06-15T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-06-16T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-06-17T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-06-18T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-06-19T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-06-20T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-06-21T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-06-22T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-06-29T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-07-06T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-07-13T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-07-14T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-07-15T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-07-16T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-07-17T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-07-18T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-07-19T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-07-20T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-07-27T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-03T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-04T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-08-05T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-08-06T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-08-07T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-08-08T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
 
       {
         date: new Date("2025-08-09T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-08-10T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-11T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-12T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-13T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-14T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-15T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-16T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-17T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-24T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-08-31T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-09-07T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-09-14T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-09-15T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-09-16T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-09-17T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-09-18T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-09-19T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-09-20T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-09-21T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-09-28T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-10-05T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-10-12T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-10-19T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-10-20T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-10-21T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-10-22T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-10-23T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-10-24T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-10-25T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-10-26T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-10-30T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-10-31T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-11-01T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-11-02T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-11-09T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-11-16T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-11-17T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-11-18T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-11-19T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-11-20T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-11-21T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-11-22T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-11-23T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-11-30T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-12-07T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-12-14T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-12-17T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-12-18T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-12-19T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-12-20T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-12-21T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-12-22T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-12-23T00:00:00Z"),
-        eventId: 3,
+        eventId: 4,
       },
       {
         date: new Date("2025-12-24T00:00:00Z"),
-        eventId: 2,
+        eventId: 3,
       },
       {
         date: new Date("2025-12-25T00:00:00Z"),
-        eventId: 2,
+        eventId: 3,
       },
       {
         date: new Date("2025-12-28T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-12-29T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-12-30T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
       {
         date: new Date("2025-12-31T00:00:00Z"),
-        eventId: 1,
+        eventId: 2,
       },
     ],
   });
