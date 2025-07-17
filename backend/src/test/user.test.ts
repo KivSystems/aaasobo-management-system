@@ -1,65 +1,49 @@
 import { describe, it, expect, vi } from "vitest";
-import request from "supertest";
-import bcrypt from "bcrypt";
-import { server } from "../server";
-import { saltRounds } from "../helper/commonUtils";
-
-const mockResend = vi.hoisted(() => {
-  return {
-    emails: {
-      send: vi.fn(),
-    },
-  };
-});
-
-vi.mock("resend", () => ({
-  Resend: vi.fn(() => mockResend),
-}));
-
-const mockPrisma = vi.hoisted(() => {
-  return {
-    instructor: {
-      findUnique: vi.fn(),
-      update: vi.fn(),
-    },
-    customer: {
-      findUnique: vi.fn(),
-    },
-    admins: {
-      findUnique: vi.fn(),
-      update: vi.fn(),
-    },
-    passwordResetToken: {
-      findFirst: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
-    },
-  };
-});
+import {
+  createMockPrisma,
+  createMockResend,
+  createTestAdmin,
+  createTestCustomer,
+  createTestInstructor,
+  hashPassword,
+} from "./helper";
 
 vi.mock("../../prisma/prismaClient", () => ({
-  prisma: mockPrisma,
+  prisma: createMockPrisma(),
 }));
+
+vi.mock("../helper/resendClient", () => ({
+  resend: createMockResend(),
+}));
+
+import { prisma } from "../../prisma/prismaClient";
+import { resend } from "../helper/resendClient";
+import request from "supertest";
+import { server } from "../server";
+
+const mockPrisma = prisma as unknown as ReturnType<typeof createMockPrisma>;
+const mockResend = resend as unknown as ReturnType<typeof createMockResend>;
 
 describe("Admin Login", () => {
   it("should successfully log in with valid credentials", async () => {
+    const admin = createTestAdmin();
     mockPrisma.admins.findUnique.mockResolvedValue({
-      id: 1,
-      name: "Test Admin",
-      email: "admin@example.com",
-      password: bcrypt.hashSync("adminpass123", saltRounds),
+      id: admin.id,
+      name: admin.name,
+      email: admin.email,
+      password: hashPassword(admin.password),
     });
 
     const response = await request(server)
       .post("/users/authenticate")
       .send({
-        email: "admin@example.com",
-        password: "adminpass123",
+        email: admin.email,
+        password: admin.password,
         userType: "admin",
       })
       .expect(200);
 
-    expect(response.body).toEqual({ id: 1 });
+    expect(response.body).toEqual({ id: admin.id });
   });
 
   it("should fail with invalid credentials", async () => {
@@ -76,17 +60,18 @@ describe("Admin Login", () => {
   });
 
   it("should fail with wrong password", async () => {
+    const admin = createTestAdmin();
     mockPrisma.admins.findUnique.mockResolvedValue({
-      id: 1,
-      name: "Test Admin",
-      email: "admin@example.com",
-      password: bcrypt.hashSync("adminpass123", saltRounds),
+      id: admin.id,
+      name: admin.name,
+      email: admin.email,
+      password: hashPassword(admin.password),
     });
 
     await request(server)
       .post("/users/authenticate")
       .send({
-        email: "admin@example.com",
+        email: admin.email,
         password: "wrongpassword",
         userType: "admin",
       })
@@ -96,75 +81,59 @@ describe("Admin Login", () => {
 
 describe("Customer Login", () => {
   it("should successfully log in with valid credentials", async () => {
+    const customer = createTestCustomer();
     mockPrisma.customer.findUnique.mockResolvedValue({
-      id: 1,
-      name: "Test Customer",
-      email: "customer@example.com",
-      password: bcrypt.hashSync("password123", saltRounds),
-      emailVerified: new Date(),
-      prefecture: "Tokyo",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      ...customer,
+      password: hashPassword(customer.password),
     });
 
     const response = await request(server)
       .post("/users/authenticate")
       .send({
-        email: "customer@example.com",
-        password: "password123",
+        email: customer.email,
+        password: customer.password,
         userType: "customer",
       })
       .expect(200);
 
-    expect(response.body).toEqual({ id: 1 });
+    expect(response.body).toEqual({ id: customer.id });
   });
 });
 
 describe("Instructor Login", () => {
   it("should successfully log in with valid credentials", async () => {
+    const instructor = createTestInstructor();
     mockPrisma.instructor.findUnique.mockResolvedValue({
-      id: 1,
-      name: "Test Instructor",
-      email: "instructor@example.com",
-      password: bcrypt.hashSync("password123", saltRounds),
-      classURL: "test-url",
-      icon: "test-icon",
-      nickname: "test-nick",
-      meetingId: "test-meeting",
-      passcode: "test-pass",
-      introductionURL: "test-intro",
-      createdAt: new Date(),
-      inactiveAt: null,
+      ...instructor,
+      password: hashPassword(instructor.password),
     });
 
     const response = await request(server)
       .post("/users/authenticate")
       .send({
-        email: "instructor@example.com",
-        password: "password123",
+        email: instructor.email,
+        password: instructor.password,
         userType: "instructor",
       })
       .expect(200);
 
-    expect(response.body).toEqual({ id: 1 });
+    expect(response.body).toEqual({ id: instructor.id });
   });
 });
 
 describe("Admin Password Reset", () => {
   it("should successfully reset password", async () => {
     const mockToken = "test-reset-token-123";
+    const mockAdmin = createTestAdmin();
 
     // Setup mocks
-    const mockAdmin = {
-      id: 1,
-      name: "Test Admin",
-      email: "admin@example.com",
-      password: bcrypt.hashSync("adminpass123", saltRounds),
-    };
-    mockPrisma.admins.findUnique.mockResolvedValue(mockAdmin);
+    mockPrisma.admins.findUnique.mockResolvedValue({
+      ...mockAdmin,
+      password: hashPassword(mockAdmin.password),
+    });
     mockPrisma.passwordResetToken.create.mockResolvedValue({
       id: 1,
-      email: "admin@example.com",
+      email: mockAdmin.email,
       token: mockToken,
       expires: new Date(Date.now() + 60 * 60 * 1000),
       createdAt: new Date(),
@@ -177,7 +146,7 @@ describe("Admin Password Reset", () => {
     await request(server)
       .post("/users/send-password-reset")
       .send({
-        email: "admin@example.com",
+        email: mockAdmin.email,
         userType: "admin",
       })
       .expect(201);
@@ -196,7 +165,7 @@ describe("Admin Password Reset", () => {
     // Step 2: Verify token
     mockPrisma.passwordResetToken.findUnique.mockResolvedValue({
       id: 1,
-      email: "admin@example.com",
+      email: mockAdmin.email,
       token: extractedToken,
       expires: new Date(Date.now() + 60 * 60 * 1000),
       createdAt: new Date(),
@@ -214,7 +183,7 @@ describe("Admin Password Reset", () => {
     const newPassword = "newPassword456";
     const updatedMockAdmin = {
       ...mockAdmin,
-      password: bcrypt.hashSync(newPassword, saltRounds),
+      password: hashPassword(newPassword),
     };
     mockPrisma.admins.update.mockResolvedValue(updatedMockAdmin);
 
@@ -233,12 +202,12 @@ describe("Admin Password Reset", () => {
     const loginResponse = await request(server)
       .post("/users/authenticate")
       .send({
-        email: "admin@example.com",
+        email: mockAdmin.email,
         password: newPassword,
         userType: "admin",
       })
       .expect(200);
 
-    expect(loginResponse.body).toEqual({ id: 1 });
+    expect(loginResponse.body).toEqual({ id: mockAdmin.id });
   });
 });
