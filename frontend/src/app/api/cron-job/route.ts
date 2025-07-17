@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { updateSundayColor } from "@/app/helper/api/calendarsApi";
 
-export const config = {
-  runtime: "nodejs",
-};
+// export const runtime = "nodejs";
+export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
+  console.log("CRON_SECRET:", process.env.CRON_SECRET);
   if (
     req.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`
   ) {
