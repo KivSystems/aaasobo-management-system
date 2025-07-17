@@ -69,13 +69,20 @@ const BusinessCalendarClient = ({
     if (!isAdminAuthenticated) {
       return;
     }
-    clearErrorMessage("eventId");
-    setIsModalOpen(true);
 
     const startDate = new Date(arg.start);
     const endDate = new Date(arg.end.getTime() - 24 * 60 * 60 * 1000);
     const startDateStr = dateToString(startDate);
     const endDateStr = dateToString(endDate);
+
+    // If the start date is the current date or before, do not allow selection
+    if (startDate < new Date()) {
+      alert("Cannot select past dates.");
+      return;
+    }
+
+    clearErrorMessage("eventId");
+    setIsModalOpen(true);
 
     // Set selected dates for updating the schedule
     if (startDate.getDate() === endDate.getDate()) {
