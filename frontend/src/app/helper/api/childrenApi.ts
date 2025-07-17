@@ -1,5 +1,7 @@
 import {
   NO_CHANGES_MADE_MESSAGE,
+  PROFILE_ADD_FAILED_MESSAGE,
+  PROFILE_ADD_SUCCESS_MESSAGE,
   PROFILE_DELETE_BLOCKED_BY_BOOKED_CLASS_MESSAGE,
   PROFILE_DELETE_BLOCKED_BY_PAST_CLASS_MESSAGE,
   PROFILE_DELETE_FAILED_MESSAGE,
@@ -43,36 +45,41 @@ export const getChildById = async (id: number) => {
   }
 };
 
-// POST a new child data
 export const addChild = async (
-  childName: string,
-  childBirthdate: string,
-  childPersonalInfo: string,
+  name: string,
+  birthdate: string,
+  personalInfo: string,
   customerId: number,
-) => {
-  // Define the data to be sent to the server side.
+): Promise<LocalizedMessages> => {
   const childrenURL = `${BACKEND_ORIGIN}/children`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
-    name: childName,
-    birthdate: childBirthdate,
-    personalInfo: childPersonalInfo,
+    name,
+    birthdate,
+    personalInfo,
     customerId,
   });
 
-  const response = await fetch(childrenURL, {
-    method: "POST",
-    headers,
-    body,
-  });
+  try {
+    const response = await fetch(childrenURL, {
+      method: "POST",
+      headers,
+      body,
+    });
 
-  const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    return {
+      successMessage: PROFILE_ADD_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while adding child:", error);
+    return {
+      errorMessage: PROFILE_ADD_FAILED_MESSAGE,
+    };
   }
-
-  return data;
 };
 
 export const updateChildProfile = async (

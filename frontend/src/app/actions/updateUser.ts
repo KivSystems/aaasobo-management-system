@@ -24,7 +24,7 @@ import {
   NO_CHANGES_MADE_MESSAGE,
 } from "../helper/messages/customerDashboard";
 import { getUserSession } from "@/app/helper/auth/sessionUtils";
-import { updateChildProfile } from "../helper/api/childrenApi";
+import { addChild, updateChildProfile } from "../helper/api/childrenApi";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -251,4 +251,54 @@ export async function updateChildProfileAction(
   revalidatePath(path);
 
   return updateResultMessage;
+}
+
+export async function addChildProfileAction(
+  prevState: LocalizedMessages | undefined,
+  formData: FormData,
+): Promise<LocalizedMessages> {
+  const name = formData.get("name");
+  const birthdate = formData.get("birthdate");
+  const personalInfo = formData.get("personalInfo");
+  // Hidden input tag fields
+  const customerIdFromForm = Number(formData.get("customerId")); // The form includes "customerId" only when submitted by an admin.
+
+  const session = await getUserSession();
+
+  if (!session || session.user.userType === "instructor") {
+    return { errorMessage: LOGIN_REQUIRED_MESSAGE };
+  }
+
+  const loggedInUserId = Number(session.user.id);
+  const loggedInUserType = session.user.userType;
+
+  const customerId =
+    loggedInUserType === "customer" ? loggedInUserId : customerIdFromForm;
+
+  const parsedForm = childProfileSchema.safeParse({
+    name,
+    birthdate,
+    personalInfo,
+  });
+
+  if (!parsedForm.success) {
+    const validationErrors = parsedForm.error.errors;
+    return extractProfileUpdateErrors(validationErrors);
+  }
+
+  const resultMessage = await addChild(
+    parsedForm.data.name,
+    parsedForm.data.birthdate,
+    parsedForm.data.personalInfo,
+    customerId,
+  );
+
+  const path =
+    loggedInUserType === "admin"
+      ? `/admins/${loggedInUserId}/customer-list/${customerId}`
+      : `/customers/${loggedInUserId}/children-profiles`;
+
+  revalidatePath(path);
+
+  return resultMessage;
 }

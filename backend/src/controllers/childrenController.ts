@@ -32,20 +32,25 @@ export const getChildrenController = async (req: Request, res: Response) => {
 export const registerChildController = async (req: Request, res: Response) => {
   const { name, birthdate, personalInfo, customerId } = req.body;
 
-  try {
-    const child = await registerChild(
-      name,
-      birthdate,
-      personalInfo,
-      customerId,
-    );
+  if (!name || !birthdate || !personalInfo || !customerId) {
+    return res.sendStatus(400);
+  }
 
-    res.status(200).json({
-      message: "Child is registered successfully",
-      child,
-    });
+  const formattedBirthdate = `${birthdate}T00:00:00.000Z`;
+
+  try {
+    await registerChild(name, formattedBirthdate, personalInfo, customerId);
+
+    res.sendStatus(200);
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    console.error("Error adding a new child", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 

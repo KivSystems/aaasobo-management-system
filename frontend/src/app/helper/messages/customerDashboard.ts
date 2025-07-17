@@ -124,14 +124,24 @@ export const PROFILE_UPDATED_VERIFICATION_EMAIL_SENT = {
   en: "Your profile has been updated. A verification link has been sent to your new email address. Please click the button in the email to complete the verification.",
 };
 
+export const PROFILE_ADD_SUCCESS_MESSAGE = {
+  ja: "新しいお子さまのプロフィールを追加しました。",
+  en: "A new child profile has been added.",
+};
+
+export const PROFILE_ADD_FAILED_MESSAGE = {
+  ja: "新しいお子さまのプロフィールを追加できませんでした。時間をおいて、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't add a new child profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
 export const PROFILE_UPDATE_SUCCESS_MESSAGE = {
   ja: "プロフィールの更新が完了しました。",
-  en: "Your profile has been updated.",
+  en: "The profile has been updated.",
 };
 
 export const PROFILE_UPDATE_FAILED_MESSAGE = {
   ja: "プロフィールを更新できませんでした。時間をおいて、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "We couldn't update your profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
+  en: "We couldn't update the profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
 // Rebooking modal

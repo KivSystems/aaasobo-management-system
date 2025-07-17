@@ -1,144 +1,92 @@
 "use client";
 
-import styles from "./AddChildForm.module.scss";
-import { useRouter } from "next/navigation";
-import { useInput } from "@/app/hooks/useInput";
-import { addChild } from "@/app/helper/api/childrenApi";
-import {
-  CakeIcon,
-  IdentificationIcon,
-  PlusIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/outline";
-import { formatDateToISO } from "@/app/helper/utils/dateUtils";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
+import InputField from "../../elements/inputField/InputField";
+import TextAreaInput from "../../elements/textAreaInput/TextAreaInput";
+import BirthdateInput from "../../features/registerForm/birthdateInput/BirthdateInput";
+import styles from "./AddChildForm.module.scss";
 
-function AddChildForm({
-  adminId,
+const AddChildForm = ({
+  language,
+  action,
   customerId,
+  localMessages,
   isAdminAuthenticated,
-}: {
-  adminId?: number;
-  customerId: number;
-  isAdminAuthenticated?: boolean;
-}) {
-  const [childName, onChildNameChange] = useInput();
-  const [childBirthdate, onChildBirthdateChange] = useInput();
-  const [childPersonalInfo, onChildPersonalInfoChange] = useInput();
-
-  const router = useRouter();
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const birthdateInISO = formatDateToISO(childBirthdate);
-
-    try {
-      const data = await addChild(
-        childName,
-        birthdateInISO,
-        childPersonalInfo,
-        customerId,
-      );
-
-      toast.success("Child registered successfully!");
-
-      if (isAdminAuthenticated) {
-        router.push(`/admins/${adminId}/customer-list/${customerId}`);
-      } else {
-        router.push(`/customers/${customerId}/children-profiles`);
-      }
-    } catch (error) {
-      console.error("Failed to add a new child data:", error);
-      toast.error("Failed to register the child.");
-    }
-  };
-
+  isError,
+  clearErrorMessage,
+}: AddChildFormProps) => {
   return (
-    <form onSubmit={handleSubmit}>
-      <div className={styles.formContainer}>
-        {/* Child Name */}
-        <div className={styles.field}>
-          <label className={styles.label}>
-            <p className={styles.label__text}>Name</p>
-            <div className={styles.inputWrapper}>
-              <input
-                className={styles.inputField}
-                type="text"
-                placeholder="Enter a name ..."
-                value={childName}
-                onChange={onChildNameChange}
-                required
-              />
-              <UserCircleIcon className={styles.icon} />
-            </div>
-          </label>
-        </div>
+    <form className={styles.addChildForm} action={action}>
+      {/* Child Name */}
+      <InputField
+        name="name"
+        type="text"
+        placeholder={
+          language === "ja"
+            ? "お子さまのお名前(ローマ字で)"
+            : "Child's name (in English)"
+        }
+        className={styles.addChildForm__inputField}
+        onChange={() => clearErrorMessage("name")}
+        error={localMessages.name?.[language]}
+      />
 
-        {/* Birthdate */}
-        <div className={styles.field}>
-          <label className={styles.label}>
-            <p className={styles.label__text}>Birthdate</p>
-            <div className={styles.inputWrapper}>
-              <input
-                className={styles.inputField}
-                type="date"
-                value={childBirthdate}
-                onChange={onChildBirthdateChange}
-                required
-              />
-              <CakeIcon className={styles.icon} />
-            </div>
-          </label>
-        </div>
-
-        {/* Personal Info */}
-        <div className={styles.field}>
-          <label className={styles.label}>
-            <p className={styles.label__text}>
-              Personal Information{" "}
-              <span className={styles.label__details}>
-                {" "}
-                (age, English level, their interests, favorite foods, etc.)
-              </span>
-            </p>
-            <div className={styles.inputWrapper}>
-              <input
-                className={styles.inputField}
-                type="text"
-                placeholder="Example: 5 years old, beginner, cars, bread"
-                value={childPersonalInfo}
-                onChange={onChildPersonalInfoChange}
-                required
-              />
-              <IdentificationIcon className={styles.icon} />
-            </div>
-          </label>
-        </div>
+      {/* Birthdate */}
+      <div className={styles.addChildForm__birthdate}>
+        <p className={styles.addChildForm__label}>
+          {language === "ja"
+            ? "お子さまの生年月日(半角数字)"
+            : "Child's date of birth"}
+        </p>
+        <BirthdateInput
+          error={localMessages.birthdate?.[language]}
+          language={language}
+        />
       </div>
 
-      <div className={styles.actions}>
-        {isAdminAuthenticated ? (
-          <RedirectButton
-            btnText="Cancel"
-            linkURL={`/admins/${adminId}/customer-list/${customerId}`}
-            className={styles.cancelBtn}
-          />
-        ) : (
-          <RedirectButton
-            btnText="Back"
-            linkURL={`/customers/${customerId}/children-profiles`}
-            className="deleteChild"
+      {/* Personal Info */}
+      <TextAreaInput
+        label={
+          language === "ja"
+            ? "お子さまの年齢・英語レベル・好きなことや食べ物をお教えください(できましたら英語で。日本語も可)"
+            : "Tell us your child's age, English level, and likes (English preferred, Japanese OK)."
+        }
+        placeholder={
+          language === "ja"
+            ? "例. 5 years old, Beginner, Car, Peppapig"
+            : "e.g., 5 years old, Beginner, Car, Peppapig"
+        }
+        error={localMessages.personalInfo?.[language]}
+        onChange={() => clearErrorMessage("personalInfo")}
+        required
+        language={language}
+        name="personalInfo"
+        className="addChild"
+      />
+
+      <div className={styles.addChildForm__messageWrapper}>
+        {isError && (
+          <FormValidationMessage
+            type="error"
+            message={localMessages.errorMessage[language]}
           />
         )}
+      </div>
 
-        <ActionButton type="submit" className="editChild" btnText="Add Child" />
+      {isAdminAuthenticated && (
+        <input type="hidden" name="customerId" value={customerId ?? ""} />
+      )}
+
+      <div className={styles.addChildForm__button}>
+        <ActionButton
+          className="saveCustomer"
+          btnText={language === "ja" ? "お子さまを追加" : "Add Child"}
+          type="submit"
+        />
       </div>
     </form>
   );
-}
+};
 
 export default AddChildForm;

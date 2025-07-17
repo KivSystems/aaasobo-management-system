@@ -538,3 +538,19 @@ type RebookingCompleteMessageProps = {
 type ChildConflictResponse =
   | { conflictingChildren: string[] }
   | { message: LocalizedMessage };
+
+type ChildrenProfilesProps = {
+  customerId: number;
+  childProfiles: Child[];
+  isAdminAuthenticated?: boolean;
+};
+
+type AddChildFormProps = {
+  language: LanguageType;
+  action: (payload: FormData) => void;
+  customerId: number;
+  localMessages: LocalizedMessages;
+  isAdminAuthenticated?: boolean;
+  isError: boolean;
+  clearErrorMessage: (field: keyof LocalizedMessages | "all") => void;
+};

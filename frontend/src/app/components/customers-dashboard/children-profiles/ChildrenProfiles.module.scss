@@ -67,6 +67,10 @@
     border: 1px solid #ccc;
     border-radius: 6px;
     width: 100%;
+
+    &::placeholder {
+      font-size: 12px;
+    }
   }
   &__name {
     font-size: 24px;

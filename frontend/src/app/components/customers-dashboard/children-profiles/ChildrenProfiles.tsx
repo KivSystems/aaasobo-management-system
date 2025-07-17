@@ -10,10 +10,12 @@ import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { formatBirthdateToISO } from "@/app/helper/utils/dateUtils";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useFormState } from "react-dom";
-import { updateChildProfileAction } from "@/app/actions/updateUser";
+import {
+  addChildProfileAction,
+  updateChildProfileAction,
+} from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import BirthdateInput from "../../features/registerForm/birthdateInput/BirthdateInput";
@@ -24,48 +26,52 @@ import {
   CONFIRM_DELETE_CHILD_PROFILE_MESSAGE,
 } from "@/app/helper/messages/customerDashboard";
 import { deleteChildProfileAction } from "@/app/actions/deleteUser";
+import Modal from "../../elements/modal/Modal";
+import AddChildForm from "./AddChildForm";
 
 function ChildrenProfiles({
   customerId,
   childProfiles,
-  adminId,
   isAdminAuthenticated,
-}: {
-  customerId: number;
-  childProfiles: Child[];
-  adminId?: number;
-  isAdminAuthenticated?: boolean;
-}) {
-  const [profileUpdateResult, formAction] = useFormState(
+}: ChildrenProfilesProps) {
+  const [updateResult, updateAction] = useFormState(
     updateChildProfileAction,
     undefined,
   );
-  const { localMessages, clearErrorMessage } =
-    useFormMessages<LocalizedMessages>(profileUpdateResult);
+  const [addResult, addAction] = useFormState(addChildProfileAction, undefined);
+  const { localMessages, setLocalMessages, clearErrorMessage } =
+    useFormMessages<LocalizedMessages>();
 
+  const [isAddChildModalOpen, setIsAddChildModalOpen] = useState(false);
   const [editingChildId, setEditingChildId] = useState<number | null>(null);
   const [editingSuccessChildId, setEditingSuccessChildId] = useState<
     number | null
   >(null);
-
-  const addChildUrl = isAdminAuthenticated
-    ? `/admins/${adminId}/customer-list/${customerId}/children-profiles/add-child`
-    : `children-profiles/add-child`;
 
   const { language } = useLanguage();
 
   const isError = !!localMessages.errorMessage;
   const isSuccess = !!localMessages.successMessage;
 
-  // If the profile update was successful, exit editing mode.
   useEffect(() => {
-    if (profileUpdateResult !== undefined) {
-      if (profileUpdateResult.successMessage) {
+    if (updateResult !== undefined) {
+      setLocalMessages(updateResult);
+      if (updateResult.successMessage) {
         setEditingSuccessChildId(editingChildId);
         setEditingChildId(null);
       }
     }
-  }, [profileUpdateResult]);
+  }, [updateResult]);
+
+  useEffect(() => {
+    if (addResult !== undefined) {
+      setLocalMessages(addResult);
+      if (addResult.successMessage) {
+        toast.success(addResult.successMessage[language]);
+        setIsAddChildModalOpen(false);
+      }
+    }
+  }, [addResult]);
 
   const handleDeleteClick = async (childId: number) => {
     const hasOnlyOneChild = childProfiles.length === 1;
@@ -90,17 +96,42 @@ function ChildrenProfiles({
   return (
     <div className={styles.container}>
       <div className={styles.addBtn}>
-        <RedirectButton
-          linkURL={addChildUrl}
+        <ActionButton
           btnText={language === "ja" ? "お子さまを追加" : "Add Child"}
           className="addBtn"
           Icon={PlusIcon}
+          onClick={(e) => {
+            e.preventDefault();
+            setEditingChildId(null);
+            clearErrorMessage("all");
+            setIsAddChildModalOpen(true);
+          }}
         />
       </div>
 
+      <Modal
+        isOpen={isAddChildModalOpen}
+        onClose={() => setIsAddChildModalOpen(false)}
+        className="rebooking"
+      >
+        <AddChildForm
+          language={language}
+          action={addAction}
+          customerId={customerId}
+          localMessages={localMessages}
+          isAdminAuthenticated={isAdminAuthenticated}
+          isError={isError}
+          clearErrorMessage={clearErrorMessage}
+        />
+      </Modal>
+
       <div className={styles.children}>
         {childProfiles.map((child) => (
-          <form className={styles.childCard} key={child.id} action={formAction}>
+          <form
+            className={styles.childCard}
+            key={child.id}
+            action={updateAction}
+          >
             <div className={styles.childCard__profile}>
               {/* Child Name */}
               <div className={styles.childName}>
@@ -237,6 +268,7 @@ function ChildrenProfiles({
                   btnText={language === "ja" ? "編集" : "Edit"}
                   onClick={(e) => {
                     e.preventDefault();
+                    clearErrorMessage("all");
                     setEditingChildId(child.id);
                     setEditingSuccessChildId(null);
                   }}
