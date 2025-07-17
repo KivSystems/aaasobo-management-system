@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import InstructorSearch from "@/app/components/admins-dashboard/InstructorSearch";
 import InstructorCalendarForAdmin from "@/app/components/admins-dashboard/InstructorCalendarForAdmin";
+import { initialSetup } from "@/app/helper/utils/initialSetup";
 
 const Page = ({ params }: { params: { id: string } }) => {
   const adminId = parseInt(params.id);
@@ -11,6 +12,9 @@ const Page = ({ params }: { params: { id: string } }) => {
 
   // Set the authentication status as true.
   const isAuthenticated = true;
+
+  // Perform initial setup for the admin user
+  initialSetup("admin");
 
   const handleSendInstructor = async (id: number, name: string) => {
     localStorage.setItem("activeInstructor", [String(id), name].join(","));
