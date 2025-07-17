@@ -13,6 +13,7 @@ import { eventsRouter } from "./routes/eventsRouter";
 import { subscriptionsRouter } from "./routes/subscriptionsRouter";
 import { indexRouter } from "./routes/indexRouter";
 import { usersRouter } from "./routes/usersRouter";
+import { jobsRouter } from "./routes/jobsRouter";
 
 export const server = express();
 
@@ -46,3 +47,4 @@ server.use("/plans", plansRouter);
 server.use("/events", eventsRouter);
 server.use("/subscriptions", subscriptionsRouter);
 server.use("/users", usersRouter);
+server.use("/jobs", jobsRouter);

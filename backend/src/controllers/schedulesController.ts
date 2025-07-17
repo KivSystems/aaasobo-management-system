@@ -5,7 +5,10 @@ import {
   registerSchedules,
   updateSchedules,
 } from "../services/scheduleService";
-import { convertToISOString } from "../helper/dateUtils";
+import {
+  getFirstDesignatedDayOfYear,
+  convertToISOString,
+} from "../helper/dateUtils";
 
 // Admin dashboard for displaying all schedules
 export const getAllSchedulesController = async (_: Request, res: Response) => {
@@ -73,6 +76,59 @@ export const updateBusinessScheduleController = async (
     });
 
     res.status(200).json({ result: result });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
+  }
+};
+
+// Update next year's all Sunday's color
+export const updateSundayColorController = async (
+  req: Request,
+  res: Response,
+) => {
+  const eventId = parseInt(req.body.eventId);
+
+  if (isNaN(eventId)) {
+    return res.status(400).json({
+      error: "Invalid event ID.",
+    });
+  }
+
+  try {
+    // Create date & data list to be sent to the service layer
+    const dateList = [];
+
+    // Get the current year and next year
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
+
+    // Get the first Sunday of the next year
+    const firstSunday = getFirstDesignatedDayOfYear(nextYear, "Sun");
+
+    // Generate all Sundays of the next year
+    for (
+      let d = new Date(firstSunday);
+      d.getFullYear() === nextYear;
+      d = new Date(d.setDate(d.getDate() + 7))
+    ) {
+      dateList.push(convertToISOString(d.toISOString().split("T")[0]));
+    }
+
+    const dataList = dateList.map((date) => ({
+      date,
+      eventId,
+    }));
+
+    // Register new schedules and update existing ones
+    const result = await registerSchedules(dataList);
+
+    if (!result) {
+      return res.status(500).json({
+        error: "Failed to update Sunday's color.",
+      });
+    }
+
+    res.status(200).json({ result });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
   }
