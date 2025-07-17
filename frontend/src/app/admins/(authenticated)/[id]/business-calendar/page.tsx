@@ -22,7 +22,6 @@ const Page = async ({ params }: { params: { id: string } }) => {
       id: item.ID,
       name: item.Event,
     })),
-    { id: 0, name: "No Event" },
   ].sort((a, b) => a.id - b.id);
 
   // Set the authentication status based on the session
