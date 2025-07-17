@@ -21,8 +21,13 @@ export const getAllSchedules = async () => {
 // Register selected schedules
 export const registerSchedules = async (
   dataList: { date: string; eventId: number }[],
-  tx: Prisma.TransactionClient,
+  tx?: Prisma.TransactionClient,
 ) => {
+  // If no transaction client is provided, the default Prisma client will be used
+  if (!tx) {
+    tx = prisma;
+  }
+
   try {
     return await tx.schedule.createMany({
       data: dataList,

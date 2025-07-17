@@ -187,3 +187,17 @@ export const formatYearDateTime = (
     hour12: false,
   }).format(date);
 };
+
+// Get the first date of the year that is a designated day.
+
+export const getFirstDesignatedDayOfYear = (year: number, day: Day): Date => {
+  // Create a date object for January 1st of the specified year based on UTC
+  const date = new Date(Date.UTC(year, 0, 1));
+
+  // Set the date to the first occurrence of the specified day in that year
+  while (date.getDay() !== getDayNumber(day)) {
+    date.setDate(date.getDate() + 1);
+  }
+
+  return date;
+};
