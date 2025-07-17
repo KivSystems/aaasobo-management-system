@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { updateSundayColor } from "@/app/helper/api/calendarsApi";
 
-// export const runtime = "nodejs";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
