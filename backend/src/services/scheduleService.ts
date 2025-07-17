@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 
 // Fetch all schedules
@@ -17,28 +18,13 @@ export const getAllSchedules = async () => {
   }
 };
 
-// Delete selected schedules
-export const deleteSchedules = async (dateList: string[]) => {
-  try {
-    return await prisma.schedule.deleteMany({
-      where: {
-        date: {
-          in: dateList,
-        },
-      },
-    });
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to delete schedules.");
-  }
-};
-
 // Register selected schedules
 export const registerSchedules = async (
   dataList: { date: string; eventId: number }[],
+  tx: Prisma.TransactionClient,
 ) => {
   try {
-    return await prisma.schedule.createMany({
+    return await tx.schedule.createMany({
       data: dataList,
       skipDuplicates: true,
     });
@@ -53,9 +39,10 @@ export const updateSchedules = async (
   startDate: string,
   endDate: string,
   eventId: number,
+  tx: Prisma.TransactionClient,
 ) => {
   try {
-    return await prisma.schedule.updateMany({
+    return await tx.schedule.updateMany({
       where: {
         date: {
           gte: startDate,

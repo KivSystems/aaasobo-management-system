@@ -1,7 +1,7 @@
+import { prisma } from "../../prisma/prismaClient";
 import { Request, Response } from "express";
 import {
   getAllSchedules,
-  deleteSchedules,
   registerSchedules,
   updateSchedules,
 } from "../services/scheduleService";
@@ -62,25 +62,17 @@ export const updateBusinessScheduleController = async (
       eventId,
     }));
 
-    // If eventId is 0 (No Event), delete the schedules
-    // Otherwise, register new schedules and update existing ones
-    if (eventId === 0) {
-      const deleteResult = await deleteSchedules(dateList);
-      return res.status(200).json({ result: deleteResult });
-    }
-
     const startDateISO = dateList[0];
     const endDateISO = dateList[dateList.length - 1];
 
     // Register new schedules and update existing ones
-    const registerResult = await registerSchedules(dataList);
-    const updateResult = await updateSchedules(
-      startDateISO,
-      endDateISO,
-      eventId,
-    );
+    const result = await prisma.$transaction(async (tx) => {
+      await registerSchedules(dataList, tx);
+      await updateSchedules(startDateISO, endDateISO, eventId, tx);
+      return true;
+    });
 
-    res.status(200).json({ result: registerResult && updateResult });
+    res.status(200).json({ result: result });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
   }
