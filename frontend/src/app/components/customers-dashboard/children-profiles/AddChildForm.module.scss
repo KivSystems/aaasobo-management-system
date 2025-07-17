@@ -1,18 +1,22 @@
 .addChildForm {
   width: 350px;
-  padding: 3rem 2rem 2rem 2rem;;
-  min-height: 400px;
+  padding: 3.5rem 2rem 2rem 2rem;
+  height: 540px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
 
   &__inputField {
+    font-size: 1rem;
     height: 30px;
     font-family: var(--font-poppins), sans-serif;
     padding: 3px 6px;
     border: 1px solid #ccc;
     border-radius: 6px;
     width: 100%;
+
+    &::placeholder {
+      font-size: 14px;
+    }
   }
 
   &__birthdate {
@@ -30,6 +34,9 @@
   }
 
   &__button {
-    margin: 0 auto;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }

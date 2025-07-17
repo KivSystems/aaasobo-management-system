@@ -7,6 +7,7 @@ const BirthdateInput = ({
   defaultBirthdate,
   error,
   language,
+  useFormAction,
 }: BirthdateInputProps) => {
   const [defaultYear, defaultMonth, defaultDay] =
     defaultBirthdate?.split("-") ?? [];
@@ -20,13 +21,16 @@ const BirthdateInput = ({
 
   useEffect(() => {
     if (year === "" || month === "" || day === "") return;
+
     const iso = `${year}-${padZero(month)}-${padZero(day)}`;
-    if (onValidDateChange) {
-      onValidDateChange(iso);
-    } else {
+
+    if (useFormAction) {
+      onValidDateChange(undefined);
       setLocalIsoDate(iso);
+    } else {
+      onValidDateChange(iso);
     }
-  }, [year, month, day, onValidDateChange]);
+  }, [year, month, day, onValidDateChange, useFormAction]);
 
   return (
     <fieldset className={styles.birthdateInput}>
@@ -77,8 +81,8 @@ const BirthdateInput = ({
         </div>
       </div>
 
-      {/* Hidden input for form submission (only used if onValidDateChange is not passed) */}
-      {!onValidDateChange && localIsoDate && (
+      {/* Hidden input for form submission */}
+      {useFormAction && localIsoDate && (
         <input type="hidden" name="birthdate" value={localIsoDate ?? ""} />
       )}
 

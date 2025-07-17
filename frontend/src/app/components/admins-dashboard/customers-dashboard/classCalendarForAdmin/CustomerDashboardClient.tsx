@@ -68,7 +68,6 @@ function CustomerDashboardClient({
       label: "Children's Profile",
       content: (
         <ChildrenProfiles
-          adminId={adminId}
           customerId={customerId}
           isAdminAuthenticated={isAuthenticated}
           childProfiles={childProfiles}

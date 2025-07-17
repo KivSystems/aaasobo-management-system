@@ -438,10 +438,11 @@ type RegisterChildProps = {
 };
 
 type BirthdateInputProps = {
-  onValidDateChange?: (isoDate: string | null) => void;
+  onValidDateChange: (isoDate?: string | null) => void;
   defaultBirthdate?: string;
   error?: string;
   language?: LanguageType;
+  useFormAction?: boolean;
 };
 
 type TextAreaInputProps = {

@@ -5,7 +5,7 @@ import {
   PlusIcon,
   UserCircleIcon as UserCircleSolid,
 } from "@heroicons/react/24/solid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { formatBirthdateToISO } from "@/app/helper/utils/dateUtils";
 import { toast } from "react-toastify";
@@ -41,15 +41,15 @@ function ChildrenProfiles({
   const [addResult, addAction] = useFormState(addChildProfileAction, undefined);
   const { localMessages, setLocalMessages, clearErrorMessage } =
     useFormMessages<LocalizedMessages>();
-
   const [isAddChildModalOpen, setIsAddChildModalOpen] = useState(false);
   const [editingChildId, setEditingChildId] = useState<number | null>(null);
   const [editingSuccessChildId, setEditingSuccessChildId] = useState<
     number | null
   >(null);
-
+  const handleBirthdateChange = useCallback(() => {
+    clearErrorMessage("birthdate");
+  }, [clearErrorMessage]);
   const { language } = useLanguage();
-
   const isError = !!localMessages.errorMessage;
   const isSuccess = !!localMessages.successMessage;
 
@@ -61,7 +61,7 @@ function ChildrenProfiles({
         setEditingChildId(null);
       }
     }
-  }, [updateResult]);
+  }, [updateResult, editingChildId, setLocalMessages]);
 
   useEffect(() => {
     if (addResult !== undefined) {
@@ -71,7 +71,7 @@ function ChildrenProfiles({
         setIsAddChildModalOpen(false);
       }
     }
-  }, [addResult]);
+  }, [addResult, language, setLocalMessages]);
 
   const handleDeleteClick = async (childId: number) => {
     const hasOnlyOneChild = childProfiles.length === 1;
@@ -173,9 +173,11 @@ function ChildrenProfiles({
 
                   {editingChildId === child.id ? (
                     <BirthdateInput
+                      onValidDateChange={handleBirthdateChange}
                       defaultBirthdate={formatBirthdateToISO(child.birthdate)}
                       error={localMessages.birthdate?.[language]}
                       language={language}
+                      useFormAction={true}
                     />
                   ) : (
                     <div className={styles.profileInfo}>

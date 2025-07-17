@@ -96,7 +96,7 @@ export default function RegisterChildForm({
         </p>
         <BirthdateInput
           onValidDateChange={useCallback(
-            (date: string | null) => {
+            (date?: string | null) => {
               if (date) handleChange("birthdate", date);
               clearErrorMessage("birthdate");
             },

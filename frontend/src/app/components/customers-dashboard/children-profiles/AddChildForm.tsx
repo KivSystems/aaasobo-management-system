@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 import InputField from "../../elements/inputField/InputField";
@@ -40,8 +41,12 @@ const AddChildForm = ({
             : "Child's date of birth"}
         </p>
         <BirthdateInput
+          onValidDateChange={useCallback(() => {
+            clearErrorMessage("birthdate");
+          }, [clearErrorMessage])}
           error={localMessages.birthdate?.[language]}
           language={language}
+          useFormAction={true}
         />
       </div>
 
