@@ -44,6 +44,11 @@ async function insertInstructorAvailabilities() {
     data: [
       { startAt: "2025-06-02T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
       { startAt: "2025-06-02T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
+      { startAt: "2025-06-03T07:00:00Z", instructorId: helen.id },
+      { startAt: "2025-06-04T07:00:00Z", instructorId: helen.id },
+      { startAt: "2025-06-05T07:00:00Z", instructorId: helen.id },
+      { startAt: "2025-06-06T07:00:00Z", instructorId: helen.id },
+      { startAt: "2025-06-07T07:00:00Z", instructorId: helen.id },
 
       // { startAt: "2025-02-03T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
       // { startAt: "2025-02-03T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
@@ -133,9 +138,6 @@ async function insertInstructorAvailabilities() {
   };
 
   await insertAvailabilities(helen.id, "2025-06-02T07:00:00Z", [
-    "2025-06-23T07:00:00Z",
-    "2025-06-30T07:00:00Z",
-    "2025-07-07T07:00:00Z",
     "2025-07-14T07:00:00Z",
     "2025-07-21T07:00:00Z",
     "2025-07-28T07:00:00Z",
@@ -146,9 +148,6 @@ async function insertInstructorAvailabilities() {
   ]);
 
   await insertAvailabilities(elian.id, "2025-06-02T07:00:00Z", [
-    "2025-06-23T07:00:00Z",
-    "2025-06-30T07:00:00Z",
-    "2025-07-07T07:00:00Z",
     "2025-07-14T07:00:00Z",
     "2025-07-21T07:00:00Z",
     "2025-07-28T07:00:00Z",
@@ -156,6 +155,61 @@ async function insertInstructorAvailabilities() {
     "2025-08-11T07:00:00Z",
     "2025-08-18T07:00:00Z",
     "2025-08-25T07:00:00Z",
+  ]);
+
+  await insertAvailabilities(helen.id, "2025-06-03T07:00:00Z", [
+    "2025-07-08T07:00:00Z",
+    "2025-07-15T07:00:00Z",
+    "2025-07-22T07:00:00Z",
+    "2025-07-29T07:00:00Z",
+    "2025-08-05T07:00:00Z",
+    "2025-08-12T07:00:00Z",
+    "2025-08-19T07:00:00Z",
+    "2025-08-26T07:00:00Z",
+  ]);
+
+  await insertAvailabilities(helen.id, "2025-06-04T07:00:00Z", [
+    "2025-07-09T07:00:00Z",
+    "2025-07-16T07:00:00Z",
+    "2025-07-23T07:00:00Z",
+    "2025-07-30T07:00:00Z",
+    "2025-08-06T07:00:00Z",
+    "2025-08-13T07:00:00Z",
+    "2025-08-20T07:00:00Z",
+    "2025-08-27T07:00:00Z",
+  ]);
+
+  await insertAvailabilities(helen.id, "2025-06-05T07:00:00Z", [
+    "2025-07-10T07:00:00Z",
+    "2025-07-17T07:00:00Z",
+    "2025-07-24T07:00:00Z",
+    "2025-07-31T07:00:00Z",
+    "2025-08-07T07:00:00Z",
+    "2025-08-14T07:00:00Z",
+    "2025-08-21T07:00:00Z",
+    "2025-08-28T07:00:00Z",
+  ]);
+
+  await insertAvailabilities(helen.id, "2025-06-06T07:00:00Z", [
+    "2025-07-11T07:00:00Z",
+    "2025-07-18T07:00:00Z",
+    "2025-07-25T07:00:00Z",
+    "2025-08-01T07:00:00Z",
+    "2025-08-08T07:00:00Z",
+    "2025-08-15T07:00:00Z",
+    "2025-08-22T07:00:00Z",
+    "2025-08-29T07:00:00Z",
+  ]);
+
+  await insertAvailabilities(helen.id, "2025-06-07T07:00:00Z", [
+    "2025-07-12T00:00:00Z",
+    "2025-07-19T00:00:00Z",
+    "2025-07-26T00:00:00Z",
+    "2025-08-02T00:00:00Z",
+    "2025-08-09T00:00:00Z",
+    "2025-08-16T00:00:00Z",
+    "2025-08-23T00:00:00Z",
+    "2025-08-30T00:00:00Z",
   ]);
 
   // await insertAvailabilities(helen.id, "2025-02-03T07:00:00Z", [
@@ -285,6 +339,7 @@ async function insertCustomers() {
         password:
           "$2b$12$GFM.a0hEjl/0/U3IjO057esEr7l.NMKZSeRC7c1he6wzDvoIW4oxy", // AaasoBo!Alice
         prefecture: "青森県 / Aomori",
+        hasSeenWelcome: true,
         createdAt: "2024-08-01T00:00:00.000Z",
         updatedAt: "2024-08-10T00:00:00.000Z",
       },
@@ -294,6 +349,7 @@ async function insertCustomers() {
         password:
           "$2b$12$txZ49345mBu/RNVfnKFw9.VahiO1wj4z.6aeKckM50LYkd2Upz3eC", // AaasoBo!Bob
         prefecture: "北海道 / Hokkaido",
+        hasSeenWelcome: true,
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2024-08-01T00:00:00.000Z",
         updatedAt: "2024-08-10T00:00:00.000Z",
@@ -304,6 +360,7 @@ async function insertCustomers() {
         password:
           "$2b$12$qbcPqqpR3nKgtCgrusCbQOfMqJJHiMlBSkeClYEeWkKM6Fc6xahD2", // AaasoBo!Hana
         prefecture: "北海道 / Hokkaido",
+        hasSeenWelcome: true,
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2025-04-01T00:00:00.000Z",
         updatedAt: "2024-08-10T00:00:00.000Z",
@@ -430,7 +487,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-02T00:00:00Z",
+        dateTime: "2025-07-30T00:00:00Z",
         status: "booked",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -438,11 +495,12 @@ async function insertClasses() {
         createdAt: "2025-05-20T07:00:00Z",
         updatedAt: "2025-05-20T07:00:00Z",
         classCode: "1-0",
+        isFreeTrial: false,
       },
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-02T00:30:00Z",
+        dateTime: "2025-07-30T00:30:00Z",
         status: "rebooked",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -450,11 +508,12 @@ async function insertClasses() {
         createdAt: "2025-05-20T07:00:00Z",
         updatedAt: "2025-05-20T07:00:00Z",
         classCode: "1-1",
+        isFreeTrial: false,
       },
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-02T01:00:00Z",
+        dateTime: "2025-07-30T01:00:00Z",
         status: "canceledByCustomer",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -462,11 +521,12 @@ async function insertClasses() {
         createdAt: "2025-05-20T07:00:00Z",
         updatedAt: "2025-05-20T07:00:00Z",
         classCode: "1-2",
+        isFreeTrial: false,
       },
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-02T01:00:00Z",
+        dateTime: "2025-07-30T01:00:00Z",
         status: "canceledByInstructor",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -474,11 +534,12 @@ async function insertClasses() {
         createdAt: "2025-05-20T07:00:00Z",
         updatedAt: "2025-05-20T07:00:00Z",
         classCode: "1-3",
+        isFreeTrial: false,
       },
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-02T01:00:00Z",
+        dateTime: "2025-07-30T01:00:00Z",
         status: "completed",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -486,6 +547,25 @@ async function insertClasses() {
         createdAt: "2025-05-20T07:00:00Z",
         updatedAt: "2025-05-20T07:00:00Z",
         classCode: "1-4",
+        isFreeTrial: false,
+      },
+      {
+        customerId: alice.id,
+        status: "pending",
+        rebookableUntil: "2025-10-30T09:00:00Z",
+        createdAt: "2025-05-20T07:00:00Z",
+        updatedAt: "2025-05-20T07:00:00Z",
+        classCode: "ft-0",
+        isFreeTrial: true,
+      },
+      {
+        customerId: alice.id,
+        status: "pending",
+        rebookableUntil: "2025-10-30T09:00:00Z",
+        createdAt: "2025-05-20T07:00:00Z",
+        updatedAt: "2025-05-20T07:00:00Z",
+        classCode: "ft-0-2",
+        isFreeTrial: true,
       },
       // {
       //   instructorId: helen.id,
@@ -755,9 +835,6 @@ async function insertClassAttendance() {
       { classId: classes[2].id, childrenId: children[0].id },
       { classId: classes[3].id, childrenId: children[0].id },
       { classId: classes[4].id, childrenId: children[0].id },
-      // { classId: classes[5].id, childrenId: children[0].id },
-      // { classId: classes[6].id, childrenId: children[0].id },
-      // { classId: classes[7].id, childrenId: children[0].id },
     ],
   });
 

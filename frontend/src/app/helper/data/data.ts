@@ -51,3 +51,6 @@ export const prefectures = [
   "鹿児島県 / Kagoshima",
   "沖縄県 / Okinawa",
 ];
+
+export const FREE_TRIAL_BOOKING_HOURS = 72;
+export const REGULAR_REBOOKING_HOURS = 3;

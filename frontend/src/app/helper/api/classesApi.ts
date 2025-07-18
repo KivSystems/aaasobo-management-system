@@ -59,7 +59,7 @@ export const rebookClass = async (
     childrenIds: number[];
   },
 ): Promise<
-  { successMessage: LocalizedMessage } | { errorMessage: LocalizedMessage }
+  { success: true } | { success: false; errorMessage: LocalizedMessage }
 > => {
   const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/rebook`;
   try {
@@ -70,35 +70,26 @@ export const rebookClass = async (
     });
 
     if (response.ok) {
-      return { successMessage: REBOOK_CLASS_RESULT_MESSAGES.success };
+      return { success: true };
     }
 
     const data = await response.json().catch(() => null);
     const errorType = data?.errorType;
 
-    const errorMessage =
-      (errorType && REBOOK_CLASS_RESULT_MESSAGES[errorType]) ??
-      REBOOK_CLASS_RESULT_MESSAGES.default;
+    const errorMessage = REBOOK_CLASS_RESULT_MESSAGES[errorType];
 
-    return { errorMessage };
+    if (!errorMessage)
+      throw new Error(
+        `Error Type: ${errorType}, HTTP Status: ${response.status} ${response.statusText}`,
+      );
+
+    return { success: false, errorMessage };
   } catch (error: unknown) {
     console.error("API error while rebooking a class:", error);
-    return { errorMessage: REBOOK_CLASS_RESULT_MESSAGES.default };
-  }
-};
-
-// GET a class by id
-export const getClassById = async (classId: number) => {
-  try {
-    const response = await fetch(`${BACKEND_ORIGIN}/classes/class/${classId}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const classData = await response.json();
-    return classData;
-  } catch (error) {
-    console.error("Failed to fetch a class:", error);
-    throw error;
+    return {
+      success: false,
+      errorMessage: REBOOK_CLASS_RESULT_MESSAGES.default,
+    };
   }
 };
 

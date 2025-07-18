@@ -46,7 +46,8 @@ type ClassStatus =
   | "canceledByCustomer"
   | "canceledByInstructor"
   | "pending"
-  | "rebooked";
+  | "rebooked"
+  | "freeTrial";
 
 type ClassType = {
   id: number;
@@ -104,6 +105,7 @@ type CustomerClass = {
   rebookableUntil: string;
   classCode: string;
   updatedAt: string;
+  isFreeTrial: boolean;
 };
 
 type Child = {
@@ -306,6 +308,7 @@ type CustomerProfile = {
   email: string;
   prefecture: string;
   createdAt: string;
+  hasSeenWelcome: boolean;
 };
 
 type LanguageType = "ja" | "en";
@@ -353,6 +356,7 @@ type RebookableClass = {
   id: number;
   rebookableUntil: Date;
   classCode: string;
+  isFreeTrial: boolean;
 };
 
 type RebookingModalControllerProps = {
@@ -482,6 +486,7 @@ type RebookableClassesListProps = {
   setClassToRebook: Dispatch<SetStateAction<number | null>>;
   setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
+  isAdminAuthenticated?: boolean;
 };
 
 type RebookableOptionsProps = {
@@ -538,3 +543,10 @@ type RebookingCompleteMessageProps = {
 type ChildConflictResponse =
   | { conflictingChildren: string[] }
   | { message: LocalizedMessage };
+
+type WelcomeModalProps = {
+  customerId: number;
+  language: LanguageType;
+  setIsWelcomeModalOpen: Dispatch<SetStateAction<boolean>>;
+  isAdminAuthenticated?: boolean;
+};

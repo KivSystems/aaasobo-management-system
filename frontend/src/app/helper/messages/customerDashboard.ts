@@ -57,9 +57,19 @@ export const TODAYS_CLASS_REBOOKING_NOTICE = {
   en: "You can rebook a class on the same day up to 3 hours before it starts. However, please note that in some cases, the class may be canceled if the instructor doesn't have enough time to prepare.",
 };
 
+export const FREE_TRIAL_BOOKING_ELIGIBILITY_NOTE = {
+  ja: "無料トライアルクラスは、ご予約の際から72時間以上あとに始まるクラスが対象となります。",
+  en: "Only classes starting 72+ hours from now are eligible for free trial booking.",
+};
+
+export const FREE_TRIAL_BOOKING_TOO_LATE_NOTICE = {
+  ja: "無料トライアルクラスの予約は、予約対象となる最終クラスの開始72時間前までとなっております。申し訳ありませんが、すでにその期限を過ぎているため、予約は行えません。",
+  en: "You can only book free trial classes up to 72 hours before the final eligible class. Unfortunately, that deadline has passed.",
+};
+
 export const REBOOKING_TOO_LATE_NOTICE = {
-  ja: "当日の振替は、クラス開始の3時間前まで可能です。申し訳ありませんが、すでに時間を過ぎているため、振替予約はできません。",
-  en: "You can rebook a class on the same day up to 3 hours before it starts. However, since that time has already passed, rebooking is no longer possible.",
+  ja: "振替予約の受付は、振替対象となる最終クラスの開始3時間前までとなっております。申し訳ありませんが、すでにその期限を過ぎているため、振替は行えません。",
+  en: "Rebooking is allowed up to 3 hours before your final eligible class. We're sorry, but the deadline has passed and this class can no longer be rebooked.",
 };
 
 export const CHILD_PROFILE_REQUIRED_MESSAGE = {
@@ -162,8 +172,8 @@ export const DOUBLE_BOOKING_CONFIRMATION_MESSAGE = {
 
 export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
   success: {
-    ja: "クラスの振替予約が完了しました！",
-    en: "Your class has been successfully rebooked!",
+    ja: "クラスの予約が完了しました！",
+    en: "Your class has been successfully booked!",
   },
   "past rebooking deadline": {
     ja: "振替予約は、クラス開始の3時間前まで可能です。ご予約時点で締切を過ぎていたため、振替ができませんでした。お手数ですが、ページを更新し別のクラスをご検討ください。",
@@ -194,4 +204,40 @@ export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
 export const LOGIN_REQUIRED_MESSAGE = {
   ja: "続行するには、ログインしてください。",
   en: "Please log in to continue.",
+};
+
+// WelcomeModal
+export const FREE_TRIAL_DECLINE_CONFIRMATION_MESSAGE = {
+  ja: "本当に無料トライアルクラスをお受けにならなくても大丈夫ですか？ この操作は後から変更できません。",
+  en: "Are you sure you don't want to take the free trial class? This action cannot be undone.",
+};
+
+export const FREE_TRIAL_REMOVE_SUCCESS_MESSAGE = {
+  ja: "無料トライアルクラスを削除しました。",
+  en: "The free trial class has been removed.",
+};
+
+export const FREE_TRIAL_ALREADY_REMOVED_MESSAGE = {
+  ja: "無料トライアルクラスはすでに削除済みです。",
+  en: "The free trial class has already been removed.",
+};
+
+export const FREE_TRIAL_REMOVE_ERROR_MESSAGE = {
+  ja: "無料トライアルクラスの削除に失敗しました。もう一度お試しください。解決しない場合は、contact@aaasobo.orgまでお問い合わせください。",
+  en: "Failed to remove the free trial class. Please try again. If the problem persists, contact us at contact@aaasobo.org.",
+};
+
+export const WELCOME_MODAL_TITLE = {
+  ja: "オンラインこども英会話プログラム【AaasoBo!】アーソボ！へようこそ",
+  en: "Welcome to AaasoBo!, the Online English Conversation Program for Kids",
+};
+
+export const FREE_TRIAL_BOOKING_INSTRUCTION_MESSAGE = {
+  ja: "無料トライアルクラスのご予約は、ページ右上の『クラスを予約』ボタンからできます。",
+  en: "You can book your free trial class by clicking the 'Book Class' button at the top right of the page.",
+};
+
+export const CHILD_PROFILE_UPDATE_INSTRUCTION_MESSAGE = {
+  ja: "クラスに参加するお子さまを追加する場合は、左サイドメニューの『お子様プロフィール』から変更できます。",
+  en: "To add children who will join the class, please go to 'Children Profiles' in the left-hand side menu.",
 };

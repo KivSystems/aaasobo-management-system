@@ -62,36 +62,38 @@ model InstructorUnavailability {
 }
 
 model Customer {
-  id            Int            @id @default(autoincrement())
-  name          String
-  email         String         @unique
-  emailVerified DateTime?
-  password      String
-  classes       Class[]
-  children      Children[]
-  subscription  Subscription[]
-  prefecture    String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id             Int            @id @default(autoincrement())
+  name           String
+  email          String         @unique
+  emailVerified  DateTime?
+  password       String
+  classes        Class[]
+  children       Children[]
+  subscription   Subscription[]
+  prefecture     String
+  hasSeenWelcome Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model Class {
   id               Int               @id @default(autoincrement())
-  instructorId     Int
+  instructorId     Int?
   customerId       Int
-  recurringClassId Int
-  dateTime         DateTime
+  recurringClassId Int?
+  dateTime         DateTime?
   status           Status
-  instructor       Instructor        @relation(fields: [instructorId], references: [id])
+  instructor       Instructor?       @relation(fields: [instructorId], references: [id])
   customer         Customer          @relation(fields: [customerId], references: [id])
   recurringClass   RecurringClass?   @relation(fields: [recurringClassId], references: [id])
   classAttendance  ClassAttendance[]
-  subscriptionId   Int
-  subscription     Subscription      @relation(fields: [subscriptionId], references: [id])
+  subscriptionId   Int?
+  subscription     Subscription?     @relation(fields: [subscriptionId], references: [id])
   rebookableUntil  DateTime?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime
   classCode        String
+  isFreeTrial      Boolean           @default(false)
 }
 
 enum Status {
@@ -101,6 +103,7 @@ enum Status {
   canceledByInstructor
   pending
   rebooked
+  declined
 }
 
 model Admins {

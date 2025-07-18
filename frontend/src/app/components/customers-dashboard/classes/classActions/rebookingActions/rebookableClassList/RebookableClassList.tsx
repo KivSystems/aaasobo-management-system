@@ -7,24 +7,46 @@ import {
   formatTime24Hour,
   nHoursBefore,
 } from "@/app/helper/utils/dateUtils";
-import { REBOOKING_TOO_LATE_NOTICE } from "@/app/helper/messages/customerDashboard";
+import {
+  FREE_TRIAL_BOOKING_TOO_LATE_NOTICE,
+  REBOOKING_TOO_LATE_NOTICE,
+} from "@/app/helper/messages/customerDashboard";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
+import { confirmAndDeclineFreeTrialClass } from "@/app/helper/utils/confirmAndDeclineFreeTrialClass";
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "@/app/helper/data/data";
 
 export default function RebookableClassList({
+  customerId,
   rebookableClasses,
   setClassToRebook,
   setRebookingStep,
   language,
+  isAdminAuthenticated,
 }: RebookableClassListProps) {
-  const handleRebook = (id: number, rebookableUntil: Date) => {
+  const handleRebook = (
+    id: number,
+    rebookableUntil: Date,
+    isFreeTrial: boolean,
+  ) => {
     const now = new Date().getTime();
+
+    const hoursBefore = isFreeTrial
+      ? FREE_TRIAL_BOOKING_HOURS
+      : REGULAR_REBOOKING_HOURS;
     const rebookingDeadline = nHoursBefore(
-      3,
+      hoursBefore,
       new Date(rebookableUntil),
     ).getTime();
 
     if (now > rebookingDeadline) {
-      return alert(REBOOKING_TOO_LATE_NOTICE[language]);
+      return alert(
+        isFreeTrial
+          ? FREE_TRIAL_BOOKING_TOO_LATE_NOTICE[language]
+          : REBOOKING_TOO_LATE_NOTICE[language],
+      );
     }
 
     setClassToRebook(id);
@@ -40,30 +62,77 @@ export default function RebookableClassList({
           locale,
         );
         const time = formatTime24Hour(new Date(classItem.rebookableUntil));
+        const isFreeTrial = classItem.isFreeTrial;
+
+        const dateTimeText = <span>{`${date} ${time}`}</span>;
+        const bookableDateTime =
+          language === "ja" ? (
+            <>
+              {dateTimeText} のクラスまで{isFreeTrial ? "予約可能" : "振替可能"}
+            </>
+          ) : (
+            <>
+              {isFreeTrial ? "Bookable" : "Rebookable"} until{" "}
+              <span>{`${time}`}</span> class, <span>{`${date}`}</span>
+            </>
+          );
+
+        const btnText =
+          language === "ja"
+            ? isFreeTrial
+              ? "予約"
+              : "振替予約"
+            : isFreeTrial
+              ? "Book"
+              : "Rebook";
 
         return (
           <li key={classItem.id} className={styles.listItem}>
             <div className={styles.listItem__dateTime}>
-              {language === "ja" ? (
-                <>
-                  <span>{`${date} ${time}`}</span> のクラスまで振替可能
-                </>
-              ) : (
-                <>
-                  Rebookable until <span>{`${time}`}</span> class,{" "}
-                  <span>{`${date}`}</span>
-                </>
-              )}
+              <>
+                {bookableDateTime}
+                {isFreeTrial && (
+                  <p className={styles.listItem__declineClass}>
+                    {language === "ja"
+                      ? "※ 無料トライアルが不要な方は、"
+                      : "※ If you don't need a free trial class, "}
+                    <button
+                      className={styles.listItem__link}
+                      onClick={() =>
+                        confirmAndDeclineFreeTrialClass({
+                          customerId,
+                          isAdminAuthenticated,
+                          language,
+                          classCode: classItem.classCode,
+                        })
+                      }
+                    >
+                      {language === "ja" ? "こちら" : "click here"}
+                    </button>
+                    {language === "en" && "."}
+                  </p>
+                )}
+              </>
             </div>
             <div className={styles.listItem__classId}>
-              {classItem.classCode}
+              <p>{classItem.classCode}</p>
+              {isFreeTrial &&
+                (language === "ja" ? (
+                  <span>無料トライアル</span>
+                ) : (
+                  <span>Free Trial</span>
+                ))}
             </div>
             <div className={styles.listItem__button}>
               <ActionButton
                 className="selectRebookingClass"
-                btnText={language === "ja" ? "振替予約" : "Rebook"}
+                btnText={btnText}
                 onClick={() =>
-                  handleRebook(classItem.id, classItem.rebookableUntil)
+                  handleRebook(
+                    classItem.id,
+                    classItem.rebookableUntil,
+                    classItem.isFreeTrial,
+                  )
                 }
               />
             </div>

@@ -30,6 +30,11 @@ const ClassDetail = ({
   if (!classDetail) {
     return <div>{NO_CLASS_DETAILS[language]}</div>;
   }
+
+  const isFreeTrial =
+    classDetail.isFreeTrial &&
+    (classDetail.classStatus === "booked" ||
+      classDetail.classStatus === "rebooked");
   const statusesForAttendance: ClassStatus[] = [
     "booked",
     "rebooked",
@@ -64,11 +69,17 @@ const ClassDetail = ({
   };
 
   return (
-    <div className={`${styles.classCard} ${styles[classDetail.classStatus]}`}>
-      <ClassStatus status={classDetail.classStatus} language={language} />
+    <div
+      className={`${styles.classCard} ${isFreeTrial ? styles.freeTrial : styles[classDetail.classStatus]}`}
+    >
+      <ClassStatus
+        status={classDetail.classStatus}
+        isFreeTrial={isFreeTrial}
+        language={language}
+      />
 
       <ClassInstructor
-        classStatus={classDetail.classStatus}
+        classStatus={isFreeTrial ? "freeTrial" : classDetail.classStatus}
         instructorIcon={classDetail.instructorIcon}
         instructorNickname={classDetail.instructorNickname}
       />
