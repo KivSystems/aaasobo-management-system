@@ -10,10 +10,10 @@
     height: 2rem;
 
     &.booked {
-      color: $blue-primary;
+      color: $light-pink-regular-class;
     }
     &.rebooked {
-      color: $green-success;
+      color: $light-yellow-rebooked-class;
     }
     &.completed {
       color: $completed-background-color;
@@ -23,6 +23,9 @@
     }
     &.canceledByCustomer {
       color: $gray-background;
+    }
+    &.freeTrial {
+      color: $green-success;
     }
   }
 

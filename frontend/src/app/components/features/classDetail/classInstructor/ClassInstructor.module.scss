@@ -10,10 +10,10 @@
     border-radius: 180px;
 
     &.booked {
-      border: 3px solid $blue-primary;
+      border: 3px solid $light-pink-regular-class;
     }
     &.rebooked {
-      border: 3px solid $green-success;
+      border: 3px solid $light-yellow-rebooked-class;
     }
     &.completed {
       border: 3px solid $completed-background-color;
@@ -23,6 +23,9 @@
     }
     &.canceledByCustomer {
       border: 3px solid $gray-background;
+    }
+    &.freeTrial {
+      border: 3px solid $green-success;
     }
   }
 

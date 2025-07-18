@@ -46,7 +46,8 @@ type ClassStatus =
   | "canceledByCustomer"
   | "canceledByInstructor"
   | "pending"
-  | "rebooked";
+  | "rebooked"
+  | "freeTrial";
 
 type ClassType = {
   id: number;
@@ -104,6 +105,7 @@ type CustomerClass = {
   rebookableUntil: string;
   classCode: string;
   updatedAt: string;
+  isFreeTrial: boolean;
 };
 
 type Child = {
@@ -126,7 +128,7 @@ type Plan = {
 type BusinessEventType = {
   id: number;
   name: string;
-  color: string;
+  color?: string;
 };
 
 type Subscriptions = {
@@ -223,7 +225,7 @@ type LinkType = {
 
 type UserType = "admin" | "customer" | "instructor";
 
-type CategoryType = "event" | "plan";
+type CategoryType = "event" | "plan" | "schedule";
 
 type ForgotPasswordFormState = {
   errorMessage?: string;
@@ -254,6 +256,7 @@ type UpdateFormState = {
   passcode?: string;
   introductionURL?: string;
   color?: string;
+  eventId?: string;
   errorMessage?: string;
   successMessage?: string;
 };
@@ -305,6 +308,7 @@ type CustomerProfile = {
   email: string;
   prefecture: string;
   createdAt: string;
+  hasSeenWelcome: boolean;
 };
 
 type LanguageType = "ja" | "en";
@@ -322,6 +326,7 @@ type BusinessSchedule = {
 
 type BusinessCalendarClientProps = {
   businessSchedule?: BusinessSchedule[] | [];
+  events?: BusinessEventType[] | [];
   isAdminAuthenticated?: boolean;
   validRange: {
     start: string;
@@ -351,6 +356,7 @@ type RebookableClass = {
   id: number;
   rebookableUntil: Date;
   classCode: string;
+  isFreeTrial: boolean;
 };
 
 type RebookingModalControllerProps = {
@@ -483,6 +489,7 @@ type RebookableClassesListProps = {
   setClassToRebook: Dispatch<SetStateAction<number | null>>;
   setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
+  isAdminAuthenticated?: boolean;
 };
 
 type RebookableOptionsProps = {
@@ -554,4 +561,11 @@ type AddChildFormProps = {
   isAdminAuthenticated?: boolean;
   isError: boolean;
   clearErrorMessage: (field: keyof LocalizedMessages | "all") => void;
+};
+
+type WelcomeModalProps = {
+  customerId: number;
+  language: LanguageType;
+  setIsWelcomeModalOpen: Dispatch<SetStateAction<boolean>>;
+  isAdminAuthenticated?: boolean;
 };

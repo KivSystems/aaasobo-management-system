@@ -71,23 +71,39 @@
   display: flex;
 
   &__colorBox {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
     border-radius: 4px;
     border: 1px solid #ccc;
     margin-right: 8px;
   }
 
   &__inputField {
-    margin: 0px 50px 5px 0px;
+    margin: 0px 10px 5px 0px;
     padding: 3px 6px;
     font-size: 19px;
     font-weight: 500;
+    border: 1.5px solid #000000;
     border-radius: 6px;
-    width: 100%;
+    width: 400px;
+    height: 35px;
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;
+  }
+
+  &__editText {
+    height: 35px;
+    font-size: 19px;
+    font-weight: 500;
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    padding: 0.15rem 0.75rem;
+  }
+
+  &__displayText {
+    font-size: 20px;
+    font-weight: 500;
   }
 }
 

@@ -22,3 +22,6 @@ export const pickProperties = (
 
 // Standardize salt rounds for hashing passwords
 export const saltRounds = 12;
+
+export const FREE_TRIAL_BOOKING_HOURS = 72;
+export const REGULAR_REBOOKING_HOURS = 3;

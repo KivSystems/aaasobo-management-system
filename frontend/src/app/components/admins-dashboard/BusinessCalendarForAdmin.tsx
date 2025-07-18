@@ -4,9 +4,11 @@ import BusinessCalendarClient from "./BusinessCalendarClient";
 
 function BusinessCalendarForAdmin({
   businessSchedule,
+  events,
   isAdminAuthenticated,
 }: {
   businessSchedule: BusinessSchedule[];
+  events: BusinessEventType[];
   isAdminAuthenticated?: boolean;
 }) {
   // Calculate the first day of the previous year (e.g., 20XX-01-01)
@@ -27,6 +29,7 @@ function BusinessCalendarForAdmin({
       <>
         <BusinessCalendarClient
           businessSchedule={businessSchedule}
+          events={events}
           validRange={calendarValidRange}
           isAdminAuthenticated={isAdminAuthenticated}
         />

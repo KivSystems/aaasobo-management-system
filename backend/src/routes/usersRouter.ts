@@ -5,7 +5,6 @@ import {
   updatePasswordController,
   verifyResetTokenController,
 } from "../controllers/usersController";
-import { verifyAuthentication } from "../middlewares/auth.middleware";
 
 export const usersRouter = express.Router();
 
@@ -14,8 +13,4 @@ export const usersRouter = express.Router();
 usersRouter.post("/authenticate", authenticateUserController);
 usersRouter.post("/send-password-reset", sendUserResetEmailController);
 usersRouter.post("/verify-reset-token", verifyResetTokenController);
-usersRouter.patch(
-  "/update-password",
-  verifyAuthentication,
-  updatePasswordController,
-);
+usersRouter.patch("/update-password", updatePasswordController);

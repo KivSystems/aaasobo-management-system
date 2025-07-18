@@ -604,12 +604,25 @@ export const getClassesWithinPeriodController = async (
     const data = classes.map((classItem, number) => {
       const { id, instructor, customer, dateTime, status, classCode } =
         classItem;
-      const instructorName = instructor.nickname;
+
+      // If the free trial class status is "pending" or "declined" before booking, an instructor is not assigned — return "Not Set".
+      const instructorName = instructor?.nickname ?? "Not Set";
       const customerName = customer.name;
 
-      // Convert dateTime from UTC to JST (Add 9 hours).
-      const dateTimeUTC = new Date(dateTime);
-      const dateTimeJST = new Date(dateTimeUTC.getTime() + 9 * 60 * 60 * 1000);
+      // If the free trial class status is "pending" or "declined" before booking, no dateTime is selected — return "Not Set".
+      let date = "Not Set";
+      let time = "Not Set";
+
+      if (dateTime) {
+        // Convert dateTime from UTC to JST (Add 9 hours).
+        const dateTimeUTC = new Date(dateTime);
+        const dateTimeJST = new Date(
+          dateTimeUTC.getTime() + 9 * 60 * 60 * 1000,
+        );
+
+        date = dateTimeJST.toISOString().slice(0, 10);
+        time = dateTimeJST.toISOString().slice(11, 16);
+      }
 
       // Format the displayed status.
       let statusText = "";
@@ -626,6 +639,15 @@ export const getClassesWithinPeriodController = async (
         case "canceledByInstructor":
           statusText = "Canceled(Instructor)";
           break;
+        case "rebooked":
+          statusText = "Rebooked";
+          break;
+        case "pending":
+          statusText = "Pending";
+          break;
+        case "declined":
+          statusText = "Declined";
+          break;
       }
 
       return {
@@ -633,8 +655,8 @@ export const getClassesWithinPeriodController = async (
         ID: id,
         Instructor: instructorName,
         Customer: customerName,
-        Date: dateTimeJST.toISOString().slice(0, 10),
-        Time: dateTimeJST.toISOString().slice(11, 16),
+        Date: date,
+        Time: time,
         Status: statusText,
         "Class Code": classCode,
       };

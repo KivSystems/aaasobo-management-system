@@ -1,7 +1,5 @@
-import { CreateEmailResponse, Resend } from "resend";
-
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { CreateEmailResponse } from "resend";
+import { resend } from "./resendClient";
 export type UserType = "admin" | "customer" | "instructor";
 
 export const sendVerificationEmail = async (
