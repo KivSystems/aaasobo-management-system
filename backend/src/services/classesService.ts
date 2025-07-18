@@ -121,25 +121,6 @@ export const deleteClass = async (classId: number) => {
   }
 };
 
-// Fetch a class by class id along with related instructors, customers, and children data
-export const getClassById = async (classId: number) => {
-  try {
-    const classData = await prisma.class.findUnique({
-      where: { id: classId },
-      include: {
-        instructor: true,
-        customer: true,
-        classAttendance: { include: { children: true } },
-      },
-    });
-
-    return classData;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch a class.");
-  }
-};
-
 // Update/Edit a class
 export const updateClass = async (
   id: number,
