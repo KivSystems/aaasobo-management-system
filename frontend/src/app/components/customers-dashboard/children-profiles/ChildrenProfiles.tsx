@@ -61,7 +61,7 @@ function ChildrenProfiles({
         setEditingChildId(null);
       }
     }
-  }, [updateResult, editingChildId, setLocalMessages]);
+  }, [updateResult]);
 
   useEffect(() => {
     if (addResult !== undefined) {
@@ -71,7 +71,7 @@ function ChildrenProfiles({
         setIsAddChildModalOpen(false);
       }
     }
-  }, [addResult, language, setLocalMessages]);
+  }, [addResult]);
 
   const handleDeleteClick = async (childId: number) => {
     const hasOnlyOneChild = childProfiles.length === 1;
