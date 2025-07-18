@@ -61,7 +61,7 @@ export const updateChildProfileController = async (
   const childId = req.id;
   const { name, birthdate, personalInfo, customerId } = req.body;
 
-  if (!name || !birthdate || !personalInfo || !customerId) {
+  if (!name || !birthdate || !personalInfo || customerId == null) {
     return res.sendStatus(400);
   }
 

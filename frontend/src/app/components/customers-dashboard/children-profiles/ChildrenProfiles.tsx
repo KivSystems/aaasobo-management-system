@@ -69,11 +69,13 @@ function ChildrenProfiles({
       if (addResult.successMessage) {
         toast.success(addResult.successMessage[language]);
         setIsAddChildModalOpen(false);
+        clearErrorMessage("all");
       }
     }
   }, [addResult]);
 
   const handleDeleteClick = async (childId: number) => {
+    clearErrorMessage("all");
     const hasOnlyOneChild = childProfiles.length === 1;
 
     if (hasOnlyOneChild)
@@ -262,7 +264,10 @@ function ChildrenProfiles({
                 <ActionButton
                   className="deleteChild"
                   btnText={language === "ja" ? "削除" : "Delete"}
-                  onClick={() => handleDeleteClick(child.id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeleteClick(child.id);
+                  }}
                   disabled={editingChildId !== null}
                 />
                 <ActionButton
@@ -282,11 +287,7 @@ function ChildrenProfiles({
             {/* Hidden fields to include in form submission */}
             {/* For security, pass the customer ID through a hidden input only if the admin is authenticated */}
             {isAdminAuthenticated && (
-              <input
-                type="hidden"
-                name="customerId"
-                value={child.customerId ?? ""}
-              />
+              <input type="hidden" name="customerId" value={customerId ?? ""} />
             )}
             <input type="hidden" name="id" value={child.id ?? ""} />
           </form>
