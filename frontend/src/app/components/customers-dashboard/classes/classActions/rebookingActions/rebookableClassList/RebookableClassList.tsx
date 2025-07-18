@@ -13,6 +13,10 @@ import {
 } from "@/app/helper/messages/customerDashboard";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import { confirmAndDeclineFreeTrialClass } from "@/app/helper/utils/confirmAndDeclineFreeTrialClass";
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "@/app/helper/data/data";
 
 export default function RebookableClassList({
   customerId,
@@ -29,7 +33,9 @@ export default function RebookableClassList({
   ) => {
     const now = new Date().getTime();
 
-    const hoursBefore = isFreeTrial ? 72 : 3;
+    const hoursBefore = isFreeTrial
+      ? FREE_TRIAL_BOOKING_HOURS
+      : REGULAR_REBOOKING_HOURS;
     const rebookingDeadline = nHoursBefore(
       hoursBefore,
       new Date(rebookableUntil),

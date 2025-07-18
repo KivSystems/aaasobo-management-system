@@ -1,6 +1,11 @@
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import { nHoursLater } from "../helper/dateUtils";
+import { NewClassToRebookType } from "../controllers/classesController";
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "../helper/commonUtils";
 
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
@@ -409,8 +414,8 @@ export const getRebookableClasses = async (customerId: number) => {
   // Rebooking is allowed until 3 hours before rebookableUntil.
   // Free trial booking is allowed until 72 hours before rebookableUntil.
 
-  const rebookableFrom = nHoursLater(3);
-  const freeTrialBookableFrom = nHoursLater(72);
+  const rebookableFrom = nHoursLater(REGULAR_REBOOKING_HOURS);
+  const freeTrialBookableFrom = nHoursLater(FREE_TRIAL_BOOKING_HOURS);
 
   // Regular (non-free trial) classes
   const regularClasses = await prisma.class.findMany({
@@ -738,18 +743,7 @@ export const getClassToRebook = async (classId: number) => {
 
 export const rebookClass = async (
   oldClass: { id: number; status: Status },
-  newClass: {
-    dateTime: Date;
-    instructorId: number;
-    customerId: number;
-    status: Status;
-    subscriptionId?: number;
-    recurringClassId?: number;
-    rebookableUntil: string | Date;
-    classCode: string;
-    updatedAt: Date;
-    isFreeTrial: boolean;
-  },
+  newClass: NewClassToRebookType,
   childrenToAttend: number[],
 ) => {
   return await prisma.$transaction(async (tx) => {

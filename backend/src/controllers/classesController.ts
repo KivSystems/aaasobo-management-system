@@ -39,6 +39,10 @@ import {
   sendAdminSameDayRebookEmail,
   sendInstructorSameDayRebookEmail,
 } from "../helper/mail";
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "../helper/commonUtils";
 
 // GET all classes along with related instructors and customers data
 export const getAllClassesController = async (_: Request, res: Response) => {
@@ -59,8 +63,8 @@ export const getAllClassesController = async (_: Request, res: Response) => {
         },
         // "Pending" or "declined" free trial classes don't have an instructor, so use fallback values when instructor is missing
         instructor: {
-          id: instructor?.id ?? null,
-          name: instructor?.name ?? "Not Set",
+          id: instructor?.id,
+          name: instructor?.name,
         },
         status,
         recurringClassId,
@@ -108,13 +112,13 @@ export const getClassesByCustomerIdController = async (
         },
         // "Pending" or "declined" free trial classes don't have an instructor, so use fallback values when instructor is missing
         instructor: {
-          id: instructor?.id ?? null,
-          name: instructor?.name ?? "Not Set",
-          icon: instructor?.icon ?? null,
-          classURL: instructor?.classURL ?? null,
-          nickname: instructor?.nickname ?? null,
-          meetingId: instructor?.meetingId ?? null,
-          passcode: instructor?.passcode ?? null,
+          id: instructor?.id,
+          name: instructor?.name,
+          icon: instructor?.icon,
+          classURL: instructor?.classURL,
+          nickname: instructor?.nickname,
+          meetingId: instructor?.meetingId,
+          passcode: instructor?.passcode,
         },
         classAttendance: {
           children: classAttendance.map((classAttendance) => ({
@@ -135,6 +139,19 @@ export const getClassesByCustomerIdController = async (
     console.error("Controller Error:", error);
     res.status(500).json({ error: "Failed to fetch classes." });
   }
+};
+
+export type NewClassToRebookType = {
+  dateTime: string | Date;
+  instructorId: number;
+  customerId: number;
+  status: "rebooked";
+  rebookableUntil: string | Date;
+  classCode: string;
+  updatedAt: Date;
+  isFreeTrial: boolean;
+  subscriptionId?: number;
+  recurringClassId?: number;
 };
 
 export const rebookClassController = async (
@@ -169,8 +186,8 @@ export const rebookClassController = async (
 
     // Rebooking deadline: 72 hours before the class starts for free trial classes, and 3 hours before the class starts for regular classes
     const rebookingDeadline = isFreeTrial
-      ? nHoursBefore(72, new Date(dateTime))
-      : nHoursBefore(3, new Date(dateTime));
+      ? nHoursBefore(FREE_TRIAL_BOOKING_HOURS, new Date(dateTime))
+      : nHoursBefore(REGULAR_REBOOKING_HOURS, new Date(dateTime));
     const isPastRebookingDeadline = new Date() > rebookingDeadline;
 
     if (isPastRebookingDeadline) {
@@ -228,7 +245,7 @@ export const rebookClassController = async (
       });
     }
 
-    const newClassToRebook: any = {
+    const newClassToRebook: NewClassToRebookType = {
       dateTime,
       instructorId,
       customerId,
@@ -403,9 +420,9 @@ export const getInstructorClasses = async (
         dateTime,
         customerName: customer.name,
         // "Pending" or "declined" free trial classes do not have an instructor, so use fallback values
-        classURL: instructor?.classURL ?? null,
-        meetingId: instructor?.meetingId ?? null,
-        passcode: instructor?.passcode ?? null,
+        classURL: instructor?.classURL,
+        meetingId: instructor?.meetingId,
+        passcode: instructor?.passcode,
         attendingChildren: classAttendance.map((classAttendance) => ({
           id: classAttendance.children.id,
           name: classAttendance.children.name,

@@ -1,4 +1,8 @@
 import { prisma } from "../../prisma/prismaClient";
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "../helper/commonUtils";
 import { nHoursLater } from "../helper/dateUtils";
 
 export const getCalendarAvailabilities = async (instructorId: number) => {
@@ -86,7 +90,9 @@ export const getInstructorAvailabilities = async (
   rebookableUntil: Date,
   isFreeTrial: boolean,
 ): Promise<InstructorAvailability[]> => {
-  const effectiveFrom = isFreeTrial ? nHoursLater(72) : nHoursLater(3);
+  const effectiveFrom = isFreeTrial
+    ? nHoursLater(FREE_TRIAL_BOOKING_HOURS)
+    : nHoursLater(REGULAR_REBOOKING_HOURS);
 
   const availableSlots = await prisma.$queryRaw<InstructorAvailability[]>`
     SELECT ia."instructorId", ia."dateTime"
