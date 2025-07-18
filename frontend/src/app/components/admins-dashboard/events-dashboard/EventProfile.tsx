@@ -10,6 +10,7 @@ import {
   CONTENT_UPDATE_SUCCESS_MESSAGE,
   CONTENT_DELETE_SUCCESS_MESSAGE,
 } from "@/app/helper/messages/formValidation";
+import { defaultEventIds } from "@/app/helper/data/data";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
@@ -112,10 +113,13 @@ function EventProfile({
     return <p>{event}</p>;
   }
 
+  // Check if the event is one of the default events
+  const isEventDisabled = defaultEventIds.includes(event.id);
+
   return (
     <>
       <div className={styles.container}>
-        {latestEvent ? (
+        {latestEvent && latestEvent.color ? (
           <form action={formAction} className={styles.profileCard}>
             <div className={styles.profileCard}>
               {/* Event name */}
@@ -140,15 +144,19 @@ function EventProfile({
                 <div>
                   <p className={styles.eventName__text}>Color</p>
                   {isEditing ? (
-                    <InputField
-                      name="color"
-                      value={latestEvent.color
-                        .toUpperCase()
-                        .replace(/,\s*/g, ", ")}
-                      error={localMessages.color}
-                      onChange={(e) => handleInputChange(e, "color")}
-                      className={`${styles.eventColor__inputField} ${isEditing ? styles.editable : ""}`}
-                    />
+                    <div className={styles.eventColor}>
+                      <InputField
+                        name="color"
+                        type="color"
+                        value={latestEvent.color.toUpperCase()}
+                        error={localMessages.color}
+                        onChange={(e) => handleInputChange(e, "color")}
+                        className={`${styles.eventColor__inputField} ${isEditing ? styles.editable : ""}`}
+                      />
+                      <div className={styles.eventColor__editText}>
+                        {latestEvent.color.toUpperCase()}
+                      </div>
+                    </div>
                   ) : (
                     <div className={styles.eventColor}>
                       <div
@@ -157,9 +165,9 @@ function EventProfile({
                           backgroundColor: latestEvent.color,
                         }}
                       />
-                      <h4>
-                        {latestEvent.color.toUpperCase().replace(/,\s*/g, ", ")}
-                      </h4>
+                      <h3 className={styles.eventColor__displayText}>
+                        {latestEvent.color.toUpperCase()}
+                      </h3>
                     </div>
                   )}
                 </div>
@@ -197,6 +205,7 @@ function EventProfile({
                           btnText="Delete"
                           type="button"
                           onClick={() => handleDeleteClick()}
+                          disabled={isEventDisabled}
                         />
                       </div>
                       <div>
@@ -205,6 +214,7 @@ function EventProfile({
                           btnText="Edit"
                           type="button"
                           onClick={handleEditClick}
+                          disabled={isEventDisabled}
                         />
                       </div>
                     </div>

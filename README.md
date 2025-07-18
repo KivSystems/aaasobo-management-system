@@ -28,12 +28,15 @@ POSTGRES_URL_NON_POOLING="postgresql://postgres:summer@localhost:5432/mydb?schem
 PORT=4000
 KEY1=98b5b9c9ef24f4280561d95beb2ee54c00e81dfa1abc9d008b35b66e6c2095cc
 KEY2=7e3caf8440ad740910137a1890940347c44a5258f73784e822d0d705a1db3b70
+RESEND_API_KEY="Dummy Resend API Key"
+AUTH_SALT="authjs.session-token"
 ```
 
 Note that the following variables should be changed to match your local setup:
 
 - `POSTGRES_PRISMA_URL`: postgres://<user>:<password>@localhost:<port>/<dbname>?schema=schema
 - `POSTGRES_URL_NON_POOLING`
+- `RESEND_API_KEY` is shared in the development team.
 
 `KEY1` and `KEY2` are used for security purposes. They should be changed to a random string, for example, by running either of the following command:
 
@@ -92,13 +95,18 @@ cd frontend
 npm install
 ```
 
-#### (Optional) .env
+#### .env
 
-Currently, the frontend does not require any environment variables. However, if you want to run the backend on a different port, you can create a `.env` file in the `frontend` directory with the following content:
+Create a `.env` file in the `frontend` directory with the following content:
 
 ```
-NEXT_PUBLIC_BACKEND_ORIGIN=http://localhost:4001
+NEXTAUTH_SECRET="kwZirbC+M5b3nRdd3NtbWZzdXoYWCe2EAnQHgas/fZQ="
+
+# Optional. Default is http://localhost:4000
+NEXT_PUBLIC_BACKEND_ORIGIN=http://localhost:4000
 ```
+
+`NEXTAUTH_SECRET` should be randomly generated. See the backend section above.
 
 #### Start Next.js
 
