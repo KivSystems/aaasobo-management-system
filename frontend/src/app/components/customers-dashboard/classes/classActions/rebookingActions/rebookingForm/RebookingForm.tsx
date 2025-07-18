@@ -72,6 +72,7 @@ export default function RebookingForm({
           setClassToRebook={setClassToRebook}
           setRebookingStep={setRebookingStep}
           language={language}
+          isAdminAuthenticated={isAdminAuthenticated}
         />
       )}
 

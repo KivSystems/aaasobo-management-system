@@ -7,7 +7,6 @@ import {
   createClassesForMonthController,
   deleteClassController,
   getAllClassesController,
-  getClassByIdController,
   getClassesByCustomerIdController,
   rebookClassController,
   updateClassController,
@@ -27,8 +26,6 @@ classesRouter.get("/:id", getClassesByCustomerIdController);
 classesRouter.get("/:id/instructor-availabilities", parseId, (req, res) =>
   getInstructorAvailabilitiesController(req as RequestWithId, res),
 );
-
-classesRouter.get("/class/:id", getClassByIdController);
 
 classesRouter.post("/:id/rebook", parseId, (req, res) =>
   rebookClassController(req as RequestWithId, res),

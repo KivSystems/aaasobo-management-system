@@ -119,7 +119,7 @@ function EventProfile({
   return (
     <>
       <div className={styles.container}>
-        {latestEvent ? (
+        {latestEvent && latestEvent.color ? (
           <form action={formAction} className={styles.profileCard}>
             <div className={styles.profileCard}>
               {/* Event name */}
@@ -144,15 +144,19 @@ function EventProfile({
                 <div>
                   <p className={styles.eventName__text}>Color</p>
                   {isEditing ? (
-                    <InputField
-                      name="color"
-                      value={latestEvent.color
-                        .toUpperCase()
-                        .replace(/,\s*/g, ", ")}
-                      error={localMessages.color}
-                      onChange={(e) => handleInputChange(e, "color")}
-                      className={`${styles.eventColor__inputField} ${isEditing ? styles.editable : ""}`}
-                    />
+                    <div className={styles.eventColor}>
+                      <InputField
+                        name="color"
+                        type="color"
+                        value={latestEvent.color.toUpperCase()}
+                        error={localMessages.color}
+                        onChange={(e) => handleInputChange(e, "color")}
+                        className={`${styles.eventColor__inputField} ${isEditing ? styles.editable : ""}`}
+                      />
+                      <div className={styles.eventColor__editText}>
+                        {latestEvent.color.toUpperCase()}
+                      </div>
+                    </div>
                   ) : (
                     <div className={styles.eventColor}>
                       <div
@@ -161,9 +165,9 @@ function EventProfile({
                           backgroundColor: latestEvent.color,
                         }}
                       />
-                      <h4>
-                        {latestEvent.color.toUpperCase().replace(/,\s*/g, ", ")}
-                      </h4>
+                      <h3 className={styles.eventColor__displayText}>
+                        {latestEvent.color.toUpperCase()}
+                      </h3>
                     </div>
                   )}
                 </div>

@@ -15,6 +15,8 @@ import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import {
+  createFreeTrialClass,
+  declineFreeTrialClass,
   getCustomerClasses,
   getRebookableClasses,
   getUpcomingClasses,
@@ -83,6 +85,9 @@ export const registerCustomerController = async (
           normalizedEmail,
           tx,
         );
+
+        // Create a free trial class
+        await createFreeTrialClass({ tx, customerId: customer.id });
 
         return { customer, child, verificationToken };
       },
@@ -408,6 +413,54 @@ export const getChildProfilesController = async (
     res.status(200).json(childProfiles);
   } catch (error) {
     console.error("Error getting child profiles by customer ID", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const markWelcomeSeenController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    await updateCustomerProfile(customerId, { hasSeenWelcome: true });
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error marking welcome message as seen", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const declineFreeTrialClassController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+  const { classCode } = req.body;
+
+  try {
+    const updatedClass = await declineFreeTrialClass(customerId, classCode);
+
+    if (updatedClass.count === 0) {
+      res.sendStatus(404);
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error declining free trial class", {
       error,
       context: {
         customerId,

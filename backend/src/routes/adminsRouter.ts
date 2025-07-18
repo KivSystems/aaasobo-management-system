@@ -17,7 +17,10 @@ import {
   getAllEventsController,
   getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
-import { getAllSchedulesController } from "../../src/controllers/schedulesController";
+import {
+  getAllSchedulesController,
+  updateBusinessScheduleController,
+} from "../../src/controllers/schedulesController";
 
 import { verifyAuthentication } from "../middlewares/auth.middleware";
 
@@ -61,6 +64,11 @@ adminsRouter.delete(
   "/event-list/:id",
   verifyAuthentication,
   deleteEventController,
+);
+adminsRouter.post(
+  "/business-schedule/update",
+  verifyAuthentication,
+  updateBusinessScheduleController,
 );
 adminsRouter.get("/admin-list", getAllAdminsController);
 adminsRouter.get("/admin-list/:id", getAdminController);

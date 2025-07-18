@@ -22,6 +22,7 @@ export const updateCustomerProfile = async (
     email?: string;
     prefecture?: string;
     emailVerified?: Date | null;
+    hasSeenWelcome?: boolean;
   },
 ) => {
   const customer = await prisma.customer.update({

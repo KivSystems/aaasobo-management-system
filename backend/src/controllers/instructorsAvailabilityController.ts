@@ -34,14 +34,18 @@ export const getInstructorAvailabilitiesController = async (
   const classId = req.id;
 
   try {
-    const rebookableUntil = await getRebookableUntil(classId);
+    const data = await getRebookableUntil(classId);
 
-    if (!rebookableUntil) {
+    const { rebookableUntil, isFreeTrial } = data;
+
+    if (!rebookableUntil || isFreeTrial == null) {
       return res.sendStatus(400);
     }
 
-    const instructorAvailabilities =
-      await getInstructorAvailabilities(rebookableUntil);
+    const instructorAvailabilities = await getInstructorAvailabilities(
+      rebookableUntil,
+      isFreeTrial,
+    );
 
     res.status(200).json(instructorAvailabilities);
   } catch (error) {

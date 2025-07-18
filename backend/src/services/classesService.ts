@@ -1,6 +1,11 @@
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import { nHoursLater } from "../helper/dateUtils";
+import { NewClassToRebookType } from "../controllers/classesController";
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "../helper/commonUtils";
 
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
@@ -149,25 +154,6 @@ export const checkIfChildHasCompletedClass = async (
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to check if a child has a completed class.");
-  }
-};
-
-// Fetch a class by class id along with related instructors, customers, and children data
-export const getClassById = async (classId: number) => {
-  try {
-    const classData = await prisma.class.findUnique({
-      where: { id: classId },
-      include: {
-        instructor: true,
-        customer: true,
-        classAttendance: { include: { children: true } },
-      },
-    });
-
-    return classData;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch a class.");
   }
 };
 
@@ -425,43 +411,45 @@ export const checkDoubleBooking = async (
 };
 
 export const getRebookableClasses = async (customerId: number) => {
-  // A class can only be rebooked if its rebookableUntil time is more than three hours from now.
-  // In other words, rebooking is allowed up to three hours before the rebookableUntil time.
-  const rebookableFrom = nHoursLater(3);
+  // Rebooking is allowed until 3 hours before rebookableUntil.
+  // Free trial booking is allowed until 72 hours before rebookableUntil.
 
-  const classes = await prisma.class.findMany({
+  const rebookableFrom = nHoursLater(REGULAR_REBOOKING_HOURS);
+  const freeTrialBookableFrom = nHoursLater(FREE_TRIAL_BOOKING_HOURS);
+
+  // Regular (non-free trial) classes
+  const regularClasses = await prisma.class.findMany({
     where: {
-      customerId: customerId,
-      OR: [
-        {
-          status: "canceledByCustomer",
-          rebookableUntil: {
-            gte: rebookableFrom,
-          },
-        },
-        {
-          status: "canceledByInstructor",
-          rebookableUntil: {
-            gte: rebookableFrom,
-          },
-        },
-        {
-          status: "pending",
-          rebookableUntil: {
-            gte: rebookableFrom,
-          },
-        },
-      ],
-    },
-    orderBy: {
-      rebookableUntil: "asc",
+      customerId,
+      isFreeTrial: false,
+      status: { in: ["canceledByCustomer", "canceledByInstructor", "pending"] },
+      rebookableUntil: {
+        gte: rebookableFrom,
+      },
     },
   });
 
-  return classes.map((classItem) => ({
+  // Free trial classes
+  const freeTrialClasses = await prisma.class.findMany({
+    where: {
+      customerId,
+      isFreeTrial: true,
+      status: { in: ["canceledByCustomer", "canceledByInstructor", "pending"] },
+      rebookableUntil: {
+        gte: freeTrialBookableFrom,
+      },
+    },
+  });
+
+  const combinedClasses = [...regularClasses, ...freeTrialClasses].sort(
+    (a, b) => a.rebookableUntil!.getTime() - b.rebookableUntil!.getTime(),
+  );
+
+  return combinedClasses.map((classItem) => ({
     id: classItem.id,
     rebookableUntil: classItem.rebookableUntil,
     classCode: classItem.classCode,
+    isFreeTrial: classItem.isFreeTrial,
   }));
 };
 
@@ -602,7 +590,7 @@ export const getCustomerClasses = async (customerId: number) => {
     where: {
       customerId: customerId,
       NOT: {
-        status: "pending",
+        status: { in: ["pending", "declined"] },
       },
     },
     orderBy: {
@@ -630,19 +618,27 @@ export const getCustomerClasses = async (customerId: number) => {
       },
     },
   });
+
+  // All returned classes are non-pending, so both dateTime and instructor are guaranteed to exist
   const customerClasses = classes.map((classItem) => {
-    const start = classItem.dateTime;
+    const start = classItem.dateTime!;
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const statusColorMap: Partial<Record<Status, string>> = {
-      booked: "#e8f1fb",
-      rebooked: "#E7FBD9",
+      booked: "#FFEBEF", // Cherry Blossom
+      rebooked: "#FFFACD", // Gentle, light yellow
       canceledByCustomer: "#FFEBE0",
       canceledByInstructor: "#FFEBE0",
       completed: "#B5C4AB",
     };
 
-    const color = statusColorMap[classItem.status] ?? "#FFFFFF";
+    const isBookedOrRebooked =
+      classItem.status === "booked" || classItem.status === "rebooked";
+
+    const color =
+      classItem.isFreeTrial && isBookedOrRebooked
+        ? "#E7FBD9" // green
+        : statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)
@@ -654,16 +650,17 @@ export const getCustomerClasses = async (customerId: number) => {
       end,
       title: childrenNames,
       color,
-      instructorIcon: classItem.instructor.icon,
-      instructorNickname: classItem.instructor.nickname,
-      instructorName: classItem.instructor.name,
-      instructorClassURL: classItem.instructor.classURL,
-      instructorMeetingId: classItem.instructor.meetingId,
-      instructorPasscode: classItem.instructor.passcode,
+      instructorIcon: classItem.instructor!.icon,
+      instructorNickname: classItem.instructor!.nickname,
+      instructorName: classItem.instructor!.name,
+      instructorClassURL: classItem.instructor!.classURL,
+      instructorMeetingId: classItem.instructor!.meetingId,
+      instructorPasscode: classItem.instructor!.passcode,
       classStatus: classItem.status,
       rebookableUntil: classItem.rebookableUntil,
       classCode: classItem.classCode,
       updatedAt: classItem.updatedAt,
+      isFreeTrial: classItem.isFreeTrial,
     };
   });
   return customerClasses;
@@ -693,7 +690,7 @@ export const getCalendarClasses = async (instructorId: number) => {
     },
   });
   const instructorCalendarClasses = classes.map((classItem) => {
-    const start = classItem.dateTime;
+    const start = classItem.dateTime!; // Guaranteed to exist for non-pending classes
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const color =
@@ -724,7 +721,10 @@ export const getRebookableUntil = async (classId: number) => {
     where: { id: classId },
   });
 
-  return classData?.rebookableUntil;
+  return {
+    rebookableUntil: classData?.rebookableUntil,
+    isFreeTrial: classData?.isFreeTrial,
+  };
 };
 
 export const getClassToRebook = async (classId: number) => {
@@ -737,22 +737,13 @@ export const getClassToRebook = async (classId: number) => {
     recurringClassId: classData?.recurringClassId,
     rebookableUntil: classData?.rebookableUntil,
     classCode: classData?.classCode,
+    isFreeTrial: classData?.isFreeTrial,
   };
 };
 
 export const rebookClass = async (
   oldClass: { id: number; status: Status },
-  newClass: {
-    dateTime: Date;
-    instructorId: number;
-    customerId: number;
-    status: Status;
-    subscriptionId: number;
-    recurringClassId: number;
-    rebookableUntil: string | Date;
-    classCode: string;
-    updatedAt: Date;
-  },
+  newClass: NewClassToRebookType,
   childrenToAttend: number[],
 ) => {
   return await prisma.$transaction(async (tx) => {
@@ -784,4 +775,57 @@ export const rebookClass = async (
 
     return newRebookedClass;
   });
+};
+
+export const createFreeTrialClass = async ({
+  tx,
+  customerId,
+}: {
+  tx: Prisma.TransactionClient;
+  customerId: number;
+}) => {
+  const createdClass = await tx.class.create({
+    data: {
+      customerId,
+      status: "pending",
+      rebookableUntil: nHoursLater(180 * 24, new Date()), // 180 days (* 24 hours) after now
+      updatedAt: new Date(),
+      classCode: `ft-${customerId}`, // "ft" = free trial
+      isFreeTrial: true,
+    },
+  });
+
+  return createdClass;
+};
+
+export const declineFreeTrialClass = async (
+  customerId: number,
+  classCode?: string,
+) => {
+  const baseConditions = {
+    customerId,
+    isFreeTrial: true,
+    status: {
+      in: [
+        Status.pending,
+        Status.canceledByCustomer,
+        Status.canceledByInstructor,
+      ],
+    },
+  };
+
+  const whereClause = classCode
+    ? { ...baseConditions, classCode }
+    : baseConditions;
+
+  const updatedClass = await prisma.class.updateMany({
+    where: whereClause,
+    data: {
+      status: Status.declined,
+      updatedAt: new Date(),
+      rebookableUntil: null,
+    },
+  });
+
+  return updatedClass;
 };

@@ -127,6 +127,27 @@ export function convertDayTimeToUTC(day: Day, time: string) {
   };
 }
 
+// Convert a date string to ISO format with UTC time zone.
+// e.g., "01/05/2025" "2025-01-05" => "2025-01-05T00:00:00.000Z"
+export function convertToISOString(dateStr: string): string {
+  let year: number, month: number, day: number;
+
+  // 1. YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    [year, month, day] = dateStr.split("-").map(Number);
+  }
+  // 2. MM/DD/YYYY
+  else if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+    [month, day, year] = dateStr.split("/").map(Number);
+  }
+  // 3. Other formats -> Throw an error
+  else {
+    throw new Error(`Unsupported date format: ${dateStr}`);
+  }
+
+  return new Date(Date.UTC(year, month - 1, day)).toISOString();
+}
+
 export const nHoursLater = (n: number, dateTime: Date = new Date()) => {
   return new Date(dateTime.getTime() + n * 60 * 60 * 1000);
 };
@@ -165,4 +186,18 @@ export const formatYearDateTime = (
     minute: "2-digit",
     hour12: false,
   }).format(date);
+};
+
+// Get the first date of the year that is a designated day.
+
+export const getFirstDesignatedDayOfYear = (year: number, day: Day): Date => {
+  // Create a date object for January 1st of the specified year based on UTC
+  const date = new Date(Date.UTC(year, 0, 1));
+
+  // Set the date to the first occurrence of the specified day in that year
+  while (date.getDay() !== getDayNumber(day)) {
+    date.setDate(date.getDate() + 1);
+  }
+
+  return date;
 };

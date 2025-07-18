@@ -13,7 +13,6 @@ import {
   getFirstDateInMonths,
   createDatesBetween,
   calculateFirstDate,
-  formatTime,
   getDayNumber,
   convertDayTimeToUTC,
   formatUTCTime,
@@ -285,7 +284,7 @@ export const updateRecurringClassesController = async (
       );
       const duplicatedClassesDates = dateTimes.filter((dateTimes) =>
         classes.some(
-          (Class) => Class.dateTime.getTime() === dateTimes.getTime(),
+          (Class) => Class.dateTime!.getTime() === dateTimes.getTime(), // All "classes" are selected by dateTime, so dateTime is guaranteed to exist.
         ),
       );
       dateTimes = dateTimes.filter(

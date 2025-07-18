@@ -1,4 +1,8 @@
 import { prisma } from "../../prisma/prismaClient";
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "../helper/commonUtils";
 import { nHoursLater } from "../helper/dateUtils";
 
 export const getCalendarAvailabilities = async (instructorId: number) => {
@@ -36,7 +40,7 @@ export const getCalendarAvailabilities = async (instructorId: number) => {
 
   // Combine those unavailable dateTimes
   const unavailableDateTimes = [
-    ...bookedOrCanceledTimeSlots.map((record) => record.dateTime),
+    ...bookedOrCanceledTimeSlots.map((record) => record.dateTime!), // Guaranteed to exist for non-pending classes
     ...unavailableTimeSlots.map((record) => record.dateTime),
   ];
 
@@ -84,8 +88,11 @@ type InstructorAvailability = {
  */
 export const getInstructorAvailabilities = async (
   rebookableUntil: Date,
+  isFreeTrial: boolean,
 ): Promise<InstructorAvailability[]> => {
-  const effectiveFrom = nHoursLater(3);
+  const effectiveFrom = isFreeTrial
+    ? nHoursLater(FREE_TRIAL_BOOKING_HOURS)
+    : nHoursLater(REGULAR_REBOOKING_HOURS);
 
   const availableSlots = await prisma.$queryRaw<InstructorAvailability[]>`
     SELECT ia."instructorId", ia."dateTime"

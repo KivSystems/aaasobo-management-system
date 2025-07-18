@@ -11,6 +11,8 @@ import {
   verifyCustomerEmailController,
   checkEmailConflictsController,
   getChildProfilesController,
+  markWelcomeSeenController,
+  declineFreeTrialClassController,
 } from "../../src/controllers/customersController";
 import {
   type RequestWithId,
@@ -43,5 +45,11 @@ customersRouter.get("/:id/child-profiles", parseId, (req, res) =>
 );
 
 customersRouter.patch("/:id", updateCustomerProfileController);
+customersRouter.patch("/:id/seen-welcome", parseId, (req, res) =>
+  markWelcomeSeenController(req as RequestWithId, res),
+);
+customersRouter.patch("/:id/free-trial/decline", parseId, (req, res) =>
+  declineFreeTrialClassController(req as RequestWithId, res),
+);
 
 customersRouter.post("/:id/subscription", registerSubscriptionController);

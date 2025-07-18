@@ -22,6 +22,9 @@ export const pickProperties = (
   return pickedProperties;
 };
 
+export const FREE_TRIAL_BOOKING_HOURS = 72;
+export const REGULAR_REBOOKING_HOURS = 3;
+
 // Standardize salt rounds for hashing passwords
 const saltRounds = 12;
 

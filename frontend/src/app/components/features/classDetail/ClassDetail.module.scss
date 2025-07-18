@@ -5,10 +5,10 @@
   width: 470px;
 
   &.booked {
-    border-top: 17px solid $blue_primary;
+    border-top: 17px solid $light-pink-regular-class;
   }
   &.rebooked {
-    border-top: 17px solid $green-success;
+    border-top: 17px solid $light-yellow-rebooked-class;
   }
   &.completed {
     border-top: 17px solid $completed-background-color;
@@ -18,6 +18,9 @@
   }
   &.canceledByCustomer {
     border-top: 17px solid $gray-background;
+  }
+  &.freeTrial {
+    border-top: 17px solid $green-success;
   }
 }
 
