@@ -5,8 +5,8 @@ import {
   createTestAdmin,
   createTestCustomer,
   createTestInstructor,
-  hashPassword,
 } from "./helper";
+import { hashPasswordSync } from "../helper/commonUtils";
 
 vi.mock("../../prisma/prismaClient", () => ({
   prisma: createMockPrisma(),
@@ -31,7 +31,7 @@ describe("Admin Login", () => {
       id: admin.id,
       name: admin.name,
       email: admin.email,
-      password: hashPassword(admin.password),
+      password: hashPasswordSync(admin.password),
     });
 
     const response = await request(server)
@@ -65,7 +65,7 @@ describe("Admin Login", () => {
       id: admin.id,
       name: admin.name,
       email: admin.email,
-      password: hashPassword(admin.password),
+      password: hashPasswordSync(admin.password),
     });
 
     await request(server)
@@ -84,7 +84,7 @@ describe("Customer Login", () => {
     const customer = createTestCustomer();
     mockPrisma.customer.findUnique.mockResolvedValue({
       ...customer,
-      password: hashPassword(customer.password),
+      password: hashPasswordSync(customer.password),
     });
 
     const response = await request(server)
@@ -105,7 +105,7 @@ describe("Instructor Login", () => {
     const instructor = createTestInstructor();
     mockPrisma.instructor.findUnique.mockResolvedValue({
       ...instructor,
-      password: hashPassword(instructor.password),
+      password: hashPasswordSync(instructor.password),
     });
 
     const response = await request(server)
@@ -129,7 +129,7 @@ describe("Admin Password Reset", () => {
     // Setup mocks
     mockPrisma.admins.findUnique.mockResolvedValue({
       ...mockAdmin,
-      password: hashPassword(mockAdmin.password),
+      password: hashPasswordSync(mockAdmin.password),
     });
     mockPrisma.passwordResetToken.create.mockResolvedValue({
       id: 1,
@@ -183,7 +183,7 @@ describe("Admin Password Reset", () => {
     const newPassword = "newPassword456";
     const updatedMockAdmin = {
       ...mockAdmin,
-      password: hashPassword(newPassword),
+      password: hashPasswordSync(newPassword),
     };
     mockPrisma.admins.update.mockResolvedValue(updatedMockAdmin);
 

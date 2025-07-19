@@ -4,8 +4,8 @@ import {
   createMockResend,
   createTestAdmin,
   createTestInstructor,
-  hashPassword,
 } from "./helper";
+import { hashPasswordSync } from "../helper/commonUtils";
 
 vi.mock("../../prisma/prismaClient", () => ({
   prisma: createMockPrisma(),
@@ -25,7 +25,7 @@ const loginAsAdmin = async (admin = createTestAdmin()) => {
   mockPrisma.admins.findUnique.mockResolvedValue({
     id: admin.id,
     email: admin.email,
-    password: hashPassword(admin.password),
+    password: hashPasswordSync(admin.password),
     name: admin.name,
   });
 
@@ -106,7 +106,7 @@ describe("Instructor Registration", () => {
       .expect(200);
 
     // Step 3: Instructor can login
-    const hashedPassword = hashPassword(newInstructor.password);
+    const hashedPassword = hashPasswordSync(newInstructor.password);
     mockPrisma.instructor.findUnique.mockResolvedValue({
       ...newInstructor,
       password: hashedPassword,

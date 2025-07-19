@@ -1,7 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Admins } from "@prisma/client";
-import bcrypt from "bcrypt";
-import { saltRounds } from "../helper/commonUtils";
+import { hashPassword } from "../helper/commonUtils";
 
 // Register a new admin in the DB
 export const registerAdmin = async (data: {
@@ -9,7 +8,7 @@ export const registerAdmin = async (data: {
   email: string;
   password: string;
 }) => {
-  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+  const hashedPassword = await hashPassword(data.password);
 
   await prisma.admins.create({
     data: {
