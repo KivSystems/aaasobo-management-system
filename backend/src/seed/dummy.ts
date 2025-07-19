@@ -550,8 +550,10 @@ async function insertClasses() {
         isFreeTrial: false,
       },
       {
+        instructorId: helen.id,
         customerId: alice.id,
-        status: "pending",
+        dateTime: "2025-07-31T07:00:00Z",
+        status: "rebooked",
         rebookableUntil: "2025-10-30T09:00:00Z",
         createdAt: "2025-05-20T07:00:00Z",
         updatedAt: "2025-05-20T07:00:00Z",
@@ -835,6 +837,8 @@ async function insertClassAttendance() {
       { classId: classes[2].id, childrenId: children[0].id },
       { classId: classes[3].id, childrenId: children[0].id },
       { classId: classes[4].id, childrenId: children[0].id },
+      { classId: classes[5].id, childrenId: children[0].id },
+      { classId: classes[5].id, childrenId: children[1].id },
     ],
   });
 

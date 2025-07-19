@@ -201,3 +201,35 @@ export const getFirstDesignatedDayOfYear = (year: number, day: Day): Date => {
 
   return date;
 };
+
+/**
+ * Returns the start and end of the day in JST (00:00:00–23:59:59.999) as UTC Date objects.
+ * @param dateTime A UTC datetime (Date object or ISO string)
+ * @returns An object containing startOfDay and endOfDay in UTC
+ */
+export function getJstDayRange(dateTime: string | Date): {
+  startOfDay: Date;
+  endOfDay: Date;
+} {
+  const targetDate = new Date(dateTime);
+
+  // Convert to JST by adding 9 hours
+  const jstTime = targetDate.getTime() + 9 * 60 * 60 * 1000;
+  const jstDate = new Date(jstTime);
+
+  // Extract JST year, month, and day using UTC getters
+  const year = jstDate.getUTCFullYear();
+  const month = String(jstDate.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(jstDate.getUTCDate()).padStart(2, "0");
+  const dateOnly = `${year}-${month}-${day}`; // e.g. "2025-07-30"
+
+  // Create start of JST day in UTC (JST 00:00 → UTC 15:00 on previous day)
+  const startOfDay = new Date(`${dateOnly}T00:00:00.000Z`);
+  startOfDay.setUTCHours(startOfDay.getUTCHours() - 9);
+
+  // Create end of JST day in UTC (JST 23:59:59 → UTC 14:59:59)
+  const endOfDay = new Date(`${dateOnly}T23:59:59.999Z`);
+  endOfDay.setUTCHours(endOfDay.getUTCHours() - 9);
+
+  return { startOfDay, endOfDay };
+}

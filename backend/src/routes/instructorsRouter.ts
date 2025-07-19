@@ -12,6 +12,7 @@ import {
   updateInstructorProfile,
   getCalendarClassesController,
   getInstructorProfilesController,
+  getSameDateClassesController,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -69,6 +70,13 @@ instructorsRouter.get("/", getAllInstructorsController);
 instructorsRouter.get("/:id/classes", parseId, (req, res) => {
   getInstructorClasses(req as RequestWithId, res);
 });
+instructorsRouter.get(
+  "/:id/classes/:classId/same-date",
+  parseId,
+  (req, res) => {
+    getSameDateClassesController(req as RequestWithId, res);
+  },
+);
 
 instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
   getCalendarAvailabilitiesController(req as RequestWithId, res);

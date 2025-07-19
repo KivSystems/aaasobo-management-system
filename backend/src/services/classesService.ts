@@ -1,6 +1,6 @@
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import { nHoursLater } from "../helper/dateUtils";
+import { getJstDayRange, nHoursLater } from "../helper/dateUtils";
 import { NewClassToRebookType } from "../controllers/classesController";
 import {
   FREE_TRIAL_BOOKING_HOURS,
@@ -836,4 +836,33 @@ export const declineFreeTrialClass = async (
   });
 
   return updatedClass;
+};
+
+export const getSameDateClasses = async (
+  instructorId: number,
+  classId: number,
+) => {
+  const targetClass = await prisma.class.findUnique({
+    where: { id: classId },
+    select: { dateTime: true },
+  });
+
+  if (!targetClass || !targetClass.dateTime) return [];
+
+  const { startOfDay, endOfDay } = getJstDayRange(targetClass.dateTime);
+
+  const classes = await prisma.class.findMany({
+    where: {
+      instructorId,
+      status: {
+        in: ["booked", "rebooked", "canceledByInstructor", "completed"],
+      },
+      dateTime: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    },
+  });
+
+  return classes;
 };
