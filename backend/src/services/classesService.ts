@@ -671,7 +671,7 @@ export const getCalendarClasses = async (instructorId: number) => {
     where: {
       instructorId: instructorId,
       status: {
-        in: ["booked", "completed", "canceledByInstructor"],
+        in: ["booked", "rebooked", "completed", "canceledByInstructor"],
       },
     },
     orderBy: {
@@ -693,12 +693,20 @@ export const getCalendarClasses = async (instructorId: number) => {
     const start = classItem.dateTime!; // Guaranteed to exist for non-pending classes
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
+    const statusColorMap: Partial<Record<Status, string>> = {
+      booked: "#FFEBEF", // Cherry Blossom
+      rebooked: "#FFFACD", // Gentle, light yellow
+      canceledByInstructor: "#FFEBE0",
+      completed: "#B5C4AB",
+    };
+
+    const isBookedOrRebooked =
+      classItem.status === "booked" || classItem.status === "rebooked";
+
     const color =
-      classItem.status === "booked"
-        ? "#E7FBD9"
-        : classItem.status === "completed"
-          ? "#B5C4AB"
-          : "#FFEBE0";
+      classItem.isFreeTrial && isBookedOrRebooked
+        ? "#E7FBD9" // green
+        : statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)
