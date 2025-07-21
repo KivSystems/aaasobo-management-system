@@ -8,9 +8,10 @@ import Image from "next/image";
 type UploaderProps = {
   onFileSelect: (file: File | null) => void;
   clearFileInputRef?: () => void;
+  label?: string;
 };
 
-function Uploader({ onFileSelect, clearFileInputRef }: UploaderProps) {
+function Uploader({ onFileSelect, clearFileInputRef, label }: UploaderProps) {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -55,9 +56,11 @@ function Uploader({ onFileSelect, clearFileInputRef }: UploaderProps) {
 
   return (
     <section className={styles.dragDrop}>
-      <p className={styles.label}>
-        Instructor profile image<span className={styles.required}>*</span>
-      </p>
+      {label && (
+        <p className={styles.label}>
+          Instructor profile image<span className={styles.required}>*</span>
+        </p>
+      )}
       <div
         className={`${styles.documentUploader} ${isDragging ? styles.dragging : ""}`}
         onDrop={handleDrop}

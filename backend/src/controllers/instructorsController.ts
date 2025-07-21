@@ -26,6 +26,7 @@ import {
   getUnavailabilities,
   getInstructorProfile,
   updateInstructor,
+  updateInstructorWithIcon,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import { getCalendarClasses } from "../services/classesService";
@@ -155,7 +156,6 @@ export const updateInstructorProfile = async (req: Request, res: Response) => {
     name,
     email,
     classURL,
-    icon,
     nickname,
     meetingId,
     passcode,
@@ -164,6 +164,57 @@ export const updateInstructorProfile = async (req: Request, res: Response) => {
 
   try {
     const instructor = await updateInstructor(
+      instructorId,
+      name,
+      email,
+      classURL,
+      nickname,
+      meetingId,
+      passcode,
+      introductionURL,
+    );
+
+    res.status(200).json({
+      message: "Instructor is updated successfully",
+      instructor,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
+  }
+};
+
+// Update the applicable instructor data with icon
+export const updateInstructorProfileWithIcon = async (
+  req: Request,
+  res: Response,
+) => {
+  const instructorId = parseInt(req.params.id);
+  const icon = req.file;
+  const {
+    name,
+    email,
+    classURL,
+    nickname,
+    meetingId,
+    passcode,
+    introductionURL,
+  } = req.body;
+
+  if (
+    !name ||
+    !email ||
+    !nickname ||
+    !icon ||
+    !classURL ||
+    !meetingId ||
+    !passcode ||
+    !introductionURL
+  ) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const instructor = await updateInstructorWithIcon(
       instructorId,
       name,
       email,

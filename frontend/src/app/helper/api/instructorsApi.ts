@@ -114,7 +114,6 @@ export const updateInstructor = async (
   instructorName: string,
   instructorEmail: string,
   instructorClassURL: string,
-  instructorIcon: string,
   instructorNickname: string,
   instructorMeetingId: string,
   instructorPasscode: string,
@@ -127,7 +126,6 @@ export const updateInstructor = async (
     name: instructorName,
     email: instructorEmail,
     classURL: instructorClassURL,
-    icon: instructorIcon,
     nickname: instructorNickname,
     meetingId: instructorMeetingId,
     passcode: instructorPasscode,
@@ -138,6 +136,28 @@ export const updateInstructor = async (
     method: "PATCH",
     headers,
     body,
+  });
+
+  const data = await response.json();
+
+  if (response.status !== 200) {
+    return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
+  }
+
+  return data;
+};
+
+// PATCH instructor data with icon
+export const updateInstructorWithIcon = async (
+  instructorId: number,
+  userData: FormData,
+) => {
+  // Define the data to be sent to the server side.
+  const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/withIcon`;
+
+  const response = await fetch(instructorURL, {
+    method: "PATCH",
+    body: userData,
   });
 
   const data = await response.json();

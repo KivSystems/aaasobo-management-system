@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./InstructorProfile.module.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
 import { updateUser } from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
@@ -17,6 +17,7 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
+import Uploader from "../../features/registerForm/uploadImages/Uploader";
 
 function InstructorProfile({
   instructor,
@@ -34,6 +35,7 @@ function InstructorProfile({
     typeof instructor !== "string" ? instructor : null,
   );
   const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -85,6 +87,32 @@ function InstructorProfile({
               alt={latestInstructor.name}
               className={styles.pic}
             />
+            {isEditing ? (
+              <>
+                <input
+                  type="file"
+                  name="icon"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                />
+                <Uploader
+                  onFileSelect={(file) => {
+                    if (fileInputRef.current && file) {
+                      const dataTransfer = new DataTransfer();
+                      dataTransfer.items.add(file);
+                      fileInputRef.current.files = dataTransfer.files;
+                    }
+                  }}
+                  clearFileInputRef={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = "";
+                    }
+                  }}
+                />
+              </>
+            ) : (
+              <></>
+            )}
 
             {/* Instructor name */}
             <div className={styles.instructorName__nameSection}>

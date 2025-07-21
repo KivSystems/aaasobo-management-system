@@ -2,7 +2,7 @@ import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { saltRounds } from "../helper/commonUtils";
-import { put } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {
@@ -80,7 +80,6 @@ export const updateInstructor = async (
   name: string,
   email: string,
   classURL: string,
-  icon: string,
   nickname: string,
   meetingId: string,
   passcode: string,
@@ -96,7 +95,57 @@ export const updateInstructor = async (
         name,
         email,
         classURL,
-        icon,
+        nickname,
+        meetingId,
+        passcode,
+        introductionURL,
+      },
+    });
+    return instructor;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to update the instructor data.");
+  }
+};
+
+export const updateInstructorWithIcon = async (
+  id: number,
+  name: string,
+  email: string,
+  classURL: string,
+  icon: Express.Multer.File,
+  nickname: string,
+  meetingId: string,
+  passcode: string,
+  introductionURL: string,
+) => {
+  try {
+    const prevData = await prisma.instructor.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!prevData) return;
+
+    // Update the instructor profile icon.
+    await del(prevData?.icon);
+
+    const blob = await put(icon.originalname, icon.buffer, {
+      access: "public",
+      addRandomSuffix: true,
+    });
+
+    // Update the instructor data.
+    const instructor = await prisma.instructor.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        email,
+        classURL,
+        icon: blob.url,
         nickname,
         meetingId,
         passcode,

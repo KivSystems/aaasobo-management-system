@@ -16,7 +16,7 @@ import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
 
 type ListTableProps = {
   listType: string;
-  fetchedData: any[];
+  fetchedData: Instructor[];
   omitItems: string[];
   linkItems: string[];
   linkUrls: string[];

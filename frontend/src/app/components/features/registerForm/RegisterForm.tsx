@@ -162,6 +162,7 @@ const RegisterForm = ({ userType }: { userType: UserType }) => {
                 fileInputRef.current.value = "";
               }
             }}
+            label={"Instructor profile image"}
           />
           <TextInput
             id="classURL"
