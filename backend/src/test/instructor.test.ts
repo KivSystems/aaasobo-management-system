@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   createMockPrisma,
   createMockResend,
-  createTestAdmin,
+  loginAsAdmin,
   createTestInstructor,
 } from "./helper";
 import { hashPasswordSync } from "../helper/commonUtils";
@@ -21,26 +21,6 @@ import { server } from "../server";
 
 const mockPrisma = prisma as unknown as ReturnType<typeof createMockPrisma>;
 
-const loginAsAdmin = async (admin = createTestAdmin()) => {
-  mockPrisma.admins.findUnique.mockResolvedValue({
-    id: admin.id,
-    email: admin.email,
-    password: hashPasswordSync(admin.password),
-    name: admin.name,
-  });
-
-  await request(server)
-    .post("/users/authenticate")
-    .send({
-      email: admin.email,
-      password: admin.password,
-      userType: "admin",
-    })
-    .expect(200);
-
-  return `${process.env.AUTH_SALT}=mock-token`;
-};
-
 describe("Instructor Registration", () => {
   it("should complete the instructor registration flow", async () => {
     // Step 1: Admin creates instructor profile
@@ -49,7 +29,7 @@ describe("Instructor Registration", () => {
     mockPrisma.instructor.findUnique.mockResolvedValue(null);
     mockPrisma.instructor.create.mockResolvedValue(newInstructor);
 
-    const sessionCookie = await loginAsAdmin();
+    const sessionCookie = await loginAsAdmin(server, mockPrisma);
     await request(server)
       .post("/admins/instructor-list/register")
       .set("Cookie", sessionCookie)
@@ -130,7 +110,7 @@ describe("Instructor Profile Update", () => {
 
   it("should handle instructor profile update flow", async () => {
     // Step 1: Admin views instructor profile
-    const sessionCookie = await loginAsAdmin();
+    const sessionCookie = await loginAsAdmin(server, mockPrisma);
     const instructor = createTestInstructor();
     mockPrisma.instructor.findUnique.mockResolvedValue(instructor);
 
