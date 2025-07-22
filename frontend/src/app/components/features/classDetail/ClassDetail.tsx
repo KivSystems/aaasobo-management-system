@@ -121,11 +121,12 @@ const ClassDetail = ({
       {/* Instructor */}
       <div className={styles.instructor}>
         <Image
-          src={`/instructors/${classDetail.instructorIcon}`}
+          src={`${classDetail.instructorIcon}?t=${Date.now()}`}
           alt={classDetail.instructorName}
           width={135}
           height={135}
           priority
+          unoptimized
           className={`${styles.instructor__icon} ${statusClass}`}
         />
         <div className={styles.instructor__name}>
