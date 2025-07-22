@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 import Uploader from "../../features/registerForm/uploadImages/Uploader";
+import Image from "next/image";
 
 function InstructorProfile({
   instructor,
@@ -63,6 +64,14 @@ function InstructorProfile({
         const result = updateResultState as { instructor: Instructor };
         toast.success("Profile updated successfully!");
         setIsEditing(false);
+
+        const newInstructor = result.instructor;
+        if (typeof newInstructor.icon === "string") {
+          newInstructor.icon = {
+            url: `${newInstructor.icon}?t=${Date.now()}`,
+          };
+        }
+
         setPreviousInstructor(result.instructor);
         setLatestInstructor(result.instructor);
       } else {
@@ -82,9 +91,12 @@ function InstructorProfile({
       <div className={styles.container}>
         {latestInstructor ? (
           <form action={formAction} className={styles.profileCard}>
-            <img
-              src={latestInstructor?.icon.url}
+            <Image
+              src={`${latestInstructor.icon.url}?t=${Date.now()}`}
               alt={latestInstructor.name}
+              width={100}
+              height={100}
+              unoptimized
               className={styles.pic}
             />
             {isEditing ? (
