@@ -15,20 +15,29 @@ export default function RebookingModalController({
   const [isRebookingModalOpen, setIsRebookingModalOpen] = useState(false);
   const rebookableClassesNumber = rebookableClasses.length;
 
+  const hasFreeTrial =
+    rebookableClassesNumber > 0 &&
+    rebookableClasses.some((classItem) => classItem.isFreeTrial === true);
+
   const handleRebookingClick = () => {
     if (!hasChildProfile)
       return alert(CHILD_PROFILE_REQUIRED_MESSAGE[language]);
     setIsRebookingModalOpen(true);
   };
 
+  const buttonText =
+    language === "ja"
+      ? hasFreeTrial
+        ? `クラスを予約${rebookableClassesNumber > 0 ? ` (${rebookableClassesNumber})` : ""}`
+        : `振替予約${rebookableClassesNumber > 0 ? ` (${rebookableClassesNumber})` : ""}`
+      : hasFreeTrial
+        ? `Book Class${rebookableClassesNumber > 0 ? ` (${rebookableClassesNumber})` : ""}`
+        : `Rebook Class${rebookableClassesNumber > 0 ? ` (${rebookableClassesNumber})` : ""}`;
+
   return (
     <>
       <ActionButton
-        btnText={
-          language === "ja"
-            ? `振替予約 ${rebookableClassesNumber > 0 ? `(${rebookableClassesNumber})` : ""}`
-            : `Rebook Class ${rebookableClassesNumber > 0 ? `(${rebookableClassesNumber})` : ""}`
-        }
+        btnText={buttonText}
         className="rebookClass"
         onClick={handleRebookingClick}
         disabled={rebookableClassesNumber === 0}

@@ -1,0 +1,20 @@
+.modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 150px;
+  width: 620px;
+
+  &__title {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  &__backBtn {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}

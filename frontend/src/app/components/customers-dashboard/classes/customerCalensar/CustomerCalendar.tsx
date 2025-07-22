@@ -33,7 +33,7 @@ export default function CustomerCalendar({
     setIsClassDetailModalOpen(true);
   };
 
-  const validRange = () => getValidRange(createdAt);
+  const validRange = () => getValidRange(createdAt, 3);
   const renderCustomerEventContent = createRenderEventContent("customer");
 
   const handleModalClose = () => {
@@ -74,13 +74,17 @@ export default function CustomerCalendar({
         allDaySlot={false}
       />
 
-      <Modal isOpen={isClassDetailModalOpen} onClose={handleModalClose}>
+      <Modal
+        isOpen={isClassDetailModalOpen}
+        onClose={handleModalClose}
+        className="classDetail"
+      >
         <ClassDetail
           classDetail={classDetail}
           customerId={customerId}
-          timeZone="Asia/Tokyo"
           isAdminAuthenticated
           handleModalClose={handleModalClose}
+          language={language}
         />
       </Modal>
     </>

@@ -2,23 +2,27 @@
 
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import AdminProfile from "@/app/components/admins-dashboard/AdminProfile";
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function AdminTabs({
+  userId,
   adminId,
   admin,
 }: {
+  userId: number;
   adminId: number;
   admin: Admin | string;
 }) {
-  const breadcrumb = ["Admin List", `/admins/admin-list`, `ID: ${adminId}`];
+  const breadcrumb = [
+    "Admin List",
+    `/admins/${userId}/admin-list`,
+    `ID: ${adminId}`,
+  ];
   const activeTabName = "activeAdminTab";
 
-  // Check the authentication of the admin.
-  const { isAuthenticated } = useContext(AuthContext);
+  // Set the authentication status as true.
+  const isAuthenticated = true;
 
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect("activeAdminTab");
@@ -28,7 +32,11 @@ export default function AdminTabs({
     {
       label: "Admin's Profile",
       content: (
-        <AdminProfile admin={admin} isAdminAuthenticated={isAuthenticated} />
+        <AdminProfile
+          userId={userId}
+          admin={admin}
+          isAdminAuthenticated={isAuthenticated}
+        />
       ),
     },
   ];

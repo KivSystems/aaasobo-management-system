@@ -17,7 +17,7 @@ export default function UserName({
       <UserIconSolid className={styles.sideNavUser__icon} />
       <div className={styles.sideNavUser__name}>
         {userType === "customer" && language === "ja"
-          ? `${userName} さま`
+          ? `${userName} 様`
           : userName}
       </div>
     </div>

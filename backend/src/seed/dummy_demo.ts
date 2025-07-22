@@ -256,7 +256,6 @@ async function insertRecurringClasses() {
           subscriptionId: alice.subscription[0].id,
           dateTime,
           status: "booked",
-          isRebookable: true,
           classAttendance: {
             create: {
               childrenId: alice.children[0].id,
@@ -288,7 +287,6 @@ async function insertRecurringClasses() {
           subscriptionId: alice.subscription[0].id,
           dateTime,
           status: "booked",
-          isRebookable: true,
           classAttendance: {
             create: [
               {

@@ -2,13 +2,15 @@ import { ZodFormattedError } from "zod";
 import { ZodIssue } from "zod";
 import {
   GENERAL_ERROR_MESSAGE,
-  GENERAL_ERROR_MESSAGE_JA,
   LOGIN_FAILED_MESSAGE,
   PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR,
+  PASSWORD_SECURITY_CHECK_FAILED_MESSAGE,
+  UNEXPECTED_ERROR_MESSAGE,
 } from "../messages/formValidation";
 
 export function extractRegisterValidationErrors(
   validationErrors: ZodIssue[],
+  language?: LanguageType,
 ): RegisterFormState {
   const unexpectedError = validationErrors.some(
     (error) =>
@@ -16,7 +18,9 @@ export function extractRegisterValidationErrors(
   );
 
   if (unexpectedError) {
-    return { errorMessage: GENERAL_ERROR_MESSAGE };
+    return {
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language ?? "en"],
+    };
   }
 
   const errors: Record<string, string> = {};
@@ -60,8 +64,7 @@ export function extractLoginValidationErrors(
 
   if (unexpectedError) {
     return {
-      errorMessage:
-        language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE[language],
     };
   }
   return { errorMessage: LOGIN_FAILED_MESSAGE[language] };
@@ -71,19 +74,19 @@ export function extractResetRequestValidationErrors(
   formattedErrors: ZodFormattedError<
     {
       email: string;
-      userType: "admin" | "customer" | "instructor";
+      userType: UserType;
     },
     string
   >,
-): ForgotPasswordFormState {
-  const errors: ResetPasswordFormState = {};
+): StringMessages {
+  const errors: StringMessages = {};
 
   if (formattedErrors.email) {
     errors.errorMessage = formattedErrors.email._errors[0];
   }
 
   if (formattedErrors.userType) {
-    errors.errorMessage = GENERAL_ERROR_MESSAGE;
+    errors.errorMessage = formattedErrors.userType._errors[0];
   }
 
   return errors;
@@ -93,32 +96,54 @@ export function extractPasswordResetValidationErrors(
   formattedErrors: ZodFormattedError<
     {
       token: string;
-      userType: "admin" | "customer" | "instructor";
+      userType: UserType;
       password: string;
-      passwordConfirmation: string;
+      passConfirmation: string;
       passwordStrength: number;
     },
     string
   >,
-): ResetPasswordFormState {
-  const errors: ResetPasswordFormState = {};
+  language: LanguageType,
+): StringMessages {
+  const errors: StringMessages = {};
 
   if (formattedErrors.token || formattedErrors.userType) {
-    errors.errorMessage = PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR;
+    errors.errorMessage = PASSWORD_RESET_TOKEN_OR_USER_TYPE_ERROR[language];
   }
 
   if (formattedErrors.password) {
     errors.password = formattedErrors.password._errors[0];
   }
 
-  if (formattedErrors.passwordConfirmation) {
-    errors.passwordConfirmation =
-      formattedErrors.passwordConfirmation._errors[0];
+  if (formattedErrors.passConfirmation) {
+    errors.passConfirmation = formattedErrors.passConfirmation._errors[0];
   }
 
   if (formattedErrors.passwordStrength) {
-    errors.errorMessage = GENERAL_ERROR_MESSAGE;
+    errors.errorMessage = PASSWORD_SECURITY_CHECK_FAILED_MESSAGE[language];
   }
 
+  return errors;
+}
+
+export function extractCustomerProfileUpdateErrors(
+  validationErrors: ZodIssue[],
+): LocalizedMessages {
+  const unexpectedError = validationErrors.some(
+    (error) => error.path[0] === "userType",
+  );
+
+  if (unexpectedError) {
+    return { errorMessage: UNEXPECTED_ERROR_MESSAGE };
+  }
+
+  const errors: LocalizedMessages = {};
+  validationErrors.forEach((err) => {
+    if (err.path[0]) {
+      const [messageJa, messageEn] = err.message.split(" / ");
+      const errorMessage = { ja: messageJa, en: messageEn };
+      errors[err.path[0]] = errorMessage;
+    }
+  });
   return errors;
 }

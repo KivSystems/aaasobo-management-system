@@ -1,7 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
-import bcrypt from "bcrypt";
-import { saltRounds } from "../helper/commonUtils";
+import { hashPassword } from "../helper/commonUtils";
 import { put, del } from "@vercel/blob";
 
 // Register a new instructor account in the DB
@@ -16,7 +15,7 @@ export const registerInstructor = async (data: {
   passcode: string;
   introductionURL: string;
 }) => {
-  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+  const hashedPassword = await hashPassword(data.password);
 
   const blob = await put(data.icon.originalname, data.icon.buffer, {
     access: "public",
@@ -34,7 +33,6 @@ export const registerInstructor = async (data: {
       passcode: data.passcode,
       introductionURL: data.introductionURL,
       nickname: data.nickname,
-      emailVerified: new Date(),
     },
   });
 
@@ -464,21 +462,6 @@ export async function getInstructorProfile(instructorId: number) {
   return instructorProfile;
 }
 
-export const verifyInstructorEmail = async (
-  id: number,
-  email: string,
-): Promise<void> => {
-  await prisma.instructor.update({
-    where: {
-      id,
-    },
-    data: {
-      emailVerified: new Date(),
-      email,
-    },
-  });
-};
-
 export const updateInstructorPassword = async (
   id: number,
   newPassword: string,
@@ -486,5 +469,33 @@ export const updateInstructorPassword = async (
   return await prisma.instructor.update({
     where: { id },
     data: { password: newPassword },
+  });
+};
+
+export const getInstructorProfiles = async () => {
+  const instructors = await prisma.instructor.findMany({
+    where: {
+      inactiveAt: null, // Exclude instructors who have quit
+    },
+  });
+
+  const instructorProfiles = instructors.map((instructor) => ({
+    id: instructor.id,
+    name: instructor.name,
+    nickname: instructor.nickname,
+    icon: instructor.icon,
+    introductionURL: instructor.introductionURL,
+  }));
+
+  return instructorProfiles;
+};
+
+export const getInstructorContactById = async (id: number) => {
+  return prisma.instructor.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      email: true,
+    },
   });
 };

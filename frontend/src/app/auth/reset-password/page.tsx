@@ -3,8 +3,18 @@ import Image from "next/image";
 import { Suspense } from "react";
 import Loading from "@/app/components/elements/loading/Loading";
 import ResetPasswordForm from "@/app/components/features/resetPasswordForm/ResetPasswordForm";
+import { verifyResetToken } from "@/app/helper/api/usersApi";
 
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage({
+  searchParams,
+}: {
+  searchParams: { token: string; type: UserType };
+}) {
+  const token = searchParams.token;
+  const userType = searchParams.type;
+
+  const tokenVerificationResult = await verifyResetToken(token, userType);
+
   return (
     <main className={styles.outsideContainer}>
       <div className={styles.container}>
@@ -16,7 +26,7 @@ export default function ResetPasswordPage() {
           className={styles.logo}
           priority={true}
         />
-        <h2>Reset Password</h2>
+
         <Suspense
           fallback={
             <div className={styles.loaderWrapper}>
@@ -24,7 +34,11 @@ export default function ResetPasswordPage() {
             </div>
           }
         >
-          <ResetPasswordForm />
+          <ResetPasswordForm
+            token={token}
+            userType={userType}
+            tokenVerificationResult={tokenVerificationResult}
+          />
         </Suspense>
       </div>
     </main>

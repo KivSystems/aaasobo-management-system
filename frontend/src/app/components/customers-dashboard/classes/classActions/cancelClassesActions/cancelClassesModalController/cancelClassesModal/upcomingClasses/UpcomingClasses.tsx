@@ -1,6 +1,6 @@
 import {
-  formatShortDate,
   formatTime24Hour,
+  formatYearDate,
   isPastPreviousDayDeadline,
 } from "@/app/helper/utils/dateUtils";
 import styles from "./UpcomingClasses.module.scss";
@@ -36,8 +36,8 @@ export default function UpcomingClasses({
         const classDateTime = new Date(eachClass.dateTime);
         const classDate =
           language === "ja"
-            ? formatShortDate(classDateTime, "ja-JP")
-            : formatShortDate(classDateTime);
+            ? formatYearDate(classDateTime, "ja-JP")
+            : formatYearDate(classDateTime);
         const classTime = formatTime24Hour(classDateTime);
 
         const pastPrevDayDeadline = isPastPreviousDayDeadline(

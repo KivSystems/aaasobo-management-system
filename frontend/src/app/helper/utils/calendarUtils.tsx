@@ -27,7 +27,9 @@ export const createRenderEventContent = (userType: UserType) => {
           cursor: isClickable ? "pointer" : "default",
         }}
       >
-        {isCustomer && classStatus === "booked" && instructorIcon ? (
+        {isCustomer &&
+        (classStatus === "booked" || classStatus === "rebooked") &&
+        instructorIcon ? (
           <Image
             src={`${instructorIcon}?t=${Date.now()}`}
             alt={instructorNickname || "Instructor"}
@@ -35,7 +37,7 @@ export const createRenderEventContent = (userType: UserType) => {
             height={30}
             priority
             unoptimized
-            className={styles.instructorIcon}
+            className={`${styles.instructorIcon} ${styles[classStatus]}`}
           />
         ) : classStatus === "completed" ? (
           <div className={styles.classStatusIcon}>
@@ -57,12 +59,14 @@ export const createRenderEventContent = (userType: UserType) => {
           className={`${styles.eventDetails} ${
             classStatus === "booked"
               ? styles.booked
-              : classStatus === "completed"
-                ? styles.completed
-                : classStatus === "canceledByCustomer" ||
-                    classStatus === "canceledByInstructor"
-                  ? styles.canceled
-                  : ""
+              : classStatus === "rebooked"
+                ? styles.rebooked
+                : classStatus === "completed"
+                  ? styles.completed
+                  : classStatus === "canceledByCustomer" ||
+                      classStatus === "canceledByInstructor"
+                    ? styles.canceled
+                    : ""
           }`}
         >
           <div className={styles.eventTime}>{classTime} -</div>
@@ -75,11 +79,10 @@ export const createRenderEventContent = (userType: UserType) => {
   return RenderEventContent;
 };
 
-export const getValidRange = (createdAt: string) => {
+export const getValidRange = (createdAt: string, monthsAhead: number) => {
   const now = new Date();
-  const end = new Date(now.getFullYear(), now.getMonth() + 3, 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1);
 
-  // Valid range: from account creation to the end of the month, three months later.
   return {
     start: createdAt.split("T")[0],
     end: end.toISOString().split("T")[0],

@@ -1,17 +1,74 @@
 "use server";
 
+import { updateAdmin } from "@/app/helper/api/adminsApi";
 import {
   updateInstructor,
   updateInstructorWithIcon,
 } from "@/app/helper/api/instructorsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { extractUpdateValidationErrors } from "../helper/utils/validationErrorUtils";
+import {
+  extractCustomerProfileUpdateErrors,
+  extractUpdateValidationErrors,
+} from "../helper/utils/validationErrorUtils";
+import {
+  adminUpdateSchema,
+  instructorUpdateSchema,
+} from "../schemas/authSchema";
+import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
+import { getCookie } from "../../middleware";
+import { customerProfileSchema } from "../schemas/customerDashboardSchemas.ts";
+import { updateCustomerProfile } from "../helper/api/customersApi";
+import { revalidatePath } from "next/cache";
+import { NO_CHANGES_MADE_MESSAGE } from "../helper/messages/customerDashboard";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 import {
   userUpdateSchema,
   userUpdateSchemaWithIcon,
 } from "../schemas/authSchema";
 
-export async function updateUser(
+export async function updateAdminAction(
+  prevState: UpdateFormState | undefined,
+  formData: FormData,
+): Promise<UpdateFormState> {
+  try {
+    const name = formData.get("name");
+    const email = formData.get("email");
+    // Hidden input tag fields
+    const id = Number(formData.get("id"));
+
+    const parsedForm = adminUpdateSchema.safeParse({
+      name,
+      email,
+    });
+
+    if (!parsedForm.success) {
+      const validationErrors = parsedForm.error.errors;
+      return extractUpdateValidationErrors(validationErrors);
+    }
+
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
+    const response = await updateAdmin(
+      id,
+      parsedForm.data.name,
+      parsedForm.data.email,
+      cookie,
+    );
+
+    // Refresh cached admin data for the admin list page
+    revalidateAdminList();
+
+    return response;
+  } catch (error) {
+    console.error("Unexpected error in updateUser server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+}
+
+export async function updateInstructorAction(
   prevState: UpdateFormState | undefined,
   formData: FormData,
 ): Promise<UpdateFormState> {
@@ -30,7 +87,7 @@ export async function updateUser(
 
     // If the icon file is empty, update the instructor data without icon.
     if (icon.name === "undefined") {
-      const parsedForm = userUpdateSchema.safeParse({
+      const parsedForm = instructorUpdateSchema.safeParse({
         name,
         nickname,
         email,
@@ -46,19 +103,25 @@ export async function updateUser(
         return extractUpdateValidationErrors(validationErrors);
       }
 
-      // TODO: If this component handles different user types,
-      // the appropriate API function must be called for each based on the userType.
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
 
-      const response = await updateInstructor(
-        id,
-        parsedForm.data.name,
-        parsedForm.data.email,
-        parsedForm.data.classURL,
-        parsedForm.data.nickname,
-        parsedForm.data.meetingId,
-        parsedForm.data.passcode,
-        parsedForm.data.introductionURL,
-      );
+    // Call the API to update the instructor data
+    const response = await updateInstructor(
+      id,
+      parsedForm.data.name,
+      parsedForm.data.email,
+      parsedForm.data.classURL,
+      icon,
+      parsedForm.data.nickname,
+      parsedForm.data.meetingId,
+      parsedForm.data.passcode,
+      parsedForm.data.introductionURL,
+      cookie,
+    );
+
+    // Refresh cached instructor data for the instructor list page
+    revalidateInstructorList();
 
       return response;
     } else {
@@ -99,4 +162,76 @@ export async function updateUser(
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
   }
+}
+
+export async function updateCustomerProfileAction(
+  prevState: LocalizedMessages | undefined,
+  formData: FormData,
+): Promise<LocalizedMessages> {
+  const updatedName = formData.get("name");
+  const updatedEmail = formData.get("email");
+  const updatedPrefecture = formData.get("prefecture");
+  // Hidden input tag fields
+  const currentName = formData.get("currentName");
+  const currentEmail = formData.get("currentEmail");
+  const currentPrefecture = formData.get("currentPrefecture");
+  const language = formData.get("language") as LanguageType;
+  const id = Number(formData.get("id")); // The form includes "id" (customer ID) only when submitted by an admin.
+
+  let customerId;
+
+  // If "id" is present (only submitted by an admin), use it as the customerId.
+  // Otherwise, retrieve the customer ID from the session for security.
+  if (id) {
+    customerId = id;
+  } else {
+    const session = await getUserSession("customer");
+
+    if (!session) {
+      throw new Error("Unauthorized / 認証されていません");
+    }
+
+    customerId = Number(session.user.id);
+  }
+
+  // Get the admin ID from the session if the action is admin authenticated
+  const session = await getUserSession("admin");
+  const adminId = session?.user.id ? parseInt(session.user.id) : undefined;
+
+  // Check if there are any changes
+  if (
+    updatedName === currentName &&
+    updatedEmail === currentEmail &&
+    updatedPrefecture === currentPrefecture
+  ) {
+    return {
+      errorMessage: NO_CHANGES_MADE_MESSAGE,
+    };
+  }
+
+  const parsedForm = customerProfileSchema.safeParse({
+    name: updatedName,
+    email: updatedEmail,
+    prefecture: updatedPrefecture,
+  });
+
+  if (!parsedForm.success) {
+    const validationErrors = parsedForm.error.errors;
+    return extractCustomerProfileUpdateErrors(validationErrors);
+  }
+
+  const updateResultMessage = await updateCustomerProfile(
+    customerId,
+    parsedForm.data.name,
+    parsedForm.data.email,
+    parsedForm.data.prefecture,
+  );
+
+  const path = id
+    ? `/admins/${adminId}/customer-list/${customerId}`
+    : `/customers/${customerId}/profile`;
+
+  revalidatePath(path);
+
+  return updateResultMessage;
 }

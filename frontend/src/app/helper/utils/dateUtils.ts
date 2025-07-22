@@ -23,6 +23,29 @@ export const formatDateTime = (date: Date, locale: string = "en-US") => {
   }).format(date);
 };
 
+// Formats year and date (e.g., "Thu, Jan 11, 2025", "2025年1月11日(木)")
+export const formatYearDate = (date: Date, locale: string = "en-US") => {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
+
+// Formats year,date, and time (e.g., "Thu, January 11, 2025 at 09:30", "2025年1月11日(木) 9:30")
+export const formatYearDateTime = (date: Date, locale: string = "en-US") => {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+};
+
 // Converts a UTC ISO date string to the specified time zone, calculates the end time by adding 25 minutes,
 // and formats both start and end times as "YYYY-MM-DDTHH:MM:SS" for use in calendar events.
 export function getClassStartAndEndTimes(isoDateStr: string, timeZone: string) {
@@ -54,11 +77,7 @@ export const formatTimeWithAddedMinutes = (
   minutesToAdd: number,
 ): string => {
   const updatedDate = addMinutes(date, minutesToAdd);
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: false,
-  }).format(updatedDate);
+  return formatTime24Hour(updatedDate);
 };
 
 // Function to format the previous day for a given time zone (e.g., Jun 28, 2024)
@@ -74,86 +93,6 @@ export const formatPreviousDay = (date: Date, timeZone: string) => {
     day: "2-digit",
     timeZone,
   }).format(previousDay);
-};
-
-// TODO: Remove this function once the deadline calculation for class rebooking is implemented.
-export const formatFiveMonthsLaterEndOfMonth = (
-  date: Date | string,
-  timeZone: string,
-) => {
-  const futureDate = new Date(date);
-
-  futureDate.setMonth(futureDate.getMonth() + 5);
-
-  const endOfMonth = new Date(
-    futureDate.getFullYear(),
-    futureDate.getMonth() + 1,
-    0,
-  );
-
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    timeZone,
-  }).format(endOfMonth);
-};
-
-// TODO: Remove this function once the deadline calculation for class rebooking is implemented.
-const getEndOfNMonthsLaterInISO = (isoString: string, n: number): string => {
-  const date = new Date(isoString);
-
-  // Step 1: Get the current UTC year and month
-  let year = date.getUTCFullYear();
-  let month = date.getUTCMonth() + n;
-
-  // Step 2: Adjust year and month if month overflows
-  if (month > 11) {
-    year += Math.floor(month / 12);
-    month = month % 12;
-  }
-
-  // Step 3: Create a new Date object for the **first day of the next month**
-  const firstOfNextMonth = new Date(Date.UTC(year, month + 1, 1));
-
-  // Step 4: Subtract 1 ms to get the last moment of the previous month (end of the target month)
-  const endOfMonth = new Date(firstOfNextMonth.getTime() - 1);
-
-  // Step 5: Return as ISO string
-  return endOfMonth.toISOString();
-};
-
-// TODO: Remove this function once the deadline calculation for class rebooking is implemented.
-export const formatEndOfMonthFiveMonthsLater = (
-  isoString: string,
-  locale?: string,
-): { date: string; time: string } => {
-  // Step 1: Convert UTC → JST manually (+9 hours) e.g., "2025-04-12T09:00:00.000Z" => "2025-04-12T18:00:00.000Z"
-  const utcDate = new Date(isoString);
-  const jstDateISOString = new Date(
-    utcDate.getTime() + 9 * 60 * 60 * 1000,
-  ).toISOString();
-
-  // Step 2: Get the last day and time of the month, five months later (still in Japan time) e.g., "2025-04-12T18:00:00.000Z" => "2025-09-30T23:59:59.999Z"
-  const jstEndOfTargetMonthISOString = getEndOfNMonthsLaterInISO(
-    jstDateISOString,
-    5,
-  );
-
-  // Step 3: Convert JST → UTC manually (-9 hours) e.g., "2025-09-30T23:59:59.999Z" => "2025-09-30T14:59:59.999Z"
-  const jstEndDate = new Date(jstEndOfTargetMonthISOString);
-  const utcEndOfTargetMonthISOString = new Date(
-    jstEndDate.getTime() - 9 * 60 * 60 * 1000,
-  ).toISOString();
-
-  // Step 4: Convert UTC ISO String to the user's local time
-  const localTime = new Date(utcEndOfTargetMonthISOString);
-
-  // Step 5: Format the date and time
-  const date = formatShortDate(localTime, locale);
-  const time = formatTime24Hour(localTime);
-
-  return { date, time };
 };
 
 export const isPastPreviousDayDeadline = (classDateUTC: string): boolean => {
@@ -241,22 +180,23 @@ export const formatDateToISO = (dateString: string): string => {
 };
 
 // e.g., Monday, Tuesday ...
-export const getDayOfWeek = (date: Date): string => {
-  const formatter = new Intl.DateTimeFormat("en-US", { weekday: "long" });
+export const getDayOfWeek = (date: Date, locale: string = "en-US"): string => {
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: "long" });
   return formatter.format(date);
 };
 
-// e.g., JAN, FEB ...
-export const getShortMonth = (date: Date): string => {
-  const formatter = new Intl.DateTimeFormat("en-US", { month: "short" });
-  return formatter.format(date).toUpperCase(); // Converts to uppercase
+// e.g., "en-US": MAY, JAN ..., "ja-JP": 5, 6 ...
+export const getShortMonth = (date: Date, locale: string = "en-US"): string => {
+  if (locale === "ja-JP") {
+    return String(date.getMonth() + 1);
+  }
+
+  const formatter = new Intl.DateTimeFormat(locale, { month: "short" });
+  return formatter.format(date).toUpperCase();
 };
 
 // Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
-export const formatShortDate = (
-  date: Date,
-  locale: string = Intl.DateTimeFormat().resolvedOptions().locale,
-) => {
+export const formatShortDate = (date: Date, locale: string = "en-US") => {
   const day = date.getDate();
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
@@ -279,4 +219,12 @@ export const nHoursLater = (n: number, dateTime: Date = new Date()): Date => {
 
 export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
   return new Date(dateTime.getTime() - n * 60 * 60 * 1000);
+};
+
+export const hasTimePassed = (targetTime: Date | string): boolean =>
+  Date.now() > new Date(targetTime).getTime();
+
+export const formatClassDetailFooter = (updatedDateTime: string) => {
+  const updatedDate = new Date(updatedDateTime);
+  return format(updatedDate, "yyyy-MM-dd-HH:mm");
 };

@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-export function useFormMessages(
-  formResult: Record<string, string> | undefined,
-) {
-  const [localMessages, setLocalMessages] = useState<Record<string, string>>(
-    {},
-  );
+export function useFormMessages<T extends FormResult>(formResult?: T) {
+  const [localMessages, setLocalMessages] = useState<T>({} as T);
 
   useEffect(() => {
-    setLocalMessages(formResult ?? {});
+    if (formResult) {
+      setLocalMessages(formResult);
+    }
   }, [formResult]);
 
-  const clearErrorMessage = (field: string) => {
+  const clearErrorMessage = useCallback((field: string) => {
     setLocalMessages((prev) => {
+      if (field === "all") {
+        return {} as T;
+      }
+
       if (!prev[field] && !prev.successMessage && !prev.errorMessage) {
         return prev;
       }
@@ -24,7 +26,7 @@ export function useFormMessages(
 
       return updatedMessages;
     });
-  };
+  }, []);
 
-  return { localMessages, clearErrorMessage };
+  return { localMessages, setLocalMessages, clearErrorMessage };
 }

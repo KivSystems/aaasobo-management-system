@@ -18,7 +18,6 @@ model Instructor {
   id                              Int                               @id @default(autoincrement())
   name                            String
   email                           String                            @unique
-  emailVerified                   DateTime?
   password                        String
   instructorAvailability          InstructorAvailability[]
   classes                         Class[]
@@ -32,6 +31,7 @@ model Instructor {
   instructorUnavailability        InstructorUnavailability[]
   introductionURL                 String                            @unique
   createdAt                       DateTime                          @default(now())
+  inactiveAt                      DateTime?
 }
 
 model InstructorRecurringAvailability {
@@ -62,33 +62,38 @@ model InstructorUnavailability {
 }
 
 model Customer {
-  id            Int            @id @default(autoincrement())
-  name          String
-  email         String         @unique
-  emailVerified DateTime?
-  password      String
-  classes       Class[]
-  children      Children[]
-  subscription  Subscription[]
-  prefecture    String
-  createdAt     DateTime       @default(now())
+  id             Int            @id @default(autoincrement())
+  name           String
+  email          String         @unique
+  emailVerified  DateTime?
+  password       String
+  classes        Class[]
+  children       Children[]
+  subscription   Subscription[]
+  prefecture     String
+  hasSeenWelcome Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model Class {
   id               Int               @id @default(autoincrement())
-  instructorId     Int
+  instructorId     Int?
   customerId       Int
-  recurringClassId Int
-  dateTime         DateTime
+  recurringClassId Int?
+  dateTime         DateTime?
   status           Status
-  instructor       Instructor        @relation(fields: [instructorId], references: [id])
+  instructor       Instructor?       @relation(fields: [instructorId], references: [id])
   customer         Customer          @relation(fields: [customerId], references: [id])
   recurringClass   RecurringClass?   @relation(fields: [recurringClassId], references: [id])
   classAttendance  ClassAttendance[]
-  subscriptionId   Int
-  subscription     Subscription      @relation(fields: [subscriptionId], references: [id])
-  isRebookable     Boolean           @default(true)
+  subscriptionId   Int?
+  subscription     Subscription?     @relation(fields: [subscriptionId], references: [id])
   rebookableUntil  DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  classCode        String
+  isFreeTrial      Boolean           @default(false)
 }
 
 enum Status {
@@ -97,6 +102,8 @@ enum Status {
   canceledByCustomer
   canceledByInstructor
   pending
+  rebooked
+  declined
 }
 
 model Admins {
@@ -128,9 +135,9 @@ model ClassAttendance {
 
 model Plan {
   id               Int            @id @default(autoincrement())
-  name             String
-  description      String
+  name             String         @unique
   weeklyClassTimes Int
+  description      String
   subscription     Subscription[]
 }
 
@@ -183,4 +190,18 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+model Schedule {
+  id      Int      @id @default(autoincrement())
+  date    DateTime @unique
+  eventId Int
+  event   Event    @relation(fields: [eventId], references: [id])
+}
+
+model Event {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  color    String     @unique
+  Schedule Schedule[]
 }

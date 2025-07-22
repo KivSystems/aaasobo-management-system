@@ -2,7 +2,8 @@
 
 .sideNavContainer {
   display: flex;
-  height: 100%;
+  height: auto;
+  min-height: 100%;
   flex-direction: column;
   padding: 1rem;
   padding-left: 0.75rem;

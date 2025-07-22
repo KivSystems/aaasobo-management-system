@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/solid";
 
 const InstructorClassesTable = ({
+  adminId,
   instructorId,
   selectedDateClasses,
   timeZone,
@@ -25,6 +26,7 @@ const InstructorClassesTable = ({
   classDate,
   classId,
 }: {
+  adminId?: number | null;
   instructorId: number;
   selectedDateClasses: InstructorClassDetail[] | null;
   timeZone: string;
@@ -115,7 +117,6 @@ const InstructorClassesTable = ({
         ? undefined
         : Array.from(selectedChildrenIds);
 
-    const isRebookable = updatedStatus !== "completed";
     const rebookableUntil =
       updatedStatus === "canceledByInstructor"
         ? nHoursLater(180 * 24, new Date(classStart)).toISOString() // If the class is canceled by the instructor, set rebookableUntil to 180 days (* 24 * 60 minutes) after the class dateTime
@@ -127,8 +128,8 @@ const InstructorClassesTable = ({
       await editClass(classToCompleteId, {
         childrenIds: attendedChildrenIds,
         status: updatedStatus,
-        isRebookable,
         rebookableUntil,
+        updateAt: new Date(),
       });
 
       setClasses((prev) => {
@@ -333,7 +334,7 @@ const InstructorClassesTable = ({
                   <div className={styles.instructorClasses__time}>
                     {isAdminAuthenticate ? (
                       <Link
-                        href={`/admins/instructor-list/${instructorId}/class-schedule/${eachClass.id}`}
+                        href={`/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${eachClass.id}`}
                         passHref
                       >
                         {classStartTime}

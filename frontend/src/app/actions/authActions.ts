@@ -5,10 +5,7 @@ import { signIn, signOut } from "../../../auth.config";
 import { userLoginSchema } from "../schemas/authSchema";
 import { extractLoginValidationErrors } from "../helper/utils/validationErrorUtils";
 import { authenticateUser } from "../helper/api/usersApi";
-import {
-  GENERAL_ERROR_MESSAGE,
-  GENERAL_ERROR_MESSAGE_JA,
-} from "../helper/messages/formValidation";
+import { UNEXPECTED_ERROR_MESSAGE } from "../helper/messages/formValidation";
 
 export async function authenticate(
   prevState: { errorMessage: string } | undefined,
@@ -44,10 +41,18 @@ export async function authenticate(
 
     const userId = response.userId;
 
-    const redirectUrl =
-      parsedForm.data.userType === "customer"
-        ? `/customers/${userId}/classes`
-        : `/instructors/${userId}/class-schedule`;
+    let redirectUrl = "";
+    switch (parsedForm.data.userType) {
+      case "admin":
+        redirectUrl = `/admins/${userId}/calendar`;
+        break;
+      case "customer":
+        redirectUrl = `/customers/${userId}/classes`;
+        break;
+      case "instructor":
+        redirectUrl = `/instructors/${userId}/class-schedule`;
+        break;
+    }
 
     await signIn("credentials", {
       userId,
@@ -58,8 +63,7 @@ export async function authenticate(
     if (error instanceof AuthError) {
       console.error("Error in authenticate server action:", error);
       return {
-        errorMessage:
-          language === "ja" ? GENERAL_ERROR_MESSAGE_JA : GENERAL_ERROR_MESSAGE,
+        errorMessage: UNEXPECTED_ERROR_MESSAGE[language],
       };
     }
     // Re-throw non-auth errors so that Next.js can handle redirects properly.

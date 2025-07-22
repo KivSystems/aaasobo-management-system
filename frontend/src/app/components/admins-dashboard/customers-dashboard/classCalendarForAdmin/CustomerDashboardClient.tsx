@@ -1,7 +1,5 @@
 "use client";
 
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import CustomerProfile from "@/app/components/customers-dashboard/profile/CustomerProfile";
 import ChildrenProfiles from "@/app/components/customers-dashboard/children-profiles/ChildrenProfiles";
@@ -10,21 +8,41 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import Loading from "@/app/components/elements/loading/Loading";
 
 function CustomerDashboardClient({
+  adminId,
   customerId,
   classCalendarComponent,
+  customerProfile,
 }: {
+  adminId: number;
   customerId: number;
   classCalendarComponent: React.ReactNode;
+  customerProfile: CustomerProfile;
 }) {
-  const breadcrumb = [
-    "Customer List",
-    `/admins/customer-list`,
-    `ID: ${customerId}`,
-  ];
+  // Get the previous list page from local storage to set the breadcrumb.
+  const previousListPage = localStorage.getItem("previousListPage");
+  let breadcrumb: string[] = [];
+  switch (previousListPage) {
+    case "customer-list":
+      breadcrumb = [
+        "Customer List",
+        `/admins/${adminId}/customer-list`,
+        `ID: ${customerId}`,
+      ];
+      break;
+    case "child-list":
+      breadcrumb = [
+        "Child List",
+        `/admins/${adminId}/child-list`,
+        `Customer ID: ${customerId}`,
+      ];
+      break;
+  }
+
+  // Get the active tab name to set the active tab in the TabFunction component.
   const activeTabName = "activeCustomerTab";
 
-  // Check authentication
-  const { isAuthenticated } = useContext(AuthContext);
+  // Set the authentication status as true.
+  const isAuthenticated = true;
 
   // Get the active tab from local storage
   const { initialActiveTab, isTabInitialized } =
@@ -37,12 +55,18 @@ function CustomerDashboardClient({
     },
     {
       label: "Customer's Profile",
-      content: <CustomerProfile customerId={customerId} />,
+      content: (
+        <CustomerProfile
+          customerProfile={customerProfile}
+          isAdminAuthenticated={isAuthenticated}
+        />
+      ),
     },
     {
       label: "Children's Profile",
       content: (
         <ChildrenProfiles
+          adminId={adminId}
           customerId={customerId}
           isAdminAuthenticated={isAuthenticated}
         />
@@ -52,6 +76,7 @@ function CustomerDashboardClient({
       label: "Regular Classes",
       content: (
         <RegularClasses
+          adminId={adminId}
           customerId={customerId}
           isAdminAuthenticated={isAuthenticated}
         />

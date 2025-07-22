@@ -1,28 +1,38 @@
 import CheckboxInput from "@/app/components/elements/checkboxInput/CheckboxInput";
 import styles from "./PrivacyPolicyAgreement.module.scss";
+import { ChangeEvent } from "react";
+import FormValidationMessage from "@/app/components/elements/formValidationMessage/FormValidationMessage";
 
 const PrivacyPolicyAgreement = ({
-  localMessages,
+  error,
+  onChange,
+  checked,
+  language,
 }: {
-  localMessages: Record<string, string>;
+  error: string;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  checked?: boolean;
+  language: LanguageType;
 }) => {
   return (
     <div>
       <label className={styles.label}>
-        Privacy Policy
-        <span className={styles.required}>*</span>
+        {language === "ja" ? "個人情報の取扱いについて" : "Privacy Policy"}
         <p className={styles.privacyPolicy}>
-          We will take a screenshot as a record that the class was conducted.
-          Additionally, we may record the session for the purpose of improving
-          the instructor&apos;s skills.
+          {language === "ja"
+            ? "クラスが行われた記録としてスクリーンショットを一枚お撮りします。またインストラクターの技術向上のためあらかじめ録画させていただく場合がございます。"
+            : "We will take a screenshot as a record that the class was conducted. Additionally, we may record the session for the purpose of improving the instructor's skills."}
         </p>
       </label>
 
       <CheckboxInput
-        name="isAgreed"
-        label="I agree."
-        error={localMessages.isAgreed}
+        label={language === "ja" ? "同意する" : "I agree."}
+        onChange={onChange}
+        checked={checked}
+        className="isAgreed"
       />
+
+      {error && <FormValidationMessage type="error" message={error} />}
     </div>
   );
 };

@@ -3,7 +3,10 @@
 .buttonWrapper {
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem;
+}
+
+.messageWrapper {
+  margin: 0 0 1rem 0;
 }
 
 .icon {
@@ -24,4 +27,25 @@
 .icon {
   width: 1.2rem;
   height: 1.2rem;
+}
+
+.eventColor {
+  display: flex;
+  align-items: flex-start;
+
+  input[type="color"] {
+    width: 400px;
+    padding: 0;
+    background: none;
+  }
+
+  &__text {
+    margin: 25px 0 0 10px;
+    font-size: 18px;
+    font-weight: 500;
+    border: 1px solid #ccc;
+    border-radius: 0.3rem;
+    padding: 0.5rem;
+    flex-shrink: 0;
+  }
 }

@@ -1,0 +1,66 @@
+import {
+  formatTime24Hour,
+  formatTimeWithAddedMinutes,
+  formatYearDate,
+  getDayOfWeek,
+  getShortMonth,
+} from "@/app/helper/utils/dateUtils";
+import styles from "./ClassDateTime.module.scss";
+import { CalendarDaysIcon } from "@heroicons/react/24/solid";
+
+const ClassDateTime = ({
+  classStart,
+  language,
+}: {
+  classStart: string;
+  language?: LanguageType;
+}) => {
+  const classDateTime = new Date(classStart);
+  const classDate = formatYearDate(
+    classDateTime,
+    language == "ja" ? "ja-JP" : "en-US",
+  );
+  const classMonth = getShortMonth(classDateTime);
+  const classDay = classDateTime.getDate();
+  const classDayOfWeek = getDayOfWeek(classDateTime);
+  const classStartTime = formatTime24Hour(classDateTime);
+  const classEndTime = formatTimeWithAddedMinutes(classDateTime, 25);
+
+  return (
+    <div className={styles.dateTime}>
+      <div className={styles.dateTime__iconContainer}>
+        <CalendarDaysIcon className={styles.dateTime__icon} />
+      </div>
+
+      {language == "ja" ? (
+        <>
+          <div className={styles.dateTime__detailsJa}>
+            <div className={styles.dateTime__dateJa}>{classDate}</div>
+
+            <div className={styles.dateTime__classTimeJa}>
+              {classStartTime} - {classEndTime}
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className={styles.dateTime__details}>
+            <div className={styles.dateTime__date}>
+              <div className={styles.dateTime__day}>{classDay}</div>
+              <div className={styles.dateTime__month}>{classMonth}</div>
+            </div>
+
+            <div className={styles.dateTime__time}>
+              <div className={styles.dateTime__dayOfWeek}>{classDayOfWeek}</div>
+              <div className={styles.dateTime__classTime}>
+                {classStartTime} - {classEndTime}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default ClassDateTime;

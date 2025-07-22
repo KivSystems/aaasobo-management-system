@@ -1,0 +1,49 @@
+.welcomeModal {
+  padding: 2rem;
+  border-radius: 1rem;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.welcomeModal__title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.welcomeModal__description {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.welcomeModal__declineClass {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.welcomeModal__link {
+  color: #0070f3;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.welcomeModal__button {
+  margin-top: 2rem;
+}
+
+.welcomeModal__description,
+.welcomeModal__declineClass {
+  text-align: left;
+}

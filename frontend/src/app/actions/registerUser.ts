@@ -1,16 +1,15 @@
 "use server";
 
-import { registerCustomer } from "../helper/api/customersApi";
 import { registerInstructor } from "../helper/api/instructorsApi";
 import { registerAdmin } from "../helper/api/adminsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractRegisterValidationErrors } from "../helper/utils/validationErrorUtils";
 import {
-  customerRegisterSchema,
   instructorRegisterSchema,
   adminRegisterSchema,
 } from "../schemas/authSchema";
-import { revalidateAdminList } from "./revalidate";
+import { revalidateInstructorList, revalidateAdminList } from "./revalidate";
+import { getCookie } from "../../middleware";
 
 export async function registerUser(
   prevState: RegisterFormState | undefined,
@@ -22,8 +21,6 @@ export async function registerUser(
     const email = formData.get("email");
     const password = formData.get("password");
     const passConfirmation = formData.get("passConfirmation");
-    const prefecture = formData.get("prefecture");
-    const isAgreed = formData.get("isAgreed") === "on";
     const icon = formData.get("icon") as File;
     const classURL = formData.get("classURL");
     const meetingId = formData.get("meetingId");
@@ -35,33 +32,13 @@ export async function registerUser(
     );
     const userType = formData.get("userType");
 
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
     let parsedForm;
     let response;
 
     switch (userType) {
-      case "customer":
-        parsedForm = customerRegisterSchema.safeParse({
-          name,
-          email,
-          password,
-          passConfirmation,
-          passwordStrength,
-          prefecture,
-          isAgreed,
-          userType,
-        });
-        if (!parsedForm.success) {
-          const validationErrors = parsedForm.error.errors;
-          return extractRegisterValidationErrors(validationErrors);
-        }
-        response = await registerCustomer({
-          name: parsedForm.data.name,
-          email: parsedForm.data.email,
-          password: parsedForm.data.password,
-          prefecture: parsedForm.data.prefecture,
-        });
-        return response;
-
       case "instructor":
         parsedForm = instructorRegisterSchema.safeParse({
           name,
@@ -81,6 +58,7 @@ export async function registerUser(
           const validationErrors = parsedForm.error.errors;
           return extractRegisterValidationErrors(validationErrors);
         }
+
         const userData = new FormData();
         userData.append("name", parsedForm.data.name);
         userData.append("nickname", parsedForm.data.nickname);
@@ -91,8 +69,11 @@ export async function registerUser(
         userData.append("meetingId", parsedForm.data.meetingId);
         userData.append("passcode", parsedForm.data.passcode);
         userData.append("introductionURL", parsedForm.data.introductionURL);
-        response = await registerInstructor(userData);
-        // TODO: Add revalidation logic for instructor list
+        response = await registerInstructor(userData, cookie);
+
+        // Refresh cached instructor data for the instructor list page
+        revalidateInstructorList();
+
         return response;
 
       case "admin":
@@ -108,12 +89,17 @@ export async function registerUser(
           const validationErrors = parsedForm.error.errors;
           return extractRegisterValidationErrors(validationErrors);
         }
+
         response = await registerAdmin({
           name: parsedForm.data.name,
           email: parsedForm.data.email,
           password: parsedForm.data.password,
+          cookie,
         });
+
+        // Refresh cached admin data for the admin list page
         await revalidateAdminList();
+
         return response;
 
       default:

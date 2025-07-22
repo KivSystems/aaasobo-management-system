@@ -1,18 +1,85 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cancelClasses } from "../helper/api/classesApi";
+import { cancelClass, cancelClasses } from "../helper/api/classesApi";
+import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 export const cancelSelectedClasses = async (
   classesToCancel: number[],
   isAdminAuthenticated: boolean | undefined,
   customerId: number,
 ) => {
+  // Check if the user is authenticated and has the right permissions
+  const session = await getUserSession();
+  if (!session) {
+    throw new Error("Unauthorized / 認証されていません");
+  }
+
+  let adminId;
+
+  if (session.user.userType === "customer") {
+    if (Number(session.user.id) !== customerId) {
+      throw new Error("Unauthorized / 認証されていません");
+    }
+  } else if (session.user.userType === "admin") {
+    adminId = Number(session.user.id);
+    if (!adminId && isAdminAuthenticated) {
+      throw new Error("Admin ID is required for authenticated admin actions.");
+    }
+  } else {
+    throw new Error("Unauthorized user type");
+  }
+
+  // Determine the path to revalidate based on whether the action is admin authenticated
   const path = isAdminAuthenticated
-    ? `/admins/customer-list/${customerId}`
+    ? `/admins/${adminId}/customer-list/${customerId}`
     : `/customers/${customerId}/classes`;
 
-  await cancelClasses(classesToCancel);
+  const cancelationResult = await cancelClasses(classesToCancel);
 
-  revalidatePath(path);
+  if (cancelationResult.success) {
+    revalidatePath(path);
+  }
+
+  return cancelationResult;
+};
+
+export const cancelClassAction = async (
+  classId: number,
+  isAdminAuthenticated: boolean | undefined,
+  customerId: number,
+) => {
+  // Check if the user is authenticated and has the right permissions
+  const session = await getUserSession();
+  if (!session) {
+    throw new Error("Unauthorized / 認証されていません");
+  }
+
+  let adminId;
+
+  if (session.user.userType === "customer") {
+    if (Number(session.user.id) !== customerId) {
+      throw new Error("Unauthorized / 認証されていません");
+    }
+  } else if (session.user.userType === "admin") {
+    adminId = Number(session.user.id);
+    if (!adminId && isAdminAuthenticated) {
+      throw new Error("Admin ID is required for authenticated admin actions.");
+    }
+  } else {
+    throw new Error("Unauthorized user type");
+  }
+
+  // Determine the path to revalidate based on whether the action is admin authenticated
+  const path = isAdminAuthenticated
+    ? `/admins/${adminId}/customer-list/${customerId}`
+    : `/customers/${customerId}/classes`;
+
+  const cancelationResult = await cancelClass(classId);
+
+  if (cancelationResult.success) {
+    revalidatePath(path);
+  }
+
+  return cancelationResult;
 };

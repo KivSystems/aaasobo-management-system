@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import styles from "./ListTable.module.scss";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import {
   useReactTable,
   getCoreRowModel,
@@ -52,10 +52,14 @@ function ListTable({
           case "Customer List":
             // Set the active tab to the customer calendar tab.
             localStorage.setItem("activeCustomerTab", "0");
+            // Set the previous list page to customer list.
+            localStorage.setItem("previousListPage", "customer-list");
             break;
           case "Child List":
             // Set the active tab to the children profiles tab.
             localStorage.setItem("activeCustomerTab", "2");
+            // Set the previous list page to child list.
+            localStorage.setItem("previousListPage", "child-list");
             break;
           default:
             break;
@@ -101,6 +105,20 @@ function ListTable({
               header: key,
               cell: (data) => {
                 const value = data.getValue() as any;
+                // If the item is a color code, display it as a colored box
+                if (key === "Color Code" && typeof value === "string") {
+                  return (
+                    <div className={styles.eventColor}>
+                      <div
+                        className={styles.eventColor__colorBox}
+                        style={{
+                          backgroundColor: value,
+                        }}
+                      />
+                      <span>{value.toUpperCase().replace(/,\s*/g, ", ")}</span>
+                    </div>
+                  );
+                }
                 // If the item is not a link item, return the value
                 if (!linkItems.includes(key)) {
                   return value;
@@ -164,17 +182,8 @@ function ListTable({
     changeOptionColor(event.target);
   };
 
-  // Delete the selected user
-  const handleDeleteClick = (rowId: string | null) => {
-    // TODO: Delete the selected user
-    if (rowId === null) return alert("Something went wrong. Please try again.");
-    const deleteId = parseInt(rowId);
-    console.log("Delete the selected user:", data[deleteId]);
-  };
-
   return (
     <>
-      <h1 className={styles.title}>{listType}</h1>
       <div className={styles.container}>
         <div className={styles.topContainer}>
           <div className={styles.filterContainer}>
@@ -207,60 +216,58 @@ function ListTable({
             />
           ) : null}
         </div>
-        <table className={styles.tableContainer}>
-          <thead className={styles.tableHeader}>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className={
-                      header.column.getIsSorted()
-                        ? header.column.getIsSorted() === "asc"
-                          ? "sorted-asc"
-                          : "sorted-desc"
-                        : ""
-                    }
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
-                    {{
-                      asc: "▲",
-                      desc: "▼",
-                    }[header.column.getIsSorted() as string] ?? "　"}
-                  </th>
-                ))}
-                {/* <th></th> */}
-              </tr>
-            ))}
-          </thead>
-          <tbody className={styles.tableBody}>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    data-cell-id={cell.id}
-                    className={
-                      selectedCellId === cell.id ? styles.expanded : ""
-                    }
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-                {/* <td>
-                  <TrashIcon
-                    className={styles.icon}
-                    onClick={() => handleDeleteClick(row.id)}
-                  />
-                </td> */}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className={styles.tableWrapper}>
+          <table className={styles.tableContainer}>
+            <thead className={styles.tableHeader}>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      onClick={header.column.getToggleSortingHandler()}
+                      className={
+                        header.column.getIsSorted()
+                          ? header.column.getIsSorted() === "asc"
+                            ? "sorted-asc"
+                            : "sorted-desc"
+                          : ""
+                      }
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                      {{
+                        asc: "▲",
+                        desc: "▼",
+                      }[header.column.getIsSorted() as string] ?? "　"}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className={styles.tableBody}>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      data-cell-id={cell.id}
+                      className={
+                        selectedCellId === cell.id ? styles.expanded : ""
+                      }
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

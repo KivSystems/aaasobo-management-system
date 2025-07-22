@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
-import { kv } from "@vercel/kv";
 import { registerAdmin, getAdminByEmail } from "../services/adminsService";
-import { getAllAdmins, getAdminById } from "../services/adminsService";
+import {
+  getAllAdmins,
+  getAdminById,
+  updateAdmin,
+  deleteAdmin,
+} from "../services/adminsService";
 import {
   getAllInstructors,
   registerInstructor,
@@ -15,59 +19,13 @@ import {
 import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
-import { getAllPlans } from "../services/plansService";
-import bcrypt from "bcrypt";
-import { logout } from "../helper/logout";
-import { prisma } from "../../prisma/prismaClient";
-
-// Login Admin
-export const loginAdminController = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  try {
-    // Fetch the admin data using the email.
-    const admin = await getAdminByEmail(email);
-
-    if (!admin) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    // Check if the password is correct or not.
-    const result = await bcrypt.compare(password, admin.password);
-
-    if (!result) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    req.session = {
-      userId: admin.id,
-      userType: "admin",
-    };
-
-    // For production(Save session data to Vercel KV)
-    if (process.env.NODE_ENV === "production") {
-      const sessionId = req.cookies["session-id"];
-      if (sessionId) {
-        await kv.set(sessionId, req.session, { ex: 24 * 60 * 60 });
-      }
-    }
-
-    res.status(200).json({
-      message: "Admin logged in successfully",
-    });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-};
-
-// Logout Admin
-export const logoutAdminController = async (req: Request, res: Response) => {
-  return logout(req, res, "admin");
-};
+import { getAllPlans, registerPlan } from "../services/plansService";
+import {
+  getAllEvents,
+  registerEvent,
+  updateEvent,
+  deleteEvent,
+} from "../services/eventsService";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -96,6 +54,59 @@ export const registerAdminController = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error registering admin", { error });
     res.sendStatus(500);
+  }
+};
+
+// Update the applicable admin data
+export const updateAdminProfileController = async (
+  req: Request,
+  res: Response,
+) => {
+  const adminId = parseInt(req.params.id);
+  const { name, email } = req.body;
+
+  try {
+    if (!name || !email) {
+      return res.sendStatus(400);
+    }
+
+    // Normalize email
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check if the updated email already exists
+    const existingAdmin = await getAdminByEmail(normalizedEmail);
+    if (existingAdmin && existingAdmin.id !== adminId) {
+      return res.sendStatus(409);
+    }
+
+    const admin = await updateAdmin(adminId, name, email);
+
+    res.status(200).json({
+      message: "Admin is updated successfully",
+      admin,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
+  }
+};
+
+export const deleteAdminController = async (req: Request, res: Response) => {
+  const adminId = parseInt(req.params.id);
+
+  if (isNaN(adminId)) {
+    return res.status(400).json({ error: "Invalid admin ID." });
+  }
+
+  try {
+    const deletedAdmin = await deleteAdmin(adminId);
+
+    res.status(200).json({
+      message: "The admin profile was deleted successfully",
+      id: deletedAdmin.id,
+    });
+  } catch (error) {
+    console.error("Failed to delete the admin profile:", error);
+    res.status(500).json({ error: "Failed to delete the admin profile." });
   }
 };
 
@@ -173,7 +184,7 @@ export const getAllAdminsController = async (_: Request, res: Response) => {
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Admin: name,
         Email: email,
       };
     });
@@ -197,7 +208,7 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Customer: name,
         Email: email,
         Prefecture: prefecture,
       };
@@ -225,7 +236,7 @@ export const getAllInstructorsController = async (
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Instructor: name,
         Nickname: nickname,
         Email: email,
       };
@@ -347,11 +358,11 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
       return {
         No: number + 1,
         ID: id,
-        Name: name,
+        Child: name,
         "Customer ID": customer.id,
-        "Customer name": customer.name,
+        Customer: customer.name,
         Birthdate: birthdate?.toISOString().slice(0, 10),
-        "Personal info": personalInfo,
+        "Personal Info": personalInfo,
       };
     });
 
@@ -375,7 +386,7 @@ export const getAllPlansController = async (_: Request, res: Response) => {
         No: number + 1,
         ID: id,
         Plan: name,
-        "Weekly class times": weeklyClassTimes,
+        "Weekly Class Times": weeklyClassTimes,
         Description: description,
       };
     });
@@ -386,21 +397,197 @@ export const getAllPlansController = async (_: Request, res: Response) => {
   }
 };
 
+// Register a new plan
+export const registerPlanController = async (req: Request, res: Response) => {
+  const { name, weeklyClassTimes, description } = req.body;
+
+  if (!name || !weeklyClassTimes || !description) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize the plan name
+  const normalizedPlanName = name.toLowerCase().replace(/\s/g, "");
+
+  try {
+    // Check if the plan with the same name already exists
+    const existingPlans = await getAllPlans();
+    const planExists = existingPlans.some(
+      (plan) =>
+        plan.name.toLowerCase().replace(/\s/g, "") === normalizedPlanName,
+    );
+    if (planExists) {
+      return res.sendStatus(409);
+    }
+
+    await registerPlan({
+      name,
+      weeklyClassTimes,
+      description,
+    });
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.error("Error registering a new plan", { error });
+    res.sendStatus(500);
+  }
+};
+
+// Admin dashboard for displaying all events' information
+export const getAllEventsController = async (_: Request, res: Response) => {
+  try {
+    // Fetch all events data.
+    const events = await getAllEvents();
+
+    // Transform the data structure.
+    const data = events.map((event, number) => {
+      const { id, name, color } = event;
+
+      return {
+        No: number + 1,
+        ID: id,
+        Event: name,
+        "Color Code": color,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Register a new event
+export const registerEventController = async (req: Request, res: Response) => {
+  const { name, color } = req.body;
+
+  if (!name || !color) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize the event name and color code
+  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
+
+  try {
+    // Check if the event with the same name and color already exists
+    const existingEvents = await getAllEvents();
+    const eventNameExists = existingEvents.some(
+      (event) =>
+        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName,
+    );
+    const eventColorExists = existingEvents.some(
+      (event) =>
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode,
+    );
+
+    // Collect conflict reasons
+    const conflictItems: string[] = [];
+    if (eventNameExists) conflictItems.push("Event name");
+    if (eventColorExists) conflictItems.push("Color code");
+
+    if (conflictItems.length > 0) {
+      return res.status(409).json({ items: conflictItems });
+    }
+
+    // Register the new event
+    await registerEvent({
+      name,
+      color: normalizedColorCode,
+    });
+
+    res.sendStatus(201);
+  } catch (error) {
+    console.error("Error registering a new event", { error });
+    res.sendStatus(500);
+  }
+};
+
+// Update the applicable event data
+export const updateEventProfileController = async (
+  req: Request,
+  res: Response,
+) => {
+  const eventId = parseInt(req.params.id);
+  const { name, color } = req.body;
+
+  // Normalize the event name and color code
+  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
+
+  try {
+    if (!name || !color) {
+      return res.sendStatus(400);
+    }
+
+    // Check if the event with the same name and color already exists
+    const existingEvents = await getAllEvents();
+    const eventNameExists = existingEvents.some(
+      (event) =>
+        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName &&
+        event.id !== eventId,
+    );
+    const eventColorExists = existingEvents.some(
+      (event) =>
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode &&
+        event.id !== eventId,
+    );
+
+    // Collect conflict reasons
+    const conflictItems: string[] = [];
+    if (eventNameExists) conflictItems.push("Event name");
+    if (eventColorExists) conflictItems.push("Color code");
+
+    if (conflictItems.length > 0) {
+      return res.status(409).json({ items: conflictItems });
+    }
+
+    const event = await updateEvent(eventId, name, normalizedColorCode);
+
+    res.status(200).json({
+      message: "Event is updated successfully",
+      event,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
+  }
+};
+
+// Delete the selected event
+export const deleteEventController = async (req: Request, res: Response) => {
+  const eventId = parseInt(req.params.id);
+
+  if (isNaN(eventId)) {
+    return res.status(400).json({ error: "Invalid event ID." });
+  }
+
+  try {
+    const deletedEvent = await deleteEvent(eventId);
+
+    res.status(200).json({
+      message: "The event was deleted successfully",
+      id: deletedEvent.id,
+    });
+  } catch (error) {
+    console.error("Failed to delete the event:", error);
+    res.status(500).json({ error: "Failed to delete the event." });
+  }
+};
+
 // Get class information within designated period
 export const getClassesWithinPeriodController = async (
   _: Request,
   res: Response,
 ) => {
   try {
-    // Fetch class data within designated period.
-    const designatedPeriod = 30;
+    // Fetch class data within designated period (31days).
+    const designatedPeriod = 31;
     const designatedPeriodBefore = new Date(
       Date.now() - designatedPeriod * (24 * 60 * 60 * 1000),
     );
     const designatedPeriodAfter = new Date(
       Date.now() + (designatedPeriod + 1) * (24 * 60 * 60 * 1000),
     );
-    // Set the designated period to 30 days converted to "T00:00:00.000Z".
+    // Set the designated period to 31 days converted to "T00:00:00.000Z".
     designatedPeriodBefore.setUTCHours(0, 0, 0, 0);
     designatedPeriodAfter.setUTCHours(0, 0, 0, 0);
 
@@ -411,13 +598,27 @@ export const getClassesWithinPeriodController = async (
 
     // Transform the data structure.
     const data = classes.map((classItem, number) => {
-      const { id, instructor, customer, dateTime, status } = classItem;
-      const instructorName = instructor.nickname;
+      const { id, instructor, customer, dateTime, status, classCode } =
+        classItem;
+
+      // If the free trial class status is "pending" or "declined" before booking, an instructor is not assigned — return "Not Set".
+      const instructorName = instructor?.nickname ?? "Not Set";
       const customerName = customer.name;
 
-      // Convert dateTime from UTC to JST (Add 9 hours).
-      const dateTimeUTC = new Date(dateTime);
-      const dateTimeJST = new Date(dateTimeUTC.getTime() + 9 * 60 * 60 * 1000);
+      // If the free trial class status is "pending" or "declined" before booking, no dateTime is selected — return "Not Set".
+      let date = "Not Set";
+      let time = "Not Set";
+
+      if (dateTime) {
+        // Convert dateTime from UTC to JST (Add 9 hours).
+        const dateTimeUTC = new Date(dateTime);
+        const dateTimeJST = new Date(
+          dateTimeUTC.getTime() + 9 * 60 * 60 * 1000,
+        );
+
+        date = dateTimeJST.toISOString().slice(0, 10);
+        time = dateTimeJST.toISOString().slice(11, 16);
+      }
 
       // Format the displayed status.
       let statusText = "";
@@ -434,6 +635,15 @@ export const getClassesWithinPeriodController = async (
         case "canceledByInstructor":
           statusText = "Canceled(Instructor)";
           break;
+        case "rebooked":
+          statusText = "Rebooked";
+          break;
+        case "pending":
+          statusText = "Pending";
+          break;
+        case "declined":
+          statusText = "Declined";
+          break;
       }
 
       return {
@@ -441,9 +651,10 @@ export const getClassesWithinPeriodController = async (
         ID: id,
         Instructor: instructorName,
         Customer: customerName,
-        Date: dateTimeJST.toISOString().slice(0, 10),
-        Time: dateTimeJST.toISOString().slice(11, 16),
+        Date: date,
+        Time: time,
         Status: statusText,
+        "Class Code": classCode,
       };
     });
 

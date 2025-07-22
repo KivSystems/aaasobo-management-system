@@ -2,14 +2,18 @@ import express from "express";
 import {
   getSubscriptionsByIdController,
   registerCustomerController,
-  updateCustomerProfile,
+  updateCustomerProfileController,
   registerSubscriptionController,
   getUpcomingClassesController,
   getCustomerByIdController,
   getClassesController,
   getRebookableClassesController,
+  verifyCustomerEmailController,
+  checkEmailConflictsController,
+  getChildProfilesController,
+  markWelcomeSeenController,
+  declineFreeTrialClassController,
 } from "../../src/controllers/customersController";
-import { authenticateCustomerSession } from "../../src/middlewares/auth.middleware";
 import {
   type RequestWithId,
   parseId,
@@ -20,6 +24,8 @@ export const customersRouter = express.Router();
 // http://localhost:4000/customers
 
 customersRouter.post("/register", registerCustomerController);
+customersRouter.post("/check-email-conflicts", checkEmailConflictsController);
+customersRouter.patch("/verify-email", verifyCustomerEmailController);
 
 customersRouter.get("/:id/subscriptions", getSubscriptionsByIdController);
 customersRouter.get("/:id/customer", parseId, (req, res) =>
@@ -34,7 +40,16 @@ customersRouter.get("/:id/upcoming-classes", parseId, (req, res) =>
 customersRouter.get("/:id/classes", parseId, (req, res) =>
   getClassesController(req as RequestWithId, res),
 );
+customersRouter.get("/:id/child-profiles", parseId, (req, res) =>
+  getChildProfilesController(req as RequestWithId, res),
+);
 
-customersRouter.patch("/:id", updateCustomerProfile);
+customersRouter.patch("/:id", updateCustomerProfileController);
+customersRouter.patch("/:id/seen-welcome", parseId, (req, res) =>
+  markWelcomeSeenController(req as RequestWithId, res),
+);
+customersRouter.patch("/:id/free-trial/decline", parseId, (req, res) =>
+  declineFreeTrialClassController(req as RequestWithId, res),
+);
+
 customersRouter.post("/:id/subscription", registerSubscriptionController);
-customersRouter.get("/:id/authentication", authenticateCustomerSession);

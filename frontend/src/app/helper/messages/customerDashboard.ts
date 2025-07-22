@@ -1,11 +1,17 @@
 export const FAILED_TO_FETCH_REBOOKABLE_CLASSES =
   "We couldn't load your available classes to rebook. Please refresh the page or try again later. / 振替予約可能クラスの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
+export const FAILED_TO_FETCH_REBOOKABLE_INSTRUCTORS =
+  "We couldn't load available instructors to rebook. Please refresh the page or try again later. / 振替予約可能なインストラクター情報を取得できませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
+
+export const FAILED_TO_FETCH_INSTRUCTOR_PROFILES =
+  "We couldn't load instructors' profiles. Please refresh the page or try again later. / インストラクター情報を取得できませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
+
+export const FAILED_TO_FETCH_CHILD_PROFILES =
+  "We couldn't load your children' profiles. Please refresh the page or try again later. / お子様のプロフィールを取得できませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
+
 export const INVALID_CUSTOMER_ID =
   "We encountered an issue while processing your ID. Please refresh the page or try again later. / カスタマーIDの処理中に問題が発生しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
-
-export const INVALID_CLASS_ID =
-  "We encountered an issue while processing the class ID. Please try again later. / クラスIDの処理中に問題が発生しました。後ほどもう一度お試しください。";
 
 export const FAILED_TO_FETCH_UPCOMING_CLASSES =
   "We couldn't load your upcoming classes. Please refresh the page or try again later. / 予約済みクラスの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
@@ -31,14 +37,14 @@ export const SELECTED_CLASSES_CANCELLATION_SUCCESS = {
   en: "The selected class(es) have been successfully canceled.",
 };
 
-export const FAILED_TO_CANCEL_CLASSES = {
-  ja: "選択したクラスのキャンセルに失敗しました。後ほど、もう一度お試しください。",
-  en: "Failed to cancel the selected classes. Please try again later.",
+export const FAILED_TO_CANCEL_INVALID_CLASSES = {
+  ja: "無効なクラスIDが含まれていたため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
-export const TODAYS_CLASS_CANCELLATION_NOTICE = {
-  ja: "当日のクラスをキャンセルする場合は、LINEでスタッフにご連絡ください。この場合、振替クラスはご利用いただけませんのでご注意ください。なお、日本時間を基準としております。",
-  en: "If you need to cancel the class on the scheduled day, please contact our staff via LINE. Please note that make-up classes will not be available in this case. Note that Japan Standard Time is used as the reference.",
+export const FAILED_TO_CANCEL_CLASSES = {
+  ja: "選択したクラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "Failed to cancel the selected classes. Please try again after a short while. If the issue persists, contact us at contact@aaasobo.org.",
 };
 
 export const NO_CANCELABLE_CLASSES_MESSAGE = {
@@ -51,12 +57,187 @@ export const TODAYS_CLASS_REBOOKING_NOTICE = {
   en: "You can rebook a class on the same day up to 3 hours before it starts. However, please note that in some cases, the class may be canceled if the instructor doesn't have enough time to prepare.",
 };
 
+export const FREE_TRIAL_BOOKING_ELIGIBILITY_NOTE = {
+  ja: "無料トライアルクラスは、ご予約の際から72時間以上あとに始まるクラスが対象となります。",
+  en: "Only classes starting 72+ hours from now are eligible for free trial booking.",
+};
+
+export const FREE_TRIAL_BOOKING_TOO_LATE_NOTICE = {
+  ja: "無料トライアルクラスの予約は、予約対象となる最終クラスの開始72時間前までとなっております。申し訳ありませんが、すでにその期限を過ぎているため、予約は行えません。",
+  en: "You can only book free trial classes up to 72 hours before the final eligible class. Unfortunately, that deadline has passed.",
+};
+
 export const REBOOKING_TOO_LATE_NOTICE = {
-  ja: "当日の振替は、クラス開始の3時間前まで可能です。申し訳ありませんが、すでに時間を過ぎているため、振替予約はできません。",
-  en: "You can rebook a class on the same day up to 3 hours before it starts. However, since that time has already passed, rebooking is no longer possible.",
+  ja: "振替予約の受付は、振替対象となる最終クラスの開始3時間前までとなっております。申し訳ありませんが、すでにその期限を過ぎているため、振替は行えません。",
+  en: "Rebooking is allowed up to 3 hours before your final eligible class. We're sorry, but the deadline has passed and this class can no longer be rebooked.",
 };
 
 export const CHILD_PROFILE_REQUIRED_MESSAGE = {
   ja: "お子様のプロフィールが未登録のため、振替予約を行うことができません。サイドメニューの「お子様プロフィール」からプロフィールを登録のうえ、再度振替予約を行ってください。",
   en: "You cannot rebook a class because your child's profile has not been registered. Please go to 'Child Profile' in the side menu to register the profile, then try rebooking again.",
+};
+
+// ClassDetail Modal
+export const NO_CLASS_DETAILS = {
+  ja: "クラス情報が取得できませんでした。",
+  en: "No class details available",
+};
+
+export const CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY = {
+  ja: "クラス当日以降のキャンセルは承っておりません。当日キャンセルをご希望の方は、contact@aaasobo.org までご連絡ください。",
+  en: "Same-day or later cancellations aren't available. Please contact contact@aaasobo.org if needed.",
+};
+
+export const CANCEL_CLASS_CONFIRM_MESSAGE = {
+  ja: "このクラスをキャンセルしてもよろしいですか？",
+  en: "Are you sure you want to cancel this class?",
+};
+
+export const CLASS_CANCELLATION_SUCCESS = {
+  ja: "クラスのキャンセルが完了しました。",
+  en: "The class has been successfully canceled.",
+};
+
+export const FAILED_TO_CANCEL_INVALID_CLASS = {
+  ja: "クラスIDが無効だったため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const FAILED_TO_CANCEL_CLASS = {
+  ja: "クラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "Failed to cancel the class. Please try again after a short while. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const CANCELED_BY_INSTRUCTOR_NOTICE = {
+  ja: "インストラクターの都合でキャンセルとなったクラスは、振替可能クラスとしてカウントされ、180日間有効です。",
+  en: "Classes canceled by the instructor count toward your rebookable class total and are valid for 180 days.",
+};
+
+export const CANCELED_BY_CUSTOMER_NOTICE = {
+  ja: "前日まで（日本時間基準）にキャンセルされたクラスは、180日間振替可能です。当日キャンセルは振替できませんのでご了承ください。",
+  en: "Cancellations made by the day before (Japan time) are rebookable within 180 days. For multiple cancellations, the period starts from the original booking. Same-day cancellations aren't rebookable.",
+};
+
+// Profile page
+export const NO_CHANGES_MADE_MESSAGE = {
+  ja: "変更された項目がありません。",
+  en: "No changes were made.",
+};
+
+export const PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE = {
+  ja: "新しいメールアドレスへ認証リンクを送信できなかったため、プロフィールを更新できませんでした。メールアドレスをご確認のうえ、再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't update your profile because we were unable to send a verification link to your new email address. Please check your email address and try again. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+export const PROFILE_UPDATED_VERIFICATION_EMAIL_SENT = {
+  ja: "プロフィールの更新が完了しました。新しいメールアドレス宛に認証リンクを送信しましたので、メール内のボタンをクリックして認証を完了してください。",
+  en: "Your profile has been updated. A verification link has been sent to your new email address. Please click the button in the email to complete the verification.",
+};
+
+export const PROFILE_UPDATE_SUCCESS_MESSAGE = {
+  ja: "プロフィールの更新が完了しました。",
+  en: "Your profile has been updated.",
+};
+
+export const PROFILE_UPDATE_FAILED_MESSAGE = {
+  ja: "プロフィールを更新できませんでした。時間をおいて、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+  en: "We couldn't update your profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
+};
+
+// Rebooking modal
+export const SELECT_AT_LEAST_ONE_CHILD_MESSAGE = {
+  ja: "参加するお子様を少なくとも1人選択してください。",
+  en: "Please select at least one child to attend.",
+};
+
+export const CHILD_BOOKING_STATUS_ERROR_MESSAGE = {
+  ja: "お子様のクラス予約状況の確認ができませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。",
+  en: "We couldn't check your child's class booking status. Please reload the page or try again after some time.",
+};
+
+export const CONFIRM_BOOKING_WITH_CONFLICT_MESSAGE = {
+  ja: "下記のお子様は、すでに同じ時間に別のクラスを予約しています。このまま予約を続けてもよろしいですか？",
+  en: "The following child(ren) already have another class. Would you like to continue booking?",
+};
+
+export const DOUBLE_BOOKING_CHECK_FAILURE = {
+  ja: "予約の重複がないか確認できませんでした。ページを再読み込みするか、しばらくしてからもう一度お試しください。",
+  en: "We were unable to check for double bookings. Please refresh the page or try again later.",
+};
+
+export const DOUBLE_BOOKING_CONFIRMATION_MESSAGE = {
+  ja: "この時間にはすでに別のクラスが予約されていますが、予約を続けてもよろしいですか？",
+  en: "Another class is already booked at this time. Would you like to continue with the booking?",
+};
+
+export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
+  success: {
+    ja: "クラスの予約が完了しました！",
+    en: "Your class has been successfully booked!",
+  },
+  "past rebooking deadline": {
+    ja: "振替予約は、クラス開始の3時間前まで可能です。ご予約時点で締切を過ぎていたため、振替ができませんでした。お手数ですが、ページを更新し別のクラスをご検討ください。",
+    en: "Rebooking is available until 3 hours before the class starts. The deadline has passed, so please refresh the page and choose another class.",
+  },
+  "no subscription": {
+    ja: "ご契約情報が確認できなかったため、振替予約を完了できませんでした。ご不明な点がございましたら、contact@aaasobo.org までお気軽にお問い合わせください。",
+    en: "We couldn't complete the rebooking as your subscription couldn't be verified. If you have any questions, feel free to contact us at contact@aaasobo.org.",
+  },
+  "outdated subscription": {
+    ja: "ご契約期間が終了しているため、振替予約できません。ご不明な点がございましたら、contact@aaasobo.org までお気軽にお問い合わせください。",
+    en: "We cannot complete the rebooking because your subscription period has ended. If you have any questions, feel free to contact us at contact@aaasobo.org.",
+  },
+  "instructor conflict": {
+    ja: "申し訳ございませんが、選択された時間はインストラクターがすでに予約されています。お手数ですが、ページを更新して別の時間かインストラクターをお選びください。",
+    en: "We're sorry, but the instructor is already booked at the selected time. Please refresh the page and choose a different time or instructor.",
+  },
+  "instructor unavailable": {
+    ja: "選択された時間はインストラクターの予定変更により予約できません。お手数ですが、ページを更新して別の時間またはインストラクターをお選びください。",
+    en: "The selected time is no longer available due to a change in the instructor's schedule. Please refresh the page and choose a different time or instructor.",
+  },
+  default: {
+    ja: "クラスの振替予約中にエラーが発生しました。しばらく時間をおいてから、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
+    en: "An error occurred while rebooking the class. Please wait a moment and try again. If the issue persists, feel free to contact us at contact@aaasobo.org.",
+  },
+};
+
+export const LOGIN_REQUIRED_MESSAGE = {
+  ja: "続行するには、ログインしてください。",
+  en: "Please log in to continue.",
+};
+
+// WelcomeModal
+export const FREE_TRIAL_DECLINE_CONFIRMATION_MESSAGE = {
+  ja: "本当に無料トライアルクラスをお受けにならなくても大丈夫ですか？ この操作は後から変更できません。",
+  en: "Are you sure you don't want to take the free trial class? This action cannot be undone.",
+};
+
+export const FREE_TRIAL_REMOVE_SUCCESS_MESSAGE = {
+  ja: "無料トライアルクラスを削除しました。",
+  en: "The free trial class has been removed.",
+};
+
+export const FREE_TRIAL_ALREADY_REMOVED_MESSAGE = {
+  ja: "無料トライアルクラスはすでに削除済みです。",
+  en: "The free trial class has already been removed.",
+};
+
+export const FREE_TRIAL_REMOVE_ERROR_MESSAGE = {
+  ja: "無料トライアルクラスの削除に失敗しました。もう一度お試しください。解決しない場合は、contact@aaasobo.orgまでお問い合わせください。",
+  en: "Failed to remove the free trial class. Please try again. If the problem persists, contact us at contact@aaasobo.org.",
+};
+
+export const WELCOME_MODAL_TITLE = {
+  ja: "オンラインこども英会話プログラム【AaasoBo!】アーソボ！へようこそ",
+  en: "Welcome to AaasoBo!, the Online English Conversation Program for Kids",
+};
+
+export const FREE_TRIAL_BOOKING_INSTRUCTION_MESSAGE = {
+  ja: "無料トライアルクラスのご予約は、ページ右上の『クラスを予約』ボタンからできます。",
+  en: "You can book your free trial class by clicking the 'Book Class' button at the top right of the page.",
+};
+
+export const CHILD_PROFILE_UPDATE_INSTRUCTION_MESSAGE = {
+  ja: "クラスに参加するお子さまを追加する場合は、左サイドメニューの『お子様プロフィール』から変更できます。",
+  en: "To add children who will join the class, please go to 'Children Profiles' in the left-hand side menu.",
 };

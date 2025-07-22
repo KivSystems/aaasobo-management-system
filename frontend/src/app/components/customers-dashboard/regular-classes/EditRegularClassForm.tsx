@@ -17,10 +17,12 @@ import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 
 function EditRegularClassForm({
+  adminId,
   customerId,
   subscriptionId,
   isAdminAuthenticated,
 }: {
+  adminId?: number;
   customerId: number;
   subscriptionId?: number | null;
   isAdminAuthenticated?: boolean;
@@ -145,12 +147,12 @@ function EditRegularClassForm({
       // Set the URL depending on authenticated admin or not.
       if (data.messages[1]) {
         const targetURL = isAdminAuthenticated
-          ? `/admins/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`
+          ? `/admins/${adminId}/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`
           : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`;
         router.push(targetURL);
       } else {
         const targetURL = isAdminAuthenticated
-          ? `/admins/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}`
+          ? `/admins/${adminId}/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}`
           : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}`;
         router.push(targetURL);
       }
@@ -201,7 +203,7 @@ function EditRegularClassForm({
         {isAdminAuthenticated ? (
           <RedirectButton
             btnText="Back"
-            linkURL={`/admins/customer-list/${customerId}`}
+            linkURL={`/admins/${adminId}/customer-list/${customerId}`}
             className="backBtn"
           />
         ) : (

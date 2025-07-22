@@ -4,10 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { cancelSelectedClasses } from "@/app/actions/cancelSelectedClasses";
 import {
   CONFIRM_CLASS_CANCELLATION,
-  FAILED_TO_CANCEL_CLASSES,
   NO_CANCELABLE_CLASSES_MESSAGE,
-  SELECTED_CLASSES_CANCELLATION_SUCCESS,
-  TODAYS_CLASS_CANCELLATION_NOTICE,
 } from "@/app/helper/messages/customerDashboard";
 import { isPastPreviousDayDeadline } from "@/app/helper/utils/dateUtils";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
@@ -17,6 +14,7 @@ import InfoBanner from "@/app/components/elements/infoBanner/InfoBanner";
 import { useState } from "react";
 import { validateCancelableClasses } from "@/app/helper/utils/validationUtils";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import SameDayCancellationNotice from "@/app/components/features/classDetail/sameDayCancellationNotice/SameDayCancellationNotice";
 
 export default function CancelClassesModal({
   upcomingClasses,
@@ -36,41 +34,28 @@ export default function CancelClassesModal({
     // Validation: exclude classes that have passed the previous day's cancellation deadline.
     if (
       !validateCancelableClasses(selectedClasses, setSelectedClasses, language)
-    ) {
+    )
       return;
-    }
 
-    const confirmed = window.confirm(
-      language === "ja"
-        ? CONFIRM_CLASS_CANCELLATION.ja
-        : CONFIRM_CLASS_CANCELLATION.en,
-    );
+    const confirmed = window.confirm(CONFIRM_CLASS_CANCELLATION[language]);
     if (!confirmed) return setIsCancelingModalOpen(false);
 
     const classesToCancel = selectedClasses.map(
       (classItem) => classItem.classId,
     );
 
-    try {
-      await cancelSelectedClasses(
-        classesToCancel,
-        isAdminAuthenticated,
-        customerId,
-      );
+    const cancelationResult = await cancelSelectedClasses(
+      classesToCancel,
+      isAdminAuthenticated,
+      customerId,
+    );
 
-      setIsCancelingModalOpen(false);
-      toast.success(
-        language === "ja"
-          ? SELECTED_CLASSES_CANCELLATION_SUCCESS.ja
-          : SELECTED_CLASSES_CANCELLATION_SUCCESS.en,
-      );
-    } catch (error) {
-      alert(
-        language === "ja"
-          ? FAILED_TO_CANCEL_CLASSES.ja
-          : FAILED_TO_CANCEL_CLASSES.en,
-      );
-    }
+    if (!cancelationResult.success)
+      return alert(cancelationResult.message[language]);
+
+    setIsCancelingModalOpen(false);
+
+    toast.success(cancelationResult.message[language]);
   };
 
   const showSameDayCancelNotice = upcomingClasses.some(({ dateTime }) =>
@@ -86,7 +71,7 @@ export default function CancelClassesModal({
               className="cancelClasses"
               headItems={
                 language === "ja"
-                  ? ["", "日付", "時間", "インストラクター", "お子様"]
+                  ? ["", "日付", "時間", "インストラクター", "　お子様"]
                   : ["", "Date", "Time", "Instructor", "Children"]
               }
             >
@@ -100,28 +85,17 @@ export default function CancelClassesModal({
 
             {showSameDayCancelNotice && (
               <InfoBanner
-                info={
-                  language === "ja"
-                    ? TODAYS_CLASS_CANCELLATION_NOTICE.ja
-                    : TODAYS_CLASS_CANCELLATION_NOTICE.en
-                }
+                info={<SameDayCancellationNotice language={language} />}
               />
             )}
           </>
         ) : (
           <h3 style={{ textAlign: "center" }}>
-            {language === "ja"
-              ? NO_CANCELABLE_CLASSES_MESSAGE.ja
-              : NO_CANCELABLE_CLASSES_MESSAGE.en}
+            {NO_CANCELABLE_CLASSES_MESSAGE[language]}
           </h3>
         )}
 
         <div className={styles.classesTable__buttons}>
-          <ActionButton
-            btnText={language === "ja" ? "戻る" : "Back"}
-            className="back"
-            onClick={() => setIsCancelingModalOpen(false)}
-          />
           <ActionButton
             onClick={handleBulkCancel}
             disabled={selectedClasses.length === 0}

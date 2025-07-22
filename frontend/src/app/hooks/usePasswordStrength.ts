@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import zxcvbn from "zxcvbn";
 
 export function usePasswordStrength(password: string) {
-  const [passwordStrength, setPasswordStrength] = useState<number>(0);
+  const [passwordStrength, setPasswordStrength] = useState<number | null>(null);
   const [passwordFeedback, setPasswordFeedback] = useState<string>("");
 
   useEffect(() => {
@@ -11,7 +11,7 @@ export function usePasswordStrength(password: string) {
       setPasswordStrength(result.score);
       setPasswordFeedback(result.feedback.suggestions.join(" "));
     } else {
-      setPasswordStrength(0);
+      setPasswordStrength(null);
       setPasswordFeedback("");
     }
   }, [password]);

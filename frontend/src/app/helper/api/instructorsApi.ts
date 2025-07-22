@@ -1,3 +1,4 @@
+import { FAILED_TO_FETCH_INSTRUCTOR_PROFILES } from "../messages/customerDashboard";
 import {
   INSTRUCTOR_REGISTRATION_SUCCESS_MESSAGE,
   GENERAL_ERROR_MESSAGE,
@@ -73,11 +74,13 @@ export const getInstructor = async (
 // Register instructor data
 export const registerInstructor = async (
   userData: FormData,
+  cookie: string,
 ): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
     const response = await fetch(registerURL, {
       method: "POST",
+      headers: {  Cookie: cookie },
       body: userData,
     });
 
@@ -118,10 +121,11 @@ export const updateInstructor = async (
   instructorMeetingId: string,
   instructorPasscode: string,
   instructorIntroductionURL: string,
+  cookie: string,
 ) => {
   // Define the data to be sent to the server side.
   const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}`;
-  const headers = { "Content-Type": "application/json" };
+  const headers = { "Content-Type": "application/json", Cookie: cookie };
   const body = JSON.stringify({
     name: instructorName,
     email: instructorEmail,
@@ -321,27 +325,6 @@ export const fetchInstructorRecurringAvailabilities = async (
   }
 };
 
-export const fetchInstructorAvailabilitiesForTomorrowAndAfter = async (
-  instructorId: number,
-) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/${instructorId}/availabilities/after-tomorrow`,
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const instructorAvailabilities = await response.json();
-    return instructorAvailabilities.data;
-  } catch (error) {
-    console.error(
-      "Failed to fetch instructor availability date and times:",
-      error,
-    );
-    throw error;
-  }
-};
-
 export const getInstructorProfile = async (
   instructorId: number,
 ): Promise<InstructorProfile> => {
@@ -360,6 +343,30 @@ export const getInstructorProfile = async (
   } catch (error) {
     console.error("API error while fetching instructor profile:", error);
     throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILE);
+  }
+};
+
+export const getInstructorProfiles = async (): Promise<
+  InstructorRebookingProfile[]
+> => {
+  try {
+    const apiUrl = `${BASE_URL}/profiles`;
+    const response = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const instructorProfiles = await response.json();
+    return instructorProfiles;
+  } catch (error) {
+    console.error(
+      "API error while fetching instructor profiles for rebooking page:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILES);
   }
 };
 

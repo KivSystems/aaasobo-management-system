@@ -25,14 +25,16 @@ export const addRecurringClass = async (
     });
     // Add the classes to the Class table based on the Recurring Class ID.
     const createdClasses = await tx.class.createManyAndReturn({
-      data: dateTimes.map((dateTime) => ({
+      data: dateTimes.map((dateTime, index) => ({
         instructorId,
         customerId,
         recurringClassId: recurring.id,
         subscriptionId,
         dateTime,
         status: "booked",
-        rebookableUntil: nHoursLater(180 * 24, dateTime), // 180 days (* 24 hours) after the class dateTime,
+        rebookableUntil: nHoursLater(180 * 24, dateTime), // 180 days (* 24 hours) after the class dateTime
+        updatedAt: new Date(),
+        classCode: `${recurring.id}-${index}`,
       })),
     });
     // Add the Class Attendance to the ClassAttendance Table based on the Class ID.
@@ -247,4 +249,24 @@ export const getValidRecurringClassesByInstructorId = async (
     console.error("Database Error:", error);
     throw new Error("Failed to fetch recurring classes.");
   }
+};
+
+export const getSubscriptionByRecurringClassId = async (
+  recurringClassId: number,
+) => {
+  const recurringClass = await prisma.recurringClass.findUnique({
+    where: {
+      id: recurringClassId,
+    },
+    select: {
+      subscription: {
+        select: {
+          id: true,
+          endAt: true,
+        },
+      },
+    },
+  });
+
+  return recurringClass?.subscription || null;
 };

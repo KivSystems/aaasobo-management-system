@@ -2,31 +2,31 @@
 
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import InstructorProfile from "@/app/components/instructors-dashboard/instructor-profile/InstructorProfile";
-import { useContext } from "react";
-import { AuthContext } from "@/app/admins/(authenticated)/authContext";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
-import AvailabilityCalendar from "../../../admins/(authenticated)/instructor-list/[instructorId]/AvailabilityCalendar";
-import InstructorSchedule from "../../../admins/(authenticated)/instructor-list/[instructorId]/InstructorSchedule";
+import AvailabilityCalendar from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/AvailabilityCalendar";
+import InstructorSchedule from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/InstructorSchedule";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function InstructorTabs({
+  adminId,
   instructorId,
   instructor,
   classScheduleComponent,
 }: {
+  adminId: number;
   instructorId: number;
   instructor: Instructor | string;
   classScheduleComponent: React.ReactNode;
 }) {
   const breadcrumb = [
     "Instructor List",
-    `/admins/instructor-list`,
+    `/admins/${adminId}/instructor-list`,
     `ID: ${instructorId}`,
   ];
   const activeTabName = "activeInstructorTab";
 
-  // Check the authentication of the admin.
-  const { isAuthenticated } = useContext(AuthContext);
+  // Set the authentication status as true.
+  const isAuthenticated = true;
 
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect(

@@ -3,7 +3,7 @@
 import styles from "./InstructorProfile.module.scss";
 import { useState, useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
-import { updateUser } from "@/app/actions/updateUser";
+import { updateInstructorAction } from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
@@ -27,7 +27,10 @@ function InstructorProfile({
   instructor: Instructor | string;
   isAdminAuthenticated?: boolean;
 }) {
-  const [updateResultState, formAction] = useFormState(updateUser, {});
+  const [updateResultState, formAction] = useFormState(
+    updateInstructorAction,
+    {},
+  );
   const [previousInstructor, setPreviousInstructor] =
     useState<Instructor | null>(
       typeof instructor !== "string" ? instructor : null,

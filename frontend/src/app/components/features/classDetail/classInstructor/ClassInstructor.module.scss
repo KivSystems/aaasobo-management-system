@@ -1,0 +1,37 @@
+@import "../../../../variables.module.scss";
+
+.instructor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+
+  &__icon {
+    border-radius: 180px;
+
+    &.booked {
+      border: 3px solid $light-pink-regular-class;
+    }
+    &.rebooked {
+      border: 3px solid $light-yellow-rebooked-class;
+    }
+    &.completed {
+      border: 3px solid $completed-background-color;
+    }
+    &.canceledByInstructor {
+      border: 3px solid $gray-canceled-by-instructor;
+    }
+    &.canceledByCustomer {
+      border: 3px solid $gray-background;
+    }
+    &.freeTrial {
+      border: 3px solid $green-success;
+    }
+  }
+
+  &__name {
+    font-size: 26px;
+    font-weight: 500;
+    margin-top: 5px;
+  }
+}

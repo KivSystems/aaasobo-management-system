@@ -1,7 +1,6 @@
 import { Customer, Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import bcrypt from "bcrypt";
-import { saltRounds } from "../helper/commonUtils";
+import { hashPassword } from "../helper/commonUtils";
 
 export const getCustomerById = async (customerId: number) => {
   const customer = await prisma.customer.findUnique({
@@ -16,30 +15,22 @@ export const getCustomerById = async (customerId: number) => {
   return customerWithoutPassword;
 };
 
-export const updateCustomer = async (
+export const updateCustomerProfile = async (
   id: number,
-  name: string,
-  email: string,
-  prefecture: string,
+  dataToUpdate: {
+    name?: string;
+    email?: string;
+    prefecture?: string;
+    emailVerified?: Date | null;
+    hasSeenWelcome?: boolean;
+  },
 ) => {
-  try {
-    // Update the Customer data.
-    const customer = await prisma.customer.update({
-      where: {
-        id,
-      },
-      data: {
-        name,
-        email,
-        prefecture,
-      },
-    });
-
-    return customer;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to update the customer data.");
-  }
+  const customer = await prisma.customer.update({
+    where: {
+      id,
+    },
+    data: dataToUpdate,
+  });
 };
 
 // Fetch all customers information
@@ -70,7 +61,7 @@ export const registerCustomer = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const db = tx ?? prisma;
-  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+  const hashedPassword = await hashPassword(data.password);
 
   const customer = await db.customer.create({
     data: {
@@ -120,6 +111,16 @@ export const deleteCustomer = async (
   await db.customer.delete({
     where: {
       id,
+    },
+  });
+};
+
+export const getCustomerContactById = async (id: number) => {
+  return prisma.customer.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      email: true,
     },
   });
 };

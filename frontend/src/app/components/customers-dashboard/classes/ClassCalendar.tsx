@@ -3,6 +3,7 @@ import styles from "./ClassCalendar.module.scss";
 import ClassActions from "./classActions/ClassActions";
 import CustomerCalendar from "./customerCalensar/CustomerCalendar";
 import { getClasses, getCustomerById } from "@/app/helper/api/customersApi";
+import WelcomeModalController from "./welcomeModalController/WelcomModalController";
 
 export default async function ClassCalendar({
   customerId,
@@ -14,6 +15,7 @@ export default async function ClassCalendar({
   const classes: CustomerClass[] | [] = await getClasses(customerId);
   const customer = await getCustomerById(customerId);
   const createdAt: string = customer.createdAt;
+  const hasSeenWelcomeModal = customer.hasSeenWelcome;
 
   return (
     <main className={styles.calendarContainer}>
@@ -29,6 +31,13 @@ export default async function ClassCalendar({
         // TODO: Fetch holidays from the backend
         // holidays={["2024-07-29", "2024-07-30", "2024-07-31"]}
       />
+
+      {!hasSeenWelcomeModal && (
+        <WelcomeModalController
+          isAdminAuthenticated={isAdminAuthenticated}
+          customerId={customerId}
+        />
+      )}
     </main>
   );
 }

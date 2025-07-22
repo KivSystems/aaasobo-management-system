@@ -26,6 +26,7 @@ import {
   getUnavailabilities,
   getInstructorProfile,
   updateInstructor,
+  getInstructorProfiles,
   updateInstructorWithIcon,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
@@ -592,6 +593,28 @@ export const getCalendarClassesController = async (
       error,
       context: {
         ID: instructorId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const getInstructorProfilesController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    const instructorProfiles = await getInstructorProfiles();
+    if (!instructorProfiles) {
+      res.sendStatus(404);
+    }
+
+    res.status(200).json(instructorProfiles);
+  } catch (error) {
+    console.error("Error fetching instructor profiles", {
+      error,
+      context: {
         time: new Date().toISOString(),
       },
     });

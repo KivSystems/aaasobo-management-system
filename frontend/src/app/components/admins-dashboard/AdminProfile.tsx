@@ -3,7 +3,13 @@
 import styles from "./AdminProfile.module.scss";
 import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
-import { updateUser } from "@/app/actions/updateUser";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
+import { updateAdminAction } from "@/app/actions/updateUser";
+import { deleteAdminAction } from "@/app/actions/deleteUser";
+import {
+  ADMIN_UPDATE_SUCCESS_MESSAGE,
+  ADMIN_DELETE_SUCCESS_MESSAGE,
+} from "@/app/helper/messages/formValidation";
 import InputField from "../elements/inputField/InputField";
 import ActionButton from "../elements/buttons/actionButton/ActionButton";
 import { CheckIcon } from "@heroicons/react/24/outline";
@@ -13,13 +19,22 @@ import "react-toastify/dist/ReactToastify.css";
 import Loading from "@/app/components/elements/loading/Loading";
 
 function AdminProfile({
+  userId,
   admin,
   isAdminAuthenticated,
 }: {
+  userId: number;
   admin: Admin | string;
   isAdminAuthenticated?: boolean;
 }) {
-  const [updateResultState, formAction] = useFormState(updateUser, {});
+  // Use `useFormState` hook for updating an admin profile
+  const [updateResultState, formAction] = useFormState(updateAdminAction, {});
+  // Use `useState` hook and FormData for deleting an admin profile
+  const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
+    {},
+  );
+  const { localMessages, clearErrorMessage } =
+    useFormMessages(updateResultState);
   const [previousAdmin, setPreviousAdmin] = useState<Admin | null>(
     typeof admin !== "string" ? admin : null,
   );
@@ -38,6 +53,7 @@ function AdminProfile({
   ) => {
     if (latestAdmin) {
       setLatestAdmin({ ...latestAdmin, [field]: e.target.value });
+      clearErrorMessage(field);
     }
   };
 
@@ -45,27 +61,60 @@ function AdminProfile({
     if (latestAdmin) {
       setLatestAdmin(previousAdmin);
       setIsEditing(false);
+      clearErrorMessage("email");
+    }
+  };
+
+  const handleDeleteClick = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this admin's profile?",
+    );
+    if (confirmed && latestAdmin) {
+      const formData = new FormData();
+      formData.append("id", String(latestAdmin.id));
+
+      const result = await deleteAdminAction(deleteResultState, formData);
+      setDeleteResultState(result);
     }
   };
 
   useEffect(() => {
-    if (updateResultState !== undefined) {
-      if ("admin" in updateResultState) {
-        const result = updateResultState as { admin: Admin };
-        toast.success("Profile updated successfully!");
-        setIsEditing(false);
-        setPreviousAdmin(result.admin);
-        setLatestAdmin(result.admin);
-      } else {
-        const result = updateResultState as { errorMessage: string };
-        toast.error(result.errorMessage);
-      }
-    }
-  }, [updateResultState]);
+    // Check if the updateResultState has changed
+    if ("admin" in updateResultState && updateResultState.admin) {
+      const admin = updateResultState.admin as Admin;
+      toast.success(ADMIN_UPDATE_SUCCESS_MESSAGE);
+      setIsEditing(false);
+      setPreviousAdmin(admin);
+      setLatestAdmin(admin);
+      // Clear updateResultState to avoid re-rendering
+      updateResultState.admin = null;
+      return;
 
+      // Check if the deleteResultState has changed
+    } else if ("id" in deleteResultState && deleteResultState.id) {
+      toast.success(ADMIN_DELETE_SUCCESS_MESSAGE);
+      setIsEditing(false);
+      setLatestAdmin(null);
+      // Clear deleteResultState to avoid re-rendering
+      deleteResultState.id = null;
+      return;
+
+      // Show an error message if there is an error in either update or delete operation,
+    } else {
+      const updateResult = updateResultState as { errorMessage: string };
+      const deleteResult = deleteResultState as { errorMessage: string };
+      const errorMessage =
+        updateResult.errorMessage || deleteResult.errorMessage;
+      toast.error(errorMessage);
+      return;
+    }
+  }, [updateResultState, deleteResultState]);
+
+  // Error message is displayed if the admin data is not found.
   if (typeof admin === "string") {
     return <p>{admin}</p>;
   }
+  const adminId = admin.id;
 
   return (
     <>
@@ -97,6 +146,7 @@ function AdminProfile({
                     name="email"
                     type="email"
                     value={latestAdmin.email}
+                    error={localMessages.email}
                     onChange={(e) => handleInputChange(e, "email")}
                     className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
@@ -106,43 +156,50 @@ function AdminProfile({
               </div>
             </div>
 
-            {/* Hidden input fields */}
-            <input type="hidden" name="userType" value="admin" />
+            {/* Hidden input field */}
             <input type="hidden" name="id" value={latestAdmin.id} />
 
             {/* Action buttons for only admin */}
-            {isAdminAuthenticated ? (
-              <>
-                {isEditing ? (
-                  <div className={styles.buttons}>
+            {isAdminAuthenticated &&
+              (isEditing ? (
+                <div className={styles.buttons}>
+                  <ActionButton
+                    className="cancelEditingInstructor"
+                    btnText="Cancel"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleCancelClick();
+                    }}
+                  />
+                  <ActionButton
+                    className="saveInstructor"
+                    btnText="Save"
+                    type="submit"
+                    Icon={CheckIcon}
+                  />
+                </div>
+              ) : (
+                <div className={styles.buttons}>
+                  <div>
                     <ActionButton
-                      className="cancelEditingInstructor"
-                      btnText="Cancel"
+                      className="deleteAdmin"
+                      btnText="Delete"
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleCancelClick();
-                      }}
-                    />
-
-                    <ActionButton
-                      className="saveInstructor"
-                      btnText="Save"
-                      type="submit"
-                      Icon={CheckIcon}
+                      onClick={() => handleDeleteClick()}
+                      disabled={userId === adminId}
                     />
                   </div>
-                ) : (
-                  <div className={styles.buttons}>
+                  <div>
                     <ActionButton
-                      className="editInstructor"
+                      className="editAdmin"
                       btnText="Edit"
+                      type="button"
                       onClick={handleEditClick}
                     />
                   </div>
-                )}
-              </>
-            ) : null}
+                </div>
+              ))}
           </form>
         ) : (
           <Loading />

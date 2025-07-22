@@ -4,7 +4,8 @@ import {
   getCustomerByEmail,
   getCustomerById,
   registerCustomer,
-  updateCustomer,
+  updateCustomerProfile,
+  verifyCustomerEmail,
 } from "../services/customersService";
 import {
   getSubscriptionsById,
@@ -14,6 +15,8 @@ import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import {
+  createFreeTrialClass,
+  declineFreeTrialClass,
   getCustomerClasses,
   getRebookableClasses,
   getUpcomingClasses,
@@ -21,17 +24,31 @@ import {
 import {
   deleteVerificationToken,
   generateVerificationToken,
+  getVerificationTokenByToken,
 } from "../services/verificationTokensService";
-import { sendVerificationEmail } from "../helper/mail";
+import { resendVerificationEmail, sendVerificationEmail } from "../helper/mail";
 import { prisma } from "../../prisma/prismaClient";
+import { deleteChild, registerChild } from "../services/childrenService";
+import { getChildProfiles } from "../services/childrenService";
 
 export const registerCustomerController = async (
   req: Request,
   res: Response,
 ) => {
-  const { name, email, password, prefecture } = req.body;
+  const { customerData, childData } = req.body;
 
-  if (!name || !email || !password || !prefecture) {
+  const { email, password, prefecture } = customerData;
+  const { birthdate, personalInfo } = childData;
+
+  if (
+    !customerData.name ||
+    !email ||
+    !password ||
+    !prefecture ||
+    !childData.name ||
+    !birthdate ||
+    !personalInfo
+  ) {
     return res.sendStatus(400);
   }
 
@@ -44,10 +61,23 @@ export const registerCustomerController = async (
       return res.sendStatus(409);
     }
 
-    const { customer, verificationToken } = await prisma.$transaction(
+    const { customer, child, verificationToken } = await prisma.$transaction(
       async (tx) => {
         const customer = await registerCustomer(
-          { name, email: normalizedEmail, password, prefecture },
+          {
+            name: customerData.name,
+            email: normalizedEmail,
+            password,
+            prefecture,
+          },
+          tx,
+        );
+
+        const child = await registerChild(
+          childData.name,
+          `${birthdate}T00:00:00.000Z`,
+          personalInfo,
+          customer.id,
           tx,
         );
 
@@ -56,19 +86,22 @@ export const registerCustomerController = async (
           tx,
         );
 
-        return { customer, verificationToken };
+        // Create a free trial class
+        await createFreeTrialClass({ tx, customerId: customer.id });
+
+        return { customer, child, verificationToken };
       },
     );
 
     const sendResult = await sendVerificationEmail(
       verificationToken.email,
-      name,
+      customer.name,
       verificationToken.token,
-      "customer",
     );
 
     if (!sendResult.success) {
       await prisma.$transaction(async (tx) => {
+        await deleteChild(tx, child.id);
         await deleteCustomer(customer.id, tx);
         await deleteVerificationToken(normalizedEmail, tx);
       });
@@ -128,19 +161,65 @@ export const getCustomerByIdController = async (
   }
 };
 
-export const updateCustomerProfile = async (req: Request, res: Response) => {
+export const updateCustomerProfileController = async (
+  req: Request,
+  res: Response,
+) => {
   const customerId = parseInt(req.params.id);
   const { name, email, prefecture } = req.body;
+  const updatedEmail = email.trim().toLowerCase();
 
   try {
-    const customer = await updateCustomer(customerId, name, email, prefecture);
+    const currentCustomerProfile = await getCustomerById(customerId);
+
+    if (!currentCustomerProfile) {
+      return res.sendStatus(404);
+    }
+
+    const isNameUpdated = name !== currentCustomerProfile.name;
+    const isEmailUpdated = updatedEmail !== currentCustomerProfile.email;
+    const isPrefectureUpdated =
+      prefecture !== currentCustomerProfile.prefecture;
+
+    if (isEmailUpdated) {
+      const existingCustomer = await getCustomerByEmail(updatedEmail);
+      if (existingCustomer) {
+        return res.sendStatus(409); // Conflict: email already registered
+      }
+
+      const verificationToken = await generateVerificationToken(updatedEmail);
+
+      const resendResult = await resendVerificationEmail(
+        verificationToken.email,
+        name,
+        verificationToken.token,
+      );
+
+      if (!resendResult.success) {
+        await deleteVerificationToken(verificationToken.email);
+        return res.sendStatus(503); // Service Unavailable:failed to resend verification email
+      }
+    }
+
+    await updateCustomerProfile(customerId, {
+      ...(isNameUpdated && { name }),
+      ...(isEmailUpdated && { email: updatedEmail }),
+      ...(isPrefectureUpdated && { prefecture }),
+      ...(isEmailUpdated && { emailVerified: null }),
+    });
 
     res.status(200).json({
-      message: "Customer is updated successfully",
-      customer,
+      isEmailUpdated,
     });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    console.error("Error updating customer profile", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
@@ -238,6 +317,156 @@ export const getClassesController = async (
       `Error while getting customer classes (customer ID: ${customerId}):`,
       error,
     );
+    res.sendStatus(500);
+  }
+};
+
+export const verifyCustomerEmailController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const existingToken = await getVerificationTokenByToken(token);
+
+    if (!existingToken) {
+      return res.sendStatus(404);
+    }
+
+    const existingCustomer = await getCustomerByEmail(existingToken.email);
+
+    if (!existingCustomer) {
+      return res.sendStatus(404);
+    }
+
+    // This is for cases where a customer who has already been verified clicks the email link again.
+    if (existingCustomer.emailVerified) {
+      return res.sendStatus(200);
+    }
+
+    const isTokenExpired = new Date(existingToken.expires) < new Date();
+
+    if (isTokenExpired) {
+      return res.sendStatus(410); // 410 Gone
+    }
+
+    await verifyCustomerEmail(existingCustomer.id, existingToken.email);
+
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error("Error verifying customer email", {
+      error,
+      context: {
+        token,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const checkEmailConflictsController = async (
+  req: Request,
+  res: Response,
+) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.sendStatus(400);
+  }
+
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+
+  try {
+    const existingCustomer = await getCustomerByEmail(normalizedEmail);
+    if (existingCustomer) {
+      return res.sendStatus(409);
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error checking email conflicts", {
+      error,
+      context: {
+        email: normalizedEmail,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const getChildProfilesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    const childProfiles = await getChildProfiles(customerId);
+    res.status(200).json(childProfiles);
+  } catch (error) {
+    console.error("Error getting child profiles by customer ID", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const markWelcomeSeenController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+
+  try {
+    await updateCustomerProfile(customerId, { hasSeenWelcome: true });
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error marking welcome message as seen", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const declineFreeTrialClassController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const customerId = req.id;
+  const { classCode } = req.body;
+
+  try {
+    const updatedClass = await declineFreeTrialClass(customerId, classCode);
+
+    if (updatedClass.count === 0) {
+      res.sendStatus(404);
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error declining free trial class", {
+      error,
+      context: {
+        customerId,
+        time: new Date().toISOString(),
+      },
+    });
     res.sendStatus(500);
   }
 };

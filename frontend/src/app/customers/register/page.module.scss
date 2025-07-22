@@ -4,6 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100vh;
   background-color: $white-background;
 }
 
@@ -18,10 +19,31 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 350px;
+  max-width: 400px;
+  min-height: 620px;
   width: 100%;
 
-  .paragraph {
+  &--complete {
+    min-height: unset;
+  }
+}
+
+.logo {
+  position: absolute;
+  top: -1rem;
+  left: 1rem;
+}
+
+.header {
+  text-align: center;
+  flex-grow: 0;
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  p {
+    margin-top: 0.6rem;
     margin-bottom: 0.6rem;
     font-size: 0.9rem;
 
@@ -34,10 +56,4 @@
       }
     }
   }
-}
-
-.logo {
-  position: absolute;
-  top: -1rem;
-  left: 1rem;
 }

@@ -1,7 +1,7 @@
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
-} from "@heroicons/react/24/outline";
+} from "@heroicons/react/24/solid";
 import styles from "./FormValidationMessage.module.scss";
 
 type MessageProps = {

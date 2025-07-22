@@ -6,6 +6,9 @@ import {
   UserGroupIcon,
   CalendarIcon,
   ClockIcon,
+  ChatBubbleLeftRightIcon,
+  AcademicCapIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline";
 
 export function getLinks(
@@ -39,23 +42,48 @@ export function getLinks(
   const adminLinks: LinkType[] = [
     {
       name: "Class Calendar",
-      href: "/admins/calendar",
+      href: `/admins/${userId}/calendar`,
       icon: CalendarDaysIcon,
     },
     {
-      name: "Instructor List",
-      href: "/admins/instructor-list",
+      name: "AaasoBo! Calendar",
+      href: `/admins/${userId}/business-calendar`,
+      icon: CalendarDaysIcon,
+    },
+    {
+      name: "Class List",
+      href: `/admins/${userId}/class-list`,
       icon: ClipboardDocumentListIcon,
     },
     {
+      name: "Admin List",
+      href: `/admins/${userId}/admin-list`,
+      icon: UserIcon,
+    },
+    {
+      name: "Instructor List",
+      href: `/admins/${userId}/instructor-list`,
+      icon: UsersIcon,
+    },
+    {
       name: "Customer List",
-      href: "/admins/customer-list",
+      href: `/admins/${userId}/customer-list`,
       icon: UsersIcon,
     },
     {
       name: "Child List",
-      href: "/admins/child-list",
+      href: `/admins/${userId}/child-list`,
       icon: UserGroupIcon,
+    },
+    {
+      name: "Plan List",
+      href: `/admins/${userId}/plan-list`,
+      icon: AcademicCapIcon,
+    },
+    {
+      name: "Event List",
+      href: `/admins/${userId}/event-list`,
+      icon: BellIcon,
     },
   ];
 

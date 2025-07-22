@@ -1,20 +1,33 @@
+import { ChangeEvent } from "react";
 import styles from "./CheckboxInput.module.scss";
 
 export default function CheckboxInput({
   name,
   label,
-  error,
+  onChange,
+  checked,
+  className,
 }: {
-  name: string;
+  name?: string;
   label: string;
-  error?: string;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  checked?: boolean;
+  className?: string;
 }) {
   return (
-    <div className={styles.checkboxWrapper}>
+    <div
+      className={`${styles.checkboxWrapper} ${className ? styles[className] : ""}`}
+    >
       <label className={styles.label}>
-        <input type="checkbox" name={name} required /> {label}
+        <input
+          type="checkbox"
+          name={name}
+          required
+          onChange={onChange}
+          checked={checked}
+        />{" "}
+        <p>{label}</p>
       </label>
-      {error && <p className={styles.errorText}>{error}</p>}
     </div>
   );
 }

@@ -3,8 +3,10 @@ import InstructorCalendar from "../../instructors-dashboard/class-schedule/instr
 import InstructorDashboardClient from "@/app/components/admins-dashboard/instructors-dashboard/InstructorDashboardClient";
 
 export default async function InstructorDashboardForAdmin({
+  adminId,
   instructorId,
 }: {
+  adminId: number;
   instructorId: number;
 }) {
   // Fetch instructor's data
@@ -22,10 +24,12 @@ export default async function InstructorDashboardForAdmin({
 
   return (
     <InstructorDashboardClient
+      adminId={adminId}
       instructorId={instructorId}
       instructor={instructor}
       classScheduleComponent={
         <InstructorCalendar
+          adminId={adminId}
           instructorId={instructorId}
           isAdminAuthenticated={true}
         />

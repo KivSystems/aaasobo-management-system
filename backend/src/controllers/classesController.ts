@@ -3,32 +3,46 @@ import {
   cancelClassById,
   cancelClasses,
   checkDoubleBooking,
-  checkForChildrenWithConflictingClasses,
-  createClass,
+  checkChildConflicts,
   createClassesUsingRecurringClassId,
   deleteClass,
   fetchInstructorClasses,
   getAllClasses,
-  getClassById,
   getClassesByCustomerId,
+  getClassToRebook,
   getExcludedClasses,
-  isInstructorBooked,
   updateClass,
+  checkInstructorConflicts,
+  rebookClass,
+  checkInstructorUnavailability,
 } from "../services/classesService";
-import { getSubscriptionById } from "../services/subscriptionsService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import { prisma } from "../../prisma/prismaClient";
 import {
   getValidRecurringClasses,
-  getRecurringClassByRecurringClassId,
+  getSubscriptionByRecurringClassId,
 } from "../services/recurringClassesService";
 import {
   calculateFirstDate,
   createDatesBetween,
   days,
+  formatYearDateTime,
   getFirstDateInMonths,
   getMonthNumber,
+  isSameLocalDate,
+  nHoursBefore,
 } from "../helper/dateUtils";
+import { getInstructorContactById } from "../services/instructorsService";
+import { getCustomerContactById } from "../services/customersService";
+import { getChildrenNamesByIds } from "../services/childrenService";
+import {
+  sendAdminSameDayRebookEmail,
+  sendInstructorSameDayRebookEmail,
+} from "../helper/mail";
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "../helper/commonUtils";
 
 // GET all classes along with related instructors and customers data
 export const getAllClassesController = async (_: Request, res: Response) => {
@@ -36,15 +50,8 @@ export const getAllClassesController = async (_: Request, res: Response) => {
     const classes = await getAllClasses();
 
     const classesData = classes.map((eachClass) => {
-      const {
-        id,
-        dateTime,
-        customer,
-        instructor,
-        status,
-        isRebookable,
-        recurringClassId,
-      } = eachClass;
+      const { id, dateTime, customer, instructor, status, recurringClassId } =
+        eachClass;
 
       return {
         id,
@@ -54,12 +61,12 @@ export const getAllClassesController = async (_: Request, res: Response) => {
           name: customer.name,
           email: customer.email,
         },
+        // "Pending" or "declined" free trial classes don't have an instructor, so use fallback values when instructor is missing
         instructor: {
-          id: instructor.id,
-          name: instructor.name,
+          id: instructor?.id,
+          name: instructor?.name,
         },
         status,
-        isRebookable,
         recurringClassId,
       };
     });
@@ -89,9 +96,10 @@ export const getClassesByCustomerIdController = async (
         instructor,
         status,
         classAttendance,
-        isRebookable,
         recurringClassId,
         rebookableUntil,
+        updatedAt,
+        classCode,
       } = eachClass;
 
       return {
@@ -102,14 +110,15 @@ export const getClassesByCustomerIdController = async (
           name: customer.name,
           email: customer.email,
         },
+        // "Pending" or "declined" free trial classes don't have an instructor, so use fallback values when instructor is missing
         instructor: {
-          id: instructor.id,
-          name: instructor.name,
-          icon: instructor.icon,
-          classURL: instructor.classURL,
-          nickname: instructor.nickname,
-          meetingId: instructor.meetingId,
-          passcode: instructor.passcode,
+          id: instructor?.id,
+          name: instructor?.name,
+          icon: instructor?.icon,
+          classURL: instructor?.classURL,
+          nickname: instructor?.nickname,
+          meetingId: instructor?.meetingId,
+          passcode: instructor?.passcode,
         },
         classAttendance: {
           children: classAttendance.map((classAttendance) => ({
@@ -118,9 +127,10 @@ export const getClassesByCustomerIdController = async (
           })),
         },
         status,
-        isRebookable,
         recurringClassId,
         rebookableUntil,
+        updatedAt,
+        classCode,
       };
     });
 
@@ -131,96 +141,198 @@ export const getClassesByCustomerIdController = async (
   }
 };
 
-// POST a new class
-export const createClassController = async (req: Request, res: Response) => {
-  const {
-    classId,
-    dateTime,
-    instructorId,
-    customerId,
-    childrenIds,
-    status,
-    recurringClassId,
-    rebookableUntil,
-  } = req.body;
+export type NewClassToRebookType = {
+  dateTime: string | Date;
+  instructorId: number;
+  customerId: number;
+  status: "rebooked";
+  rebookableUntil: string | Date;
+  classCode: string;
+  updatedAt: Date;
+  isFreeTrial: boolean;
+  subscriptionId?: number;
+  recurringClassId?: number;
+};
 
-  // Check for missing fields
-  const missingFields: string[] = [];
-  if (!classId) missingFields.push("classId");
-  if (!dateTime) missingFields.push("dateTime");
-  if (!instructorId) missingFields.push("instructorId");
-  if (!customerId) missingFields.push("customerId");
-  if (!childrenIds) missingFields.push("childrenIds");
-  if (!status) missingFields.push("status");
-  if (!recurringClassId) missingFields.push("recurringClassId");
-  if (!rebookableUntil) missingFields.push("rebookableUntil");
+export const rebookClassController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const classId = req.id;
 
-  if (missingFields.length > 0) {
+  const { dateTime, instructorId, customerId, childrenIds } = req.body;
+
+  if (!dateTime || !instructorId || !customerId || !childrenIds) {
     return res.status(400).json({
-      error: `Missing required field(s): ${missingFields.join(", ")}`,
+      errorType: "missing parameters",
     });
   }
 
   try {
-    // Get subscription id from recurringClass table
-    const subscriptionId = await prisma.$transaction(async (tx) => {
-      const recurringClass = await getRecurringClassByRecurringClassId(
-        tx,
-        recurringClassId,
-      );
-      if (!recurringClass) {
-        throw new Error("Recurring class not found.");
-      }
-      return recurringClass.subscriptionId;
-    });
+    const classToRebook = await getClassToRebook(classId);
+    const {
+      status,
+      recurringClassId,
+      rebookableUntil,
+      classCode,
+      isFreeTrial,
+    } = classToRebook;
 
-    if (!subscriptionId) {
-      return res.status(400).json({ error: "No subscription found." });
-    }
-
-    // Get subscription by subscription id
-    const subscription = await getSubscriptionById(subscriptionId);
-
-    if (!subscription) {
-      return res
-        .status(400)
-        .json({ error: "No applicable subscription found." });
-    }
-
-    // Check if the selected instructor is already booked at the selected date and time
-    const instructorBooked: boolean = await isInstructorBooked(
-      instructorId,
-      dateTime,
-    );
-    if (instructorBooked) {
+    if (!status || !rebookableUntil || !classCode) {
       return res.status(400).json({
-        error:
-          "This instructor is already booked at the selected time. Please refresh your browser and try booking for a different time slot.",
+        errorType: "invalid class data",
       });
     }
 
-    const [newClass, updatedClass] = await Promise.all([
-      // Create a new Booked Class
-      createClass(
-        {
-          dateTime,
-          instructorId,
-          customerId,
-          status,
-          subscriptionId: subscription.id,
-          recurringClassId,
-          rebookableUntil,
-        },
-        childrenIds,
-      ),
-      // Update the rebooked class's isRebookable and rebookableUntil fields to prevent further rebooking
-      updateClass(classId, { isRebookable: false, rebookableUntil: null }),
-    ]);
+    // Rebooking deadline: 72 hours before the class starts for free trial classes, and 3 hours before the class starts for regular classes
+    const rebookingDeadline = isFreeTrial
+      ? nHoursBefore(FREE_TRIAL_BOOKING_HOURS, new Date(dateTime))
+      : nHoursBefore(REGULAR_REBOOKING_HOURS, new Date(dateTime));
+    const isPastRebookingDeadline = new Date() > rebookingDeadline;
 
-    res.status(201).json({ newClass, updatedClass });
+    if (isPastRebookingDeadline) {
+      return res.status(403).json({
+        errorType: "past rebooking deadline",
+      });
+    }
+
+    // For non-freeTrial classes, check subscription validity
+    let subscription;
+    if (!isFreeTrial) {
+      if (!recurringClassId) {
+        return res.status(400).json({
+          errorType: "invalid class data",
+        });
+      }
+
+      // Check if subscription exists and whether it's ended
+      subscription = await getSubscriptionByRecurringClassId(recurringClassId);
+
+      if (!subscription) {
+        return res.status(404).json({
+          errorType: "no subscription",
+        });
+      }
+
+      const hasEnded = subscription.endAt
+        ? new Date(subscription.endAt) < new Date()
+        : false;
+
+      if (hasEnded) {
+        return res.status(400).json({
+          errorType: "outdated subscription",
+        });
+      }
+    }
+
+    // Check if the selected instructor is already booked at the selected date and time
+    const isInstructorBooked: boolean = await checkInstructorConflicts(
+      instructorId,
+      dateTime,
+    );
+    if (isInstructorBooked) {
+      return res.status(400).json({
+        errorType: "instructor conflict",
+      });
+    }
+
+    // Check if the selected instructor is unavailable at the selected date and time
+    const isInstructorUnavailable: boolean =
+      await checkInstructorUnavailability(instructorId, dateTime);
+    if (isInstructorUnavailable) {
+      return res.status(400).json({
+        errorType: "instructor unavailable",
+      });
+    }
+
+    const newClassToRebook: NewClassToRebookType = {
+      dateTime,
+      instructorId,
+      customerId,
+      status: "rebooked",
+      rebookableUntil,
+      classCode,
+      updatedAt: new Date(),
+      isFreeTrial: !!isFreeTrial,
+    };
+
+    if (!isFreeTrial) {
+      newClassToRebook.subscriptionId = subscription!.id;
+      newClassToRebook.recurringClassId = recurringClassId!;
+    }
+
+    const newClass = await rebookClass(
+      { id: classId, status },
+      newClassToRebook,
+      childrenIds,
+    );
+
+    // Check if the rebooked date is today; if so, send notification emails to the admin and instructor
+    const isSameDay = isSameLocalDate(dateTime, "Asia/Tokyo");
+
+    if (isSameDay) {
+      try {
+        const instructor = await getInstructorContactById(
+          newClass.instructorId!, // Guaranteed to exist for a newly created rebooked class
+        );
+        const customer = await getCustomerContactById(newClass.customerId);
+        const children = await getChildrenNamesByIds(childrenIds);
+
+        if (!instructor || !customer || !children) {
+          console.error(
+            "Missing required data for sending same-day rebooking emails",
+            {
+              instructor,
+              customer,
+              children,
+              classId,
+            },
+          );
+          return;
+        }
+
+        await sendAdminSameDayRebookEmail({
+          classCode: newClass.classCode,
+          dateTime: formatYearDateTime(newClass.dateTime!), // Guaranteed to exist for a newly created rebooked class
+          instructorName: instructor.name,
+          instructorEmail: instructor.email,
+          customerName: customer.name,
+          customerEmail: customer.email,
+          children,
+        });
+
+        await sendInstructorSameDayRebookEmail({
+          classCode: newClass.classCode,
+          dateTime: formatYearDateTime(newClass.dateTime!, "en-US"), // Guaranteed to exist for a newly created rebooked class
+          instructorName: instructor.name,
+          instructorEmail: instructor.email,
+          children,
+        });
+      } catch (emailError) {
+        console.error("Failed to send same-day rebooking notification email", {
+          emailError,
+          context: {
+            emailError,
+            classId,
+            classDate: dateTime,
+            instructorId,
+            time: new Date().toISOString(),
+          },
+        });
+      }
+    }
+
+    res.sendStatus(201);
   } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to book class." });
+    console.error("Error rebooking a class", {
+      error,
+      context: {
+        customerId,
+        classId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
@@ -253,51 +365,6 @@ export const deleteClassController = async (req: Request, res: Response) => {
   }
 };
 
-// GET a class by class id along with related instructors, customers, and children data
-export const getClassByIdController = async (req: Request, res: Response) => {
-  const classId = Number(req.params.id);
-
-  if (isNaN(classId)) {
-    return res.status(400).json({ error: "Invalid class ID" });
-  }
-
-  try {
-    const classData = await getClassById(classId);
-
-    if (!classData) {
-      return res.status(404).json({ error: "Class not found" });
-    }
-
-    const formattedClassData = {
-      id: classData.id,
-      dateTime: classData.dateTime,
-      customer: {
-        id: classData.customer.id,
-        name: classData.customer.name,
-        email: classData.customer.email,
-      },
-      instructor: {
-        id: classData.instructor.id,
-        name: classData.instructor.name,
-        icon: classData.instructor.icon,
-        classURL: classData.instructor.classURL,
-      },
-      classAttendance: {
-        children: classData.classAttendance.map((classAttendance) => ({
-          id: classAttendance.children.id,
-          name: classAttendance.children.name,
-        })),
-      },
-      status: classData.status,
-    };
-
-    res.json(formattedClassData);
-  } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to fetch a class." });
-  }
-};
-
 // Update[Edit] a class
 export const updateClassController = async (req: Request, res: Response) => {
   const classId = parseInt(req.params.id);
@@ -318,32 +385,25 @@ export const updateClassController = async (req: Request, res: Response) => {
 // Cancel a class
 export const cancelClassController = async (req: Request, res: Response) => {
   const classId = parseInt(req.params.id);
-  const isPastPrevDayDeadline = false;
+
+  if (!classId || isNaN(classId)) res.sendStatus(400);
 
   try {
-    await cancelClassById(classId, isPastPrevDayDeadline);
-    res.status(200).json({ message: "Class canceled successfully" });
+    await cancelClassById(classId);
+    res.sendStatus(200);
   } catch (error) {
-    res.status(500).json({ error: "An unknown error occurred" });
+    console.error("Error canceling a class", {
+      error,
+      context: {
+        classId,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
-// Cancel a class on the same day of the class
-export const nonRebookableCancelController = async (
-  req: Request,
-  res: Response,
-) => {
-  const classId = parseInt(req.params.id);
-  const isPastPrevDayDeadline = true;
-
-  try {
-    await cancelClassById(classId, isPastPrevDayDeadline);
-    res.status(200).json({ message: "Class canceled successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "An unknown error occurred" });
-  }
-};
-
+// TODO: Delete this controller after finishing refactoring instructor class details page
 export const getInstructorClasses = async (
   req: RequestWithId,
   res: Response,
@@ -352,23 +412,17 @@ export const getInstructorClasses = async (
     const classes = await fetchInstructorClasses(req.id);
 
     const classesData = classes.map((eachClass) => {
-      const {
-        id,
-        dateTime,
-        customer,
-        instructor,
-        status,
-        classAttendance,
-        isRebookable,
-      } = eachClass;
+      const { id, dateTime, customer, instructor, status, classAttendance } =
+        eachClass;
 
       return {
         id,
         dateTime,
         customerName: customer.name,
-        classURL: instructor.classURL,
-        meetingId: instructor.meetingId,
-        passcode: instructor.passcode,
+        // "Pending" or "declined" free trial classes do not have an instructor, so use fallback values
+        classURL: instructor?.classURL,
+        meetingId: instructor?.meetingId,
+        passcode: instructor?.passcode,
         attendingChildren: classAttendance.map((classAttendance) => ({
           id: classAttendance.children.id,
           name: classAttendance.children.name,
@@ -382,7 +436,6 @@ export const getInstructorClasses = async (
           personalInfo: child.personalInfo,
         })),
         status,
-        isRebookable,
       };
     });
 
@@ -481,7 +534,7 @@ export const createClassesForMonthController = async (
           // if you find the same dateTime and instructor id as in the excludedClass, skip it.
           const isExistingClass = excludedClasses.some((excludedClass) => {
             const excludedClassDateTimesStr = new Date(
-              excludedClass.dateTime,
+              excludedClass.dateTime!, // All "excludedClasses" are selected by dateTime, so dateTime is guaranteed to exist.
             ).toISOString();
             const dateTimesStr = dateTimes.map((date) =>
               new Date(date).toISOString(),
@@ -522,7 +575,7 @@ export const createClassesForMonthController = async (
   }
 };
 
-// Check if there is a class that is already booked at the same dateTime as the newlly booked class
+// Check if there is a class that is already booked at the same dateTime as the newly booked class
 export const checkDoubleBookingController = async (
   req: Request,
   res: Response,
@@ -530,80 +583,74 @@ export const checkDoubleBookingController = async (
   const { customerId, dateTime } = req.body;
 
   if (!customerId || !dateTime) {
-    return res
-      .status(400)
-      .json({ error: "customerId and dateTime are required." });
+    return res.sendStatus(400);
   }
 
   try {
-    const isBooked = await checkDoubleBooking(customerId, dateTime);
+    const isDoubleBooked = await checkDoubleBooking(customerId, dateTime);
 
-    if (isBooked) {
-      return res.status(400).json({
-        error: "A class has already been booked at the selected time.",
-      });
-    }
-
-    // No booking found
-    res.status(200).json({ message: "No booked classes found." });
+    res.status(200).json(isDoubleBooked);
   } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to check class booking." });
+    console.error("Error checking double booking", {
+      error,
+      context: {
+        customerId,
+        dateTime,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
-export const checkChildrenAvailabilityController = async (
+export const checkChildConflictsController = async (
   req: Request,
   res: Response,
 ) => {
   const { dateTime, selectedChildrenIds } = req.body;
 
   if (!dateTime || !selectedChildrenIds) {
-    return res
-      .status(400)
-      .json({ error: "dateTime and selectedChildrenIds are required." });
+    return res.sendStatus(400);
   }
 
   try {
-    const childrenWithConflictingClasses =
-      await checkForChildrenWithConflictingClasses(
-        new Date(dateTime),
-        selectedChildrenIds,
-      );
+    const conflictingChildren = await checkChildConflicts(
+      dateTime,
+      selectedChildrenIds,
+    );
 
-    if (childrenWithConflictingClasses.length > 0) {
-      const childrenNames = childrenWithConflictingClasses.join(", ");
-      const conflictMessage = `Child(ren) ${childrenNames} already has/have another class with another instructor at the selected time.`;
-
-      return res.status(400).json({
-        error: conflictMessage,
-      });
-    }
-
-    // No conflicts found
-    res.status(200).json({ message: "No conflicting classes found." });
+    res.status(200).json(conflictingChildren);
   } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to check children availability." });
+    console.error("Error checking children conflicts", {
+      error,
+      context: {
+        childrenIds: selectedChildrenIds,
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
   }
 };
 
 export const cancelClassesController = async (req: Request, res: Response) => {
+  const { classIds } = req.body;
+
+  if (!Array.isArray(classIds) || classIds.length === 0) {
+    return res.sendStatus(400);
+  }
+
   try {
-    const { classIds } = req.body;
-
-    if (!Array.isArray(classIds) || classIds.length === 0) {
-      return res.status(400).json({ error: "Invalid class IDs provided." });
-    }
-
     await cancelClasses(classIds);
 
     res.sendStatus(200);
   } catch (error) {
-    console.error("Error canceling classes:", error);
-    res.status(500).json({
-      error:
-        error instanceof Error ? error.message : "Unexpected server failure.",
+    console.error("Error canceling classes", {
+      error,
+      context: {
+        classIds,
+        time: new Date().toISOString(),
+      },
     });
+    res.sendStatus(500);
   }
 };

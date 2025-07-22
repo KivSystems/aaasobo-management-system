@@ -11,22 +11,20 @@ import {
   getInstructorProfileController,
   updateInstructorProfile,
   getCalendarClassesController,
+  getInstructorProfilesController,
   updateInstructorProfileWithIcon,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
   parseId,
 } from "../../src/middlewares/parseId.middleware";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
 import {
   createInstructorUnavailability,
   getInstructorUnavailabilities,
 } from "../../src/controllers/instructorsUnavailabilityController";
-import { authenticateInstructorSession } from "../../src/middlewares/auth.middleware";
 import { getInstructorClasses } from "../../src/controllers/classesController";
-import {
-  getCalendarAvailabilitiesController,
-  getInstructorAvailabilitiesTomorrowAndAfter,
-} from "../../src/controllers/instructorsAvailabilityController";
+import { getCalendarAvailabilitiesController } from "../../src/controllers/instructorsAvailabilityController";
 import upload from "../middlewares/upload.middleware";
 
 export const instructorsRouter = express.Router();
@@ -34,11 +32,12 @@ export const instructorsRouter = express.Router();
 // http://localhost:4000/instructors
 
 instructorsRouter.get("/", getAllInstructorsAvailabilitiesController);
+instructorsRouter.get("/profiles", getInstructorProfilesController);
 instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
 );
-instructorsRouter.patch("/:id", updateInstructorProfile);
+instructorsRouter.patch("/:id", verifyAuthentication, updateInstructorProfile);
 instructorsRouter.patch(
   "/:id/withIcon",
   upload.single("icon"),
@@ -73,8 +72,6 @@ instructorsRouter.get("/:id/recurringAvailabilityById", parseId, (req, res) =>
 );
 instructorsRouter.get("/", getAllInstructorsController);
 
-instructorsRouter.get("/:id/authentication", authenticateInstructorSession);
-
 // TODO: Delete this route after finishing refactoring instructor class details page
 instructorsRouter.get("/:id/classes", parseId, (req, res) => {
   getInstructorClasses(req as RequestWithId, res);
@@ -83,13 +80,6 @@ instructorsRouter.get("/:id/classes", parseId, (req, res) => {
 instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
   getCalendarAvailabilitiesController(req as RequestWithId, res);
 });
-instructorsRouter.get(
-  "/:id/availabilities/after-tomorrow",
-  parseId,
-  (req, res) => {
-    getInstructorAvailabilitiesTomorrowAndAfter(req as RequestWithId, res);
-  },
-);
 
 instructorsRouter.get("/:id/calendar-classes", parseId, (req, res) => {
   getCalendarClassesController(req as RequestWithId, res);
