@@ -28,7 +28,7 @@ export function getLinks(
       icon: UserIcon,
     },
     {
-      name: language === "ja" ? "お子様プロフィール" : "Children's Profiles",
+      name: language === "ja" ? "お子さまプロフィール" : "Children's Profiles",
       href: `/customers/${userId}/children-profiles`,
       icon: UsersIcon,
     },

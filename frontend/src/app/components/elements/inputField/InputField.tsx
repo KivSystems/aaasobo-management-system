@@ -9,6 +9,7 @@ function InputField({
   onChange,
   type = "text",
   className,
+  placeholder,
 }: {
   name?: string;
   error?: string;
@@ -17,6 +18,7 @@ function InputField({
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   className?: string;
+  placeholder?: string;
 }) {
   return (
     <div>
@@ -28,6 +30,7 @@ function InputField({
         defaultValue={defaultValue}
         onChange={onChange}
         required
+        placeholder={placeholder}
       />
       {error && (
         <FormValidationMessage

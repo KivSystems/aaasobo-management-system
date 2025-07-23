@@ -30,6 +30,7 @@ import { resendVerificationEmail, sendVerificationEmail } from "../helper/mail";
 import { prisma } from "../../prisma/prismaClient";
 import { deleteChild, registerChild } from "../services/childrenService";
 import { getChildProfiles } from "../services/childrenService";
+import { convertToISOString } from "../helper/dateUtils";
 
 export const registerCustomerController = async (
   req: Request,
@@ -75,7 +76,7 @@ export const registerCustomerController = async (
 
         const child = await registerChild(
           childData.name,
-          `${birthdate}T00:00:00.000Z`,
+          convertToISOString(birthdate),
           personalInfo,
           customer.id,
           tx,

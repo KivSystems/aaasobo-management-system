@@ -121,42 +121,6 @@ export const deleteClass = async (classId: number) => {
   }
 };
 
-// Check if a child has a booked class by the child's id
-export const checkIfChildHasBookedClass = async (
-  tx: Prisma.TransactionClient,
-  childId: number,
-): Promise<boolean> => {
-  try {
-    const bookedClass = await tx.classAttendance.findFirst({
-      where: { childrenId: childId, class: { status: "booked" } },
-    });
-
-    // Return true if a booked class was found, otherwise false
-    return bookedClass !== null;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to check if a child has a booked class.");
-  }
-};
-
-// Check if a child has a completed class by the child's id
-export const checkIfChildHasCompletedClass = async (
-  tx: Prisma.TransactionClient,
-  childId: number,
-): Promise<boolean> => {
-  try {
-    const completedClass = await tx.classAttendance.findFirst({
-      where: { childrenId: childId, class: { status: "completed" } },
-    });
-
-    // Return true if a completed class was found, otherwise false
-    return completedClass !== null;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to check if a child has a completed class.");
-  }
-};
-
 // Update/Edit a class
 export const updateClass = async (
   id: number,

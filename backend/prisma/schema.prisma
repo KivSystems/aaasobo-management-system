@@ -122,6 +122,8 @@ model Children {
   recurringClassAttendance RecurringClassAttendance[]
   birthdate                DateTime?
   personalInfo             String?
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @default(now()) @updatedAt
 }
 
 model ClassAttendance {
