@@ -34,7 +34,7 @@ export const handleAttendanceUpdate = async ({
   setIsUpdatingData,
   setIsEditingAttendance,
 }: HandleAttendanceUpdateParams) => {
-  if (!hasTimePassed(classEndTime)) {
+  if (!isAdminAuthenticated && !hasTimePassed(classEndTime)) {
     return alert("You can only edit attendance after the class has ended.");
   }
 

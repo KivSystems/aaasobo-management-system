@@ -109,6 +109,7 @@ const ClassItemForAdmin = ({
                 <div className={styles.classItem__childrenToEdit}>
                   {classItem.customerChildren.map((child) => (
                     <CheckboxInput
+                      key={child.id}
                       label={child.name}
                       checked={attendedChildrenIdsToUpdate.includes(child.id)}
                       onClick={(e) => e.stopPropagation()}

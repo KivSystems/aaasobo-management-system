@@ -205,6 +205,8 @@ type InstructorClassDetail = {
   customerChildren: Child[];
   status: ClassStatus;
   isFreeTrial: boolean;
+  classCode: string;
+  updatedAt: string;
 };
 
 type Tab = {

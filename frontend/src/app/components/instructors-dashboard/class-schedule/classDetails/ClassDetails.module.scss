@@ -5,10 +5,6 @@
     display: flex;
     gap: 20px;
   }
-
-  &__classDetail {
-    flex: 6;
-  }
 }
 
 .classItems {
@@ -16,7 +12,6 @@
   background-color: #f9fafb;
   padding: 1rem;
   border-radius: 8px;
-  // height: 100vh;
 
   &__title {
     font-size: 18px;
@@ -36,11 +31,24 @@
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1rem;
   }
 
   &__noClasses {
     font-size: 16px;
     font-weight: 400;
+  }
+}
+
+.detailsCard {
+  flex: 6;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+
+  &__title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 1rem;
   }
 }

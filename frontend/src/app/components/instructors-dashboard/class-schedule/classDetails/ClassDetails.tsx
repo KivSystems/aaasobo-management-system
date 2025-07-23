@@ -51,6 +51,7 @@ function ClassDetails({
               classes.map((classItem) =>
                 isAdminAuthenticated && adminId ? (
                   <ClassItemForAdmin
+                    key={classItem.id}
                     adminId={adminId}
                     instructorId={instructorId}
                     classItem={classItem}
@@ -61,6 +62,7 @@ function ClassDetails({
                   />
                 ) : (
                   <ClassItem
+                    key={classItem.id}
                     classItem={classItem}
                     classId={classId}
                     instructorId={instructorId}
@@ -75,8 +77,9 @@ function ClassDetails({
           </ul>
         </div>
 
-        <div className={styles.classDetails__classDetail}>
-          <ClassDetailsCard classDetail={classDetails} timeZone="Asia/Manila" />
+        <div className={styles.detailsCard}>
+          <h3 className={styles.detailsCard__title}>Class Details</h3>
+          <ClassDetailsCard classDetails={classDetails} />
         </div>
       </main>
     </div>

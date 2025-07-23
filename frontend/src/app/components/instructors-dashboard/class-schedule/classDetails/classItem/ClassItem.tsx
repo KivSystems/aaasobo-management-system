@@ -1,4 +1,8 @@
-import { formatTime24Hour, getEndTime } from "@/app/helper/utils/dateUtils";
+import {
+  formatTime24Hour,
+  getEndTime,
+  hasTimePassed,
+} from "@/app/helper/utils/dateUtils";
 import { useState } from "react";
 import styles from "./ClassItem.module.scss";
 import ClassStatus from "@/app/components/features/classDetail/classStatus/ClassStatus";
@@ -77,6 +81,7 @@ const ClassItem = ({
                 <div className={styles.classItem__childrenToEdit}>
                   {classItem.customerChildren.map((child) => (
                     <CheckboxInput
+                      key={child.id}
                       label={child.name}
                       checked={attendedChildrenIdsToUpdate.includes(child.id)}
                       onClick={(e) => e.stopPropagation()}
@@ -147,6 +152,11 @@ const ClassItem = ({
                 btnText="Edit Attendance"
                 onClick={(e) => {
                   e.stopPropagation();
+                  if (!hasTimePassed(classEndTime)) {
+                    return alert(
+                      "You can only edit attendance after the class has ended.",
+                    );
+                  }
                   setIsEditingAttendance(true);
                 }}
                 className="editAttendance"

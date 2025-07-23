@@ -837,12 +837,13 @@ export const getSameDateClasses = async (
 ) => {
   const targetClass = await prisma.class.findUnique({
     where: { id: classId },
-    // select: { dateTime: true },
     select: {
       id: true,
       dateTime: true,
       status: true,
       isFreeTrial: true,
+      classCode: true,
+      updatedAt: true,
       instructor: {
         select: {
           classURL: true,
@@ -935,6 +936,8 @@ export const getSameDateClasses = async (
     customerChildren: targetClass.customer.children,
     status: targetClass.status,
     isFreeTrial: targetClass.isFreeTrial,
+    classCode: targetClass.classCode,
+    updatedAt: targetClass.updatedAt,
   };
 
   const formattedSameDayClasses = classes.map((cls) => ({
