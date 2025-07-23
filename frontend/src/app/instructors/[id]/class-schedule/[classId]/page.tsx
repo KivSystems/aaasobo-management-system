@@ -1,7 +1,7 @@
-import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/ClassDetails";
+import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/classDetails/ClassDetails";
 import { getSameDateClasses } from "@/app/helper/api/instructorsApi";
 
-const Page = async ({
+const ClassDetailsPage = async ({
   params,
 }: {
   params: { id: string; classId: string };
@@ -15,9 +15,19 @@ const Page = async ({
     throw new Error("Invalid classId");
   }
 
-  const sameDateClasses = await getSameDateClasses(instructorId, classId);
+  const { selectedClassDetails, sameDateClasses } = await getSameDateClasses(
+    instructorId,
+    classId,
+  );
 
-  return <ClassDetails instructorId={instructorId} classId={classId} />;
+  return (
+    <ClassDetails
+      instructorId={instructorId}
+      classId={classId}
+      classDetails={selectedClassDetails}
+      classes={sameDateClasses}
+    />
+  );
 };
 
-export default Page;
+export default ClassDetailsPage;

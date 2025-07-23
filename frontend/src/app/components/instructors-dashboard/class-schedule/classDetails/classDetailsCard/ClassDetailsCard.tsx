@@ -4,9 +4,10 @@ import {
   formatTimeWithAddedMinutes,
   getDayOfWeek,
   getShortMonth,
-  isPastClassEndTime,
+  hasTimePassed,
+  // isPastClassEndTime,
 } from "@/app/helper/utils/dateUtils";
-import styles from "./InstructorClassDetail.module.scss";
+import styles from "./ClassDetailsCard.module.scss";
 import CheckCircleIcon from "@heroicons/react/24/solid/CheckCircleIcon";
 import {
   CalendarDaysIcon,
@@ -18,7 +19,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { UserIcon as UserIconOutline } from "@heroicons/react/24/outline";
 
-const InstructorClassDetail = ({
+const ClassDetailsCard = ({
   classDetail,
   timeZone,
 }: {
@@ -103,8 +104,7 @@ const InstructorClassDetail = ({
         </div>
 
         {/* Class URL */}
-        {classDetail.status === "booked" &&
-        !isPastClassEndTime(classDetail.dateTime, "Asia/Tokyo") ? (
+        {classDetail.status === "booked" && !hasTimePassed(classEndTime) ? (
           <div className={styles.classURL}>
             <div className={styles.classURL__iconContainer}>
               <VideoCameraIcon className={styles.classURL__icon} />
@@ -216,4 +216,4 @@ const InstructorClassDetail = ({
   );
 };
 
-export default InstructorClassDetail;
+export default ClassDetailsCard;

@@ -157,47 +157,39 @@ export const checkIfChildHasCompletedClass = async (
   }
 };
 
-// Update/Edit a class
 export const updateClass = async (
   id: number,
-  classData: {
-    dateTime?: string;
-    instructorId?: number;
-    childrenIds?: number[];
-    status?: Status;
-    rebookableUntil?: string | null;
-    updatedAt?: Date;
-  },
+  status: Status,
+  classDateTime: Date | string,
 ) => {
-  const { childrenIds, ...fieldsToUpdate } = classData;
-
-  const updatedClass = await prisma.$transaction(async (prisma) => {
-    const updatedClass = await prisma.class.update({
-      where: { id },
-      data: fieldsToUpdate,
-    });
-
-    // TODO: if updatedClass.status === "canceledByInstructor", updated instructor unavailability
-
-    // Delete existing classAttendance records
-    await prisma.classAttendance.deleteMany({
-      where: { classId: id },
-    });
-
-    // Add new classAttendance records if childrenIds is provided
-    if (childrenIds) {
-      await prisma.classAttendance.createMany({
-        data: childrenIds.map((childId) => ({
-          classId: id,
-          childrenId: childId,
-        })),
+  if (status === "canceledByInstructor") {
+    await prisma.$transaction(async (tx) => {
+      await tx.class.update({
+        where: { id },
+        data: {
+          status,
+          updatedAt: new Date(),
+          rebookableUntil: nHoursLater(
+            180 * 24,
+            new Date(classDateTime),
+          ).toISOString(), // If the class is canceled by the instructor, set rebookableUntil to 180 days (* 24 * 60 minutes) after the class dateTime
+        },
       });
-    }
 
-    return updatedClass;
-  });
-
-  return updatedClass;
+      await tx.classAttendance.deleteMany({
+        where: { classId: id },
+      });
+    });
+  } else {
+    await prisma.class.update({
+      where: { id },
+      data: {
+        status,
+        updatedAt: new Date(),
+        ...(status === "completed" && { rebookableUntil: null }),
+      },
+    });
+  }
 };
 
 export async function countClassesOfSubscription(
@@ -746,6 +738,7 @@ export const getClassToRebook = async (classId: number) => {
     rebookableUntil: classData?.rebookableUntil,
     classCode: classData?.classCode,
     isFreeTrial: classData?.isFreeTrial,
+    dateTime: classData?.dateTime,
   };
 };
 
@@ -844,10 +837,50 @@ export const getSameDateClasses = async (
 ) => {
   const targetClass = await prisma.class.findUnique({
     where: { id: classId },
-    select: { dateTime: true },
+    // select: { dateTime: true },
+    select: {
+      id: true,
+      dateTime: true,
+      status: true,
+      isFreeTrial: true,
+      instructor: {
+        select: {
+          classURL: true,
+          meetingId: true,
+          passcode: true,
+        },
+      },
+      customer: {
+        select: {
+          name: true,
+          children: {
+            select: {
+              id: true,
+              name: true,
+              birthdate: true,
+              personalInfo: true,
+              customerId: true,
+            },
+          },
+        },
+      },
+      classAttendance: {
+        select: {
+          children: {
+            select: {
+              id: true,
+              name: true,
+              birthdate: true,
+              personalInfo: true,
+              customerId: true,
+            },
+          },
+        },
+      },
+    },
   });
 
-  if (!targetClass || !targetClass.dateTime) return [];
+  if (!targetClass?.dateTime) return [];
 
   const { startOfDay, endOfDay } = getJstDayRange(targetClass.dateTime);
 
@@ -862,7 +895,59 @@ export const getSameDateClasses = async (
         lte: endOfDay,
       },
     },
+    select: {
+      id: true,
+      dateTime: true,
+      status: true,
+      isFreeTrial: true,
+      customer: {
+        select: {
+          children: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      classAttendance: {
+        select: {
+          children: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { dateTime: "asc" },
   });
 
-  return classes;
+  const formattedTargetClass = {
+    id: targetClass.id,
+    dateTime: targetClass.dateTime!.toISOString(),
+    customerName: targetClass.customer.name,
+    classURL: targetClass.instructor?.classURL || "",
+    meetingId: targetClass.instructor?.meetingId || "",
+    passcode: targetClass.instructor?.passcode || "",
+    attendingChildren: targetClass.classAttendance.map((ca) => ca.children),
+    customerChildren: targetClass.customer.children,
+    status: targetClass.status,
+    isFreeTrial: targetClass.isFreeTrial,
+  };
+
+  const formattedSameDayClasses = classes.map((cls) => ({
+    id: cls.id,
+    dateTime: cls.dateTime!.toISOString(),
+    attendingChildren: cls.classAttendance.map((ca) => ca.children),
+    customerChildren: cls.customer.children,
+    status: cls.status,
+    isFreeTrial: cls.isFreeTrial,
+  }));
+
+  return {
+    selectedClassDetails: formattedTargetClass,
+    sameDateClasses: formattedSameDayClasses,
+  };
 };

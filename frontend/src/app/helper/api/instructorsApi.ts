@@ -385,7 +385,10 @@ export const getCalendarClasses = async (
 export const getSameDateClasses = async (
   instructorId: number,
   classId: number,
-): Promise<InstructorClassDetail[] | []> => {
+): Promise<{
+  selectedClassDetails: InstructorClassDetail;
+  sameDateClasses: InstructorClassDetail[] | [];
+}> => {
   try {
     const apiUrl = `${BASE_URL}/${instructorId}/classes/${classId}/same-date`;
     const response = await fetch(apiUrl, {
@@ -396,8 +399,7 @@ export const getSameDateClasses = async (
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    const sameDateClasses = await response.json();
-    return sameDateClasses;
+    return await response.json();
   } catch (error) {
     console.error(
       "API error while fetching same-date classes for instructor:",

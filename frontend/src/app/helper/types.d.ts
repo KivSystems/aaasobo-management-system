@@ -204,6 +204,7 @@ type InstructorClassDetail = {
   attendingChildren: Child[];
   customerChildren: Child[];
   status: ClassStatus;
+  isFreeTrial: boolean;
 };
 
 type Tab = {
@@ -549,4 +550,54 @@ type WelcomeModalProps = {
   language: LanguageType;
   setIsWelcomeModalOpen: Dispatch<SetStateAction<boolean>>;
   isAdminAuthenticated?: boolean;
+};
+
+type ClassDetailsProps = {
+  instructorId: number;
+  classId: number;
+  classDetails: InstructorClassDetail;
+  classes: InstructorClassDetail[] | [];
+  adminId?: number | null;
+  isAdminAuthenticated?: boolean;
+};
+
+type ClassItemProps = {
+  instructorId: number;
+  classItem: InstructorClassDetail;
+  classId: number;
+  isUpdatingData: boolean;
+  setIsUpdatingData: Dispatch<SetStateAction<boolean>>;
+};
+
+type ClassItemForAdminProps = {
+  adminId: number;
+  instructorId: number;
+  classItem: InstructorClassDetail;
+  classId: number;
+  isUpdatingData: boolean;
+  setIsUpdatingData: Dispatch<SetStateAction<boolean>>;
+  isAdminAuthenticated: boolean;
+};
+
+type HandleAttendanceUpdateParams = {
+  classId: number;
+  instructorId: number;
+  adminId?: number;
+  classEndTime: Date;
+  initialAttendedChildrenIds: number[];
+  attendedChildrenIdsToUpdate: number[];
+  isAdminAuthenticated: boolean;
+  setIsUpdatingData: (updating: boolean) => void;
+  setIsEditingAttendance: (editing: boolean) => void;
+};
+
+type HandleClassStatusUpdateParams = {
+  classId: number;
+  selectedStatus: ClassStatus | null;
+  classEndTime: Date;
+  isAdminAuthenticated: boolean;
+  instructorId: number;
+  adminId?: number;
+  setIsUpdatingData: (updating: boolean) => void;
+  setIsEditingStatus?: (editing: boolean) => void;
 };
