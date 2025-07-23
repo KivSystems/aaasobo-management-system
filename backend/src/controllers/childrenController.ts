@@ -13,6 +13,7 @@ import {
 } from "../services/classAttendancesService";
 import { prisma } from "../../prisma/prismaClient";
 import { RequestWithId } from "../middlewares/parseId.middleware";
+import { convertToISOString } from "../helper/dateUtils";
 
 export const getChildrenController = async (req: Request, res: Response) => {
   const customerId = req.query.customerId as string;
@@ -36,7 +37,7 @@ export const registerChildController = async (req: Request, res: Response) => {
     return res.sendStatus(400);
   }
 
-  const formattedBirthdate = `${birthdate}T00:00:00.000Z`;
+  const formattedBirthdate = convertToISOString(birthdate);
 
   try {
     await registerChild(name, formattedBirthdate, personalInfo, customerId);
@@ -65,7 +66,7 @@ export const updateChildProfileController = async (
     return res.sendStatus(400);
   }
 
-  const formattedBirthdate = `${birthdate}T00:00:00.000Z`;
+  const formattedBirthdate = convertToISOString(birthdate);
 
   try {
     const childToUpdate = await getChildById(childId);

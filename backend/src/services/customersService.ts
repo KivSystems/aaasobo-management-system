@@ -1,7 +1,6 @@
 import { Customer, Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import bcrypt from "bcrypt";
-import { saltRounds } from "../helper/commonUtils";
+import { hashPassword } from "../helper/commonUtils";
 
 export const getCustomerById = async (customerId: number) => {
   const customer = await prisma.customer.findUnique({
@@ -62,7 +61,7 @@ export const registerCustomer = async (
   tx?: Prisma.TransactionClient,
 ) => {
   const db = tx ?? prisma;
-  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+  const hashedPassword = await hashPassword(data.password);
 
   const customer = await db.customer.create({
     data: {

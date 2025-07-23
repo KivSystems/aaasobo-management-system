@@ -7,6 +7,7 @@ interface ModalProps {
   onClose?: () => void;
   children?: React.ReactNode;
   className?: string;
+  overlayClosable?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -14,13 +15,12 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
   children,
   className,
+  overlayClosable = false,
 }) => {
   if (!isOpen) return null;
 
-  const isWelcomeModal = className === "welcomeModal";
-
   const handleOverlayClick = () => {
-    if (!isWelcomeModal && onClose) {
+    if (overlayClosable && onClose) {
       onClose();
     }
   };
@@ -37,7 +37,7 @@ const Modal: React.FC<ModalProps> = ({
       onClick={handleOverlayClick}
     >
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        {!isWelcomeModal && onClose && (
+        {onClose && (
           <div className={styles.closeButton} onClick={handleCloseClick}>
             <XMarkIcon strokeWidth={2.5} />
           </div>

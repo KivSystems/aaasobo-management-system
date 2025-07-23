@@ -279,6 +279,6 @@ export const FREE_TRIAL_BOOKING_INSTRUCTION_MESSAGE = {
 };
 
 export const CHILD_PROFILE_UPDATE_INSTRUCTION_MESSAGE = {
-  ja: "クラスに参加するお子さまを追加する場合は、左サイドメニューの『お子様プロフィール』から変更できます。",
+  ja: "クラスに参加するお子さまを追加する場合は、左サイドメニューの『お子さまプロフィール』から変更できます。",
   en: "To add children who will join the class, please go to 'Children Profiles' in the left-hand side menu.",
 };
