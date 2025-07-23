@@ -47,9 +47,10 @@ const ClassDetailsCard = ({
         />
       )}
 
-      {bookedStatuses.includes(classDetails.status) && (
-        <InfoBanner info="If you need to cancel a class, please contact our staff promptly via Facebook." />
-      )}
+      {bookedStatuses.includes(classDetails.status) &&
+        !hasTimePassed(classEndTime) && (
+          <InfoBanner info="If you need to cancel a class, please contact our staff promptly via Facebook." />
+        )}
 
       <div className={styles.children}>
         <div className={styles.children__title}>
