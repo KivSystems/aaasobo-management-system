@@ -26,7 +26,7 @@ import {
   generatePasswordResetToken,
   getPasswordResetTokenByToken,
 } from "../services/passwordResetTokensService";
-import { saltRounds } from "../helper/commonUtils";
+import { hashPassword } from "../helper/commonUtils";
 import { Customer } from "@prisma/client";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
@@ -173,7 +173,7 @@ export const updatePasswordController = async (req: Request, res: Response) => {
       return res.sendStatus(410); // Token is expired. 410 Gone
     }
 
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await hashPassword(password);
 
     switch (userType) {
       case "admin":

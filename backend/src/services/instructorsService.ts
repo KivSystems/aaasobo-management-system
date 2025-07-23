@@ -1,7 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
-import bcrypt from "bcrypt";
-import { saltRounds } from "../helper/commonUtils";
+import { hashPassword } from "../helper/commonUtils";
 
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {
@@ -15,7 +14,7 @@ export const registerInstructor = async (data: {
   passcode: string;
   introductionURL: string;
 }) => {
-  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+  const hashedPassword = await hashPassword(data.password);
 
   await prisma.instructor.create({
     data: {
