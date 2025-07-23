@@ -126,17 +126,9 @@ export function extractPasswordResetValidationErrors(
   return errors;
 }
 
-export function extractCustomerProfileUpdateErrors(
+export function extractProfileUpdateErrors(
   validationErrors: ZodIssue[],
 ): LocalizedMessages {
-  const unexpectedError = validationErrors.some(
-    (error) => error.path[0] === "userType",
-  );
-
-  if (unexpectedError) {
-    return { errorMessage: UNEXPECTED_ERROR_MESSAGE };
-  }
-
   const errors: LocalizedMessages = {};
   validationErrors.forEach((err) => {
     if (err.path[0]) {

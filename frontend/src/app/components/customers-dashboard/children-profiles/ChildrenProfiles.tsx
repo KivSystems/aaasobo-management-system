@@ -2,334 +2,297 @@
 
 import styles from "./ChildrenProfiles.module.scss";
 import {
-  deleteChild,
-  editChild,
-  getChildrenByCustomerId,
-} from "@/app/helper/api/childrenApi";
-import {
   PlusIcon,
   UserCircleIcon as UserCircleSolid,
 } from "@heroicons/react/24/solid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import {
-  formatBirthdateToISO,
-  formatDateToISO,
-} from "@/app/helper/utils/dateUtils";
+import { formatBirthdateToISO } from "@/app/helper/utils/dateUtils";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import RedirectButton from "../../elements/buttons/redirectButton/RedirectButton";
-import Loading from "../../elements/loading/Loading";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useFormState } from "react-dom";
+import {
+  addChildProfileAction,
+  updateChildProfileAction,
+} from "@/app/actions/updateUser";
+import InputField from "../../elements/inputField/InputField";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
+import BirthdateInput from "../../features/registerForm/birthdateInput/BirthdateInput";
+import TextAreaInput from "../../elements/textAreaInput/TextAreaInput";
+import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
+import {
+  CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE,
+  CONFIRM_DELETE_CHILD_PROFILE_MESSAGE,
+} from "@/app/helper/messages/customerDashboard";
+import { deleteChildProfileAction } from "@/app/actions/deleteUser";
+import Modal from "../../elements/modal/Modal";
+import AddChildForm from "./AddChildForm";
 
 function ChildrenProfiles({
-  adminId,
   customerId,
+  childProfiles,
   isAdminAuthenticated,
-}: {
-  adminId?: number;
-  customerId: number;
-  isAdminAuthenticated?: boolean;
-}) {
-  const [children, setChildren] = useState<Child[] | undefined>([]);
-  const [latestChildDataToEdit, setLatestChildDataToEdit] = useState<
-    Child | undefined
-  >();
-  const [childToEdit, setChildToEdit] = useState<Child | undefined>();
+}: ChildrenProfilesProps) {
+  const [updateResult, updateAction] = useFormState(
+    updateChildProfileAction,
+    undefined,
+  );
+  const [addResult, addAction] = useFormState(addChildProfileAction, undefined);
+  const { localMessages, setLocalMessages, clearErrorMessage } =
+    useFormMessages<LocalizedMessages>();
+  const [isAddChildModalOpen, setIsAddChildModalOpen] = useState(false);
   const [editingChildId, setEditingChildId] = useState<number | null>(null);
+  const [editingSuccessChildId, setEditingSuccessChildId] = useState<
+    number | null
+  >(null);
+  const handleBirthdateChange = useCallback(() => {
+    clearErrorMessage("birthdate");
+  }, [clearErrorMessage]);
+  const { language } = useLanguage();
+  const isError = !!localMessages.errorMessage;
+  const isSuccess = !!localMessages.successMessage;
 
   useEffect(() => {
-    const fetchChildren = async () => {
-      try {
-        const childrenData = await getChildrenByCustomerId(customerId);
-        setChildren(childrenData);
-      } catch (error) {
-        console.error(error);
+    if (updateResult !== undefined) {
+      setLocalMessages(updateResult);
+      if (updateResult.successMessage) {
+        setEditingSuccessChildId(editingChildId);
+        setEditingChildId(null);
       }
-    };
-
-    fetchChildren();
-  }, [customerId]);
+    }
+  }, [updateResult]);
 
   useEffect(() => {
-    if (children && editingChildId !== null) {
-      const childDataToEdit = children.find(
-        (child) => child.id === editingChildId,
-      );
-      setLatestChildDataToEdit(childDataToEdit);
-      setChildToEdit(childDataToEdit);
-    }
-  }, [editingChildId, children]);
-
-  const handleEditClick = (childId: number) => {
-    setEditingChildId(childId);
-  };
-
-  const handleSaveClick = async () => {
-    if (!editingChildId || !childToEdit) return;
-
-    if (
-      childToEdit.name === latestChildDataToEdit?.name &&
-      childToEdit.birthdate === latestChildDataToEdit?.birthdate &&
-      childToEdit.personalInfo === latestChildDataToEdit?.personalInfo
-    ) {
-      return toast.info("No changes were made.");
-    }
-
-    let birthdateInISO = "";
-    if (childToEdit.birthdate) {
-      try {
-        birthdateInISO = formatDateToISO(childToEdit.birthdate);
-      } catch (error) {
-        console.error("Invalid date format:", error);
-        return toast.error("Invalid birthdate format.");
+    if (addResult !== undefined) {
+      setLocalMessages(addResult);
+      if (addResult.successMessage) {
+        toast.success(addResult.successMessage[language]);
+        setIsAddChildModalOpen(false);
+        clearErrorMessage("all");
       }
     }
-
-    const personalInfo = childToEdit.personalInfo ?? "";
-
-    try {
-      const data = await editChild(
-        editingChildId,
-        childToEdit.name,
-        birthdateInISO,
-        personalInfo,
-        customerId,
-      );
-      toast.success("Child profile updated successfully!");
-
-      setChildren((prevChildren) =>
-        prevChildren?.map((child) =>
-          child.id === editingChildId ? data.child : child,
-        ),
-      );
-
-      setEditingChildId(null);
-      setChildToEdit(undefined);
-      setLatestChildDataToEdit(undefined);
-    } catch (error) {
-      console.error("Failed to edit child data:", error);
-    }
-  };
-
-  const handleCancelClick = () => {
-    if (latestChildDataToEdit) {
-      setChildToEdit(latestChildDataToEdit);
-      setEditingChildId(null);
-    }
-  };
+  }, [addResult]);
 
   const handleDeleteClick = async (childId: number) => {
+    clearErrorMessage("all");
+    const hasOnlyOneChild = childProfiles.length === 1;
+
+    if (hasOnlyOneChild)
+      return alert(CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE[language]);
+
     const confirmed = window.confirm(
-      "Are you sure you want to delete this child's profile?",
+      CONFIRM_DELETE_CHILD_PROFILE_MESSAGE[language],
     );
     if (!confirmed) return;
 
-    try {
-      const deletedChildData = await deleteChild(childId);
-      setChildren((prevChildren) =>
-        prevChildren?.filter((child) => child.id !== childId),
-      );
+    const resultMessage = await deleteChildProfileAction(childId, customerId);
 
-      toast.success(deletedChildData.message);
-    } catch (error) {
-      console.error("Failed to delete the child profile:", error);
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("An unknown error occurred.");
-      }
+    if (resultMessage.successMessage) {
+      toast.success(resultMessage.successMessage[language]);
+    } else if (resultMessage.errorMessage) {
+      alert(resultMessage.errorMessage[language]);
     }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.addBtn}>
-        {isAdminAuthenticated ? (
-          <RedirectButton
-            linkURL={`/admins/${adminId}/customer-list/${customerId}/children-profiles/add-child`}
-            btnText="Add Child"
-            className="addBtn"
-            Icon={PlusIcon}
-          />
-        ) : (
-          <RedirectButton
-            linkURL={`children-profiles/add-child`}
-            btnText="Add Child"
-            className="addBtn"
-            Icon={PlusIcon}
-          />
-        )}
+        <ActionButton
+          btnText={language === "ja" ? "お子さまを追加" : "Add Child"}
+          className="addBtn"
+          Icon={PlusIcon}
+          onClick={(e) => {
+            e.preventDefault();
+            setEditingChildId(null);
+            clearErrorMessage("all");
+            setIsAddChildModalOpen(true);
+          }}
+        />
       </div>
-      {children ? (
-        <div className={styles.children}>
-          {children.map((child) => (
-            <div className={styles.childCard} key={child.id}>
-              <div className={styles.childCard__profile}>
-                {/* Child Name */}
-                <div className={styles.childName}>
-                  <div className={styles.childName__profileIconContainer}>
-                    <UserCircleSolid
-                      className={styles.childName__profileIcon}
+
+      <Modal
+        isOpen={isAddChildModalOpen}
+        onClose={() => setIsAddChildModalOpen(false)}
+        className="rebooking"
+      >
+        <AddChildForm
+          language={language}
+          action={addAction}
+          customerId={customerId}
+          localMessages={localMessages}
+          isAdminAuthenticated={isAdminAuthenticated}
+          isError={isError}
+          clearErrorMessage={clearErrorMessage}
+        />
+      </Modal>
+
+      <div className={styles.children}>
+        {childProfiles.map((child) => (
+          <form
+            className={styles.childCard}
+            key={child.id}
+            action={updateAction}
+          >
+            <div className={styles.childCard__profile}>
+              {/* Child Name */}
+              <div className={styles.childName}>
+                <div className={styles.childName__profileIconContainer}>
+                  <UserCircleSolid className={styles.childName__profileIcon} />
+                </div>
+
+                <label className={styles.childName__label}>
+                  <p className={styles.childName__text}>
+                    {language === "ja" ? "名前" : "Name"}
+                  </p>
+
+                  {editingChildId === child.id ? (
+                    <InputField
+                      name="name"
+                      type="text"
+                      placeholder={
+                        language === "ja"
+                          ? "お子さまのお名前(ローマ字で)"
+                          : "Child's name (in English)"
+                      }
+                      defaultValue={child.name}
+                      className={styles.childName__inputField}
+                      onChange={() => clearErrorMessage("name")}
+                      error={localMessages.name?.[language]}
                     />
-                  </div>
-
-                  <label className={styles.childName__label}>
-                    <p className={styles.childName__text}>Name</p>
-
-                    {editingChildId === child.id ? (
-                      <div className={styles.childName__inputWrapper}>
-                        <input
-                          className={`${styles.childName__inputField} ${editingChildId === child.id ? styles.editable : ""}`}
-                          type="text"
-                          value={
-                            childToEdit?.id === child.id
-                              ? childToEdit.name
-                              : child.name
-                          }
-                          onChange={(e) => {
-                            if (editingChildId === child.id) {
-                              setChildToEdit((prev) =>
-                                prev
-                                  ? { ...prev, name: e.target.value }
-                                  : undefined,
-                              );
-                            }
-                          }}
-                          required
-                        />
-                      </div>
-                    ) : (
-                      <div className={styles.childName__name}>
-                        {childToEdit && childToEdit.id === child.id
-                          ? childToEdit.name
-                          : child.name}
-                      </div>
-                    )}
-                  </label>
-                </div>
-
-                {/* Birthdate */}
-                <div className={styles.birthdate}>
-                  <label className={styles.birthdate__label}>
-                    <p className={styles.birthdate__text}>Birthdate</p>
-
-                    {editingChildId === child.id ? (
-                      <div className={styles.birthdate__inputWrapper}>
-                        <input
-                          className={`${styles.birthdate__inputField} ${editingChildId === child.id ? styles.editable : ""}`}
-                          type="date"
-                          value={
-                            childToEdit?.id === child.id
-                              ? formatBirthdateToISO(childToEdit.birthdate)
-                              : formatBirthdateToISO(child.birthdate)
-                          }
-                          onChange={(e) => {
-                            if (editingChildId === child.id) {
-                              const newBirthdate = e.target.value;
-                              setChildToEdit((prev) =>
-                                prev
-                                  ? { ...prev, birthdate: newBirthdate }
-                                  : undefined,
-                              );
-                            }
-                          }}
-                          required
-                        />
-                      </div>
-                    ) : (
-                      <div className={styles.profileInfo}>
-                        <div className={styles.profileInfo__data}>
-                          {childToEdit && childToEdit.id === child.id
-                            ? formatBirthdateToISO(childToEdit.birthdate)
-                            : formatBirthdateToISO(child.birthdate)}
-                        </div>
-                      </div>
-                    )}
-                  </label>
-                </div>
-
-                {/* Personal Info */}
-                <div className={styles.personalInfo}>
-                  <label className={styles.personalInfo__label}>
-                    <p className={styles.personalInfo__text}>Notes</p>
-
-                    {editingChildId === child.id ? (
-                      <div className={styles.personalInfo__inputWrapper}>
-                        <textarea
-                          className={`${styles.personalInfo__inputField} ${styles.textarea} ${editingChildId === child.id ? styles.editable : ""}`}
-                          value={
-                            childToEdit?.id === child.id
-                              ? childToEdit.personalInfo
-                              : child.personalInfo
-                          }
-                          onChange={(e) => {
-                            if (editingChildId === child.id) {
-                              setChildToEdit((prev) =>
-                                prev
-                                  ? { ...prev, personalInfo: e.target.value }
-                                  : undefined,
-                              );
-                            }
-                          }}
-                          required
-                        />
-                      </div>
-                    ) : (
-                      <div className={styles.profileInfo}>
-                        <div className={styles.profileInfo__data}>
-                          {childToEdit && childToEdit.id === child.id
-                            ? childToEdit.personalInfo
-                            : child.personalInfo}
-                        </div>
-                      </div>
-                    )}
-                  </label>
-                </div>
+                  ) : (
+                    <div className={styles.childName__name}>{child.name}</div>
+                  )}
+                </label>
               </div>
 
-              {editingChildId === child.id ? (
-                <div className={styles.childCard__buttons}>
-                  <ActionButton
-                    className="cancelEditingChild"
-                    btnText="Cancel"
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleCancelClick();
-                    }}
-                  />
+              {/* Birthdate */}
+              <div className={styles.birthdate}>
+                <label className={styles.birthdate__label}>
+                  <p className={styles.birthdate__text}>
+                    {language === "ja" ? "生年月日" : "Date of birth"}
+                  </p>
 
-                  <ActionButton
-                    className="saveChild"
-                    btnText="Save"
-                    type="button"
-                    onClick={() => {
-                      handleSaveClick();
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className={styles.childCard__buttons}>
-                  <ActionButton
-                    className="deleteChild"
-                    btnText="Delete"
-                    onClick={() => handleDeleteClick(child.id)}
-                    disabled={editingChildId !== null}
-                  />
-                  <ActionButton
-                    className="editChild"
-                    btnText="Edit"
-                    onClick={() => handleEditClick(child.id)}
-                    disabled={editingChildId !== null}
-                  />
-                </div>
+                  {editingChildId === child.id ? (
+                    <BirthdateInput
+                      onValidDateChange={handleBirthdateChange}
+                      defaultBirthdate={formatBirthdateToISO(child.birthdate)}
+                      error={localMessages.birthdate?.[language]}
+                      language={language}
+                      useFormAction={true}
+                    />
+                  ) : (
+                    <div className={styles.profileInfo}>
+                      <div className={styles.profileInfo__data}>
+                        {formatBirthdateToISO(child.birthdate)}
+                      </div>
+                    </div>
+                  )}
+                </label>
+              </div>
+
+              {/* Personal Info */}
+              <div className={styles.personalInfo}>
+                <label className={styles.personalInfo__label}>
+                  <p className={styles.personalInfo__text}>
+                    {language === "ja" ? "プロフィール" : "Profile"}
+                  </p>
+
+                  {editingChildId === child.id ? (
+                    <TextAreaInput
+                      defaultValue={child.personalInfo}
+                      placeholder={
+                        language === "ja"
+                          ? "例. 5 years old, Beginner, Car, Peppapig"
+                          : "e.g., 5 years old, Beginner, Car, Peppapig"
+                      }
+                      error={localMessages.personalInfo?.[language]}
+                      onChange={(e) => {
+                        clearErrorMessage("personalInfo");
+                      }}
+                      required
+                      language={language}
+                      name="personalInfo"
+                      className="childProfile"
+                    />
+                  ) : (
+                    <div className={styles.profileInfo}>
+                      <div className={styles.profileInfo__data}>
+                        {child.personalInfo}
+                      </div>
+                    </div>
+                  )}
+                </label>
+              </div>
+            </div>
+
+            <div className={styles.messageWrapper}>
+              {((isError && child.id === editingChildId) ||
+                (isSuccess && child.id === editingSuccessChildId)) && (
+                <FormValidationMessage
+                  type={isError ? "error" : "success"}
+                  message={
+                    isError
+                      ? localMessages.errorMessage[language]
+                      : localMessages.successMessage[language]
+                  }
+                />
               )}
             </div>
-          ))}
-        </div>
-      ) : (
-        <Loading />
-      )}
+
+            {editingChildId === child.id ? (
+              <div className={styles.childCard__buttons}>
+                <ActionButton
+                  className="cancelEditingCustomer"
+                  btnText={language === "ja" ? "キャンセル" : "Cancel"}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    clearErrorMessage("all");
+                    setEditingChildId(null);
+                  }}
+                />
+
+                <ActionButton
+                  className="saveCustomer"
+                  btnText={language === "ja" ? "変更を保存" : "Save"}
+                  type="submit"
+                />
+              </div>
+            ) : (
+              <div className={styles.childCard__buttons}>
+                <ActionButton
+                  className="deleteChild"
+                  btnText={language === "ja" ? "削除" : "Delete"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeleteClick(child.id);
+                  }}
+                  disabled={editingChildId !== null}
+                />
+                <ActionButton
+                  className="editChild"
+                  btnText={language === "ja" ? "編集" : "Edit"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    clearErrorMessage("all");
+                    setEditingChildId(child.id);
+                    setEditingSuccessChildId(null);
+                  }}
+                  disabled={editingChildId !== null}
+                />
+              </div>
+            )}
+
+            {/* Hidden fields to include in form submission */}
+            {/* For security, pass the customer ID through a hidden input only if the admin is authenticated */}
+            {isAdminAuthenticated && (
+              <input type="hidden" name="customerId" value={customerId ?? ""} />
+            )}
+            <input type="hidden" name="id" value={child.id ?? ""} />
+          </form>
+        ))}
+      </div>
     </div>
   );
 }

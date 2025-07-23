@@ -1,6 +1,9 @@
 import CustomerDashboardClient from "./CustomerDashboardClient";
 import ClassCalendar from "@/app/components/customers-dashboard/classes/ClassCalendar";
-import { getCustomerById } from "@/app/helper/api/customersApi";
+import {
+  getChildProfiles,
+  getCustomerById,
+} from "@/app/helper/api/customersApi";
 
 export default async function CustomerDashboardForAdmin({
   adminId,
@@ -10,6 +13,7 @@ export default async function CustomerDashboardForAdmin({
   customerId: number;
 }) {
   const customerProfile = await getCustomerById(customerId);
+  const childProfiles = await getChildProfiles(customerId);
 
   return (
     <CustomerDashboardClient
@@ -19,6 +23,7 @@ export default async function CustomerDashboardForAdmin({
         <ClassCalendar customerId={customerId} isAdminAuthenticated={true} />
       }
       customerProfile={customerProfile}
+      childProfiles={childProfiles}
     />
   );
 }

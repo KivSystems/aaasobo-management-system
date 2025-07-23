@@ -71,7 +71,7 @@ export default function CancelClassesModal({
               className="cancelClasses"
               headItems={
                 language === "ja"
-                  ? ["", "日付", "時間", "インストラクター", "　お子様"]
+                  ? ["", "日付", "時間", "インストラクター", "　お子さま"]
                   : ["", "Date", "Time", "Instructor", "Children"]
               }
             >

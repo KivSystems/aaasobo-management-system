@@ -32,7 +32,7 @@
 }
 
 // Individual styles for each class
-.customerProfile {
+.profile {
   &.ja,
   &.en {
     .breadcrumb__item {
@@ -40,14 +40,6 @@
     }
   }
 
-  &.ja {
-    .breadcrumb__item {
-      font-weight: 600;
-    }
-  }
-}
-
-.rebookingPage {
   &.ja {
     .breadcrumb__item {
       font-weight: 600;

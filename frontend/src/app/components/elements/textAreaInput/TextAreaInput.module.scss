@@ -41,3 +41,21 @@
     outline: none;
   }
 }
+
+// Individual styles for each class
+.childProfile {
+  margin-bottom: unset;
+
+  .label {
+    margin-bottom: unset;
+  }
+  .inputField {
+    height: 6rem;
+  }
+}
+
+.addChild {
+  .inputField {
+    height: 8rem;
+  }
+}
