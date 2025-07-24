@@ -49,6 +49,7 @@ async function insertInstructorAvailabilities() {
       { startAt: "2025-06-05T07:00:00Z", instructorId: helen.id },
       { startAt: "2025-06-06T07:00:00Z", instructorId: helen.id },
       { startAt: "2025-06-07T07:00:00Z", instructorId: helen.id },
+      { startAt: "2025-06-08T07:00:00Z", instructorId: helen.id },
 
       // { startAt: "2025-02-03T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
       // { startAt: "2025-02-03T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
@@ -194,7 +195,7 @@ async function insertInstructorAvailabilities() {
     "2025-07-11T07:00:00Z",
     "2025-07-18T07:00:00Z",
     "2025-07-25T07:00:00Z",
-    "2025-08-01T07:00:00Z",
+    // "2025-08-01T07:00:00Z",
     "2025-08-08T07:00:00Z",
     "2025-08-15T07:00:00Z",
     "2025-08-22T07:00:00Z",
@@ -210,6 +211,23 @@ async function insertInstructorAvailabilities() {
     "2025-08-16T00:00:00Z",
     "2025-08-23T00:00:00Z",
     "2025-08-30T00:00:00Z",
+  ]);
+
+  await insertAvailabilities(helen.id, "2025-06-08T07:00:00Z", [
+    "2025-08-01T06:00:00Z",
+    "2025-08-01T06:30:00Z",
+    "2025-08-01T07:00:00Z",
+    "2025-08-01T07:30:00Z",
+    "2025-08-01T08:00:00Z",
+    "2025-08-01T08:30:00Z",
+    "2025-08-01T09:00:00Z",
+    "2025-08-01T09:30:00Z",
+    "2025-08-01T10:00:00Z",
+    "2025-08-01T10:30:00Z",
+    "2025-08-01T11:00:00Z",
+    "2025-08-01T11:30:00Z",
+    "2025-08-01T12:00:00Z",
+    "2025-08-01T12:30:00Z",
   ]);
 
   // await insertAvailabilities(helen.id, "2025-02-03T07:00:00Z", [

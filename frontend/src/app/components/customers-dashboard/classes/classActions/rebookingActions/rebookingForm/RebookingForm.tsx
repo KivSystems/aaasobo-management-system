@@ -28,10 +28,8 @@ export default function RebookingForm({
     "instructor" | "dateTime" | null
   >(null);
   const [classToRebook, setClassToRebook] = useState<number | null>(null);
-  const [instructorToRebook, setInstructorToRebook] = useState<{
-    id: number;
-    name: string;
-  } | null>(null);
+  const [instructorToRebook, setInstructorToRebook] =
+    useState<InstructorRebookingProfile | null>(null);
   const [dateTimeToRebook, setDateTimeToRebook] = useState<string | null>(null);
   const [rebookableClassesNumber, setRebookableClassesNumber] =
     useState<number>(0);

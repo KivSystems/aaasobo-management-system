@@ -1,0 +1,54 @@
+@import "../../../variables.module.scss";
+
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepOne {
+  margin-bottom: 5rem;
+}
+
+.stepContainer {
+  display: flex;
+  align-items: center;
+}
+
+.stepCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+
+  &--active {
+    background-color: $blue-primary;
+    color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  &--inactive {
+    background-color: $gray-background;
+    color: #ffffff;
+  }
+}
+
+.stepLineWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem; 
+}
+
+.stepLine {
+  height: 0.2rem;
+  background-color: $gray-background;
+  flex-grow: 1;
+  border-radius: 9999px;
+}

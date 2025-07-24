@@ -32,8 +32,8 @@ export default function RebookableInstructorsList({
     return [];
   }, [rebookingOption, instructorAvailabilities, dateTimeToRebook]);
 
-  const selectInstructor = ({ id, name }: { id: number; name: string }) => {
-    setInstructorToRebook({ id, name });
+  const selectInstructor = (instructor: InstructorRebookingProfile) => {
+    setInstructorToRebook(instructor);
     setRebookingStep(nextRebookingStep);
   };
 
@@ -63,12 +63,7 @@ export default function RebookableInstructorsList({
                 <ActionButton
                   btnText={language === "ja" ? "選択" : "Select"}
                   className="rebookClass"
-                  onClick={() =>
-                    selectInstructor({
-                      id: instructor.id,
-                      name: instructor.name,
-                    })
-                  }
+                  onClick={() => selectInstructor(instructor)}
                 />
               ) : (
                 <h5>

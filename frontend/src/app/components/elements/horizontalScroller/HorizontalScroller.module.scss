@@ -1,0 +1,49 @@
+/* Non-scrollable wrapper for positioning the arrows */
+.horizontalScroller {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.7rem;
+
+  &__arrowLeft,
+  &__arrowRight {
+    width: 45px;
+    height: 45px;
+    padding: 8px;
+    stroke-width: 2px;
+    color: rgba(255, 255, 255, 0.7);
+
+    position: absolute; 
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(#040219CC, 0.3);
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10; 
+
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(#040219CC, 0.5);
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  &__arrowLeft {
+    left: 0;
+  }
+
+  &__arrowRight {
+    right: 0;
+  }
+
+  &__content {
+    height: 100%;
+    width: 100%;
+    padding-bottom: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+  }
+}
