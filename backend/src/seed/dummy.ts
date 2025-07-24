@@ -1042,6 +1042,129 @@ async function insertRecurringClasses() {
   // });
 }
 
+async function insertInstructorSchedules() {
+  const helen = await getInstructor("Helen");
+  const elian = await getInstructor("Elian");
+
+  // Helen's current schedule (effective from 2024-08-01)
+  const helenSchedule = await prisma.instructorSchedule.create({
+    data: {
+      instructorId: helen.id,
+      effectiveFrom: new Date("2024-08-01T00:00:00Z"),
+      effectiveTo: null, // Current schedule
+    },
+  });
+
+  // Helen's weekly slots
+  await prisma.instructorSlot.createMany({
+    data: [
+      // Monday (1)
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T07:00:00Z"),
+      },
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T07:30:00Z"),
+      },
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T08:00:00Z"),
+      },
+      // Tuesday (2)
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 2,
+        startTime: new Date("1970-01-01T07:00:00Z"),
+      },
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 2,
+        startTime: new Date("1970-01-01T07:30:00Z"),
+      },
+      // Wednesday (3)
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T07:00:00Z"),
+      },
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T07:30:00Z"),
+      },
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T08:00:00Z"),
+      },
+      // Thursday (4)
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 4,
+        startTime: new Date("1970-01-01T07:00:00Z"),
+      },
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 4,
+        startTime: new Date("1970-01-01T07:30:00Z"),
+      },
+      // Friday (5)
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 5,
+        startTime: new Date("1970-01-01T07:00:00Z"),
+      },
+      {
+        scheduleId: helenSchedule.id,
+        weekday: 5,
+        startTime: new Date("1970-01-01T07:30:00Z"),
+      },
+    ],
+  });
+
+  // Elian's current schedule
+  const elianSchedule = await prisma.instructorSchedule.create({
+    data: {
+      instructorId: elian.id,
+      effectiveFrom: new Date("2024-08-01T00:00:00Z"),
+      effectiveTo: null,
+    },
+  });
+
+  // Elian's weekly slots
+  await prisma.instructorSlot.createMany({
+    data: [
+      // Monday (1)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T07:00:00Z"),
+      },
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T07:30:00Z"),
+      },
+      // Tuesday (2)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 2,
+        startTime: new Date("1970-01-01T07:00:00Z"),
+      },
+      // Wednesday (3)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T07:00:00Z"),
+      },
+    ],
+  });
+}
+
 async function insertInstructorUnavailabilities() {
   const helen = await getInstructor("Helen");
   const elian = await getInstructor("Elian");
@@ -1785,19 +1908,21 @@ async function main() {
     await deleteAll("class");
     await deleteAll("recurringClass");
     await deleteAll("instructorAvailability");
+    await deleteAll("instructorSlot");
 
     // Dependent on the below
     await deleteAll("children");
     await deleteAll("subscription");
     await deleteAll("instructorRecurringAvailability");
+    await deleteAll("instructorSchedule");
     await deleteAll("schedule");
+    await deleteAll("instructorUnavailability");
 
     // Independent
     await deleteAll("admins");
     await deleteAll("instructor");
     await deleteAll("customer");
     await deleteAll("plan");
-    await deleteAll("instructorUnavailability");
     await deleteAll("event");
   }
 
@@ -1811,6 +1936,7 @@ async function main() {
 
     // Dependant on the above
     await insertInstructorAvailabilities();
+    await insertInstructorSchedules();
     await insertSubscriptions();
     await insertChildren();
     await insertSchedules();
