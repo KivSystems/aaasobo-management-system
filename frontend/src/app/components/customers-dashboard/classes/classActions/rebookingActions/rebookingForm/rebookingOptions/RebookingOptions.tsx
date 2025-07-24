@@ -11,8 +11,8 @@ export default function RebookingOptions({
 }: RebookableOptionsProps) {
   return (
     <div className={styles.rebookingOptions}>
-      <div className={styles.rebookingOptions__options}>
-        <div>
+      <div className={styles.rebookingOptions__optionsContainer}>
+        <div className={styles.rebookingOptions__option}>
           <Image
             src={"/images/fa-solid_chalkboard-teacher.svg"}
             alt="chalkboard-teacher"
@@ -32,7 +32,7 @@ export default function RebookingOptions({
           />
         </div>
 
-        <div>
+        <div className={styles.rebookingOptions__option}>
           <Image
             src={"/images/fluent-mdl2_date-time.svg"}
             alt="chalkboard-teacher"
