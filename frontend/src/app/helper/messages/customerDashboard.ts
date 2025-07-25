@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL, LINE_QR_CODE_URL } from "../data/contacts";
+
 export const FAILED_TO_FETCH_REBOOKABLE_CLASSES =
   "We couldn't load your available classes to rebook. Please refresh the page or try again later. / 振替予約可能クラスの読み込みに失敗しました。ページを再読み込みするか、しばらくしてからもう一度お試しください。";
 
@@ -38,13 +40,13 @@ export const SELECTED_CLASSES_CANCELLATION_SUCCESS = {
 };
 
 export const FAILED_TO_CANCEL_INVALID_CLASSES = {
-  ja: "無効なクラスIDが含まれていたため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: `無効なクラスIDが含まれていたため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は ${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）で連絡ください。`,
+  en: `The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
 };
 
 export const FAILED_TO_CANCEL_CLASSES = {
-  ja: "選択したクラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "Failed to cancel the selected classes. Please try again after a short while. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: `選択したクラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は ${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でご連絡ください。`,
+  en: `Failed to cancel the selected classes. Please try again after a short while. If the issue persists, contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
 };
 
 export const NO_CANCELABLE_CLASSES_MESSAGE = {
@@ -84,8 +86,8 @@ export const NO_CLASS_DETAILS = {
 };
 
 export const CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY = {
-  ja: "クラス当日以降のキャンセルは承っておりません。当日キャンセルをご希望の方は、contact@aaasobo.org までご連絡ください。",
-  en: "Same-day or later cancellations aren't available. Please contact contact@aaasobo.org if needed.",
+  ja: `クラス当日以降のキャンセルは承っておりません。当日キャンセルをご希望の方は、${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でご連絡ください。`,
+  en: `Same-day or later cancellations aren't available. Please contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}) if needed.`,
 };
 
 export const CANCEL_CLASS_CONFIRM_MESSAGE = {
@@ -99,13 +101,13 @@ export const CLASS_CANCELLATION_SUCCESS = {
 };
 
 export const FAILED_TO_CANCEL_INVALID_CLASS = {
-  ja: "クラスIDが無効だったため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: `クラスIDが無効だったため、キャンセルに失敗しました。しばらくしてから再度お試しください。解決しない場合は ${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でご連絡ください。`,
+  en: `The cancellation failed due to an invalid class ID. Please try again after some time. If the issue persists, contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
 };
 
 export const FAILED_TO_CANCEL_CLASS = {
-  ja: "クラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "Failed to cancel the class. Please try again after a short while. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: `クラスのキャンセルに失敗しました。お手数ですが、しばらくしてから再度お試しください。解決しない場合は ${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でご連絡ください。`,
+  en: `Failed to cancel the class. Please try again after a short while. If the issue persists, contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
 };
 
 export const CANCELED_BY_INSTRUCTOR_NOTICE = {
@@ -125,8 +127,8 @@ export const NO_CHANGES_MADE_MESSAGE = {
 };
 
 export const PROFILE_UPDATE_EMAIL_VERIFICATION_FAILED_MESSAGE = {
-  ja: "新しいメールアドレスへ認証リンクを送信できなかったため、プロフィールを更新できませんでした。メールアドレスをご確認のうえ、再度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "We couldn't update your profile because we were unable to send a verification link to your new email address. Please check your email address and try again. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: "新しいメールアドレスへ認証リンクを送信できなかったため、プロフィールを更新できませんでした。メールアドレスをご確認のうえ、再度お試しください。解決しない場合はスタッフまでご連絡ください。",
+  en: "We couldn't update your profile because we were unable to send a verification link to your new email address. Please check your email address and try again. If the issue persists, contact us.",
 };
 
 export const PROFILE_UPDATED_VERIFICATION_EMAIL_SENT = {
@@ -140,8 +142,8 @@ export const PROFILE_ADD_SUCCESS_MESSAGE = {
 };
 
 export const PROFILE_ADD_FAILED_MESSAGE = {
-  ja: "新しいお子さまのプロフィールを追加できませんでした。時間をおいて、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "We couldn't add a new child profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: "新しいお子さまのプロフィールを追加できませんでした。時間をおいて、もう一度お試しください。解決しない場合はスタッフまでご連絡ください。",
+  en: "We couldn't add a new child profile. Please wait a moment and try again. If the issue persists, contact us.",
 };
 
 export const PROFILE_UPDATE_SUCCESS_MESSAGE = {
@@ -150,8 +152,8 @@ export const PROFILE_UPDATE_SUCCESS_MESSAGE = {
 };
 
 export const PROFILE_UPDATE_FAILED_MESSAGE = {
-  ja: "プロフィールを更新できませんでした。時間をおいて、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "We couldn't update the profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: "プロフィールを更新できませんでした。時間をおいて、もう一度お試しください。解決しない場合はスタッフまでご連絡ください。",
+  en: "We couldn't update the profile. Please wait a moment and try again. If the issue persists, contact us.",
 };
 
 // Rebooking modal
@@ -190,12 +192,12 @@ export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
     en: "Rebooking is available until 3 hours before the class starts. The deadline has passed, so please refresh the page and choose another class.",
   },
   "no subscription": {
-    ja: "ご契約情報が確認できなかったため、振替予約を完了できませんでした。ご不明な点がございましたら、contact@aaasobo.org までお気軽にお問い合わせください。",
-    en: "We couldn't complete the rebooking as your subscription couldn't be verified. If you have any questions, feel free to contact us at contact@aaasobo.org.",
+    ja: `ご契約情報が確認できなかったため、振替予約を完了できませんでした。ご不明な点がございましたら、${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でお気軽にお問い合わせください。`,
+    en: `We couldn't complete the rebooking as your subscription couldn't be verified. If you have any questions, feel free to contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
   },
   "outdated subscription": {
-    ja: "ご契約期間が終了しているため、振替予約できません。ご不明な点がございましたら、contact@aaasobo.org までお気軽にお問い合わせください。",
-    en: "We cannot complete the rebooking because your subscription period has ended. If you have any questions, feel free to contact us at contact@aaasobo.org.",
+    ja: `ご契約期間が終了しているため、振替予約できません。ご不明な点がございましたら、${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でお気軽にお問い合わせください。`,
+    en: `We cannot complete the rebooking because your subscription period has ended. If you have any questions, feel free to contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
   },
   "instructor conflict": {
     ja: "申し訳ございませんが、選択された時間はインストラクターがすでに予約されています。お手数ですが、ページを更新して別の時間かインストラクターをお選びください。",
@@ -206,8 +208,8 @@ export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
     en: "The selected time is no longer available due to a change in the instructor's schedule. Please refresh the page and choose a different time or instructor.",
   },
   default: {
-    ja: "クラスの振替予約中にエラーが発生しました。しばらく時間をおいてから、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-    en: "An error occurred while rebooking the class. Please wait a moment and try again. If the issue persists, feel free to contact us at contact@aaasobo.org.",
+    ja: `クラスの振替予約中にエラーが発生しました。しばらく時間をおいてから、もう一度お試しください。解決しない場合は ${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でご連絡ください。`,
+    en: `An error occurred while rebooking the class. Please wait a moment and try again. If the issue persists, feel free to contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
   },
 };
 
@@ -233,8 +235,8 @@ export const PROFILE_DELETE_SUCCESS_MESSAGE = {
 };
 
 export const PROFILE_DELETE_FAILED_MESSAGE = {
-  ja: "プロフィールを削除できませんでした。時間をおいて、もう一度お試しください。解決しない場合は contact@aaasobo.org までご連絡ください。",
-  en: "We couldn't delete the profile. Please wait a moment and try again. If the issue persists, contact us at contact@aaasobo.org.",
+  ja: `プロフィールを削除できませんでした。時間をおいて、もう一度お試しください。解決しない場合は ${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）で連絡ください。`,
+  en: `We couldn't delete the profile. Please wait a moment and try again. If the issue persists, contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
 };
 
 export const PROFILE_DELETE_BLOCKED_BY_PAST_CLASS_MESSAGE = {
@@ -264,8 +266,8 @@ export const FREE_TRIAL_ALREADY_REMOVED_MESSAGE = {
 };
 
 export const FREE_TRIAL_REMOVE_ERROR_MESSAGE = {
-  ja: "無料トライアルクラスの削除に失敗しました。もう一度お試しください。解決しない場合は、contact@aaasobo.orgまでお問い合わせください。",
-  en: "Failed to remove the free trial class. Please try again. If the problem persists, contact us at contact@aaasobo.org.",
+  ja: `無料トライアルクラスの削除に失敗しました。もう一度お試しください。解決しない場合は、${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でお問い合わせください。`,
+  en: `Failed to remove the free trial class. Please try again. If the problem persists, contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
 };
 
 export const WELCOME_MODAL_TITLE = {

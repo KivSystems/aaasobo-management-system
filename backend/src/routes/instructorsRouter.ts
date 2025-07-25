@@ -25,6 +25,11 @@ import {
 } from "../../src/controllers/instructorsUnavailabilityController";
 import { getInstructorClasses } from "../../src/controllers/classesController";
 import { getCalendarAvailabilitiesController } from "../../src/controllers/instructorsAvailabilityController";
+import {
+  getInstructorSchedulesController,
+  getScheduleController,
+  createInstructorScheduleController,
+} from "../../src/controllers/instructorScheduleController";
 
 export const instructorsRouter = express.Router();
 
@@ -85,3 +90,21 @@ instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
 instructorsRouter.get("/:id/calendar-classes", parseId, (req, res) => {
   getCalendarClassesController(req as RequestWithId, res);
 });
+
+// Instructor schedule system routes (WIP)
+instructorsRouter.get("/:id/schedules", parseId, (req, res) => {
+  getInstructorSchedulesController(req as RequestWithId, res);
+});
+
+instructorsRouter.get("/:id/schedules/:scheduleId", parseId, (req, res) => {
+  getScheduleController(req as RequestWithId, res);
+});
+
+instructorsRouter.post(
+  "/:id/schedules",
+  parseId,
+  verifyAuthentication,
+  (req, res) => {
+    createInstructorScheduleController(req as RequestWithId, res);
+  },
+);

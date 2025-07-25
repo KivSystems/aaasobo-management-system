@@ -2,8 +2,12 @@
 
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import styles from "./RebookableTimeSlots.module.scss";
-import { formatDateTime } from "@/app/helper/utils/dateUtils";
 import { useMemo } from "react";
+import { format } from "date-fns";
+import { ja, enUS } from "date-fns/locale";
+import HorizontalScroller from "@/app/components/elements/horizontalScroller/HorizontalScroller";
+import StepIndicator from "@/app/components/elements/stepIndicator/StepIndicator";
+import ClassInstructor from "@/app/components/features/classDetail/classInstructor/ClassInstructor";
 
 export default function RebookableTimeSlots({
   setDateTimeToRebook,
@@ -18,6 +22,8 @@ export default function RebookableTimeSlots({
 
   const nextRebookingStep =
     rebookingOption === "instructor" ? "confirmRebooking" : "selectInstructor";
+
+  const currentStep: number = rebookingOption === "instructor" ? 2 : 1;
 
   const rebookableTimeSlots = useMemo(() => {
     if (rebookingOption === "instructor") {
@@ -42,6 +48,21 @@ export default function RebookableTimeSlots({
     setRebookingStep(nextRebookingStep);
   };
 
+  const groupSlotsByDay = (slots: string[]) => {
+    const grouped: Record<string, string[]> = {};
+
+    slots.forEach((slot) => {
+      const date = format(new Date(slot), "yyyy-MM-dd");
+      if (!grouped[date]) {
+        grouped[date] = [];
+      }
+      grouped[date].push(slot);
+    });
+    return grouped;
+  };
+  const groupedSlots = groupSlotsByDay(rebookableTimeSlots);
+  const weekDates = Object.keys(groupedSlots);
+
   return (
     <div className={styles.rebookableSlots}>
       {instructorAvailabilities.length === 0 ? (
@@ -52,27 +73,66 @@ export default function RebookableTimeSlots({
         </p>
       ) : (
         <>
+          <StepIndicator currentStep={currentStep} totalSteps={3} />
+
           {rebookingOption === "instructor" && (
-            <div className={styles.rebookableSlots__instructor}>
-              {instructorToRebook.name}
-            </div>
+            <ClassInstructor
+              classStatus={"freeTrial"}
+              instructorIcon={instructorToRebook.icon}
+              instructorNickname={instructorToRebook.nickname}
+              width={100}
+              className="rebookingModal"
+            />
           )}
 
-          <div className={styles.rebookableSlots__list}>
-            {rebookableTimeSlots?.map((s, i) => {
-              return (
-                <ActionButton
-                  key={i}
-                  btnText={formatDateTime(
-                    new Date(s),
-                    language === "ja" ? "ja-JP" : "en-US",
-                  )}
-                  className="bookBtn"
-                  onClick={() => selectDateTime(s)}
-                />
-              );
-            })}
-          </div>
+          <HorizontalScroller>
+            <div>
+              <div className={styles.headerRow}>
+                {weekDates.map((date) => {
+                  const locale = language === "ja" ? ja : enUS;
+                  const formattedDay = format(
+                    new Date(`${date}T00:00:00`),
+                    "EEE",
+                    {
+                      locale,
+                    },
+                  );
+                  const formattedDate =
+                    language === "ja"
+                      ? format(new Date(`${date}T00:00:00`), "M/d", { locale })
+                      : format(new Date(`${date}T00:00:00`), "MMM d", {
+                          locale,
+                        });
+
+                  return (
+                    <div key={date} className={styles.dayHeader}>
+                      <div className={styles.dayHeader__date}>
+                        {formattedDate}
+                      </div>
+                      <div className={styles.dayHeader__day}>
+                        {formattedDay}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className={styles.slotRow}>
+                {weekDates.map((date) => (
+                  <div key={date} className={styles.dayColumn}>
+                    {groupedSlots[date].map((slot) => (
+                      <ActionButton
+                        key={slot}
+                        btnText={format(new Date(slot), "H:mm")}
+                        className="timeSlotBtn"
+                        onClick={() => selectDateTime(slot)}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </HorizontalScroller>
         </>
       )}
 
