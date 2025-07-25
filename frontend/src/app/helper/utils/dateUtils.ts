@@ -75,12 +75,41 @@ export function getWeekday(date: Date, timeZone: string) {
   }).format(date);
 }
 
+// Function to check if the current date & time in a particular time zone is past the target class end time
+export const isPastClassEndTime = (
+  classDateTime: string,
+  timeZone: string,
+): boolean => {
+  try {
+    // Convert class start time to zoned time
+    const classDateTimeInZone = toZonedTime(classDateTime, timeZone);
+
+    // Calculate the end time of the class
+    const classEndTime = getEndTime(classDateTimeInZone);
+
+    // Get the current date & time in the specified time zone
+    const currentDateTimeInZone = toZonedTime(new Date(), timeZone);
+
+    // Check if the current date & time is after the class end time
+    return isAfter(currentDateTimeInZone, classEndTime);
+  } catch (error) {
+    console.error("Error in isPastClassEndTime:", error);
+    return false;
+  }
+};
+
 // Converts a date string to the format YYYY-MM-DD.
 export const formatBirthdateToISO = (dateString?: string) => {
   if (!dateString) return "";
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return "";
   return date.toISOString().split("T")[0];
+};
+
+// e.g., Monday, Tuesday ...
+export const getDayOfWeek = (date: Date, locale: string = "en-US"): string => {
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: "long" });
+  return formatter.format(date);
 };
 
 // e.g., "en-US": MAY, JAN ..., "ja-JP": 5, 6 ...
