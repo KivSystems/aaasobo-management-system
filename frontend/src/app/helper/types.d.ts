@@ -518,10 +518,7 @@ type RebookableTimeSlotsProps = {
 };
 
 type ConfirmRebookingProps = {
-  instructorToRebook: {
-    id: number;
-    name: string;
-  };
+  instructorToRebook: InstructorRebookingProfile;
   dateTimeToRebook: string;
   rebookingOption: "instructor" | "dateTime";
   setRebookingStep: (step: RebookingSteps) => void;

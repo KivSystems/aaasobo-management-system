@@ -2,7 +2,10 @@
 
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import styles from "./ConfirmRebooking.module.scss";
-import { formatYearDateTime } from "@/app/helper/utils/dateUtils";
+import {
+  formatTimeWithAddedMinutes,
+  formatYearDateTime,
+} from "@/app/helper/utils/dateUtils";
 import { useEffect, useState } from "react";
 import {
   CONFIRM_BOOKING_WITH_CONFLICT_MESSAGE,
@@ -17,6 +20,9 @@ import {
   checkDoubleBooking,
 } from "@/app/helper/api/classesApi";
 import { rebookClassWithValidation } from "@/app/actions/rebooking";
+import ClassInstructor from "@/app/components/features/classDetail/classInstructor/ClassInstructor";
+import { CalendarDaysIcon, UsersIcon } from "@heroicons/react/24/solid";
+import StepIndicator from "@/app/components/elements/stepIndicator/StepIndicator";
 
 export default function ConfirmRebooking({
   instructorToRebook,
@@ -138,30 +144,48 @@ export default function ConfirmRebooking({
 
   return (
     <div className={styles.rebookingConfirm}>
-      <div className={styles.rebookingConfirm__instructor}>
-        {instructorToRebook.name}
-      </div>
+      <StepIndicator currentStep={3} totalSteps={3} />
 
-      <div className={styles.rebookingConfirm__dateTime}>
-        {formatYearDateTime(
-          new Date(dateTimeToRebook),
-          language === "ja" ? "ja-JP" : "en-US",
-        )}
-      </div>
+      <div className={styles.rebookingConfirm__container}>
+        <ClassInstructor
+          classStatus={"freeTrial"}
+          instructorIcon={instructorToRebook.icon}
+          instructorNickname={instructorToRebook.nickname}
+          width={120}
+          className="rebookingModal"
+        />
 
-      <div className={styles.rebookingConfirm__children}>
-        {childProfiles.map((child) => (
-          <CheckboxInput
-            key={child.id}
-            label={child.name}
-            checked={selectedChildrenIds.some((id) => id === child.id)}
-            onChange={(event) => handleChildChange(child.id)}
-          />
-        ))}
-      </div>
+        <div className={styles.rebookingConfirm__dateTime}>
+          <CalendarDaysIcon className={styles.rebookingConfirm__icon} />
+          {`${formatYearDateTime(
+            new Date(dateTimeToRebook!),
+            language === "ja" ? "ja-JP" : "en-US",
+          )} - 
+          ${formatTimeWithAddedMinutes(new Date(dateTimeToRebook!), 25)}`}
+        </div>
 
-      <div className={styles.rebookingConfirm__loading}>
-        {isLoading && <Loading className="rebooking" />}
+        <div className={styles.rebookingConfirm__children}>
+          <div className={styles.rebookingConfirm__title}>
+            <UsersIcon className={styles.rebookingConfirm__icon} />
+            <p>
+              {language === "ja" ? "参加されるお子さま" : "Attending children"}
+            </p>
+          </div>
+          <div className={styles.rebookingConfirm__attendingChildren}>
+            {childProfiles.map((child) => (
+              <CheckboxInput
+                key={child.id}
+                label={child.name}
+                checked={selectedChildrenIds.some((id) => id === child.id)}
+                onChange={(event) => handleChildChange(child.id)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.rebookingConfirm__loading}>
+          {isLoading && <Loading className="rebooking" />}
+        </div>
       </div>
 
       <div className={styles.rebookingConfirm__buttons}>

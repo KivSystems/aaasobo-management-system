@@ -7,11 +7,11 @@
   gap: 3px;
   align-items: center;
   color: $blue-primary;
-  transition: all 0.3s ease; 
+  transition: all 0.3s ease;
 
   &:hover {
     cursor: pointer;
-    color: $blue_primary_hover; 
+    color: $blue_primary_hover;
     text-decoration: underline;
   }
 }
