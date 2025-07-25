@@ -501,7 +501,7 @@ type RebookableOptionsProps = {
 type RebookableInstructorsListProps = {
   instructorProfiles: InstructorRebookingProfile[];
   instructorAvailabilities: InstructorAvailability[] | [];
-  setInstructorToRebook: (instructor: { id: number; name: string }) => void;
+  setInstructorToRebook: (instructor: InstructorRebookingProfile) => void;
   rebookingOption: "instructor" | "dateTime";
   setRebookingStep: (step: RebookingSteps) => void;
   dateTimeToRebook: string | null;
@@ -511,20 +511,14 @@ type RebookableInstructorsListProps = {
 type RebookableTimeSlotsProps = {
   setDateTimeToRebook: (dateTime: string) => void;
   setRebookingStep: (step: RebookingSteps) => void;
-  instructorToRebook: {
-    id: number;
-    name: string;
-  };
+  instructorToRebook: InstructorRebookingProfile;
   instructorAvailabilities: InstructorAvailability[] | [];
   rebookingOption: "instructor" | "dateTime";
   language: LanguageType;
 };
 
 type ConfirmRebookingProps = {
-  instructorToRebook: {
-    id: number;
-    name: string;
-  };
+  instructorToRebook: InstructorRebookingProfile;
   dateTimeToRebook: string;
   rebookingOption: "instructor" | "dateTime";
   setRebookingStep: (step: RebookingSteps) => void;

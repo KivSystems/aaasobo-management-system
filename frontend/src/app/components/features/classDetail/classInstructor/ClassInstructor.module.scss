@@ -35,3 +35,24 @@
     margin-top: 5px;
   }
 }
+
+// Individual styles for each class
+.rebookingModal {
+  margin-bottom: 10px;
+
+  .instructor__name {
+    font-size: 22px;
+    font-weight: 500;
+  }
+}
+
+.instructorItem {
+  margin-bottom: 10px;
+  position: absolute;
+  top: 0;
+
+  .instructor__name {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}

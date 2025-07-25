@@ -35,6 +35,201 @@ async function insertInstructors() {
       createdAt: "2024-08-01T00:00:00.000Z",
     },
   });
+  await prisma.instructor.create({
+    data: {
+      email: "lori@example.com",
+      name: "Lorraine Nuesca",
+      nickname: "Lori",
+      icon: "lori-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=lori",
+      meetingId: "lori 123 456",
+      passcode: "lori",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=404241&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "kaori@example.com",
+      name: "Kaori Jean Garcia",
+      nickname: "Kaori",
+      icon: "kaori-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=kaori",
+      meetingId: "kaori 123 456",
+      passcode: "kaori",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=399447&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "winnie@example.com",
+      name: "Winnelyn Balangbang",
+      nickname: "Winnie",
+      icon: "winnie-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=winnie",
+      meetingId: "winnie 123 456",
+      passcode: "winnie",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=401099&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "claude@example.com",
+      name: "Claude Jean Hinampas",
+      nickname: "Claude",
+      icon: "claude-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=claude",
+      meetingId: "claude 123 456",
+      passcode: "claude",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=326768&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "jdy@example.com",
+      name: "Jiesheru Dy Bandisa",
+      nickname: "JDY",
+      icon: "jdy-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=jdy",
+      meetingId: "jdy 123 456",
+      passcode: "jdy",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=384411&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "mae@example.com",
+      name: "Mae Reantazo",
+      nickname: "Mae",
+      icon: "mae-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=mae",
+      meetingId: "mae 123 456",
+      passcode: "mae",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=383552&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "eiyd@example.com",
+      name: "Eiyd",
+      nickname: "Eiyd",
+      icon: "eiyd-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=eiyd",
+      meetingId: "eiyd 123 456",
+      passcode: "eiyd",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=383555&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "kechia@example.com",
+      name: "Kechia Oline Aquino",
+      nickname: "Kechia",
+      icon: "kechia-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=kechia",
+      meetingId: "kechia 123 456",
+      passcode: "kechia",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=317400&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "yasmin@example.com",
+      name: "Yasmin Luda",
+      nickname: "Yasmin",
+      icon: "yasmin-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=yasmin",
+      meetingId: "yasmin 123 456",
+      passcode: "yasmin",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=384405&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "dani@example.com",
+      name: "Dani",
+      nickname: "Dani",
+      icon: "dani-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=dani",
+      meetingId: "dani 123 456",
+      passcode: "dani",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=372623&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "angela@example.com",
+      name: "Angela Siega",
+      nickname: "Angela",
+      icon: "angela-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=angela",
+      meetingId: "angela 123 456",
+      passcode: "angela",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=359230&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "ronilo@example.com",
+      name: "Ronilo Salimbot",
+      nickname: "Ronilo",
+      icon: "ronilo-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=ronilo",
+      meetingId: "ronilo 123 456",
+      passcode: "ronilo",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=359243&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
+  await prisma.instructor.create({
+    data: {
+      email: "sheryll@example.com",
+      name: "Sheryll",
+      nickname: "Sheryll",
+      icon: "sheryll-1.jpg",
+      classURL: "https://zoom.us/j/12345?pwd=sheryll",
+      meetingId: "sheryll 123 456",
+      passcode: "sheryll",
+      password: "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
+      introductionURL:
+        "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=350273&w_flg=1",
+      createdAt: "2024-08-01T00:00:00.000Z",
+    },
+  });
 }
 
 async function insertInstructorAvailabilities() {
@@ -49,6 +244,7 @@ async function insertInstructorAvailabilities() {
       { startAt: "2025-06-05T07:00:00Z", instructorId: helen.id },
       { startAt: "2025-06-06T07:00:00Z", instructorId: helen.id },
       { startAt: "2025-06-07T07:00:00Z", instructorId: helen.id },
+      { startAt: "2025-06-08T07:00:00Z", instructorId: helen.id },
 
       // { startAt: "2025-02-03T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
       // { startAt: "2025-02-03T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
@@ -194,7 +390,7 @@ async function insertInstructorAvailabilities() {
     "2025-07-11T07:00:00Z",
     "2025-07-18T07:00:00Z",
     "2025-07-25T07:00:00Z",
-    "2025-08-01T07:00:00Z",
+    // "2025-08-01T07:00:00Z",
     "2025-08-08T07:00:00Z",
     "2025-08-15T07:00:00Z",
     "2025-08-22T07:00:00Z",
@@ -210,6 +406,23 @@ async function insertInstructorAvailabilities() {
     "2025-08-16T00:00:00Z",
     "2025-08-23T00:00:00Z",
     "2025-08-30T00:00:00Z",
+  ]);
+
+  await insertAvailabilities(helen.id, "2025-06-08T07:00:00Z", [
+    "2025-08-01T06:00:00Z",
+    "2025-08-01T06:30:00Z",
+    "2025-08-01T07:00:00Z",
+    "2025-08-01T07:30:00Z",
+    "2025-08-01T08:00:00Z",
+    "2025-08-01T08:30:00Z",
+    "2025-08-01T09:00:00Z",
+    "2025-08-01T09:30:00Z",
+    "2025-08-01T10:00:00Z",
+    "2025-08-01T10:30:00Z",
+    "2025-08-01T11:00:00Z",
+    "2025-08-01T11:30:00Z",
+    "2025-08-01T12:00:00Z",
+    "2025-08-01T12:30:00Z",
   ]);
 
   // await insertAvailabilities(helen.id, "2025-02-03T07:00:00Z", [

@@ -35,15 +35,20 @@ export const formatYearDate = (date: Date, locale: string = "en-US") => {
 
 // Formats year,date, and time (e.g., "Thu, January 11, 2025 at 09:30", "2025年1月11日(木) 9:30")
 export const formatYearDateTime = (date: Date, locale: string = "en-US") => {
-  return new Intl.DateTimeFormat(locale, {
+  const datePart = new Intl.DateTimeFormat(locale, {
     weekday: "short",
     year: "numeric",
     month: "long",
     day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: false,
   }).format(date);
+
+  const timePart = formatTime24Hour(date);
+  const formatted =
+    locale === "en-US"
+      ? `${datePart} at ${timePart}`
+      : `${datePart} ${timePart}`;
+
+  return formatted;
 };
 
 // Converts a UTC ISO date string to the specified time zone, calculates the end time by adding 25 minutes,

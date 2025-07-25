@@ -5,18 +5,22 @@ const ClassInstructor = ({
   classStatus,
   instructorIcon,
   instructorNickname,
+  className,
+  width = 135,
 }: {
   classStatus: string;
   instructorIcon: string;
   instructorNickname: string;
+  className?: string;
+  width?: number;
 }) => {
   return (
-    <div className={styles.instructor}>
+    <div className={`${styles.instructor} ${className && styles[className]}`}>
       <Image
         src={`/instructors/${instructorIcon}`}
         alt={instructorNickname}
-        width={135}
-        height={135}
+        width={width}
+        height={width}
         priority
         className={`${styles.instructor__icon} ${styles[classStatus]}`}
       />
