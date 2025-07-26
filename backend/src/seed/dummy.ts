@@ -1378,6 +1378,27 @@ async function insertInstructorSchedules() {
   });
 }
 
+async function insertInstructorAbsences() {
+  const helen = await getInstructor("Helen");
+  const elian = await getInstructor("Elian");
+  await prisma.instructorAbsence.createMany({
+    data: [
+      {
+        instructorId: helen.id,
+        absentAt: new Date("2025-02-14T10:00:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        absentAt: new Date("2025-03-21T14:00:00Z"),
+      },
+      {
+        instructorId: elian.id,
+        absentAt: new Date("2025-02-28T09:00:00Z"),
+      },
+    ],
+  });
+}
+
 async function insertInstructorUnavailabilities() {
   const helen = await getInstructor("Helen");
   const elian = await getInstructor("Elian");
@@ -2160,6 +2181,7 @@ async function main() {
 
     // Dependant on the above
     await insertInstructorUnavailabilities();
+    await insertInstructorAbsences();
 
     // Dependant on the above
     await insertClassAttendance();

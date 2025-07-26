@@ -33,6 +33,7 @@ model Instructor {
   createdAt                       DateTime                          @default(now())
   inactiveAt                      DateTime?
   instructorSchedules             InstructorSchedule[]
+  instructorAbsences              InstructorAbsence[]
 }
 
 model InstructorRecurringAvailability {
@@ -227,4 +228,12 @@ model InstructorSlot {
   schedule   InstructorSchedule @relation(fields: [scheduleId], references: [id])
 
   @@id([scheduleId, weekday, startTime])
+}
+
+model InstructorAbsence {
+  instructorId Int
+  absentAt     DateTime
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+
+  @@id([instructorId, absentAt])
 }

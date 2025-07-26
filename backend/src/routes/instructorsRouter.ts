@@ -29,6 +29,11 @@ import {
   getScheduleController,
   createInstructorScheduleController,
 } from "../../src/controllers/instructorScheduleController";
+import {
+  getInstructorAbsencesController,
+  addInstructorAbsenceController,
+  removeInstructorAbsenceController,
+} from "../../src/controllers/instructorAbsenceController";
 
 export const instructorsRouter = express.Router();
 
@@ -98,5 +103,28 @@ instructorsRouter.post(
   verifyAuthentication,
   (req, res) => {
     createInstructorScheduleController(req as RequestWithId, res);
+  },
+);
+
+// Instructor absence routes
+instructorsRouter.get("/:id/absences", parseId, (req, res) => {
+  getInstructorAbsencesController(req as RequestWithId, res);
+});
+
+instructorsRouter.post(
+  "/:id/absences",
+  parseId,
+  verifyAuthentication,
+  (req, res) => {
+    addInstructorAbsenceController(req as RequestWithId, res);
+  },
+);
+
+instructorsRouter.delete(
+  "/:id/absences/:absentAt",
+  parseId,
+  verifyAuthentication,
+  (req, res) => {
+    removeInstructorAbsenceController(req as RequestWithId, res);
   },
 );
