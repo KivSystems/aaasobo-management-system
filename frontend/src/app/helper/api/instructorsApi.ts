@@ -381,3 +381,30 @@ export const getCalendarClasses = async (
     throw new Error(FAILED_TO_FETCH_INSTRUCTOR_CLASSES);
   }
 };
+
+export const getSameDateClasses = async (
+  instructorId: number,
+  classId: number,
+): Promise<{
+  selectedClassDetails: InstructorClassDetail;
+  sameDateClasses: InstructorClassDetail[] | [];
+}> => {
+  try {
+    const apiUrl = `${BASE_URL}/${instructorId}/classes/${classId}/same-date`;
+    const response = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(
+      "API error while fetching same-date classes for instructor:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_CLASSES);
+  }
+};

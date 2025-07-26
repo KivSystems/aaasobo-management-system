@@ -42,3 +42,17 @@
     }
   }
 }
+
+// Individual styles for each class
+.classItem {
+  margin: unset;
+
+  .classStatus__icon {
+    width: 1.3rem;
+    min-width: 1.3rem;
+  }
+  .classStatus__label {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}

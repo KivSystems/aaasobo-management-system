@@ -38,3 +38,26 @@ export const deleteAttendancesByChildId = async (
 
   return deletedAttendances;
 };
+
+export const deleteAttendancesByClassId = async (
+  classId: number,
+  tx?: Prisma.TransactionClient,
+) => {
+  const db = tx ?? prisma;
+  await db.classAttendance.deleteMany({
+    where: { classId },
+  });
+};
+
+export const createAttendances = async (
+  classId: number,
+  childrenIds: number[],
+  tx: Prisma.TransactionClient,
+) => {
+  await tx.classAttendance.createMany({
+    data: childrenIds.map((childId) => ({
+      classId,
+      childrenId: childId,
+    })),
+  });
+};

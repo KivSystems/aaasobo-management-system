@@ -7,16 +7,19 @@ export default function CheckboxInput({
   onChange,
   checked,
   className,
+  onClick,
 }: {
   name?: string;
   label: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   checked?: boolean;
   className?: string;
+  onClick?: (event: React.MouseEvent<HTMLInputElement>) => void;
 }) {
   return (
     <div
       className={`${styles.checkboxWrapper} ${className ? styles[className] : ""}`}
+      onClick={onClick}
     >
       <label className={styles.label}>
         <input

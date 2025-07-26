@@ -1,4 +1,5 @@
-import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/ClassDetails";
+import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/classDetails/ClassDetails";
+import { getSameDateClasses } from "@/app/helper/api/instructorsApi";
 import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 const Page = async ({
@@ -28,12 +29,19 @@ const Page = async ({
     throw new Error("Invalid classId");
   }
 
+  const { selectedClassDetails, sameDateClasses } = await getSameDateClasses(
+    instructorId,
+    classId,
+  );
+
   return (
     <ClassDetails
       adminId={adminId}
       instructorId={instructorId}
       classId={classId}
       isAdminAuthenticated={isAuthenticated}
+      classDetails={selectedClassDetails}
+      classes={sameDateClasses}
     />
   );
 };

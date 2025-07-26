@@ -1,11 +1,18 @@
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import { nHoursLater } from "../helper/dateUtils";
+import { getJstDayRange, nHoursLater } from "../helper/dateUtils";
 import { NewClassToRebookType } from "../controllers/classesController";
 import {
   FREE_TRIAL_BOOKING_HOURS,
   REGULAR_REBOOKING_HOURS,
 } from "../helper/commonUtils";
+import {
+  CANCELED_CLASS_COLOR,
+  COMPLETED_CLASS_COLOR,
+  FREE_TRIAL_CLASS_COLOR,
+  REBOOKED_CLASS_COLOR,
+  REGULAR_CLASS_COLOR,
+} from "../helper/colors";
 
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
@@ -124,44 +131,37 @@ export const deleteClass = async (classId: number) => {
 // Update/Edit a class
 export const updateClass = async (
   id: number,
-  classData: {
-    dateTime?: string;
-    instructorId?: number;
-    childrenIds?: number[];
-    status?: Status;
-    rebookableUntil?: string | null;
-    updatedAt?: Date;
-  },
+  status: Status,
+  classDateTime: Date | string,
 ) => {
-  const { childrenIds, ...fieldsToUpdate } = classData;
-
-  const updatedClass = await prisma.$transaction(async (prisma) => {
-    const updatedClass = await prisma.class.update({
-      where: { id },
-      data: fieldsToUpdate,
-    });
-
-    // TODO: if updatedClass.status === "canceledByInstructor", updated instructor unavailability
-
-    // Delete existing classAttendance records
-    await prisma.classAttendance.deleteMany({
-      where: { classId: id },
-    });
-
-    // Add new classAttendance records if childrenIds is provided
-    if (childrenIds) {
-      await prisma.classAttendance.createMany({
-        data: childrenIds.map((childId) => ({
-          classId: id,
-          childrenId: childId,
-        })),
+  if (status === "canceledByInstructor") {
+    await prisma.$transaction(async (tx) => {
+      await tx.class.update({
+        where: { id },
+        data: {
+          status,
+          updatedAt: new Date(),
+          rebookableUntil: nHoursLater(
+            180 * 24,
+            new Date(classDateTime),
+          ).toISOString(), // If the class is canceled by the instructor, set rebookableUntil to 180 days (* 24 * 60 minutes) after the class dateTime
+        },
       });
-    }
 
-    return updatedClass;
-  });
-
-  return updatedClass;
+      await tx.classAttendance.deleteMany({
+        where: { classId: id },
+      });
+    });
+  } else {
+    await prisma.class.update({
+      where: { id },
+      data: {
+        status,
+        updatedAt: new Date(),
+        ...(status === "completed" && { rebookableUntil: null }),
+      },
+    });
+  }
 };
 
 export async function countClassesOfSubscription(
@@ -589,11 +589,11 @@ export const getCustomerClasses = async (customerId: number) => {
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const statusColorMap: Partial<Record<Status, string>> = {
-      booked: "#FFEBEF", // Cherry Blossom
-      rebooked: "#FFFACD", // Gentle, light yellow
-      canceledByCustomer: "#FFEBE0",
-      canceledByInstructor: "#FFEBE0",
-      completed: "#B5C4AB",
+      booked: REGULAR_CLASS_COLOR,
+      rebooked: REBOOKED_CLASS_COLOR,
+      canceledByCustomer: CANCELED_CLASS_COLOR,
+      canceledByInstructor: CANCELED_CLASS_COLOR,
+      completed: COMPLETED_CLASS_COLOR,
     };
 
     const isBookedOrRebooked =
@@ -601,7 +601,7 @@ export const getCustomerClasses = async (customerId: number) => {
 
     const color =
       classItem.isFreeTrial && isBookedOrRebooked
-        ? "#E7FBD9" // green
+        ? FREE_TRIAL_CLASS_COLOR
         : statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
@@ -635,7 +635,7 @@ export const getCalendarClasses = async (instructorId: number) => {
     where: {
       instructorId: instructorId,
       status: {
-        in: ["booked", "completed", "canceledByInstructor"],
+        in: ["booked", "rebooked", "completed", "canceledByInstructor"],
       },
     },
     orderBy: {
@@ -657,12 +657,20 @@ export const getCalendarClasses = async (instructorId: number) => {
     const start = classItem.dateTime!; // Guaranteed to exist for non-pending classes
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
+    const statusColorMap: Partial<Record<Status, string>> = {
+      booked: REGULAR_CLASS_COLOR,
+      rebooked: REBOOKED_CLASS_COLOR,
+      canceledByInstructor: CANCELED_CLASS_COLOR,
+      completed: COMPLETED_CLASS_COLOR,
+    };
+
+    const isBookedOrRebooked =
+      classItem.status === "booked" || classItem.status === "rebooked";
+
     const color =
-      classItem.status === "booked"
-        ? "#E7FBD9"
-        : classItem.status === "completed"
-          ? "#B5C4AB"
-          : "#FFEBE0";
+      classItem.isFreeTrial && isBookedOrRebooked
+        ? FREE_TRIAL_CLASS_COLOR
+        : statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)
@@ -702,6 +710,7 @@ export const getClassToRebook = async (classId: number) => {
     rebookableUntil: classData?.rebookableUntil,
     classCode: classData?.classCode,
     isFreeTrial: classData?.isFreeTrial,
+    dateTime: classData?.dateTime,
   };
 };
 
@@ -792,4 +801,128 @@ export const declineFreeTrialClass = async (
   });
 
   return updatedClass;
+};
+
+export const getSameDateClasses = async (
+  instructorId: number,
+  classId: number,
+) => {
+  const targetClass = await prisma.class.findUnique({
+    where: { id: classId },
+    select: {
+      id: true,
+      dateTime: true,
+      status: true,
+      isFreeTrial: true,
+      classCode: true,
+      updatedAt: true,
+      instructor: {
+        select: {
+          classURL: true,
+          meetingId: true,
+          passcode: true,
+        },
+      },
+      customer: {
+        select: {
+          name: true,
+          children: {
+            select: {
+              id: true,
+              name: true,
+              birthdate: true,
+              personalInfo: true,
+              customerId: true,
+            },
+          },
+        },
+      },
+      classAttendance: {
+        select: {
+          children: {
+            select: {
+              id: true,
+              name: true,
+              birthdate: true,
+              personalInfo: true,
+              customerId: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!targetClass?.dateTime) return [];
+
+  const { startOfDay, endOfDay } = getJstDayRange(targetClass.dateTime);
+
+  const classes = await prisma.class.findMany({
+    where: {
+      instructorId,
+      status: {
+        in: ["booked", "rebooked", "canceledByInstructor", "completed"],
+      },
+      dateTime: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    },
+    select: {
+      id: true,
+      dateTime: true,
+      status: true,
+      isFreeTrial: true,
+      customer: {
+        select: {
+          children: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      classAttendance: {
+        select: {
+          children: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { dateTime: "asc" },
+  });
+
+  const formattedTargetClass = {
+    id: targetClass.id,
+    dateTime: targetClass.dateTime!.toISOString(),
+    customerName: targetClass.customer.name,
+    classURL: targetClass.instructor?.classURL || "",
+    meetingId: targetClass.instructor?.meetingId || "",
+    passcode: targetClass.instructor?.passcode || "",
+    attendingChildren: targetClass.classAttendance.map((ca) => ca.children),
+    customerChildren: targetClass.customer.children,
+    status: targetClass.status,
+    isFreeTrial: targetClass.isFreeTrial,
+    classCode: targetClass.classCode,
+    updatedAt: targetClass.updatedAt,
+  };
+
+  const formattedSameDayClasses = classes.map((cls) => ({
+    id: cls.id,
+    dateTime: cls.dateTime!.toISOString(),
+    attendingChildren: cls.classAttendance.map((ca) => ca.children),
+    customerChildren: cls.customer.children,
+    status: cls.status,
+    isFreeTrial: cls.isFreeTrial,
+  }));
+
+  return {
+    selectedClassDetails: formattedTargetClass,
+    sameDateClasses: formattedSameDayClasses,
+  };
 };

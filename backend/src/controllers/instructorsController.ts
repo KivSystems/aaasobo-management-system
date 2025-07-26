@@ -29,7 +29,10 @@ import {
   getInstructorProfiles,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
-import { getCalendarClasses } from "../services/classesService";
+import {
+  getCalendarClasses,
+  getSameDateClasses,
+} from "../services/classesService";
 
 // Fetch all the instructors and their availabilities
 export const getAllInstructorsAvailabilitiesController = async (
@@ -561,6 +564,32 @@ export const getInstructorProfilesController = async (
     console.error("Error fetching instructor profiles", {
       error,
       context: {
+        time: new Date().toISOString(),
+      },
+    });
+    res.sendStatus(500);
+  }
+};
+
+export const getSameDateClassesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const instructorId = req.id;
+  const classId = req.classId;
+
+  if (classId === undefined) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const classes = await getSameDateClasses(instructorId, classId);
+    res.status(200).json(classes);
+  } catch (error) {
+    console.error("Error getting same-date classes for instructor", {
+      error,
+      context: {
+        ID: instructorId,
         time: new Date().toISOString(),
       },
     });

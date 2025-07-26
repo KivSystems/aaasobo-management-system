@@ -700,7 +700,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-30T00:00:00Z",
+        dateTime: "2025-07-15T07:00:00Z",
         status: "booked",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -713,7 +713,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-30T00:30:00Z",
+        dateTime: "2025-07-15T08:00:00Z",
         status: "rebooked",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -726,7 +726,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-30T01:00:00Z",
+        dateTime: "2025-07-15T09:00:00Z",
         status: "canceledByCustomer",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -739,7 +739,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-30T01:00:00Z",
+        dateTime: "2025-07-15T10:00:00Z",
         status: "canceledByInstructor",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -752,7 +752,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-07-30T01:00:00Z",
+        dateTime: "2025-07-15T06:00:00Z",
         status: "completed",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -763,8 +763,10 @@ async function insertClasses() {
         isFreeTrial: false,
       },
       {
+        instructorId: helen.id,
         customerId: alice.id,
-        status: "pending",
+        dateTime: "2025-07-15T11:00:00Z",
+        status: "rebooked",
         rebookableUntil: "2025-10-30T09:00:00Z",
         createdAt: "2025-05-20T07:00:00Z",
         updatedAt: "2025-05-20T07:00:00Z",
@@ -1046,8 +1048,9 @@ async function insertClassAttendance() {
       { classId: classes[0].id, childrenId: children[1].id },
       { classId: classes[1].id, childrenId: children[0].id },
       { classId: classes[2].id, childrenId: children[0].id },
-      { classId: classes[3].id, childrenId: children[0].id },
       { classId: classes[4].id, childrenId: children[0].id },
+      { classId: classes[5].id, childrenId: children[0].id },
+      { classId: classes[5].id, childrenId: children[1].id },
     ],
   });
 

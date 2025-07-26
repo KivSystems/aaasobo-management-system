@@ -1,8 +1,11 @@
-"use client";
+import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/classDetails/ClassDetails";
+import { getSameDateClasses } from "@/app/helper/api/instructorsApi";
 
-import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/ClassDetails";
-
-const Page = ({ params }: { params: { id: string; classId: string } }) => {
+const ClassDetailsPage = async ({
+  params,
+}: {
+  params: { id: string; classId: string };
+}) => {
   const instructorId = parseInt(params.id);
   if (isNaN(instructorId)) {
     throw new Error("Invalid instructorId");
@@ -12,7 +15,19 @@ const Page = ({ params }: { params: { id: string; classId: string } }) => {
     throw new Error("Invalid classId");
   }
 
-  return <ClassDetails instructorId={instructorId} classId={classId} />;
+  const { selectedClassDetails, sameDateClasses } = await getSameDateClasses(
+    instructorId,
+    classId,
+  );
+
+  return (
+    <ClassDetails
+      instructorId={instructorId}
+      classId={classId}
+      classDetails={selectedClassDetails}
+      classes={sameDateClasses}
+    />
+  );
 };
 
-export default Page;
+export default ClassDetailsPage;
