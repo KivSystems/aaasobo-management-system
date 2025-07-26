@@ -5,60 +5,47 @@ import {
 } from "../helper/commonUtils";
 import { nHoursLater } from "../helper/dateUtils";
 
+type InstructorAvailability = {
+  instructorId?: number;
+  dateTime: Date;
+};
+
+/**
+ * Fetches a specific instructor's available time slots starting 3 hours from now.
+ * Only includes slots where:
+ * - The instructor is not marked as unavailable
+ * - There are no existing classes that are booked or rebooked at those times
+ * - Excludes any instructor availability falling on dates marked as events named "AaasoBo! Holiday".
+ *   This exclusion is based on matching the date (ignoring time) between InstructorAvailability.dateTime and Schedule.date.
+ */
 export const getCalendarAvailabilities = async (instructorId: number) => {
-  const effectiveFrom = nHoursLater(3);
+  const effectiveFrom = nHoursLater(REGULAR_REBOOKING_HOURS);
 
-  // Get the instructor's unavailable dateTimes from Class table
-  const bookedOrCanceledTimeSlots = await prisma.class.findMany({
-    where: {
-      instructorId: instructorId,
-      dateTime: {
-        gte: effectiveFrom,
-      },
-      status: {
-        // TODO: once the updateClass service function has been updated, remove "canceledByInstructor"
-        in: ["booked", "rebooked", "canceledByInstructor"],
-      },
-    },
-    select: {
-      dateTime: true,
-    },
-  });
+  const availableSlots = await prisma.$queryRaw<InstructorAvailability[]>`
+    SELECT ia."dateTime"
+    FROM "InstructorAvailability" ia
+    WHERE ia."instructorId" = ${instructorId}
+      AND ia."dateTime" >= ${effectiveFrom.toISOString()}::timestamp
+      AND NOT EXISTS (
+        SELECT 1 FROM "InstructorUnavailability" iu
+        WHERE iu."instructorId" = ia."instructorId"
+          AND iu."dateTime" = ia."dateTime"
+      )
+      AND NOT EXISTS (
+        SELECT 1 FROM "Class" c
+        WHERE c."instructorId" = ia."instructorId"
+          AND c."dateTime" = ia."dateTime"
+          AND c."status" IN ('booked', 'rebooked')
+      )
+      AND NOT EXISTS (
+        SELECT 1 FROM "Schedule" s
+        JOIN "Event" e ON e."id" = s."eventId"
+        WHERE ia."dateTime"::date = s."date"
+          AND e."name" = 'AaasoBo! Holiday'
+      )
+  `;
 
-  // Get the instructor's unavailable dateTimes from InstructorUnavailability table
-  const unavailableTimeSlots = await prisma.instructorUnavailability.findMany({
-    where: {
-      instructorId: instructorId,
-      dateTime: {
-        gte: effectiveFrom,
-      },
-    },
-    select: {
-      dateTime: true,
-    },
-  });
-
-  // Combine those unavailable dateTimes
-  const unavailableDateTimes = [
-    ...bookedOrCanceledTimeSlots.map((record) => record.dateTime!), // Guaranteed to exist for non-pending classes
-    ...unavailableTimeSlots.map((record) => record.dateTime),
-  ];
-
-  // Get the instructor's available dateTimes by excluding unavailable time slots
-  const availabilities = await prisma.instructorAvailability.findMany({
-    where: {
-      instructorId: instructorId,
-      dateTime: {
-        gte: effectiveFrom,
-        notIn: unavailableDateTimes, // Exclude the records of unavailable dateTimes
-      },
-    },
-    orderBy: {
-      dateTime: "asc",
-    },
-  });
-
-  const formattedAvailabilities = availabilities.map((availability) => {
+  const formattedAvailabilities = availableSlots.map((availability) => {
     const start = availability.dateTime;
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
@@ -71,11 +58,6 @@ export const getCalendarAvailabilities = async (instructorId: number) => {
   });
 
   return formattedAvailabilities;
-};
-
-type InstructorAvailability = {
-  instructorId: number;
-  dateTime: Date;
 };
 
 /**

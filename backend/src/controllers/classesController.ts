@@ -11,10 +11,10 @@ import {
   getClassesByCustomerId,
   getClassToRebook,
   getExcludedClasses,
-  updateClass,
   checkInstructorConflicts,
   rebookClass,
   checkInstructorUnavailability,
+  updateClass,
 } from "../services/classesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
 import { prisma } from "../../prisma/prismaClient";
@@ -43,6 +43,10 @@ import {
   FREE_TRIAL_BOOKING_HOURS,
   REGULAR_REBOOKING_HOURS,
 } from "../helper/commonUtils";
+import {
+  createAttendances,
+  deleteAttendancesByClassId,
+} from "../services/classAttendancesService";
 
 // GET all classes along with related instructors and customers data
 export const getAllClassesController = async (_: Request, res: Response) => {
@@ -365,23 +369,6 @@ export const deleteClassController = async (req: Request, res: Response) => {
   }
 };
 
-// Update[Edit] a class
-export const updateClassController = async (req: Request, res: Response) => {
-  const classId = parseInt(req.params.id);
-  const classData = req.body;
-
-  try {
-    const updatedClass = await updateClass(classId, classData);
-
-    res.status(200).json({
-      message: "Class is updated successfully",
-      updatedClass,
-    });
-  } catch (error) {
-    res.status(500).json({ error: `${error}` });
-  }
-};
-
 // Cancel a class
 export const cancelClassController = async (req: Request, res: Response) => {
   const classId = parseInt(req.params.id);
@@ -652,5 +639,74 @@ export const cancelClassesController = async (req: Request, res: Response) => {
       },
     });
     res.sendStatus(500);
+  }
+};
+
+export const updateAttendanceController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const classId = req.id;
+  const { childrenIds }: { childrenIds: number[] } = req.body;
+
+  if (!Array.isArray(childrenIds)) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    if (childrenIds.length === 0) {
+      await deleteAttendancesByClassId(classId);
+    } else {
+      await prisma.$transaction(async (tx) => {
+        await deleteAttendancesByClassId(classId, tx);
+        await createAttendances(classId, childrenIds, tx);
+      });
+    }
+
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error("Error updating class attendance", {
+      error,
+      context: {
+        classId,
+        childrenIds,
+        time: new Date().toISOString(),
+      },
+    });
+    return res.sendStatus(500);
+  }
+};
+
+export const updateClassStatusController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const classId = req.id;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const classToUpdate = await getClassToRebook(classId);
+    const classDateTime = classToUpdate.dateTime;
+
+    if (!classToUpdate || !classDateTime) {
+      return res.sendStatus(404);
+    }
+
+    await updateClass(classId, status, classDateTime);
+
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error("Error updating class status", {
+      error,
+      context: {
+        classId,
+        time: new Date().toISOString(),
+      },
+    });
+    return res.sendStatus(500);
   }
 };

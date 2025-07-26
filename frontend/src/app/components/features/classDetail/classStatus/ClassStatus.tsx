@@ -9,10 +9,12 @@ const ClassStatus = ({
   status,
   isFreeTrial,
   language,
+  className,
 }: {
   status: ClassStatus;
   isFreeTrial: boolean;
   language?: LanguageType;
+  className?: string;
 }) => {
   const languageClass = language === "ja" ? styles.ja : styles.en;
 
@@ -46,7 +48,9 @@ const ClassStatus = ({
   };
 
   return (
-    <div className={styles.classStatus}>
+    <div
+      className={`${styles.classStatus}  ${className ? styles[className] : ""}`}
+    >
       <IconComponent
         className={`${styles.classStatus__icon} ${styles[isFreeTrial ? "freeTrial" : status]}`}
       />

@@ -75,29 +75,6 @@ export function getWeekday(date: Date, timeZone: string) {
   }).format(date);
 }
 
-// Function to check if the current date & time in a particular time zone is past the target class end time
-export const isPastClassEndTime = (
-  classDateTime: string,
-  timeZone: string,
-): boolean => {
-  try {
-    // Convert class start time to zoned time
-    const classDateTimeInZone = toZonedTime(classDateTime, timeZone);
-
-    // Calculate the end time of the class
-    const classEndTime = getEndTime(classDateTimeInZone);
-
-    // Get the current date & time in the specified time zone
-    const currentDateTimeInZone = toZonedTime(new Date(), timeZone);
-
-    // Check if the current date & time is after the class end time
-    return isAfter(currentDateTimeInZone, classEndTime);
-  } catch (error) {
-    console.error("Error in isPastClassEndTime:", error);
-    return false;
-  }
-};
-
 // Converts a date string to the format YYYY-MM-DD.
 export const formatBirthdateToISO = (dateString?: string) => {
   if (!dateString) return "";
@@ -123,21 +100,30 @@ export const getShortMonth = (date: Date, locale: string = "en-US"): string => {
 };
 
 // Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
-export const formatShortDate = (date: Date, locale: string = "en-US") => {
-  const day = date.getDate();
+export const formatShortDate = (
+  date: Date,
+  locale: string = "en-US",
+  timeZone?: string,
+) => {
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
-  }).format(new Date(date.setDate(day)));
+    ...(timeZone && { timeZone }),
+  }).format(date);
 };
 
 // Formats a Date object into a 24-hour time string without leading zeros (e.g., "9:00").
-export const formatTime24Hour = (date: Date): string => {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+export const formatTime24Hour = (date: Date, timeZone?: string): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: timeZone || undefined,
+  };
 
-  return `${hours}:${minutes.toString().padStart(2, "0")}`;
+  const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
+  return formatted.replace(/^0/, "");
 };
 
 export const nHoursLater = (n: number, dateTime: Date = new Date()): Date => {

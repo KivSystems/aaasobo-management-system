@@ -7,6 +7,9 @@ import { extractUpdateValidationErrors } from "../helper/utils/validationErrorUt
 import { eventUpdateSchema, scheduleUpdateSchema } from "../schemas/authSchema";
 import { revalidateEventList, revalidateBusinessSchedule } from "./revalidate";
 import { getCookie } from "../../middleware";
+import { validateSession } from "./validateSession";
+import { updateAttendance, updateClassStatus } from "../helper/api/classesApi";
+import { revalidatePath } from "next/cache";
 
 export async function updateEventAction(
   prevState: UpdateFormState | undefined,
@@ -89,4 +92,82 @@ export async function updateScheduleAction(
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
   }
+}
+
+export async function updateAttendanceAction(
+  classId: number,
+  childrenIds: number[],
+  instructorId: number,
+  isAdminAuthenticated: boolean,
+  adminId?: number,
+): Promise<{ success: boolean; message: string }> {
+  const userId = isAdminAuthenticated ? adminId : instructorId;
+
+  const { isValid, error } = await validateSession(
+    userId,
+    isAdminAuthenticated,
+  );
+
+  if (!isValid) {
+    return { success: false, message: error! };
+  }
+
+  const result = await updateAttendance(classId, childrenIds);
+
+  if (!result.success)
+    return {
+      success: false,
+      message:
+        "Failed to update attendance. Please try again later. If the problem persists, contact the staff.",
+    };
+
+  const path = isAdminAuthenticated
+    ? `/admins/${userId}/instructor-list/${instructorId}/class-schedule`
+    : `/instructors/${userId}/class-schedule`;
+
+  revalidatePath(path);
+
+  return { success: true, message: "Attendance updated successfully." };
+}
+
+export async function updateClassStatusAction(
+  classId: number,
+  status: ClassStatus,
+  instructorId: number,
+  isAdminAuthenticated: boolean,
+  adminId?: number,
+): Promise<{ success: boolean; message: string }> {
+  const userId = isAdminAuthenticated ? adminId : instructorId;
+
+  const { isValid, error } = await validateSession(
+    userId,
+    isAdminAuthenticated,
+  );
+
+  if (!isValid) {
+    return { success: false, message: error! };
+  }
+
+  const result = await updateClassStatus(classId, status);
+
+  if (!result.success)
+    return {
+      success: false,
+      message: isAdminAuthenticated
+        ? "Failed to update class status. Please try again later."
+        : "Failed to complete the class. Please try again later. If the problem persists, contact the staff.",
+    };
+
+  const path = isAdminAuthenticated
+    ? `/admins/${userId}/instructor-list/${instructorId}/class-schedule`
+    : `/instructors/${userId}/class-schedule`;
+
+  revalidatePath(path);
+
+  return {
+    success: true,
+    message: isAdminAuthenticated
+      ? "Class status updated successfully."
+      : "Class completed successfully.",
+  };
 }

@@ -12,6 +12,7 @@ import {
   updateInstructorProfile,
   getCalendarClassesController,
   getInstructorProfilesController,
+  getSameDateClassesController,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -29,6 +30,11 @@ import {
   getScheduleController,
   createInstructorScheduleController,
 } from "../../src/controllers/instructorScheduleController";
+import {
+  getInstructorAbsencesController,
+  addInstructorAbsenceController,
+  removeInstructorAbsenceController,
+} from "../../src/controllers/instructorAbsenceController";
 
 export const instructorsRouter = express.Router();
 
@@ -74,6 +80,13 @@ instructorsRouter.get("/", getAllInstructorsController);
 instructorsRouter.get("/:id/classes", parseId, (req, res) => {
   getInstructorClasses(req as RequestWithId, res);
 });
+instructorsRouter.get(
+  "/:id/classes/:classId/same-date",
+  parseId,
+  (req, res) => {
+    getSameDateClassesController(req as RequestWithId, res);
+  },
+);
 
 instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
   getCalendarAvailabilitiesController(req as RequestWithId, res);
@@ -98,5 +111,28 @@ instructorsRouter.post(
   verifyAuthentication,
   (req, res) => {
     createInstructorScheduleController(req as RequestWithId, res);
+  },
+);
+
+// Instructor absence routes
+instructorsRouter.get("/:id/absences", parseId, (req, res) => {
+  getInstructorAbsencesController(req as RequestWithId, res);
+});
+
+instructorsRouter.post(
+  "/:id/absences",
+  parseId,
+  verifyAuthentication,
+  (req, res) => {
+    addInstructorAbsenceController(req as RequestWithId, res);
+  },
+);
+
+instructorsRouter.delete(
+  "/:id/absences/:absentAt",
+  parseId,
+  verifyAuthentication,
+  (req, res) => {
+    removeInstructorAbsenceController(req as RequestWithId, res);
   },
 );
