@@ -115,23 +115,6 @@ export const cancelClass = async (classId: number) => {
   }
 };
 
-// TODO: Delete this api call function after finishing refactoring the instructor class details page
-export const getClassesByInstructorId = async (instructorId: number) => {
-  try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/instructors/${instructorId}/classes`,
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const { classes } = await response.json();
-    return classes;
-  } catch (error) {
-    console.error("Failed to fetch classes:", error);
-    throw error;
-  }
-};
-
 // POST create monthly classes
 export const createMonthlyClasses = async (data: {
   year: number;
