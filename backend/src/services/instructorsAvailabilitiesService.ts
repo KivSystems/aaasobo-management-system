@@ -83,7 +83,7 @@ type InstructorAvailability = {
  * Only includes slots where:
  * - The instructor is not marked as unavailable
  * - There are no existing classes that are booked or rebooked at those times
- * - Excludes any instructor availability falling on dates marked as events named "AaasoBo! Holiday".
+ * - Excludes any instructor availability falling on dates marked as events named "お休み / No Class".
  *   This exclusion is based on matching the date (ignoring time) between InstructorAvailability.dateTime and Schedule.date.
  */
 export const getInstructorAvailabilities = async (
@@ -113,7 +113,7 @@ export const getInstructorAvailabilities = async (
       SELECT 1 FROM "Schedule" s
       JOIN "Event" e ON e."id" = s."eventId"
       WHERE ia."dateTime"::date = s."date"
-        AND e."name" = 'AaasoBo! Holiday'
+        AND e."name" = 'お休み / No Class'
     )
   `;
 

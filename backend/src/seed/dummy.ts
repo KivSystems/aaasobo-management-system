@@ -1425,19 +1425,19 @@ async function insertEvents() {
   await prisma.event.createMany({
     data: [
       {
-        name: "Regular Class Day",
+        name: "通常授業日 / Regular Class Day",
         color: "#FFFFFF",
       },
       {
-        name: "AaasoBo! Holiday", // お休み
+        name: "お休み / No Class",
         color: "#FAD7CD",
       },
       {
-        name: "AaasoBo! Substitute Holiday", // お休み振替対象日
+        name: "お休み振替対象日 / Rebookable Day",
         color: "#FF0000",
       },
       {
-        name: "Theme Class Week", // テーマクラスウィーク
+        name: "テーマクラスウィーク / Theme Class Week",
         color: "#FFFF00",
       },
     ],

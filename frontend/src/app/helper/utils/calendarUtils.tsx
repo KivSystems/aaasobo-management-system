@@ -88,28 +88,6 @@ export const getValidRange = (createdAt: string, monthsAhead: number) => {
   };
 };
 
-// TODO: Applies custom styles to calendar cells based on holiday dates
-export const createDayCellDidMount = (
-  holidays: string[],
-  styles: { [key: string]: string },
-) => {
-  const DayCellDidMount = (info: DayCellContentArg) => {
-    const date = new Date(info.date);
-    const formattedDate = date.toISOString().split("T")[0];
-
-    if (!holidays.includes(formattedDate)) return;
-
-    info.el.classList.add(styles.holidayCell);
-
-    const dayNumber = info.el.querySelector(".fc-daygrid-day-number");
-    if (dayNumber) {
-      dayNumber.classList.add(styles.holidayDateNumber);
-    }
-  };
-
-  return DayCellDidMount;
-};
-
 export const getClassSlotTimesForCalendar = () => {
   // Step 1: Get the user's timezone offset from UTC in minutes
   const timezoneOffsetMinutes = new Date().getTimezoneOffset();
