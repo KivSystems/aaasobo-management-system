@@ -355,6 +355,8 @@ type InstructorCalendarClientProps = {
     start: string;
     end: string;
   };
+  businessSchedule: BusinessSchedule[];
+  colorsForEvents: { event: string; color: string }[];
 };
 
 type RebookableClass = {

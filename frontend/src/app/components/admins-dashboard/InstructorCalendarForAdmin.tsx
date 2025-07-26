@@ -10,6 +10,10 @@ import {
 import Loading from "../elements/loading/Loading";
 import { getValidRange } from "@/app/helper/utils/calendarUtils";
 import InstructorCalendarClient from "../instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendarClient";
+import {
+  getAllBusinessSchedules,
+  getAllEvents,
+} from "@/app/helper/api/adminsApi";
 
 function InstructorCalendarForAdmin({
   adminId,
@@ -29,6 +33,10 @@ function InstructorCalendarForAdmin({
     start: string;
     end: string;
   } | null>(null);
+  const [schedule, setSchedule] = useState<any>([]);
+  const [colorsForEvents, setColorsForEvents] = useState<
+    { event: string; color: string }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,17 +44,32 @@ function InstructorCalendarForAdmin({
     if (!instructorId) return;
 
     try {
-      const [classes, instructorAvailabilities, instructorProfile] =
-        await Promise.all([
-          getCalendarClasses(instructorId),
-          getCalendarAvailabilities(instructorId),
-          getInstructorProfile(instructorId),
-        ]);
+      const [
+        classes,
+        instructorAvailabilities,
+        instructorProfile,
+        schedule,
+        events,
+      ] = await Promise.all([
+        getCalendarClasses(instructorId),
+        getCalendarAvailabilities(instructorId),
+        getInstructorProfile(instructorId),
+        getAllBusinessSchedules(),
+        getAllEvents(),
+      ]);
 
       setInstructorCalendarEvents([...classes, ...instructorAvailabilities]);
       const instructorCreatedAt = instructorProfile.createdAt;
       const calendarValidRange = getValidRange(instructorCreatedAt, 3);
       setCalendarValidRange(calendarValidRange);
+      setSchedule(schedule);
+      const colorsForEvents: { event: string; color: string }[] = events
+        .map((e: EventColor) => ({
+          event: e.Event,
+          color: e["Color Code"],
+        }))
+        .filter((e: { event: string; color: string }) => e.color !== "#FFFFFF"); // Filter out events with white color (#FFFFFF)
+      setColorsForEvents(colorsForEvents);
     } catch (error) {
       setError("Failed to load classes. Please try again.");
     } finally {
@@ -81,6 +104,8 @@ function InstructorCalendarForAdmin({
             instructorCalendarEvents={instructorCalendarEvents}
             validRange={calendarValidRange!}
             isAdminAuthenticated={isAdminAuthenticated}
+            businessSchedule={schedule.organizedData}
+            colorsForEvents={colorsForEvents}
           />
         </>
       )}
