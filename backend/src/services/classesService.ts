@@ -6,6 +6,13 @@ import {
   FREE_TRIAL_BOOKING_HOURS,
   REGULAR_REBOOKING_HOURS,
 } from "../helper/commonUtils";
+import {
+  CANCELED_CLASS_COLOR,
+  COMPLETED_CLASS_COLOR,
+  FREE_TRIAL_CLASS_COLOR,
+  REBOOKED_CLASS_COLOR,
+  REGULAR_CLASS_COLOR,
+} from "../helper/colors";
 
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
@@ -582,11 +589,11 @@ export const getCustomerClasses = async (customerId: number) => {
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const statusColorMap: Partial<Record<Status, string>> = {
-      booked: "#FFEBEF", // Cherry Blossom
-      rebooked: "#FFFACD", // Gentle, light yellow
-      canceledByCustomer: "#FFEBE0",
-      canceledByInstructor: "#FFEBE0",
-      completed: "#B5C4AB",
+      booked: REGULAR_CLASS_COLOR,
+      rebooked: REBOOKED_CLASS_COLOR,
+      canceledByCustomer: CANCELED_CLASS_COLOR,
+      canceledByInstructor: CANCELED_CLASS_COLOR,
+      completed: COMPLETED_CLASS_COLOR,
     };
 
     const isBookedOrRebooked =
@@ -594,7 +601,7 @@ export const getCustomerClasses = async (customerId: number) => {
 
     const color =
       classItem.isFreeTrial && isBookedOrRebooked
-        ? "#E7FBD9" // green
+        ? FREE_TRIAL_CLASS_COLOR
         : statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
@@ -651,10 +658,10 @@ export const getCalendarClasses = async (instructorId: number) => {
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const statusColorMap: Partial<Record<Status, string>> = {
-      booked: "#FFEBEF", // Cherry Blossom
-      rebooked: "#FFFACD", // Gentle, light yellow
-      canceledByInstructor: "#FFEBE0",
-      completed: "#B5C4AB",
+      booked: REGULAR_CLASS_COLOR,
+      rebooked: REBOOKED_CLASS_COLOR,
+      canceledByInstructor: CANCELED_CLASS_COLOR,
+      completed: COMPLETED_CLASS_COLOR,
     };
 
     const isBookedOrRebooked =
@@ -662,7 +669,7 @@ export const getCalendarClasses = async (instructorId: number) => {
 
     const color =
       classItem.isFreeTrial && isBookedOrRebooked
-        ? "#E7FBD9" // green
+        ? FREE_TRIAL_CLASS_COLOR
         : statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
