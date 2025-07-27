@@ -27,7 +27,7 @@ import { getInstructorClasses } from "../../src/controllers/classesController";
 import { getCalendarAvailabilitiesController } from "../../src/controllers/instructorsAvailabilityController";
 import {
   getInstructorSchedulesController,
-  getScheduleController,
+  getInstructorScheduleController,
   createInstructorScheduleController,
 } from "../../src/controllers/instructorScheduleController";
 import {
@@ -102,7 +102,7 @@ instructorsRouter.get("/:id/schedules", parseId, (req, res) => {
 });
 
 instructorsRouter.get("/:id/schedules/:scheduleId", parseId, (req, res) => {
-  getScheduleController(req as RequestWithId, res);
+  getInstructorScheduleController(req as RequestWithId, res);
 });
 
 instructorsRouter.post(

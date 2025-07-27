@@ -5,6 +5,7 @@ import InstructorProfile from "@/app/components/instructors-dashboard/instructor
 import { useTabSelect } from "@/app/hooks/useTabSelect";
 import AvailabilityCalendar from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/AvailabilityCalendar";
 import InstructorSchedule from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/InstructorSchedule";
+import VersionedInstructorSchedule from "./instructor-schedule/VersionedInstructorSchedule";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function InstructorTabs({
@@ -55,6 +56,10 @@ export default function InstructorTabs({
     {
       label: "Instructor's Schedule",
       content: <InstructorSchedule instructorId={instructorId} />,
+    },
+    {
+      label: "Versioned Schedule (WIP)",
+      content: <VersionedInstructorSchedule instructorId={instructorId} />,
     },
   ];
 
