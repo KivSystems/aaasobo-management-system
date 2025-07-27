@@ -1,4 +1,8 @@
-import { DayCellContentArg, EventContentArg } from "@fullcalendar/core";
+import {
+  DayCellContentArg,
+  DayCellMountArg,
+  EventContentArg,
+} from "@fullcalendar/core";
 import styles from "../../components/features/calendarView/CalendarView.module.scss";
 import Image from "next/image";
 import {
@@ -126,3 +130,22 @@ export const getClassSlotTimesForCalendar = () => {
     end: classesEndTime,
   };
 };
+
+export function getDayCellColorHandler(
+  businessSchedule: { date: string; color: string }[],
+): (arg: DayCellMountArg) => void {
+  const dateToColorMap = new Map<string, string>(
+    businessSchedule.map((item) => [item.date, item.color]),
+  );
+
+  return (arg: DayCellMountArg) => {
+    if (arg.isOther) return;
+
+    const dateStr = arg.date.toISOString().split("T")[0];
+    const color = dateToColorMap.get(dateStr);
+
+    if (color) {
+      arg.el.style.backgroundColor = color;
+    }
+  };
+}

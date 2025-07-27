@@ -10,6 +10,7 @@ import { DayCellMountArg, EventClickArg } from "@fullcalendar/core";
 import {
   createRenderEventContent,
   getClassSlotTimesForCalendar,
+  getDayCellColorHandler,
 } from "@/app/helper/utils/calendarUtils";
 import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLegend";
 
@@ -39,24 +40,7 @@ const InstructorCalendarClient = ({
 
   const classSlotTimes = getClassSlotTimesForCalendar();
 
-  // Map to store date to color mapping
-  const dateToColorMap = new Map<string, string>(
-    businessSchedule.map((item) => [item.date, item.color]),
-  );
-
-  // Set color for each date in the calendar
-  const dayCellColors = (arg: DayCellMountArg) => {
-    // Skip if the cell is not in the valid range (in previous or next month)
-    if (arg.isOther) {
-      return;
-    }
-    const dateStr = arg.date.toISOString().split("T")[0];
-    const color = dateToColorMap.get(dateStr);
-    // Set background color for the cell
-    if (color) {
-      arg.el.style.backgroundColor = color;
-    }
-  };
+  const dayCellColors = getDayCellColorHandler(businessSchedule);
 
   return (
     <>

@@ -12,6 +12,7 @@ import Modal from "@/app/components/elements/modal/Modal";
 import ClassDetail from "@/app/components/features/classDetail/ClassDetail";
 import {
   createRenderEventContent,
+  getDayCellColorHandler,
   getValidRange,
 } from "@/app/helper/utils/calendarUtils";
 import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLegend";
@@ -44,24 +45,7 @@ export default function CustomerCalendar({
     setIsClassDetailModalOpen(false);
   };
 
-  // Map to store date to color mapping
-  const dateToColorMap = new Map<string, string>(
-    businessSchedule.map((item) => [item.date, item.color]),
-  );
-
-  // Set color for each date in the calendar
-  const dayCellColors = (arg: DayCellMountArg) => {
-    // Skip if the cell is not in the valid range (in previous or next month)
-    if (arg.isOther) {
-      return;
-    }
-    const dateStr = arg.date.toISOString().split("T")[0];
-    const color = dateToColorMap.get(dateStr);
-    // Set background color for the cell
-    if (color) {
-      arg.el.style.backgroundColor = color;
-    }
-  };
+  const dayCellColors = getDayCellColorHandler(businessSchedule);
 
   return (
     <>
