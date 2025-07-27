@@ -6,19 +6,23 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
-import { EventClickArg } from "@fullcalendar/core";
+import { DayCellMountArg, EventClickArg } from "@fullcalendar/core";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import Modal from "@/app/components/elements/modal/Modal";
 import ClassDetail from "@/app/components/features/classDetail/ClassDetail";
 import {
   createRenderEventContent,
+  getDayCellColorHandler,
   getValidRange,
 } from "@/app/helper/utils/calendarUtils";
+import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLegend";
 
 export default function CustomerCalendar({
   customerId,
   classes,
   createdAt,
+  businessSchedule,
+  colorsForEvents,
 }: CustomerCalendarProps) {
   const [isClassDetailModalOpen, setIsClassDetailModalOpen] = useState(false);
   const [classDetail, setClassDetail] = useState<CustomerClass | null>(null);
@@ -41,6 +45,8 @@ export default function CustomerCalendar({
     setIsClassDetailModalOpen(false);
   };
 
+  const dayCellColors = getDayCellColorHandler(businessSchedule);
+
   return (
     <>
       <FullCalendar
@@ -60,8 +66,6 @@ export default function CustomerCalendar({
         eventClick={handleEventClick}
         eventContent={renderCustomerEventContent}
         validRange={validRange}
-        // TODO: After the 'Holiday' table is created, apply the styling to them
-        // dayCellDidMount={dayCellDidMount}
         locale={language === "ja" ? "ja" : "en"}
         dayCellContent={(arg) => {
           return { html: String(arg.date.getDate()) };
@@ -72,7 +76,12 @@ export default function CustomerCalendar({
         selectable={false}
         eventDisplay="block"
         allDaySlot={false}
+        dayCellDidMount={dayCellColors}
       />
+
+      {colorsForEvents.length > 0 && (
+        <CalendarLegend colorsForEvents={colorsForEvents} language={language} />
+      )}
 
       <Modal
         isOpen={isClassDetailModalOpen}

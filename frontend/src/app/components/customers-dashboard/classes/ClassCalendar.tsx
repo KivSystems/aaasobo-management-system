@@ -4,6 +4,10 @@ import ClassActions from "./classActions/ClassActions";
 import CustomerCalendar from "./customerCalensar/CustomerCalendar";
 import { getClasses, getCustomerById } from "@/app/helper/api/customersApi";
 import WelcomeModalController from "./welcomeModalController/WelcomModalController";
+import {
+  getAllBusinessSchedules,
+  getAllEvents,
+} from "@/app/helper/api/adminsApi";
 
 export default async function ClassCalendar({
   customerId,
@@ -12,10 +16,22 @@ export default async function ClassCalendar({
   customerId: number;
   isAdminAuthenticated?: boolean;
 }) {
-  const classes: CustomerClass[] | [] = await getClasses(customerId);
-  const customer = await getCustomerById(customerId);
-  const createdAt: string = customer.createdAt;
+  const [classes, customer, schedule, events] = await Promise.all([
+    getClasses(customerId),
+    getCustomerById(customerId),
+    getAllBusinessSchedules(),
+    getAllEvents(),
+  ]);
+
+  const createdAt = customer.createdAt;
   const hasSeenWelcomeModal = customer.hasSeenWelcome;
+
+  const colorsForEvents: { event: string; color: string }[] = events
+    .map((e: EventColor) => ({
+      event: e.Event,
+      color: e["Color Code"],
+    }))
+    .filter((e: { event: string; color: string }) => e.color !== "#FFFFFF"); // Filter out events with white color (#FFFFFF)
 
   return (
     <main className={styles.calendarContainer}>
@@ -28,8 +44,8 @@ export default async function ClassCalendar({
         customerId={customerId}
         classes={classes}
         createdAt={createdAt}
-        // TODO: Fetch holidays from the backend
-        // holidays={["2024-07-29", "2024-07-30", "2024-07-31"]}
+        businessSchedule={schedule.organizedData}
+        colorsForEvents={colorsForEvents}
       />
 
       {!hasSeenWelcomeModal && (

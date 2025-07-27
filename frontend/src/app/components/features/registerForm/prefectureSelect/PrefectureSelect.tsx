@@ -3,7 +3,7 @@ import styles from "./PrefectureSelect.module.scss";
 import { HomeIcon } from "@heroicons/react/24/outline";
 import FormValidationMessage from "@/app/components/elements/formValidationMessage/FormValidationMessage";
 import { ChangeEvent, memo, useState } from "react";
-import { getLocalizedPrefecture } from "@/app/helper/utils/stringUtils";
+import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 
 const PrefectureSelect = ({
   onChange,
@@ -43,10 +43,7 @@ const PrefectureSelect = ({
             {placeHolder}
           </option>
           {prefectures.map((prefecture) => {
-            const localizedPrefecture = getLocalizedPrefecture(
-              prefecture,
-              language,
-            );
+            const localizedPrefecture = getLocalizedText(prefecture, language);
             return (
               <option key={prefecture} value={prefecture}>
                 {localizedPrefecture}

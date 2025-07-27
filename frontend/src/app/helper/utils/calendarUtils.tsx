@@ -1,4 +1,8 @@
-import { DayCellContentArg, EventContentArg } from "@fullcalendar/core";
+import {
+  DayCellContentArg,
+  DayCellMountArg,
+  EventContentArg,
+} from "@fullcalendar/core";
 import styles from "../../components/features/calendarView/CalendarView.module.scss";
 import Image from "next/image";
 import {
@@ -88,28 +92,6 @@ export const getValidRange = (createdAt: string, monthsAhead: number) => {
   };
 };
 
-// TODO: Applies custom styles to calendar cells based on holiday dates
-export const createDayCellDidMount = (
-  holidays: string[],
-  styles: { [key: string]: string },
-) => {
-  const DayCellDidMount = (info: DayCellContentArg) => {
-    const date = new Date(info.date);
-    const formattedDate = date.toISOString().split("T")[0];
-
-    if (!holidays.includes(formattedDate)) return;
-
-    info.el.classList.add(styles.holidayCell);
-
-    const dayNumber = info.el.querySelector(".fc-daygrid-day-number");
-    if (dayNumber) {
-      dayNumber.classList.add(styles.holidayDateNumber);
-    }
-  };
-
-  return DayCellDidMount;
-};
-
 export const getClassSlotTimesForCalendar = () => {
   // Step 1: Get the user's timezone offset from UTC in minutes
   const timezoneOffsetMinutes = new Date().getTimezoneOffset();
@@ -148,3 +130,22 @@ export const getClassSlotTimesForCalendar = () => {
     end: classesEndTime,
   };
 };
+
+export function getDayCellColorHandler(
+  businessSchedule: { date: string; color: string }[],
+): (arg: DayCellMountArg) => void {
+  const dateToColorMap = new Map<string, string>(
+    businessSchedule.map((item) => [item.date, item.color]),
+  );
+
+  return (arg: DayCellMountArg) => {
+    if (arg.isOther) return;
+
+    const dateStr = arg.date.toISOString().split("T")[0];
+    const color = dateToColorMap.get(dateStr);
+
+    if (color) {
+      arg.el.style.backgroundColor = color;
+    }
+  };
+}

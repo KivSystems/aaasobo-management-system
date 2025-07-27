@@ -342,6 +342,8 @@ type CustomerCalendarProps = {
   customerId: number;
   classes: CustomerClass[] | [];
   createdAt: string;
+  businessSchedule: BusinessSchedule[];
+  colorsForEvents: { event: string; color: string }[];
 };
 
 type InstructorCalendarClientProps = {
@@ -353,6 +355,8 @@ type InstructorCalendarClientProps = {
     start: string;
     end: string;
   };
+  businessSchedule: BusinessSchedule[];
+  colorsForEvents: { event: string; color: string }[];
 };
 
 type RebookableClass = {
@@ -565,6 +569,13 @@ type WelcomeModalProps = {
   language: LanguageType;
   setIsWelcomeModalOpen: Dispatch<SetStateAction<boolean>>;
   isAdminAuthenticated?: boolean;
+};
+
+type EventColor = {
+  No: number;
+  ID: number;
+  Event: string;
+  "Color Code": string;
 };
 
 type ClassDetailsProps = {

@@ -390,49 +390,6 @@ export const cancelClassController = async (req: Request, res: Response) => {
   }
 };
 
-// TODO: Delete this controller after finishing refactoring instructor class details page
-export const getInstructorClasses = async (
-  req: RequestWithId,
-  res: Response,
-) => {
-  try {
-    const classes = await fetchInstructorClasses(req.id);
-
-    const classesData = classes.map((eachClass) => {
-      const { id, dateTime, customer, instructor, status, classAttendance } =
-        eachClass;
-
-      return {
-        id,
-        dateTime,
-        customerName: customer.name,
-        // "Pending" or "declined" free trial classes do not have an instructor, so use fallback values
-        classURL: instructor?.classURL,
-        meetingId: instructor?.meetingId,
-        passcode: instructor?.passcode,
-        attendingChildren: classAttendance.map((classAttendance) => ({
-          id: classAttendance.children.id,
-          name: classAttendance.children.name,
-          birthdate: classAttendance.children.birthdate,
-          personalInfo: classAttendance.children.personalInfo,
-        })),
-        customerChildren: customer.children.map((child) => ({
-          id: child.id,
-          name: child.name,
-          birthdate: child.birthdate,
-          personalInfo: child.personalInfo,
-        })),
-        status,
-      };
-    });
-
-    res.json({ classes: classesData });
-  } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to fetch classes." });
-  }
-};
-
 export const createClassesForMonthController = async (
   req: Request,
   res: Response,

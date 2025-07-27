@@ -23,7 +23,6 @@ import {
   createInstructorUnavailability,
   getInstructorUnavailabilities,
 } from "../../src/controllers/instructorsUnavailabilityController";
-import { getInstructorClasses } from "../../src/controllers/classesController";
 import { getCalendarAvailabilitiesController } from "../../src/controllers/instructorsAvailabilityController";
 import {
   getInstructorSchedulesController,
@@ -76,10 +75,6 @@ instructorsRouter.get("/:id/recurringAvailabilityById", parseId, (req, res) =>
 );
 instructorsRouter.get("/", getAllInstructorsController);
 
-// TODO: Delete this route after finishing refactoring instructor class details page
-instructorsRouter.get("/:id/classes", parseId, (req, res) => {
-  getInstructorClasses(req as RequestWithId, res);
-});
 instructorsRouter.get(
   "/:id/classes/:classId/same-date",
   parseId,

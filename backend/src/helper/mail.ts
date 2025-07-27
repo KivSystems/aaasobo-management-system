@@ -113,8 +113,7 @@ export const resendVerificationEmail = async (
 
   try {
     const response: CreateEmailResponse = await resend.emails.send({
-      // TODO: Replace 'onboarding@resend.dev' with KIV's verified email address before going live.
-      from: "onboarding@resend.dev", // Resend-provided email
+      from: `${CONTACT_EMAIL}`,
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】メールアドレス認証リンクを再送しました / We've re-sent your email confirmation link",
@@ -216,8 +215,7 @@ export const sendPasswordResetEmail = async (
 
   try {
     const response: CreateEmailResponse = await resend.emails.send({
-      // TODO: Replace 'onboarding@resend.dev' with KIV's verified email address before going live.
-      from: "onboarding@resend.dev", // Resend-provided email
+      from: `${CONTACT_EMAIL}`,
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】パスワード再設定のお知らせ / Password Reset Notification",
