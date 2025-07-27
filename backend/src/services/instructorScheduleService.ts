@@ -1,11 +1,10 @@
 import { prisma } from "../../prisma/prismaClient";
 
-// Get all schedule versions for an instructor (without slot details)
 export const getInstructorSchedules = async (instructorId: number) => {
   try {
     return await prisma.instructorSchedule.findMany({
       where: { instructorId },
-      orderBy: { effectiveFrom: "asc" },
+      orderBy: { effectiveFrom: "desc" },
     });
   } catch (error) {
     console.error("Database Error:", error);
@@ -13,20 +12,20 @@ export const getInstructorSchedules = async (instructorId: number) => {
   }
 };
 
-// Get all slots for a specific schedule
-export const getScheduleSlots = async (scheduleId: number) => {
+export const getScheduleWithSlots = async (scheduleId: number) => {
   try {
-    return await prisma.instructorSlot.findMany({
-      where: { scheduleId },
-      orderBy: [{ weekday: "asc" }, { startTime: "asc" }],
+    return await prisma.instructorSchedule.findUnique({
+      where: { id: scheduleId },
+      include: {
+        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+      },
     });
   } catch (error) {
     console.error("Database Error:", error);
-    throw new Error("Failed to fetch schedule slots.");
+    throw new Error("Failed to fetch schedule with slots.");
   }
 };
 
-// Create a new schedule version for an instructor
 export const createInstructorSchedule = async (data: {
   instructorId: number;
   effectiveFrom: Date;
@@ -37,26 +36,25 @@ export const createInstructorSchedule = async (data: {
 }) => {
   try {
     return await prisma.$transaction(async (tx) => {
-      // Find current active schedule to end it
-      const currentActiveSchedule = await tx.instructorSchedule.findUnique({
+      // Find the currently active schedule (effectiveTo: null)
+      // Note: This should be findUnique since we have @@unique([instructorId, effectiveTo]),
+      // but Prisma doesn't support null values in compound unique constraints with findUnique.
+      // Using findFirst is safe here as the DB constraint ensures uniqueness.
+      const currentActiveSchedule = await tx.instructorSchedule.findFirst({
         where: {
-          instructorId_effectiveTo: {
-            instructorId: data.instructorId,
-            effectiveTo: null as any, // Currently active (no end date)
-          },
+          instructorId: data.instructorId,
+          effectiveTo: null,
         },
       });
 
       // If there's an active schedule, end it
       if (currentActiveSchedule) {
-        // Set end date to new schedule start (half-open interval)
         await tx.instructorSchedule.update({
           where: { id: currentActiveSchedule.id },
           data: { effectiveTo: data.effectiveFrom },
         });
       }
 
-      // Create the new schedule
       const schedule = await tx.instructorSchedule.create({
         data: {
           instructorId: data.instructorId,
@@ -73,7 +71,6 @@ export const createInstructorSchedule = async (data: {
         })),
       });
 
-      // Return the created schedule with slots
       return await tx.instructorSchedule.findUnique({
         where: { id: schedule.id },
         include: { slots: true },

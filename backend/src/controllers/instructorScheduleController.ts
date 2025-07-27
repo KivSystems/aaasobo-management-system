@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import {
   getInstructorSchedules,
-  getScheduleSlots,
+  getScheduleWithSlots,
   createInstructorSchedule,
 } from "../services/instructorScheduleService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
@@ -11,8 +11,7 @@ export const getInstructorSchedulesController = async (
   res: Response,
 ) => {
   try {
-    const instructorId = req.id;
-    const schedules = await getInstructorSchedules(instructorId);
+    const schedules = await getInstructorSchedules(req.id);
 
     res.status(200).json({
       message: "Instructor schedule versions retrieved successfully",
@@ -27,7 +26,7 @@ export const getInstructorSchedulesController = async (
   }
 };
 
-export const getScheduleController = async (
+export const getInstructorScheduleController = async (
   req: RequestWithId,
   res: Response,
 ) => {
@@ -40,16 +39,21 @@ export const getScheduleController = async (
       });
     }
 
-    const slots = await getScheduleSlots(scheduleId);
+    const schedule = await getScheduleWithSlots(scheduleId);
+    if (!schedule) {
+      return res.status(404).json({
+        message: "Schedule not found",
+      });
+    }
 
     res.status(200).json({
-      message: "Schedule slots retrieved successfully",
-      data: slots,
+      message: "Schedule retrieved successfully",
+      data: schedule,
     });
   } catch (error) {
-    console.error("Error fetching schedule slots:", error);
+    console.error("Error fetching schedule:", error);
     res.status(500).json({
-      message: "Failed to fetch schedule slots",
+      message: "Failed to fetch schedule",
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }
@@ -60,7 +64,6 @@ export const createInstructorScheduleController = async (
   res: Response,
 ) => {
   try {
-    const instructorId = req.id;
     const { effectiveFrom, slots } = req.body;
 
     if (!effectiveFrom || !slots || !Array.isArray(slots)) {
@@ -97,7 +100,7 @@ export const createInstructorScheduleController = async (
     }
 
     const schedule = await createInstructorSchedule({
-      instructorId,
+      instructorId: req.id,
       effectiveFrom: effectiveFromDate,
       slots: slots.map((slot: any) => ({
         weekday: slot.weekday,
