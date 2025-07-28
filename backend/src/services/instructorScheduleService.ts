@@ -3,6 +3,7 @@ import {
   createJSTMidnight,
   assertIsJSTMidnight,
   toJSTDateString,
+  JAPAN_TIME_DIFF,
 } from "../helper/dateUtils";
 
 export const getInstructorSchedules = async (instructorId: number) => {
@@ -149,7 +150,9 @@ export const getInstructorAvailableSlots = async (
       if (effectiveSchedule) {
         // Calculate the day of the week in JST timezone
         // Since currentDate represents JST midnight (09:00 UTC), we need to adjust for JST
-        const jstDate = new Date(currentDate.getTime() - 9 * 60 * 60 * 1000);
+        const jstDate = new Date(
+          currentDate.getTime() - JAPAN_TIME_DIFF * 60 * 60 * 1000,
+        );
         const dayOfWeek = jstDate.getUTCDay(); // 0 = Sunday, 6 = Saturday
         const jstDateString = jstDate.toISOString().split("T")[0];
 
