@@ -139,7 +139,7 @@ function InstructorProfile({
                   </div>
                 </div>
                 <div>
-                  <p>Date of Birth</p>
+                  <p>Birthday</p>
                   {isEditing ? (
                     <InputField
                       name="birthdate"
@@ -156,7 +156,7 @@ function InstructorProfile({
                   )}
                 </div>
                 <div>
-                  <p>Class</p>
+                  <p>Available Class</p>
                   {isEditing ? (
                     <textarea
                       id="workingTime"
