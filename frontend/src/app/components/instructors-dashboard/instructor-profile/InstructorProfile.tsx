@@ -6,7 +6,12 @@ import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
 import { updateInstructorAction } from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
+import TextAreaInput from "../../elements/textAreaInput/TextAreaInput";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
+import {
+  formatBirthdateToISO,
+  getShortMonth,
+} from "@/app/helper/utils/dateUtils";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import {
   EnvelopeIcon,
@@ -80,7 +85,6 @@ function InstructorProfile({
 
   return (
     <>
-      <h2>Profile Page</h2>
       <div className={styles.container}>
         {latestInstructor ? (
           <form action={formAction} className={styles.profileCard}>
@@ -93,7 +97,7 @@ function InstructorProfile({
               className={styles.pic}
             />
 
-            {/* Instructor name */}
+            {/* Name*/}
             <div className={styles.instructorName__nameSection}>
               <p className={styles.instructorName__text}>Name</p>
               {isEditing ? (
@@ -104,31 +108,117 @@ function InstructorProfile({
                   className={`${styles.instructorName__inputField} ${isEditing ? styles.editable : ""}`}
                 />
               ) : (
-                <h3 className={styles.instructorName__name}>
-                  {latestInstructor.name}
-                </h3>
+                <>
+                  <h3 className={styles.instructorName__name}>
+                    {latestInstructor.name}
+                  </h3>
+                </>
               )}
             </div>
 
-            {/* Instructor nickname */}
+            {/* Nickname, Date of Birth, Life History, Favorite Food, Hobby, Message For Children, Skill */}
             <div className={styles.insideContainer}>
-              <UserCircleIcon className={styles.icon} />
               <div>
-                <p>Nickname</p>
+                <UserCircleIcon className={styles.icon} />
+                <div>
+                  <p>Nickname</p>
+                  {isEditing ? (
+                    <InputField
+                      name="nickname"
+                      value={latestInstructor.nickname}
+                      onChange={(e) => handleInputChange(e, "nickname")}
+                      className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4>{latestInstructor.nickname}</h4>
+                  )}
+                </div>
+              </div>
+              <div>
+                <p>Date of Birth</p>
                 {isEditing ? (
                   <InputField
-                    name="nickname"
-                    value={latestInstructor.nickname}
-                    onChange={(e) => handleInputChange(e, "nickname")}
+                    name="birthdate"
+                    type="date"
+                    value={formatBirthdateToISO(latestInstructor.birthdate)}
+                    onChange={(e) => handleInputChange(e, "birthdate")}
                     className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
-                  <h4>{latestInstructor.nickname}</h4>
+                  <h4>
+                    {getShortMonth(new Date(latestInstructor.birthdate))}{" "}
+                    {new Date(latestInstructor.birthdate).getDate()}
+                  </h4>
+                )}
+              </div>
+              <div>
+                <p>Life History</p>
+                {isEditing ? (
+                  <TextAreaInput
+                    name="lifeHistory"
+                    defaultValue={latestInstructor.lifeHistory}
+                    onChange={(e) => handleInputChange(e, "lifeHistory")}
+                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                  />
+                ) : (
+                  <h4>{latestInstructor.lifeHistory}</h4>
+                )}
+              </div>
+              <div>
+                <p>Favorite Food</p>
+                {isEditing ? (
+                  <TextAreaInput
+                    name="favoriteFood"
+                    defaultValue={latestInstructor.favoriteFood}
+                    onChange={(e) => handleInputChange(e, "favoriteFood")}
+                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                  />
+                ) : (
+                  <h4>{latestInstructor.favoriteFood}</h4>
+                )}
+              </div>
+              <div>
+                <p>Hobby</p>
+                {isEditing ? (
+                  <TextAreaInput
+                    name="hobby"
+                    defaultValue={latestInstructor.hobby}
+                    onChange={(e) => handleInputChange(e, "hobby")}
+                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                  />
+                ) : (
+                  <h4>{latestInstructor.hobby}</h4>
+                )}
+              </div>
+              <div>
+                <p>Message For Children</p>
+                {isEditing ? (
+                  <TextAreaInput
+                    name="messageForChildren"
+                    defaultValue={latestInstructor.messageForChildren}
+                    onChange={(e) => handleInputChange(e, "messageForChildren")}
+                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                  />
+                ) : (
+                  <h4>{latestInstructor.messageForChildren}</h4>
+                )}
+              </div>
+              <div>
+                <p>Skill</p>
+                {isEditing ? (
+                  <TextAreaInput
+                    name="skill"
+                    defaultValue={latestInstructor.skill}
+                    onChange={(e) => handleInputChange(e, "skill")}
+                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                  />
+                ) : (
+                  <h4>{latestInstructor.skill}</h4>
                 )}
               </div>
             </div>
 
-            {/* Instructor email */}
+            {/* Email */}
             <div className={styles.insideContainer}>
               <EnvelopeIcon className={styles.icon} />
               <div>
@@ -147,7 +237,7 @@ function InstructorProfile({
               </div>
             </div>
 
-            {/* Instructor Class URL, Meeting ID, and Passcode */}
+            {/* Class URL, Meeting ID, and Passcode */}
             <div className={styles.insideContainer}>
               <VideoCameraIcon className={styles.icon} />
               <div>

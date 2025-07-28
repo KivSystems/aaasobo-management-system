@@ -15,6 +15,13 @@ type Instructor = {
   unavailabilities: Availability[];
   email: string;
   nickname: string;
+  birthdate: string;
+  lifeHistory: string;
+  favoriteFood: string;
+  hobby: string;
+  messageForChildren: string;
+  workingTime: string;
+  skill: string;
   classURL: string;
   icon: string;
   meetingId: string;
