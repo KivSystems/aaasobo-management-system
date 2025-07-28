@@ -30,7 +30,7 @@ model Instructor {
   lifeHistory                     String
   favoriteFood                    String
   hobby                           String
-  messageForKids                  String
+  messageForChildren              String
   workingTime                     String
   skill                           String
   meetingId                       String                            @unique
