@@ -525,3 +525,46 @@ export const createInstructorSchedule = async (
     throw error;
   }
 };
+
+export type AvailableSlot = {
+  dateTime: string;
+  weekday: number;
+  startTime: string;
+};
+
+export const getInstructorAvailableSlots = async (
+  instructorId: number,
+  startDate: string,
+  endDate: string,
+): Promise<Response<{ availableSlots: AvailableSlot[] }>> => {
+  try {
+    const params = new URLSearchParams({
+      startDate,
+      endDate,
+    });
+
+    const response = await fetch(
+      `${BASE_URL}/${instructorId}/available-slots?${params}`,
+      {
+        cache: "no-store",
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { availableSlots: result.data };
+  } catch (error) {
+    console.error("Failed to fetch instructor available slots:", error);
+    throw error;
+  }
+};

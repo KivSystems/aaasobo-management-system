@@ -3,6 +3,7 @@ import {
   getInstructorSchedules,
   getScheduleWithSlots,
   createInstructorSchedule,
+  getInstructorAvailableSlots,
 } from "../services/instructorScheduleService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 
@@ -116,6 +117,38 @@ export const createInstructorScheduleController = async (
     console.error("Error creating schedule version:", error);
     res.status(500).json({
       message: "Failed to create schedule version",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const getInstructorAvailableSlotsController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        message: "startDate and endDate query parameters are required",
+      });
+    }
+
+    const availableSlots = await getInstructorAvailableSlots(
+      req.id,
+      startDate as string,
+      endDate as string,
+    );
+
+    res.status(200).json({
+      message: "Available slots retrieved successfully",
+      data: availableSlots,
+    });
+  } catch (error) {
+    console.error("Error fetching available slots:", error);
+    res.status(500).json({
+      message: "Failed to fetch available slots",
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }

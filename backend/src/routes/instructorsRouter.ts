@@ -28,6 +28,7 @@ import {
   getInstructorSchedulesController,
   getInstructorScheduleController,
   createInstructorScheduleController,
+  getInstructorAvailableSlotsController,
 } from "../../src/controllers/instructorScheduleController";
 import {
   getInstructorAbsencesController,
@@ -108,6 +109,10 @@ instructorsRouter.post(
     createInstructorScheduleController(req as RequestWithId, res);
   },
 );
+
+instructorsRouter.get("/:id/available-slots", parseId, (req, res) => {
+  getInstructorAvailableSlotsController(req as RequestWithId, res);
+});
 
 // Instructor absence routes
 instructorsRouter.get("/:id/absences", parseId, (req, res) => {
