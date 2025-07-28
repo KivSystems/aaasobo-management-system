@@ -9,6 +9,13 @@ export const registerInstructor = async (data: {
   email: string;
   password: string;
   icon: string;
+  birthdate: Date;
+  lifeHistory: string;
+  favoriteFood: string;
+  hobby: string;
+  messageForChildren: string;
+  workingTime: string;
+  skill: string;
   classURL: string;
   meetingId: string;
   passcode: string;
@@ -19,14 +26,21 @@ export const registerInstructor = async (data: {
   await prisma.instructor.create({
     data: {
       name: data.name,
+      nickname: data.nickname,
       email: data.email,
       password: hashedPassword,
+      birthdate: data.birthdate,
+      lifeHistory: data.lifeHistory,
+      favoriteFood: data.favoriteFood,
+      hobby: data.hobby,
+      messageForChildren: data.messageForChildren,
+      workingTime: data.workingTime,
+      skill: data.skill,
       icon: data.icon,
       classURL: data.classURL,
       meetingId: data.meetingId,
       passcode: data.passcode,
       introductionURL: data.introductionURL,
-      nickname: data.nickname,
     },
   });
 
