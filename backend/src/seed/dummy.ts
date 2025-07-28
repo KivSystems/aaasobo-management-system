@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { createJSTMidnight } from "../helper/dateUtils";
 
 const prisma = new PrismaClient();
 
@@ -1266,8 +1267,8 @@ async function insertInstructorSchedules() {
   const helenSchedule1 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: new Date("2024-06-01"),
-      effectiveTo: new Date("2024-08-01"),
+      effectiveFrom: createJSTMidnight("2024-06-01"),
+      effectiveTo: createJSTMidnight("2024-08-01"),
     },
   });
 
@@ -1334,8 +1335,8 @@ async function insertInstructorSchedules() {
   const helenSchedule2 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: new Date("2024-08-01"),
-      effectiveTo: new Date("2025-01-01"),
+      effectiveFrom: createJSTMidnight("2024-08-01"),
+      effectiveTo: createJSTMidnight("2025-01-01"),
     },
   });
 
@@ -1412,7 +1413,7 @@ async function insertInstructorSchedules() {
   const helenSchedule3 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: new Date("2025-01-01"),
+      effectiveFrom: createJSTMidnight("2025-01-01"),
       effectiveTo: null, // Current schedule
     },
   });
@@ -1490,7 +1491,7 @@ async function insertInstructorSchedules() {
   const elianSchedule = await prisma.instructorSchedule.create({
     data: {
       instructorId: elian.id,
-      effectiveFrom: new Date("2024-08-01"),
+      effectiveFrom: createJSTMidnight("2024-08-01"),
       effectiveTo: null,
     },
   });

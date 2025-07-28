@@ -73,6 +73,7 @@ export const createInstructorScheduleController = async (
       });
     }
 
+    // Validate effectiveFrom is a valid date
     const effectiveFromDate = new Date(effectiveFrom);
     if (isNaN(effectiveFromDate.getTime())) {
       return res.status(400).json({
@@ -135,10 +136,33 @@ export const getInstructorAvailableSlotsController = async (
       });
     }
 
+    // Validate and parse dates
+    const startDateObj = new Date(startDate as string);
+    const endDateObj = new Date(endDate as string);
+
+    if (isNaN(startDateObj.getTime())) {
+      return res.status(400).json({
+        message: "Invalid startDate format",
+      });
+    }
+
+    if (isNaN(endDateObj.getTime())) {
+      return res.status(400).json({
+        message: "Invalid endDate format",
+      });
+    }
+
+    // Validate date range
+    if (startDateObj >= endDateObj) {
+      return res.status(400).json({
+        message: "startDate must be before endDate",
+      });
+    }
+
     const availableSlots = await getInstructorAvailableSlots(
       req.id,
-      startDate as string,
-      endDate as string,
+      startDateObj,
+      endDateObj,
     );
 
     res.status(200).json({

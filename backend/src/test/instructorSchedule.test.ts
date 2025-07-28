@@ -63,7 +63,7 @@ describe("Instructor Schedule", () => {
     const newSchedule = {
       id: 1,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-02-01"),
+      effectiveFrom: new Date("2025-02-01T09:00:00.000Z"), // JST midnight
       effectiveTo: null,
       slots: [
         {
@@ -86,7 +86,7 @@ describe("Instructor Schedule", () => {
       {
         id: 1,
         instructorId: instructor.id,
-        effectiveFrom: new Date("2025-02-01"),
+        effectiveFrom: new Date("2025-02-01T09:00:00.000Z"), // JST midnight
         effectiveTo: null,
       },
       newSchedule,
@@ -116,7 +116,7 @@ describe("Instructor Schedule", () => {
     expect(response.body.data).toMatchObject({
       id: 1,
       instructorId: instructor.id,
-      effectiveFrom: "2025-02-01T00:00:00.000Z",
+      effectiveFrom: "2025-02-01T09:00:00.000Z",
       effectiveTo: null,
       slots: [
         {
@@ -145,7 +145,7 @@ describe("Instructor Schedule", () => {
     const existingSchedule = {
       id: 1,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-01-01"),
+      effectiveFrom: new Date("2025-01-01T09:00:00.000Z"), // JST midnight
       effectiveTo: null,
     };
 
@@ -153,7 +153,7 @@ describe("Instructor Schedule", () => {
     const newSchedule = {
       id: 2,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-03-01"),
+      effectiveFrom: new Date("2025-03-01T09:00:00.000Z"), // JST midnight
       effectiveTo: null,
       slots: [
         {
@@ -176,7 +176,7 @@ describe("Instructor Schedule", () => {
       {
         id: 2,
         instructorId: instructor.id,
-        effectiveFrom: new Date("2025-03-01"),
+        effectiveFrom: new Date("2025-03-01T09:00:00.000Z"), // JST midnight
         effectiveTo: null,
       },
       newSchedule,
@@ -206,7 +206,7 @@ describe("Instructor Schedule", () => {
     expect(response.body.data).toMatchObject({
       id: 2,
       instructorId: instructor.id,
-      effectiveFrom: "2025-03-01T00:00:00.000Z",
+      effectiveFrom: "2025-03-01T09:00:00.000Z",
       effectiveTo: null,
       slots: [
         {
@@ -227,7 +227,7 @@ describe("Instructor Schedule", () => {
     // Ensure the existing schedule has been ended
     expect(mockTxUpdate).toHaveBeenCalledWith({
       where: { id: existingSchedule.id },
-      data: { effectiveTo: new Date("2025-03-01") },
+      data: { effectiveTo: new Date("2025-03-01T09:00:00.000Z") },
     });
   });
 
@@ -280,13 +280,13 @@ describe("Instructor Schedule", () => {
       {
         id: 1,
         instructorId: instructor.id,
-        effectiveFrom: new Date("2025-01-01"),
-        effectiveTo: new Date("2025-03-01"),
+        effectiveFrom: new Date("2025-01-01T09:00:00.000Z"), // JST midnight
+        effectiveTo: new Date("2025-03-01T09:00:00.000Z"), // JST midnight
       },
       {
         id: 2,
         instructorId: instructor.id,
-        effectiveFrom: new Date("2025-03-01"),
+        effectiveFrom: new Date("2025-03-01T09:00:00.000Z"), // JST midnight
         effectiveTo: null, // Current active schedule
       },
     ];
@@ -304,8 +304,8 @@ describe("Instructor Schedule", () => {
     expect(versionsResponse.body.data[0]).toMatchObject({
       id: 1,
       instructorId: instructor.id,
-      effectiveFrom: "2025-01-01T00:00:00.000Z",
-      effectiveTo: "2025-03-01T00:00:00.000Z",
+      effectiveFrom: "2025-01-01T09:00:00.000Z",
+      effectiveTo: "2025-03-01T09:00:00.000Z",
     });
 
     // Step 2: Select a schedule version from the list
@@ -313,7 +313,7 @@ describe("Instructor Schedule", () => {
     const scheduleWithSlots = {
       id: 2,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-03-01"),
+      effectiveFrom: new Date("2025-03-01T09:00:00.000Z"), // JST midnight
       effectiveTo: null,
       slots: [
         {
@@ -348,7 +348,7 @@ describe("Instructor Schedule", () => {
     expect(scheduleDetailResponse.body.data).toMatchObject({
       id: 2,
       instructorId: instructor.id,
-      effectiveFrom: "2025-03-01T00:00:00.000Z",
+      effectiveFrom: "2025-03-01T09:00:00.000Z",
       effectiveTo: null,
       slots: [
         {
@@ -391,7 +391,7 @@ describe("Instructor Schedule", () => {
     const mockSchedule = {
       id: 1,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-07-01T00:00:00.000Z"),
+      effectiveFrom: new Date("2025-07-01T09:00:00.000Z"), // JST midnight
       effectiveTo: null,
       slots: [
         {
@@ -676,8 +676,8 @@ describe("Instructor Schedule", () => {
     const mockScheduleWithEndDate = {
       id: 1,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-07-01T00:00:00.000Z"),
-      effectiveTo: new Date("2025-07-15T00:00:00.000Z"), // Schedule ends July 15th
+      effectiveFrom: new Date("2025-07-01T09:00:00.000Z"), // JST midnight
+      effectiveTo: new Date("2025-07-15T09:00:00.000Z"), // JST midnight - Schedule ends July 15th
       slots: [
         {
           id: 1,
@@ -1098,8 +1098,8 @@ describe("Instructor Schedule", () => {
     const endedSchedule = {
       id: 1,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-06-01T00:00:00.000Z"),
-      effectiveTo: new Date("2025-07-01T00:00:00.000Z"), // Ended July 1st (exclusive) - adjacent to active schedule
+      effectiveFrom: new Date("2025-06-01T09:00:00.000Z"), // JST midnight
+      effectiveTo: new Date("2025-07-01T09:00:00.000Z"), // JST midnight - Ended July 1st (exclusive) - adjacent to active schedule
       slots: [
         {
           id: 1,
@@ -1119,7 +1119,7 @@ describe("Instructor Schedule", () => {
     const activeSchedule = {
       id: 2,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-07-01T00:00:00.000Z"),
+      effectiveFrom: new Date("2025-07-01T09:00:00.000Z"), // JST midnight
       effectiveTo: null, // Active schedule
       slots: [
         {
@@ -1368,8 +1368,8 @@ describe("Instructor Schedule", () => {
     const endedScheduleWithGap = {
       id: 1,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-06-01T00:00:00.000Z"),
-      effectiveTo: new Date("2025-06-20T00:00:00.000Z"), // Ends June 20th (exclusive)
+      effectiveFrom: new Date("2025-06-01T09:00:00.000Z"), // JST midnight
+      effectiveTo: new Date("2025-06-20T09:00:00.000Z"), // JST midnight - Ends June 20th (exclusive)
       slots: [
         {
           id: 1,
@@ -1389,7 +1389,7 @@ describe("Instructor Schedule", () => {
     const activeScheduleWithGap = {
       id: 2,
       instructorId: instructor.id,
-      effectiveFrom: new Date("2025-07-10T00:00:00.000Z"), // Starts July 10th (gap from June 20 - July 10)
+      effectiveFrom: new Date("2025-07-10T09:00:00.000Z"), // JST midnight - Starts July 10th (gap from June 20 - July 10)
       effectiveTo: null, // Active schedule
       slots: [
         {
