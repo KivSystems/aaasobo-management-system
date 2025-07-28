@@ -1,4 +1,10 @@
 import { prisma } from "../../prisma/prismaClient";
+import {
+  createJSTMidnight,
+  assertIsJSTMidnight,
+  toJSTDateString,
+  JAPAN_TIME_DIFF,
+} from "../helper/dateUtils";
 
 export const getInstructorSchedules = async (instructorId: number) => {
   try {
@@ -28,13 +34,17 @@ export const getScheduleWithSlots = async (scheduleId: number) => {
 
 export const createInstructorSchedule = async (data: {
   instructorId: number;
-  effectiveFrom: Date;
+  effectiveFrom: Date; // Date object representing JST date
   slots: Array<{
     weekday: number;
     startTime: Date;
   }>;
 }) => {
   try {
+    // Convert Date object to JST date string, then to JST midnight DateTime
+    const effectiveFromDateString = toJSTDateString(data.effectiveFrom);
+    const effectiveFromDateTime = createJSTMidnight(effectiveFromDateString);
+
     return await prisma.$transaction(async (tx) => {
       // Find the currently active schedule (effectiveTo: null)
       // Note: This should be findUnique since we have @@unique([instructorId, effectiveTo]),
@@ -51,14 +61,14 @@ export const createInstructorSchedule = async (data: {
       if (currentActiveSchedule) {
         await tx.instructorSchedule.update({
           where: { id: currentActiveSchedule.id },
-          data: { effectiveTo: data.effectiveFrom },
+          data: { effectiveTo: effectiveFromDateTime },
         });
       }
 
       const schedule = await tx.instructorSchedule.create({
         data: {
           instructorId: data.instructorId,
-          effectiveFrom: data.effectiveFrom,
+          effectiveFrom: effectiveFromDateTime,
           effectiveTo: null,
         },
       });
@@ -84,10 +94,14 @@ export const createInstructorSchedule = async (data: {
 
 export const getInstructorAvailableSlots = async (
   instructorId: number,
-  startDate: string,
-  endDate: string,
+  startDate: Date,
+  endDate: Date,
 ) => {
   try {
+    // Convert Date objects to JST date strings
+    const startDateString = toJSTDateString(startDate);
+    const endDateString = toJSTDateString(endDate);
+
     const schedules = await prisma.instructorSchedule.findMany({
       where: {
         instructorId,
@@ -97,11 +111,11 @@ export const getInstructorAvailableSlots = async (
         //
         // Since we can't use max/min functions in Prisma where clause, we decompose:
         // 1. effectiveFrom < endDate (schedule starts before range ends)
-        effectiveFrom: { lt: new Date(endDate) },
+        effectiveFrom: { lt: createJSTMidnight(endDateString) },
         // 2. startDate < effectiveTo OR effectiveTo is null (schedule ends after range starts, or is infinite)
         OR: [
           { effectiveTo: null },
-          { effectiveTo: { gt: new Date(startDate) } },
+          { effectiveTo: { gt: createJSTMidnight(startDateString) } },
         ],
       },
       include: {
@@ -112,32 +126,35 @@ export const getInstructorAvailableSlots = async (
 
     // Generate available slots for each day in the requested period
     const availableSlots = [];
-    // Treat input dates as JST (add 9 hours to convert from UTC)
-    const startDateObj = new Date(startDate + "T09:00:00Z");
-    const endDateObj = new Date(endDate + "T09:00:00Z");
+    // Treat input dates as JST (create JST midnight DateTime objects)
+    const startDateObj = createJSTMidnight(startDateString);
+    const endDateObj = createJSTMidnight(endDateString);
     const currentDate = new Date(startDateObj);
 
     while (currentDate < endDateObj) {
-      // Extract date string in JST
-      const currentDateString = currentDate.toISOString().split("T")[0];
-
       // Find the schedule that is effective for this specific date
       const effectiveSchedule = schedules.find((s) => {
-        const effectiveFrom = s.effectiveFrom.toISOString().split("T")[0];
-        const effectiveTo = s.effectiveTo
-          ? s.effectiveTo.toISOString().split("T")[0]
-          : null;
+        // Validate that effectiveFrom and effectiveTo are JST midnight
+        assertIsJSTMidnight(s.effectiveFrom);
+        if (s.effectiveTo) {
+          assertIsJSTMidnight(s.effectiveTo);
+        }
 
         // Check if current date is within the schedule's effective period
         return (
-          effectiveFrom <= currentDateString &&
-          (effectiveTo === null || currentDateString < effectiveTo)
+          s.effectiveFrom <= currentDate &&
+          (s.effectiveTo === null || currentDate < s.effectiveTo)
         );
       });
 
       if (effectiveSchedule) {
-        const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
-        const jstDateString = currentDate.toISOString().split("T")[0];
+        // Calculate the day of the week in JST timezone
+        // Since currentDate represents JST midnight (09:00 UTC), we need to adjust for JST
+        const jstDate = new Date(
+          currentDate.getTime() - JAPAN_TIME_DIFF * 60 * 60 * 1000,
+        );
+        const dayOfWeek = jstDate.getUTCDay(); // 0 = Sunday, 6 = Saturday
+        const jstDateString = jstDate.toISOString().split("T")[0];
 
         // Find slots for this day of the week
         const slotsForDay = effectiveSchedule.slots.filter(
@@ -166,8 +183,8 @@ export const getInstructorAvailableSlots = async (
         }
       }
 
-      // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
+      // Move to next day (add 24 hours to maintain JST midnight)
+      currentDate.setTime(currentDate.getTime() + 24 * 60 * 60 * 1000);
     }
 
     return availableSlots;
