@@ -6,6 +6,7 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import AvailabilityCalendar from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/AvailabilityCalendar";
 import InstructorSchedule from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/InstructorSchedule";
 import VersionedInstructorSchedule from "./instructor-schedule/VersionedInstructorSchedule";
+import VersionedAvailabilityCalendar from "./instructor-schedule/VersionedAvailabilityCalendar";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function InstructorTabs({
@@ -60,6 +61,10 @@ export default function InstructorTabs({
     {
       label: "Versioned Schedule (WIP)",
       content: <VersionedInstructorSchedule instructorId={instructorId} />,
+    },
+    {
+      label: "Versioned Availability (WIP)",
+      content: <VersionedAvailabilityCalendar instructorId={instructorId} />,
     },
   ];
 

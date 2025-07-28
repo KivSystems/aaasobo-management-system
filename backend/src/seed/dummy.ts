@@ -1266,8 +1266,8 @@ async function insertInstructorSchedules() {
   const helenSchedule1 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: new Date("2024-06-01T09:00:00Z"),
-      effectiveTo: new Date("2024-08-01T09:00:00Z"),
+      effectiveFrom: new Date("2024-06-01"),
+      effectiveTo: new Date("2024-08-01"),
     },
   });
 
@@ -1334,8 +1334,8 @@ async function insertInstructorSchedules() {
   const helenSchedule2 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: new Date("2024-08-01T09:00:00Z"),
-      effectiveTo: new Date("2025-01-01T09:00:00Z"),
+      effectiveFrom: new Date("2024-08-01"),
+      effectiveTo: new Date("2025-01-01"),
     },
   });
 
@@ -1412,7 +1412,7 @@ async function insertInstructorSchedules() {
   const helenSchedule3 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: new Date("2025-01-01T09:00:00Z"),
+      effectiveFrom: new Date("2025-01-01"),
       effectiveTo: null, // Current schedule
     },
   });
@@ -1490,7 +1490,7 @@ async function insertInstructorSchedules() {
   const elianSchedule = await prisma.instructorSchedule.create({
     data: {
       instructorId: elian.id,
-      effectiveFrom: new Date("2024-08-01T09:00:00Z"),
+      effectiveFrom: new Date("2024-08-01"),
       effectiveTo: null,
     },
   });
