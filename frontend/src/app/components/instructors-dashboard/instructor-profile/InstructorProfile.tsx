@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
 import { updateInstructorAction } from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
-import TextAreaInput from "../../elements/textAreaInput/TextAreaInput";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
   formatBirthdateToISO,
@@ -49,7 +48,9 @@ function InstructorProfile({
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
     field: keyof Instructor,
   ) => {
     if (latestInstructor) {
@@ -118,103 +119,136 @@ function InstructorProfile({
 
             {/* Nickname, Date of Birth, Life History, Favorite Food, Hobby, Message For Children, Skill */}
             <div className={styles.insideContainer}>
-              <div>
-                <UserCircleIcon className={styles.icon} />
+              <UserCircleIcon className={styles.icon} />
+              <div className={styles.userInfo}>
                 <div>
-                  <p>Nickname</p>
+                  <div>
+                    <p>Nickname</p>
+                    {isEditing ? (
+                      <InputField
+                        name="nickname"
+                        value={latestInstructor.nickname}
+                        onChange={(e) => handleInputChange(e, "nickname")}
+                        className={`${styles.nickname__inputField} ${isEditing ? styles.editable : ""}`}
+                      />
+                    ) : (
+                      <h4 className={styles.nickname__text}>
+                        {latestInstructor.nickname}
+                      </h4>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p>Date of Birth</p>
                   {isEditing ? (
                     <InputField
-                      name="nickname"
-                      value={latestInstructor.nickname}
-                      onChange={(e) => handleInputChange(e, "nickname")}
-                      className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                      name="birthdate"
+                      type="date"
+                      value={formatBirthdateToISO(latestInstructor.birthdate)}
+                      onChange={(e) => handleInputChange(e, "birthdate")}
+                      className={`${styles.birthdate__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
-                    <h4>{latestInstructor.nickname}</h4>
+                    <h4 className={styles.birthdate__text}>
+                      {getShortMonth(new Date(latestInstructor.birthdate))}{" "}
+                      {new Date(latestInstructor.birthdate).getDate()}
+                    </h4>
                   )}
                 </div>
-              </div>
-              <div>
-                <p>Date of Birth</p>
-                {isEditing ? (
-                  <InputField
-                    name="birthdate"
-                    type="date"
-                    value={formatBirthdateToISO(latestInstructor.birthdate)}
-                    onChange={(e) => handleInputChange(e, "birthdate")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>
-                    {getShortMonth(new Date(latestInstructor.birthdate))}{" "}
-                    {new Date(latestInstructor.birthdate).getDate()}
-                  </h4>
-                )}
-              </div>
-              <div>
-                <p>Life History</p>
-                {isEditing ? (
-                  <TextAreaInput
-                    name="lifeHistory"
-                    defaultValue={latestInstructor.lifeHistory}
-                    onChange={(e) => handleInputChange(e, "lifeHistory")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>{latestInstructor.lifeHistory}</h4>
-                )}
-              </div>
-              <div>
-                <p>Favorite Food</p>
-                {isEditing ? (
-                  <TextAreaInput
-                    name="favoriteFood"
-                    defaultValue={latestInstructor.favoriteFood}
-                    onChange={(e) => handleInputChange(e, "favoriteFood")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>{latestInstructor.favoriteFood}</h4>
-                )}
-              </div>
-              <div>
-                <p>Hobby</p>
-                {isEditing ? (
-                  <TextAreaInput
-                    name="hobby"
-                    defaultValue={latestInstructor.hobby}
-                    onChange={(e) => handleInputChange(e, "hobby")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>{latestInstructor.hobby}</h4>
-                )}
-              </div>
-              <div>
-                <p>Message For Children</p>
-                {isEditing ? (
-                  <TextAreaInput
-                    name="messageForChildren"
-                    defaultValue={latestInstructor.messageForChildren}
-                    onChange={(e) => handleInputChange(e, "messageForChildren")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>{latestInstructor.messageForChildren}</h4>
-                )}
-              </div>
-              <div>
-                <p>Skill</p>
-                {isEditing ? (
-                  <TextAreaInput
-                    name="skill"
-                    defaultValue={latestInstructor.skill}
-                    onChange={(e) => handleInputChange(e, "skill")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>{latestInstructor.skill}</h4>
-                )}
+                <div>
+                  <p>Class</p>
+                  {isEditing ? (
+                    <textarea
+                      id="workingTime"
+                      name="workingTime"
+                      defaultValue={latestInstructor.workingTime}
+                      onChange={(e) => handleInputChange(e, "workingTime")}
+                      className={`${styles.workingTime__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4 className={styles.workingTime__text}>
+                      {latestInstructor.workingTime}
+                    </h4>
+                  )}
+                </div>
+                <div>
+                  <p>Life History</p>
+                  {isEditing ? (
+                    <textarea
+                      id="lifeHistory"
+                      name="lifeHistory"
+                      defaultValue={latestInstructor.lifeHistory}
+                      onChange={(e) => handleInputChange(e, "lifeHistory")}
+                      className={`${styles.lifeHistory__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4 className={styles.lifeHistory__text}>
+                      {latestInstructor.lifeHistory}
+                    </h4>
+                  )}
+                </div>
+                <div>
+                  <p>Favorite Food</p>
+                  {isEditing ? (
+                    <textarea
+                      name="favoriteFood"
+                      defaultValue={latestInstructor.favoriteFood}
+                      onChange={(e) => handleInputChange(e, "favoriteFood")}
+                      className={`${styles.favoriteFood__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4 className={styles.favoriteFood__text}>
+                      {latestInstructor.favoriteFood}
+                    </h4>
+                  )}
+                </div>
+                <div>
+                  <p>Hobby</p>
+                  {isEditing ? (
+                    <textarea
+                      name="hobby"
+                      defaultValue={latestInstructor.hobby}
+                      onChange={(e) => handleInputChange(e, "hobby")}
+                      className={`${styles.hobby__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4 className={styles.hobby__text}>
+                      {latestInstructor.hobby}
+                    </h4>
+                  )}
+                </div>
+                <div>
+                  <p>Message For Children</p>
+                  {isEditing ? (
+                    <textarea
+                      name="messageForChildren"
+                      defaultValue={latestInstructor.messageForChildren}
+                      onChange={(e) =>
+                        handleInputChange(e, "messageForChildren")
+                      }
+                      className={`${styles.messageForChildren__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4 className={styles.messageForChildren__text}>
+                      {latestInstructor.messageForChildren}
+                    </h4>
+                  )}
+                </div>
+                <div>
+                  <p>Skill</p>
+                  {isEditing ? (
+                    <textarea
+                      name="skill"
+                      defaultValue={latestInstructor.skill}
+                      onChange={(e) => handleInputChange(e, "skill")}
+                      className={`${styles.skill__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4 className={styles.skill__text}>
+                      {latestInstructor.skill}
+                    </h4>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -232,7 +266,9 @@ function InstructorProfile({
                     className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
-                  <h4>{latestInstructor.email}</h4>
+                  <h4 className={styles.email__text}>
+                    {latestInstructor.email}
+                  </h4>
                 )}
               </div>
             </div>
