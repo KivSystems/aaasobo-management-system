@@ -169,7 +169,7 @@ export const instructorUpdateSchema = z.object({
   }),
 });
 
-export const userUpdateSchemaWithIcon = z.object({
+export const instructorUpdateSchemaWithIcon = z.object({
   name: z.string().min(1, "Name is required."),
   nickname: z.string().min(1, "Nickname is required."),
   email: z

@@ -42,7 +42,6 @@ adminsRouter.delete(
 );
 adminsRouter.post(
   "/instructor-list/register",
-  verifyAuthentication,
   upload.single("icon"),
   registerInstructorController,
 );

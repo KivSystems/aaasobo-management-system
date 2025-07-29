@@ -13,6 +13,7 @@ import {
 import {
   adminUpdateSchema,
   instructorUpdateSchema,
+  instructorUpdateSchemaWithIcon,
 } from "../schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
 import { getCookie } from "../../middleware";
@@ -21,10 +22,6 @@ import { updateCustomerProfile } from "../helper/api/customersApi";
 import { revalidatePath } from "next/cache";
 import { NO_CHANGES_MADE_MESSAGE } from "../helper/messages/customerDashboard";
 import { getUserSession } from "@/app/helper/auth/sessionUtils";
-import {
-  userUpdateSchema,
-  userUpdateSchemaWithIcon,
-} from "../schemas/authSchema";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,
@@ -103,30 +100,26 @@ export async function updateInstructorAction(
         return extractUpdateValidationErrors(validationErrors);
       }
 
-    // Get the cookies from the request headers
-    const cookie = await getCookie();
 
-    // Call the API to update the instructor data
-    const response = await updateInstructor(
-      id,
-      parsedForm.data.name,
-      parsedForm.data.email,
-      parsedForm.data.classURL,
-      icon,
-      parsedForm.data.nickname,
-      parsedForm.data.meetingId,
-      parsedForm.data.passcode,
-      parsedForm.data.introductionURL,
-      cookie,
-    );
+      // Call the API to update the instructor data
+      const response = await updateInstructor(
+        id,
+        parsedForm.data.name,
+        parsedForm.data.email,
+        parsedForm.data.classURL,
+        parsedForm.data.nickname,
+        parsedForm.data.meetingId,
+        parsedForm.data.passcode,
+        parsedForm.data.introductionURL,
+      );
 
-    // Refresh cached instructor data for the instructor list page
-    revalidateInstructorList();
+      // Refresh cached instructor data for the instructor list page
+      revalidateInstructorList();
 
       return response;
     } else {
       // If the icon file is not empty, update the instructor data with icon.
-      const parsedForm = userUpdateSchemaWithIcon.safeParse({
+      const parsedForm = instructorUpdateSchemaWithIcon.safeParse({
         name,
         nickname,
         email,
