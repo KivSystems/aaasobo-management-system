@@ -100,7 +100,6 @@ export async function updateInstructorAction(
         return extractUpdateValidationErrors(validationErrors);
       }
 
-
       // Call the API to update the instructor data
       const response = await updateInstructor(
         id,
