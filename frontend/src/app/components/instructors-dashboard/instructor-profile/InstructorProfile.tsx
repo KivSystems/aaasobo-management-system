@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "./InstructorProfile.module.scss";
 import { useState, useEffect } from "react";
 import { useFormState } from "react-dom";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateInstructorAction } from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
@@ -34,6 +35,8 @@ function InstructorProfile({
     updateInstructorAction,
     {},
   );
+  const { localMessages, clearErrorMessage } =
+    useFormMessages(updateResultState);
   const [previousInstructor, setPreviousInstructor] =
     useState<Instructor | null>(
       typeof instructor !== "string" ? instructor : null,
@@ -55,6 +58,7 @@ function InstructorProfile({
   ) => {
     if (latestInstructor) {
       setLatestInstructor({ ...latestInstructor, [field]: e.target.value });
+      clearErrorMessage(field);
     }
   };
 
@@ -129,6 +133,7 @@ function InstructorProfile({
                         name="nickname"
                         value={latestInstructor.nickname}
                         onChange={(e) => handleInputChange(e, "nickname")}
+                        error={localMessages.nickname}
                         className={`${styles.nickname__inputField} ${isEditing ? styles.editable : ""}`}
                       />
                     ) : (
@@ -263,6 +268,7 @@ function InstructorProfile({
                     type="email"
                     value={latestInstructor.email}
                     onChange={(e) => handleInputChange(e, "email")}
+                    error={localMessages.email}
                     className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
@@ -284,6 +290,7 @@ function InstructorProfile({
                     type="url"
                     value={latestInstructor.classURL}
                     onChange={(e) => handleInputChange(e, "classURL")}
+                    error={localMessages.classURL}
                     className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
@@ -306,6 +313,7 @@ function InstructorProfile({
                       name="meetingId"
                       value={latestInstructor.meetingId}
                       onChange={(e) => handleInputChange(e, "meetingId")}
+                      error={localMessages.meetingId}
                       className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
@@ -319,6 +327,7 @@ function InstructorProfile({
                       name="passcode"
                       value={latestInstructor.passcode}
                       onChange={(e) => handleInputChange(e, "passcode")}
+                      error={localMessages.passcode}
                       className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
@@ -339,6 +348,7 @@ function InstructorProfile({
                     type="url"
                     value={latestInstructor.introductionURL}
                     onChange={(e) => handleInputChange(e, "introductionURL")}
+                    error={localMessages.introductionURL}
                     className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (

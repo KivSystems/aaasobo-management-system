@@ -75,6 +75,12 @@ export async function updateInstructorAction(
   try {
     const name = formData.get("name");
     const nickname = formData.get("nickname");
+    const workingTime = String(formData.get("workingTime"));
+    const lifeHistory = String(formData.get("lifeHistory"));
+    const favoriteFood = String(formData.get("favoriteFood"));
+    const hobby = String(formData.get("hobby"));
+    const messageForChildren = String(formData.get("messageForChildren"));
+    const skill = String(formData.get("skill"));
     const email = formData.get("email");
     const classURL = formData.get("classURL");
     const meetingId = formData.get("meetingId");
@@ -108,10 +114,16 @@ export async function updateInstructorAction(
     const response = await updateInstructor(
       id,
       parsedForm.data.name,
+      parsedForm.data.nickname,
+      workingTime,
+      lifeHistory,
+      favoriteFood,
+      hobby,
+      messageForChildren,
+      skill,
       parsedForm.data.email,
       parsedForm.data.classURL,
       icon,
-      parsedForm.data.nickname,
       parsedForm.data.meetingId,
       parsedForm.data.passcode,
       parsedForm.data.introductionURL,
