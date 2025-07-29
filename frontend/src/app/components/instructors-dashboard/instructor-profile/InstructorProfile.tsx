@@ -66,6 +66,7 @@ function InstructorProfile({
     if (latestInstructor) {
       setLatestInstructor(previousInstructor);
       setIsEditing(false);
+      clearErrorMessage("all");
     }
   };
 
