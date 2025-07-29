@@ -50,7 +50,9 @@ export const registerInstructor = async (data: {
 // Fetch all instructors information
 export const getAllInstructors = async () => {
   try {
-    return await prisma.instructor.findMany();
+    return await prisma.instructor.findMany({
+      orderBy: { id: "asc" },
+    });
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch instructors.");
@@ -84,10 +86,16 @@ export async function getInstructorById(id: number) {
 export const updateInstructor = async (
   id: number,
   name: string,
+  nickname: string,
+  workingTime: string,
+  lifeHistory: string,
+  favoriteFood: string,
+  hobby: string,
+  messageForChildren: string,
+  skill: string,
   email: string,
   classURL: string,
   icon: string,
-  nickname: string,
   meetingId: string,
   passcode: string,
   introductionURL: string,
@@ -100,10 +108,16 @@ export const updateInstructor = async (
       },
       data: {
         name,
+        nickname,
+        workingTime,
+        lifeHistory,
+        favoriteFood,
+        hobby,
+        messageForChildren,
+        skill,
         email,
         classURL,
         icon,
-        nickname,
         meetingId,
         passcode,
         introductionURL,
