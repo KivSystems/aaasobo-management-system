@@ -4,33 +4,29 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   width: 80vw;
-  height: 80vh;
+  height: 90vh;
 
   &__list {
     display: flex;
     align-items: center;
     flex-grow: 1;
     gap: 20px;
+    width: 100%;
+    overflow: auto;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  &__item {
+  &__dateTime {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    width: 230px;
-    height: 120px;
-    padding: 12px;
-    background-color: #ece8e8;
+    gap: 5px;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
 
-    &--disabled {
-      color: gray;
-    }
-
-    h5 {
-      padding: 8px 0;
-    }
+  &__icon {
+    width: 1.5rem;
   }
 }

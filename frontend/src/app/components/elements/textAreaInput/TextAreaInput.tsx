@@ -10,9 +10,11 @@ const TextAreaInput = ({
   error,
   onChange,
   language = "en",
+  name,
+  className,
 }: TextAreaInputProps) => {
   return (
-    <div className={styles.field}>
+    <div className={`${styles.field} ${className ? styles[className] : ""}`}>
       <label htmlFor={id} className={styles.label}>
         {label && <p className={styles.label__text}>{label}</p>}
         <div className={styles.inputWrapper}>
@@ -23,6 +25,7 @@ const TextAreaInput = ({
             onChange={onChange}
             placeholder={placeholder}
             required={required}
+            name={name}
           />
         </div>
         {error && (

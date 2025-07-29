@@ -88,18 +88,25 @@ export default function RegisterChildForm({
         }}
       />
 
-      <BirthdateInput
-        onValidDateChange={useCallback(
-          (date: string | null) => {
-            if (date) handleChange("birthdate", date);
-            clearErrorMessage("birthdate");
-          },
-          [handleChange, clearErrorMessage],
-        )}
-        defaultBirthdate={childData.birthdate}
-        error={localMessages.birthdate}
-        language={language}
-      />
+      <div className={styles.birthdate}>
+        <p className={styles.birthdate__label}>
+          {language === "ja"
+            ? "お子さまの生年月日(半角数字)"
+            : "Child's date of birth"}
+        </p>
+        <BirthdateInput
+          onValidDateChange={useCallback(
+            (date?: string | null) => {
+              if (date) handleChange("birthdate", date);
+              clearErrorMessage("birthdate");
+            },
+            [handleChange, clearErrorMessage],
+          )}
+          defaultBirthdate={childData.birthdate}
+          error={localMessages.birthdate}
+          language={language}
+        />
+      </div>
 
       <TextAreaInput
         id="personalInfo"

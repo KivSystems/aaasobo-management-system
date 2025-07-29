@@ -1,3 +1,15 @@
+import {
+  NO_CHANGES_MADE_MESSAGE,
+  PROFILE_ADD_FAILED_MESSAGE,
+  PROFILE_ADD_SUCCESS_MESSAGE,
+  PROFILE_DELETE_BLOCKED_BY_BOOKED_CLASS_MESSAGE,
+  PROFILE_DELETE_BLOCKED_BY_PAST_CLASS_MESSAGE,
+  PROFILE_DELETE_FAILED_MESSAGE,
+  PROFILE_DELETE_SUCCESS_MESSAGE,
+  PROFILE_UPDATE_FAILED_MESSAGE,
+  PROFILE_UPDATE_SUCCESS_MESSAGE,
+} from "../messages/customerDashboard";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
@@ -33,47 +45,50 @@ export const getChildById = async (id: number) => {
   }
 };
 
-// POST a new child data
 export const addChild = async (
-  childName: string,
-  childBirthdate: string,
-  childPersonalInfo: string,
+  name: string,
+  birthdate: string,
+  personalInfo: string,
   customerId: number,
-) => {
-  // Define the data to be sent to the server side.
+): Promise<LocalizedMessages> => {
   const childrenURL = `${BACKEND_ORIGIN}/children`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
-    name: childName,
-    birthdate: childBirthdate,
-    personalInfo: childPersonalInfo,
+    name,
+    birthdate,
+    personalInfo,
     customerId,
   });
 
-  const response = await fetch(childrenURL, {
-    method: "POST",
-    headers,
-    body,
-  });
+  try {
+    const response = await fetch(childrenURL, {
+      method: "POST",
+      headers,
+      body,
+    });
 
-  const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    return {
+      successMessage: PROFILE_ADD_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while adding child:", error);
+    return {
+      errorMessage: PROFILE_ADD_FAILED_MESSAGE,
+    };
   }
-
-  return data;
 };
 
-// PATCH a child date
-export const editChild = async (
+export const updateChildProfile = async (
   childId: number,
   childName: string,
   childBirthdate: string,
   childInfo: string,
   customerId: number,
-) => {
-  // Define the data to be sent to the server side.
+): Promise<LocalizedMessages> => {
   const childrenURL = `${BACKEND_ORIGIN}/children/${childId}`;
   const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
@@ -83,25 +98,40 @@ export const editChild = async (
     customerId: Number(customerId),
   });
 
-  const response = await fetch(childrenURL, {
-    method: "PATCH",
-    headers,
-    body,
-  });
+  try {
+    const response = await fetch(childrenURL, {
+      method: "PATCH",
+      headers,
+      body,
+    });
 
-  const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+
+    if (data.message === "no_change") {
+      return {
+        errorMessage: NO_CHANGES_MADE_MESSAGE,
+      };
+    }
+
+    return {
+      successMessage: PROFILE_UPDATE_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("API error while updating child profile:", error);
+    return {
+      errorMessage: PROFILE_UPDATE_FAILED_MESSAGE,
+    };
   }
-
-  return data;
 };
 
-// DELETE a child data by child id
-export const deleteChild = async (childId: number) => {
+export const deleteChild = async (
+  childId: number,
+): Promise<LocalizedMessages> => {
   try {
-    // Define the data to be sent to the server side.
     const childrenURL = `${BACKEND_ORIGIN}/children/${childId}`;
     const headers = { "Content-Type": "application/json" };
 
@@ -110,15 +140,33 @@ export const deleteChild = async (childId: number) => {
       headers,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error);
-    }
-    const result = await response.json();
+    if (response.status === 409) {
+      const data = await response.json();
 
-    return result;
+      if (data.message === "has_completed_class") {
+        return {
+          errorMessage: PROFILE_DELETE_BLOCKED_BY_PAST_CLASS_MESSAGE,
+        };
+      }
+
+      if (data.message === "has_booked_class") {
+        return {
+          errorMessage: PROFILE_DELETE_BLOCKED_BY_BOOKED_CLASS_MESSAGE,
+        };
+      }
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      successMessage: PROFILE_DELETE_SUCCESS_MESSAGE,
+    };
   } catch (error) {
-    console.error("Failed to delete the child profile:", error);
-    throw error;
+    console.error("API error while deleting child profile:", error);
+    return {
+      errorMessage: PROFILE_DELETE_FAILED_MESSAGE,
+    };
   }
 };

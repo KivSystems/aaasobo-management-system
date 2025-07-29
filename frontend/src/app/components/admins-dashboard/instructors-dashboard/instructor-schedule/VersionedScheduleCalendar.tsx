@@ -1,0 +1,92 @@
+import styles from "./VersionedScheduleCalendar.module.scss";
+import { InstructorSlot } from "@/app/helper/api/instructorsApi";
+import {
+  BusinessTime,
+  Weekday,
+  WEEKDAYS,
+  weekdayToDay,
+  utcToJstTime,
+} from "@/app/helper/utils/scheduleUtils";
+import {
+  TimeColumn,
+  BaseDayColumn,
+  BaseCalendarRoot,
+} from "./BaseScheduleCalendar";
+
+enum CellType {
+  EMPTY = "empty",
+  SCHEDULED = "scheduled",
+  DISABLED = "disabled",
+}
+
+interface VersionedScheduleCalendarProps {
+  slots: InstructorSlot[];
+}
+
+export default function VersionedScheduleCalendar({
+  slots,
+}: VersionedScheduleCalendarProps) {
+  const slotsByDay = slots.reduce(
+    (acc, slot) => {
+      const day = weekdayToDay(slot.weekday);
+      if (!acc[day]) acc[day] = [];
+
+      const time = utcToJstTime(slot.startTime);
+      acc[day].push(time);
+      return acc;
+    },
+    {} as Record<Weekday, string[]>,
+  );
+
+  Object.keys(slotsByDay).forEach((day) => {
+    slotsByDay[day as Weekday].sort();
+  });
+
+  return (
+    <BaseCalendarRoot>
+      <TimeColumn />
+      {WEEKDAYS.map((day) => (
+        <DayColumn key={day} day={day} scheduledTimes={slotsByDay[day] || []} />
+      ))}
+    </BaseCalendarRoot>
+  );
+}
+
+function DayColumn({
+  day,
+  scheduledTimes,
+}: {
+  day: Weekday;
+  scheduledTimes: string[];
+}) {
+  const disabledTimes = BusinessTime.getDisabledTimes(day);
+
+  const getCellType = (time: string): CellType => {
+    if (disabledTimes.includes(time)) return CellType.DISABLED;
+    if (scheduledTimes.includes(time)) return CellType.SCHEDULED;
+    return CellType.EMPTY;
+  };
+
+  return (
+    <BaseDayColumn day={day}>
+      {BusinessTime.times.map((time) => (
+        <Cell key={time} cellType={getCellType(time)} />
+      ))}
+    </BaseDayColumn>
+  );
+}
+
+function Cell({ cellType }: { cellType: CellType }) {
+  const getCellClass = () => {
+    switch (cellType) {
+      case CellType.SCHEDULED:
+        return styles.scheduledCell;
+      case CellType.DISABLED:
+        return styles.disabledCell;
+      default:
+        return styles.emptyCell;
+    }
+  };
+
+  return <div className={getCellClass()} />;
+}

@@ -1,0 +1,22 @@
+@import "../../../variables.module.scss";
+
+.externalLink {
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  color: $blue-primary;
+  transition: all 0.3s ease;
+
+  &:hover {
+    cursor: pointer;
+    color: $blue_primary_hover;
+    text-decoration: underline;
+  }
+}
+
+.icon {
+  width: 1.3rem;
+  height: 1.3rem;
+}

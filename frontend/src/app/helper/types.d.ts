@@ -204,6 +204,9 @@ type InstructorClassDetail = {
   attendingChildren: Child[];
   customerChildren: Child[];
   status: ClassStatus;
+  isFreeTrial: boolean;
+  classCode: string;
+  updatedAt: string;
 };
 
 type Tab = {
@@ -339,6 +342,8 @@ type CustomerCalendarProps = {
   customerId: number;
   classes: CustomerClass[] | [];
   createdAt: string;
+  businessSchedule: BusinessSchedule[];
+  colorsForEvents: { event: string; color: string }[];
 };
 
 type InstructorCalendarClientProps = {
@@ -350,6 +355,8 @@ type InstructorCalendarClientProps = {
     start: string;
     end: string;
   };
+  businessSchedule: BusinessSchedule[];
+  colorsForEvents: { event: string; color: string }[];
 };
 
 type RebookableClass = {
@@ -444,10 +451,11 @@ type RegisterChildProps = {
 };
 
 type BirthdateInputProps = {
-  onValidDateChange: (isoDate: string | null) => void;
+  onValidDateChange: (isoDate?: string | null) => void;
   defaultBirthdate?: string;
   error?: string;
   language?: LanguageType;
+  useFormAction?: boolean;
 };
 
 type TextAreaInputProps = {
@@ -459,6 +467,8 @@ type TextAreaInputProps = {
   error?: string;
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   language?: LanguageType;
+  name?: string;
+  className?: string;
 };
 
 // Types related to RebookingForm
@@ -498,7 +508,7 @@ type RebookableOptionsProps = {
 type RebookableInstructorsListProps = {
   instructorProfiles: InstructorRebookingProfile[];
   instructorAvailabilities: InstructorAvailability[] | [];
-  setInstructorToRebook: (instructor: { id: number; name: string }) => void;
+  setInstructorToRebook: (instructor: InstructorRebookingProfile) => void;
   rebookingOption: "instructor" | "dateTime";
   setRebookingStep: (step: RebookingSteps) => void;
   dateTimeToRebook: string | null;
@@ -508,20 +518,14 @@ type RebookableInstructorsListProps = {
 type RebookableTimeSlotsProps = {
   setDateTimeToRebook: (dateTime: string) => void;
   setRebookingStep: (step: RebookingSteps) => void;
-  instructorToRebook: {
-    id: number;
-    name: string;
-  };
+  instructorToRebook: InstructorRebookingProfile;
   instructorAvailabilities: InstructorAvailability[] | [];
   rebookingOption: "instructor" | "dateTime";
   language: LanguageType;
 };
 
 type ConfirmRebookingProps = {
-  instructorToRebook: {
-    id: number;
-    name: string;
-  };
+  instructorToRebook: InstructorRebookingProfile;
   dateTimeToRebook: string;
   rebookingOption: "instructor" | "dateTime";
   setRebookingStep: (step: RebookingSteps) => void;
@@ -544,9 +548,82 @@ type ChildConflictResponse =
   | { conflictingChildren: string[] }
   | { message: LocalizedMessage };
 
+type ChildrenProfilesProps = {
+  customerId: number;
+  childProfiles: Child[];
+  isAdminAuthenticated?: boolean;
+};
+
+type AddChildFormProps = {
+  language: LanguageType;
+  action: (payload: FormData) => void;
+  customerId: number;
+  localMessages: LocalizedMessages;
+  isAdminAuthenticated?: boolean;
+  isError: boolean;
+  clearErrorMessage: (field: keyof LocalizedMessages | "all") => void;
+};
+
 type WelcomeModalProps = {
   customerId: number;
   language: LanguageType;
   setIsWelcomeModalOpen: Dispatch<SetStateAction<boolean>>;
   isAdminAuthenticated?: boolean;
+};
+
+type EventColor = {
+  No: number;
+  ID: number;
+  Event: string;
+  "Color Code": string;
+};
+
+type ClassDetailsProps = {
+  instructorId: number;
+  classId: number;
+  classDetails: InstructorClassDetail;
+  classes: InstructorClassDetail[] | [];
+  adminId?: number | null;
+  isAdminAuthenticated?: boolean;
+};
+
+type ClassItemProps = {
+  instructorId: number;
+  classItem: InstructorClassDetail;
+  classId: number;
+  isUpdatingData: boolean;
+  setIsUpdatingData: Dispatch<SetStateAction<boolean>>;
+};
+
+type ClassItemForAdminProps = {
+  adminId: number;
+  instructorId: number;
+  classItem: InstructorClassDetail;
+  classId: number;
+  isUpdatingData: boolean;
+  setIsUpdatingData: Dispatch<SetStateAction<boolean>>;
+  isAdminAuthenticated: boolean;
+};
+
+type HandleAttendanceUpdateParams = {
+  classId: number;
+  instructorId: number;
+  adminId?: number;
+  classEndTime: Date;
+  initialAttendedChildrenIds: number[];
+  attendedChildrenIdsToUpdate: number[];
+  isAdminAuthenticated: boolean;
+  setIsUpdatingData: (updating: boolean) => void;
+  setIsEditingAttendance: (editing: boolean) => void;
+};
+
+type HandleClassStatusUpdateParams = {
+  classId: number;
+  selectedStatus: ClassStatus | null;
+  classEndTime: Date;
+  isAdminAuthenticated: boolean;
+  instructorId: number;
+  adminId?: number;
+  setIsUpdatingData: (updating: boolean) => void;
+  setIsEditingStatus?: (editing: boolean) => void;
 };

@@ -93,38 +93,6 @@ export const rebookClass = async (
   }
 };
 
-// PATCH a class date
-export const editClass = async (
-  id: number,
-  classData: {
-    childrenIds?: number[];
-    dateTime?: string;
-    status?: ClassStatus;
-    instructorId?: number;
-    rebookableUntil?: string | null;
-    updateAt: Date;
-  },
-) => {
-  // Define the data to be sent to the server side.
-  const classURL = `${BACKEND_ORIGIN}/classes/${id}`;
-  const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify(classData);
-
-  const response = await fetch(classURL, {
-    method: "PATCH",
-    headers,
-    body,
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return data;
-};
-
 export const cancelClass = async (classId: number) => {
   const cancelClassUrl = `${BACKEND_ORIGIN}/classes/${classId}/cancel`;
 
@@ -144,23 +112,6 @@ export const cancelClass = async (classId: number) => {
   } catch (error) {
     console.error("API error while canceling a class:", error);
     return { success: false, message: FAILED_TO_CANCEL_CLASS };
-  }
-};
-
-// TODO: Delete this api call function after finishing refactoring the instructor class details page
-export const getClassesByInstructorId = async (instructorId: number) => {
-  try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/instructors/${instructorId}/classes`,
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const { classes } = await response.json();
-    return classes;
-  } catch (error) {
-    console.error("Failed to fetch classes:", error);
-    throw error;
   }
 };
 
@@ -289,5 +240,57 @@ export const getInstructorAvailabilities = async (
       error,
     );
     throw new Error(FAILED_TO_FETCH_REBOOKABLE_INSTRUCTORS);
+  }
+};
+
+export const updateAttendance = async (
+  classId: number,
+  childrenIds: number[],
+): Promise<{ success: boolean }> => {
+  const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/attendance`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        childrenIds,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("API error while updating class attendance:", error);
+    return { success: false };
+  }
+};
+
+export const updateClassStatus = async (
+  classId: number,
+  status: string,
+): Promise<{ success: boolean }> => {
+  const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/status`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("API error while updating class status:", error);
+    return { success: false };
   }
 };

@@ -12,11 +12,13 @@ function CustomerDashboardClient({
   customerId,
   classCalendarComponent,
   customerProfile,
+  childProfiles,
 }: {
   adminId: number;
   customerId: number;
   classCalendarComponent: React.ReactNode;
   customerProfile: CustomerProfile;
+  childProfiles: Child[];
 }) {
   // Get the previous list page from local storage to set the breadcrumb.
   const previousListPage = localStorage.getItem("previousListPage");
@@ -66,9 +68,9 @@ function CustomerDashboardClient({
       label: "Children's Profile",
       content: (
         <ChildrenProfiles
-          adminId={adminId}
           customerId={customerId}
           isAdminAuthenticated={isAuthenticated}
+          childProfiles={childProfiles}
         />
       ),
     },

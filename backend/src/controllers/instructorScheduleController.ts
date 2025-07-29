@@ -1,0 +1,179 @@
+import { Response } from "express";
+import {
+  getInstructorSchedules,
+  getScheduleWithSlots,
+  createInstructorSchedule,
+  getInstructorAvailableSlots,
+} from "../services/instructorScheduleService";
+import { type RequestWithId } from "../middlewares/parseId.middleware";
+
+export const getInstructorSchedulesController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  try {
+    const schedules = await getInstructorSchedules(req.id);
+
+    res.status(200).json({
+      message: "Instructor schedule versions retrieved successfully",
+      data: schedules,
+    });
+  } catch (error) {
+    console.error("Error fetching instructor schedule versions:", error);
+    res.status(500).json({
+      message: "Failed to fetch instructor schedule versions",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const getInstructorScheduleController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  try {
+    const scheduleId = parseInt(req.params.scheduleId);
+
+    if (isNaN(scheduleId)) {
+      return res.status(400).json({
+        message: "Invalid schedule ID",
+      });
+    }
+
+    const schedule = await getScheduleWithSlots(scheduleId);
+    if (!schedule) {
+      return res.status(404).json({
+        message: "Schedule not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Schedule retrieved successfully",
+      data: schedule,
+    });
+  } catch (error) {
+    console.error("Error fetching schedule:", error);
+    res.status(500).json({
+      message: "Failed to fetch schedule",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const createInstructorScheduleController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  try {
+    const { effectiveFrom, slots } = req.body;
+
+    if (!effectiveFrom || !slots || !Array.isArray(slots)) {
+      return res.status(400).json({
+        message: "effectiveFrom and slots array are required",
+      });
+    }
+
+    // Validate effectiveFrom is a valid date
+    const effectiveFromDate = new Date(effectiveFrom);
+    if (isNaN(effectiveFromDate.getTime())) {
+      return res.status(400).json({
+        message: "Invalid effectiveFrom date format",
+      });
+    }
+
+    // Validate slots
+    for (const slot of slots) {
+      if (
+        typeof slot.weekday !== "number" ||
+        slot.weekday < 0 ||
+        slot.weekday > 6
+      ) {
+        return res.status(400).json({
+          message: "Invalid weekday. Must be a number between 0-6",
+        });
+      }
+
+      const startTime = new Date(slot.startTime);
+      if (isNaN(startTime.getTime())) {
+        return res.status(400).json({
+          message: "Invalid startTime format",
+        });
+      }
+    }
+
+    const schedule = await createInstructorSchedule({
+      instructorId: req.id,
+      effectiveFrom: effectiveFromDate,
+      slots: slots.map((slot: any) => ({
+        weekday: slot.weekday,
+        startTime: new Date(slot.startTime),
+      })),
+    });
+
+    res.status(201).json({
+      message: "Schedule version created successfully",
+      data: schedule,
+    });
+  } catch (error) {
+    console.error("Error creating schedule version:", error);
+    res.status(500).json({
+      message: "Failed to create schedule version",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const getInstructorAvailableSlotsController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        message: "startDate and endDate query parameters are required",
+      });
+    }
+
+    // Validate and parse dates
+    const startDateObj = new Date(startDate as string);
+    const endDateObj = new Date(endDate as string);
+
+    if (isNaN(startDateObj.getTime())) {
+      return res.status(400).json({
+        message: "Invalid startDate format",
+      });
+    }
+
+    if (isNaN(endDateObj.getTime())) {
+      return res.status(400).json({
+        message: "Invalid endDate format",
+      });
+    }
+
+    // Validate date range
+    if (startDateObj >= endDateObj) {
+      return res.status(400).json({
+        message: "startDate must be before endDate",
+      });
+    }
+
+    const availableSlots = await getInstructorAvailableSlots(
+      req.id,
+      startDateObj,
+      endDateObj,
+    );
+
+    res.status(200).json({
+      message: "Available slots retrieved successfully",
+      data: availableSlots,
+    });
+  } catch (error) {
+    console.error("Error fetching available slots:", error);
+    res.status(500).json({
+      message: "Failed to fetch available slots",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};

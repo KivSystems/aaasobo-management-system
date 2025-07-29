@@ -1,6 +1,8 @@
 import { CreateEmailResponse } from "resend";
 import { resend } from "./resendClient";
+
 export type UserType = "admin" | "customer" | "instructor";
+const CONTACT_EMAIL = "contact@aaasobo.org";
 
 export const sendVerificationEmail = async (
   email: string,
@@ -11,7 +13,7 @@ export const sendVerificationEmail = async (
 
   try {
     const response: CreateEmailResponse = await resend.emails.send({
-      from: "contact@aaasobo.org",
+      from: `${CONTACT_EMAIL}`,
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】メールアドレス認証のお願い / Please confirm your email address",
@@ -72,7 +74,7 @@ export const sendVerificationEmail = async (
         </p>
         <p style="font-size: 14px;">
           KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-          contact@aaasobo.org
+          ${CONTACT_EMAIL}
         </p>
       </div>
     `,
@@ -111,8 +113,7 @@ export const resendVerificationEmail = async (
 
   try {
     const response: CreateEmailResponse = await resend.emails.send({
-      // TODO: Replace 'onboarding@resend.dev' with KIV's verified email address before going live.
-      from: "onboarding@resend.dev", // Resend-provided email
+      from: `${CONTACT_EMAIL}`,
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】メールアドレス認証リンクを再送しました / We've re-sent your email confirmation link",
@@ -171,7 +172,7 @@ export const resendVerificationEmail = async (
         </p>
         <p style="font-size: 14px;">
           KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-          contact@aaasobo.org
+          ${CONTACT_EMAIL}
         </p>
       </div>
     `,
@@ -214,8 +215,7 @@ export const sendPasswordResetEmail = async (
 
   try {
     const response: CreateEmailResponse = await resend.emails.send({
-      // TODO: Replace 'onboarding@resend.dev' with KIV's verified email address before going live.
-      from: "onboarding@resend.dev", // Resend-provided email
+      from: `${CONTACT_EMAIL}`,
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】パスワード再設定のお知らせ / Password Reset Notification",
@@ -272,7 +272,7 @@ export const sendPasswordResetEmail = async (
       </p>
       <p style="font-size: 14px;">
         KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-        contact@aaasobo.org
+        ${CONTACT_EMAIL}
       </p>
     </div>
   `,
@@ -313,8 +313,8 @@ export const sendAdminSameDayRebookEmail = async (data: {
 }) => {
   try {
     const response: CreateEmailResponse = await resend.emails.send({
-      from: "contact@aaasobo.org",
-      to: "contact@aaasobo.org",
+      from: `${CONTACT_EMAIL}`,
+      to: `${CONTACT_EMAIL}`,
       subject: "【AaasoBo!】当日クラスの予約が入りました。",
       html: `
   <div style="font-family: 'Helvetica Neue', sans-serif; font-size: 16px; line-height: 1.6; color: #333;">
@@ -354,7 +354,7 @@ export const sendAdminSameDayRebookEmail = async (data: {
     <p style="font-size: 14px; color: #555;">
       KIVこどもオンライン英会話 AaasoBo!<br>
       KIV Online English Program AaasoBo!<br>
-      📧 contact@aaasobo.org
+      📧 ${CONTACT_EMAIL}
     </p>
   </div>
 `,
@@ -399,7 +399,7 @@ export const sendInstructorSameDayRebookEmail = async (data: {
 }) => {
   try {
     const response: CreateEmailResponse = await resend.emails.send({
-      from: "contact@aaasobo.org",
+      from: `${CONTACT_EMAIL}`,
       to: data.instructorEmail,
       subject: "【AaasoBo!】A Class Has Been Booked for Today",
       html: `
@@ -437,7 +437,7 @@ export const sendInstructorSameDayRebookEmail = async (data: {
 
     <p style="font-size: 14px; color: #555;">
       KIV Online English Program AaasoBo!<br>
-      📧 contact@aaasobo.org
+      📧 ${CONTACT_EMAIL}
     </p>
   </div>
 `,

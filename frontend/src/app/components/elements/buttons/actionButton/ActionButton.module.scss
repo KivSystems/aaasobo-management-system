@@ -85,6 +85,11 @@
   }
 }
 
+.rescheduleBtn {
+  width: 100%;
+  padding: 0.5rem;
+}
+
 .bookBtn,
 .addBtn,
 .submitBtn,
@@ -211,7 +216,6 @@
   padding: 0.2rem 0.6rem;
   border-radius: 0.375rem;
   font-size: 0.8rem;
-  width: 76px;
 
   &:hover {
     background-color: $blue_primary_hover;
@@ -228,7 +232,6 @@
   padding: 0.2rem 0.6rem;
   border-radius: 0.375rem;
   font-size: 0.8rem;
-  width: 76px;
 
   &:hover {
     background-color: $green-success-hover;
@@ -360,4 +363,22 @@
   padding: 0.6rem 2rem;
   font-size: 1rem;
   border-radius: 9999px;
+}
+
+.timeSlotBtn {
+  background-color: white;
+  color: $green-success;
+  border: 1px solid $green-success;
+  border-radius: 8px;
+  padding: 2px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 128, 0, 0.1);
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e9fbe9;
+  }
 }

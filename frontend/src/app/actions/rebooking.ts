@@ -1,7 +1,6 @@
 "use server";
 
 import { rebookClass } from "../helper/api/classesApi";
-import { getUserSession } from "../helper/auth/sessionUtils";
 import { revalidateCustomerCalendar } from "./revalidate";
 import { validateSession } from "./validateSession";
 

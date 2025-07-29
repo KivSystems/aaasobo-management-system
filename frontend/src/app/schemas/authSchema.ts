@@ -294,7 +294,7 @@ export const resetPasswordFormSchemaJa = z
     path: ["password"],
   });
 
-const createBirthdateSchema = (errorMessage: string) =>
+export const createBirthdateSchema = (errorMessage: string) =>
   z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, errorMessage)

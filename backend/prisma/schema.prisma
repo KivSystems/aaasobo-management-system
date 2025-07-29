@@ -32,6 +32,8 @@ model Instructor {
   introductionURL                 String                            @unique
   createdAt                       DateTime                          @default(now())
   inactiveAt                      DateTime?
+  instructorSchedules             InstructorSchedule[]
+  instructorAbsences              InstructorAbsence[]
 }
 
 model InstructorRecurringAvailability {
@@ -122,6 +124,8 @@ model Children {
   recurringClassAttendance RecurringClassAttendance[]
   birthdate                DateTime?
   personalInfo             String?
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @default(now()) @updatedAt
 }
 
 model ClassAttendance {
@@ -204,4 +208,32 @@ model Event {
   name     String     @unique
   color    String     @unique
   Schedule Schedule[]
+}
+
+model InstructorSchedule {
+  id            Int              @id @default(autoincrement())
+  instructorId  Int
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  instructor    Instructor       @relation(fields: [instructorId], references: [id])
+  slots         InstructorSlot[]
+
+  @@unique([instructorId, effectiveTo])
+}
+
+model InstructorSlot {
+  scheduleId Int
+  weekday    Int
+  startTime  DateTime           @db.Time
+  schedule   InstructorSchedule @relation(fields: [scheduleId], references: [id])
+
+  @@id([scheduleId, weekday, startTime])
+}
+
+model InstructorAbsence {
+  instructorId Int
+  absentAt     DateTime
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+
+  @@id([instructorId, absentAt])
 }

@@ -201,3 +201,89 @@ export const getFirstDesignatedDayOfYear = (year: number, day: Day): Date => {
 
   return date;
 };
+
+/**
+ * Returns the start and end of the day in JST (00:00:00–23:59:59.999) as UTC Date objects.
+ * @param dateTime A UTC datetime (Date object or ISO string)
+ * @returns An object containing startOfDay and endOfDay in UTC
+ */
+export function getJstDayRange(dateTime: string | Date): {
+  startOfDay: Date;
+  endOfDay: Date;
+} {
+  const targetDate = new Date(dateTime);
+
+  // Convert to JST by adding 9 hours
+  const jstTime = targetDate.getTime() + 9 * 60 * 60 * 1000;
+  const jstDate = new Date(jstTime);
+
+  // Extract JST year, month, and day using UTC getters
+  const year = jstDate.getUTCFullYear();
+  const month = String(jstDate.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(jstDate.getUTCDate()).padStart(2, "0");
+  const dateOnly = `${year}-${month}-${day}`; // e.g. "2025-07-30"
+
+  // Create start of JST day in UTC (JST 00:00 → UTC 15:00 on previous day)
+  const startOfDay = new Date(`${dateOnly}T00:00:00.000Z`);
+  startOfDay.setUTCHours(startOfDay.getUTCHours() - 9);
+
+  // Create end of JST day in UTC (JST 23:59:59 → UTC 14:59:59)
+  const endOfDay = new Date(`${dateOnly}T23:59:59.999Z`);
+  endOfDay.setUTCHours(endOfDay.getUTCHours() - 9);
+
+  return { startOfDay, endOfDay };
+}
+
+/**
+ * JST Midnight Utilities for InstructorSchedule
+ * Business Rule: Schedule effective dates must always represent 00:00 JST (09:00 UTC)
+ */
+
+/**
+ * Creates a DateTime representing JST midnight (00:00 JST = 09:00 UTC) for a given date string
+ * @param dateString Date string in YYYY-MM-DD format (represents JST date)
+ * @returns DateTime object representing 00:00 JST (09:00 UTC) for that date
+ */
+export const createJSTMidnight = (dateString: string): Date => {
+  const date = new Date(
+    `${dateString}T${String(JAPAN_TIME_DIFF).padStart(2, "0")}:00:00.000Z`,
+  );
+  assertIsJSTMidnight(date);
+  return date;
+};
+
+/**
+ * Validates that a DateTime represents JST midnight (00:00 JST = 09:00 UTC)
+ * @param date DateTime to validate
+ * @throws Error if the date is not JST midnight
+ */
+export const assertIsJSTMidnight = (date: Date): void => {
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
+  const seconds = date.getUTCSeconds();
+  const milliseconds = date.getUTCMilliseconds();
+
+  if (
+    hours !== JAPAN_TIME_DIFF ||
+    minutes !== 0 ||
+    seconds !== 0 ||
+    milliseconds !== 0
+  ) {
+    throw new Error(
+      `Invalid schedule effective date: must be JST midnight (${String(JAPAN_TIME_DIFF).padStart(2, "0")}:00 UTC), got ${date.toISOString()}`,
+    );
+  }
+};
+
+/**
+ * Converts a Date object to JST date string (YYYY-MM-DD)
+ * Extracts the date part from any Date object for use with JST midnight functions
+ * @param date Date object to convert
+ * @returns Date string in YYYY-MM-DD format representing JST date
+ */
+export const toJSTDateString = (date: Date): string => {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};

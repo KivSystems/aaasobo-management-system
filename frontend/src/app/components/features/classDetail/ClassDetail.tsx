@@ -131,7 +131,11 @@ const ClassDetail = ({
       />
 
       <div className={styles.footer}>
-        {formatClassDetailFooter(classDetail.updatedAt)} {classDetail.classCode}
+        <span>
+          {language === "ja" ? "クラスコード" : "Class Code"} :{" "}
+          {classDetail.classCode}
+        </span>
+        <span>{formatClassDetailFooter(classDetail.updatedAt)}</span>
       </div>
     </div>
   );

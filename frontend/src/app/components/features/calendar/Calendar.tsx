@@ -2,7 +2,7 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 import interactionPlugin from "@fullcalendar/interaction";
-import { CalendarOptions } from "@fullcalendar/core";
+import { CalendarOptions, EventSourceInput } from "@fullcalendar/core";
 
 type Event = {
   id: string;
@@ -12,7 +12,7 @@ type Event = {
 };
 
 type CalendarProp = {
-  events: Event[];
+  events: Event[] | EventSourceInput;
 } & CalendarOptions;
 
 function Calendar({ events, ...options }: CalendarProp) {

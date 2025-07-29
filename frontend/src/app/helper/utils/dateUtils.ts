@@ -11,18 +11,6 @@ export const formatTime = (date: Date, timeZone: string) => {
   }).format(date);
 };
 
-// Formats date and time (e.g., "Thu, January 11 at 09:30", "1月11日(木) 9:30")
-export const formatDateTime = (date: Date, locale: string = "en-US") => {
-  return new Intl.DateTimeFormat(locale, {
-    weekday: "short",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: false,
-  }).format(date);
-};
-
 // Formats year and date (e.g., "Thu, Jan 11, 2025", "2025年1月11日(木)")
 export const formatYearDate = (date: Date, locale: string = "en-US") => {
   return new Intl.DateTimeFormat(locale, {
@@ -35,40 +23,20 @@ export const formatYearDate = (date: Date, locale: string = "en-US") => {
 
 // Formats year,date, and time (e.g., "Thu, January 11, 2025 at 09:30", "2025年1月11日(木) 9:30")
 export const formatYearDateTime = (date: Date, locale: string = "en-US") => {
-  return new Intl.DateTimeFormat(locale, {
+  const datePart = new Intl.DateTimeFormat(locale, {
     weekday: "short",
     year: "numeric",
     month: "long",
     day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: false,
   }).format(date);
-};
 
-// Converts a UTC ISO date string to the specified time zone, calculates the end time by adding 25 minutes,
-// and formats both start and end times as "YYYY-MM-DDTHH:MM:SS" for use in calendar events.
-export function getClassStartAndEndTimes(isoDateStr: string, timeZone: string) {
-  const utcDate = new Date(isoDateStr);
-  const zonedStartDate = toZonedTime(utcDate, timeZone);
+  const timePart = formatTime24Hour(date);
+  const formatted =
+    locale === "en-US"
+      ? `${datePart} at ${timePart}`
+      : `${datePart} ${timePart}`;
 
-  const start = zonedStartDate;
-  const end = addMinutes(start, 25);
-
-  return {
-    start: format(start, "yyyy-MM-dd'T'HH:mm:ssXXX"),
-    end: format(end, "yyyy-MM-dd'T'HH:mm:ssXXX"),
-  };
-}
-
-// Function to format day and date for a given time zone (e.g., Mon, July 23, 2024)
-export const formatDayDate = (date: Date, timeZone: string) => {
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "long",
-    day: "2-digit",
-    timeZone,
-  }).format(date);
+  return formatted;
 };
 
 // Function to format time with added minutes (e.g., 19:25)
@@ -78,21 +46,6 @@ export const formatTimeWithAddedMinutes = (
 ): string => {
   const updatedDate = addMinutes(date, minutesToAdd);
   return formatTime24Hour(updatedDate);
-};
-
-// Function to format the previous day for a given time zone (e.g., Jun 28, 2024)
-export const formatPreviousDay = (date: Date, timeZone: string) => {
-  // Calculate the previous day
-  const previousDay = new Date(date);
-  previousDay.setDate(previousDay.getDate() - 1);
-
-  // Format the previous day
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    timeZone,
-  }).format(previousDay);
 };
 
 export const isPastPreviousDayDeadline = (classDateUTC: string): boolean => {
@@ -109,23 +62,6 @@ export const isPastPreviousDayDeadline = (classDateUTC: string): boolean => {
   return !isAfter(classDayStart, todayInJapan);
 };
 
-// Function to check if the current date & time in a particular time zone is past the target class date & time
-export const isPastClassDateTime = (
-  classDateTime: string,
-  timeZone: string,
-): boolean => {
-  try {
-    const classDateTimeInZone = toZonedTime(classDateTime, timeZone);
-
-    const currentDateTimeInZone = toZonedTime(new Date(), timeZone);
-
-    return isAfter(currentDateTimeInZone, classDateTimeInZone);
-  } catch (error) {
-    console.error("Error in hasCurrentDateTimePassedTargetDateTime:", error);
-    return false;
-  }
-};
-
 // Function to calculate the end time of a class.
 export function getEndTime(date: Date): Date {
   return new Date(date.getTime() + 25 * 60 * 1000);
@@ -139,44 +75,12 @@ export function getWeekday(date: Date, timeZone: string) {
   }).format(date);
 }
 
-// Function to check if the current date & time in a particular time zone is past the target class end time
-export const isPastClassEndTime = (
-  classDateTime: string,
-  timeZone: string,
-): boolean => {
-  try {
-    // Convert class start time to zoned time
-    const classDateTimeInZone = toZonedTime(classDateTime, timeZone);
-
-    // Calculate the end time of the class
-    const classEndTime = getEndTime(classDateTimeInZone);
-
-    // Get the current date & time in the specified time zone
-    const currentDateTimeInZone = toZonedTime(new Date(), timeZone);
-
-    // Check if the current date & time is after the class end time
-    return isAfter(currentDateTimeInZone, classEndTime);
-  } catch (error) {
-    console.error("Error in isPastClassEndTime:", error);
-    return false;
-  }
-};
-
 // Converts a date string to the format YYYY-MM-DD.
 export const formatBirthdateToISO = (dateString?: string) => {
   if (!dateString) return "";
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return "";
   return date.toISOString().split("T")[0];
-};
-
-// Converts a date in YYYY-MM-DD format to ISO 8601 format (YYYY-MM-DDTHH:MM:SS.sssZ).
-export const formatDateToISO = (dateString: string): string => {
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) {
-    throw new Error("Invalid date format");
-  }
-  return date.toISOString();
 };
 
 // e.g., Monday, Tuesday ...
@@ -196,21 +100,30 @@ export const getShortMonth = (date: Date, locale: string = "en-US"): string => {
 };
 
 // Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
-export const formatShortDate = (date: Date, locale: string = "en-US") => {
-  const day = date.getDate();
+export const formatShortDate = (
+  date: Date,
+  locale: string = "en-US",
+  timeZone?: string,
+) => {
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
-  }).format(new Date(date.setDate(day)));
+    ...(timeZone && { timeZone }),
+  }).format(date);
 };
 
 // Formats a Date object into a 24-hour time string without leading zeros (e.g., "9:00").
-export const formatTime24Hour = (date: Date): string => {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+export const formatTime24Hour = (date: Date, timeZone?: string): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: timeZone || undefined,
+  };
 
-  return `${hours}:${minutes.toString().padStart(2, "0")}`;
+  const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
+  return formatted.replace(/^0/, "");
 };
 
 export const nHoursLater = (n: number, dateTime: Date = new Date()): Date => {

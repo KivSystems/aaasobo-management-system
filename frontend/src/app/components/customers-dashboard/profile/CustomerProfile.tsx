@@ -10,7 +10,7 @@ import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateCustomerProfileAction } from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
 import PrefectureSelect from "../../features/registerForm/prefectureSelect/PrefectureSelect";
-import { getLocalizedPrefecture } from "@/app/helper/utils/stringUtils";
+import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 function CustomerProfile({
@@ -30,7 +30,7 @@ function CustomerProfile({
   const { localMessages, clearErrorMessage } =
     useFormMessages<LocalizedMessages>(profileUpdateResult);
 
-  const localizedCustomerPrefecture = getLocalizedPrefecture(
+  const localizedCustomerPrefecture = getLocalizedText(
     customerProfile.prefecture,
     language,
   );

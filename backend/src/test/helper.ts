@@ -1,4 +1,7 @@
+import { Express } from "express";
 import { vi } from "vitest";
+import { hashPasswordSync } from "../helper/commonUtils";
+import request from "supertest";
 
 export const createMockPrisma = () => {
   const mock = {
@@ -36,6 +39,44 @@ export const createMockPrisma = () => {
       findMany: vi.fn(),
       create: vi.fn(),
       deleteMany: vi.fn(),
+    },
+    instructorSchedule: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      deleteMany: vi.fn(),
+    },
+    instructorSlot: {
+      findMany: vi.fn(),
+      createMany: vi.fn(),
+      deleteMany: vi.fn(),
+    },
+    instructorAbsence: {
+      findMany: vi.fn(),
+      create: vi.fn(),
+      createMany: vi.fn(),
+      delete: vi.fn(),
+      deleteMany: vi.fn(),
+    },
+    class: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    schedule: {
+      findMany: vi.fn(),
+    },
+    event: {
+      findMany: vi.fn(),
+    },
+    subscription: {
+      findFirst: vi.fn(),
+    },
+    plan: {
+      findFirst: vi.fn(),
     },
     $queryRaw: vi.fn(),
     $transaction: vi.fn(),
@@ -87,3 +128,27 @@ export const createTestInstructor = () => ({
   updatedAt: new Date(),
   inactiveAt: null,
 });
+
+export const loginAsAdmin = async (
+  server: Express,
+  mockPrisma: ReturnType<typeof createMockPrisma>,
+  admin = createTestAdmin(),
+) => {
+  mockPrisma.admins.findUnique.mockResolvedValue({
+    id: admin.id,
+    email: admin.email,
+    password: hashPasswordSync(admin.password),
+    name: admin.name,
+  });
+
+  await request(server)
+    .post("/users/authenticate")
+    .send({
+      email: admin.email,
+      password: admin.password,
+      userType: "admin",
+    })
+    .expect(200);
+
+  return `${process.env.AUTH_SALT}=mock-token`;
+};

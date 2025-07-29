@@ -1,4 +1,4 @@
-import { LINE_QR_CODE_URL } from "@/app/helper/data/contacts";
+import { CONTACT_EMAIL, LINE_QR_CODE_URL } from "@/app/helper/data/contacts";
 import React from "react";
 
 const SameDayCancellationNotice = ({
@@ -9,28 +9,20 @@ const SameDayCancellationNotice = ({
   return language === "ja" ? (
     <p>
       当日（日本時間基準）のクラスをキャンセルされる際は、恐れ入りますが
-      <a
-        href={LINE_QR_CODE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ textDecoration: "none" }}
-      >
-        アーソボLINEまでご連絡ください
+      <a href={LINE_QR_CODE_URL} target="_blank" rel="noopener noreferrer">
+        アーソボLINE
       </a>
-      。なお、当日キャンセルは振替の対象外となりますのでご了承ください。
+      か<a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+      までご連絡ください。なお、当日キャンセルは振替の対象外となりますのでご了承ください。
     </p>
   ) : (
     <p>
       For same-day cancellations (based on Japan time), please contact us via{" "}
-      <a
-        href={LINE_QR_CODE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ textDecoration: "none" }}
-      >
+      <a href={LINE_QR_CODE_URL} target="_blank" rel="noopener noreferrer">
         AaasoBo! LINE
-      </a>
-      . Please note that same-day cancellations are not eligible for rebooking.
+      </a>{" "}
+      or at <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Please note
+      that same-day cancellations are not eligible for rebooking.
     </p>
   );
 };
