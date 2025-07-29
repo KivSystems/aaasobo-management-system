@@ -69,7 +69,7 @@ export async function registerUser(
         userData.append("meetingId", parsedForm.data.meetingId);
         userData.append("passcode", parsedForm.data.passcode);
         userData.append("introductionURL", parsedForm.data.introductionURL);
-        response = await registerInstructor(userData, cookie);
+        response = await registerInstructor(userData);
 
         // Refresh cached instructor data for the instructor list page
         revalidateInstructorList();
