@@ -30,17 +30,19 @@
 
 .userInfo {
   display: block;
+  flex: 1;
 }
 
 .icon {
-  width: 2rem;
-  height: 2rem;
+  width: 30px;
+  height: 30px;
   margin-right: 1rem;
 }
 
 .urlInfo {
   display: flex;
   font-size: 0.8rem;
+  margin: 5px 0px 0px 0px;
 }
 
 .url {
@@ -92,21 +94,19 @@
 .nickname,
 .birthdate {
   &__inputField {
-    margin: 0px 50px 15px 0px;
     padding: 3px 6px;
     font-size: 20px;
     font-weight: 400;
     border-radius: 6px;
-    width: 60%;
+    width: 100%;
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;
   }
 
   &__text {
-    margin: 0 0 25px 0;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 400;
   }
 }
 
@@ -118,13 +118,13 @@
 .messageForChildren,
 .skill {
   &__inputField {
-    margin: 0px 50px 5px 0px;
+    margin: 0px 50px 0px 0px;
     padding: 3px 6px;
     font-size: 20px;
     font-weight: 400;
     border: 2px solid #000;
     border-radius: 6px;
-    width: 200%;
+    width: 100%;
     min-height: 100px;
     resize: none;
     word-break: break-word;
@@ -133,16 +133,14 @@
   }
 
   &__text {
-    margin: 0 0 25px 0;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 400;
   }
 }
 
 // email
 .email {
   &__inputField {
-    margin: 0px 50px 0px 0px;
     padding: 3px 6px;
     font-size: 20px;
     font-weight: 400;
@@ -156,7 +154,7 @@
   &__text {
     margin: 0 0 15px 0;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 400;
   }
 }
 
@@ -179,12 +177,12 @@
 .meetingId,
 .passcode {
   &__inputField {
-    margin: 1px 0px 5px 6px;
+    margin: 0px 10px 0px 0px;
     padding: 1px 1px;
     font-size: 14px;
     font-weight: 400;
     border-radius: 6px;
-    width: 60%;
+    min-width: 200px;
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;
