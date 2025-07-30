@@ -129,12 +129,15 @@
     resize: none;
     word-break: break-word;
     overflow-wrap: break-word;
-    white-space: normal;
+    white-space: pre-line;
   }
 
   &__text {
     font-size: 18px;
     font-weight: 400;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-line;
   }
 }
 
