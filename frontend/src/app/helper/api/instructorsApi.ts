@@ -143,6 +143,7 @@ export const updateInstructor = async (
   id: number,
   name: string,
   nickname: string,
+  birthdate: string,
   workingTime: string,
   lifeHistory: string,
   favoriteFood: string,
@@ -163,6 +164,7 @@ export const updateInstructor = async (
   const body = JSON.stringify({
     name,
     nickname,
+    birthdate,
     workingTime,
     lifeHistory,
     favoriteFood,

@@ -75,6 +75,7 @@ export async function updateInstructorAction(
   try {
     const name = formData.get("name");
     const nickname = formData.get("nickname");
+    const birthdate = String(formData.get("birthdate"));
     const workingTime = String(formData.get("workingTime"));
     const lifeHistory = String(formData.get("lifeHistory"));
     const favoriteFood = String(formData.get("favoriteFood"));
@@ -115,6 +116,7 @@ export async function updateInstructorAction(
       id,
       parsedForm.data.name,
       parsedForm.data.nickname,
+      birthdate,
       workingTime,
       lifeHistory,
       favoriteFood,

@@ -8,6 +8,7 @@ import {
   JAPAN_TIME_DIFF,
   createDatesBetween,
   calculateFirstDate,
+  convertToISOString,
 } from "../helper/dateUtils";
 import {
   getAllInstructorsAvailabilities,
@@ -170,6 +171,7 @@ export const updateInstructorProfile = async (req: Request, res: Response) => {
     name,
     email,
     nickname,
+    birthdate,
     workingTime,
     lifeHistory,
     favoriteFood,
@@ -185,6 +187,8 @@ export const updateInstructorProfile = async (req: Request, res: Response) => {
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
+  // Normalize birthdate
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
 
   // Set unique checks list
   const uniqueChecks = [
@@ -242,6 +246,7 @@ export const updateInstructorProfile = async (req: Request, res: Response) => {
       id,
       name,
       nickname,
+      normalizedBirthdate,
       workingTime,
       lifeHistory,
       favoriteFood,

@@ -87,6 +87,7 @@ export const updateInstructor = async (
   id: number,
   name: string,
   nickname: string,
+  birthdate: Date,
   workingTime: string,
   lifeHistory: string,
   favoriteFood: string,
@@ -109,6 +110,7 @@ export const updateInstructor = async (
       data: {
         name,
         nickname,
+        birthdate,
         workingTime,
         lifeHistory,
         favoriteFood,
