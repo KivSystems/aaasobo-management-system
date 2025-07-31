@@ -90,6 +90,18 @@ export const getInstructor = async (
   return data;
 };
 
+// GET instructor id by class id
+export const getInstructorIdByClassId = async (
+  classId: number,
+): Promise<Response<{ instructorId: number }>> => {
+  const apiUrl = `${BASE_URL}/class/${classId}`;
+  const data: Response<{ instructorId: number }> = await fetch(apiUrl, {
+    cache: "no-store",
+  }).then((res) => res.json());
+
+  return data;
+};
+
 // Register instructor data
 export const registerInstructor = async (userData: {
   name: string;
