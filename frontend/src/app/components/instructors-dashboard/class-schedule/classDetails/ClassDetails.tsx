@@ -15,6 +15,7 @@ function ClassDetails({
   classes,
   adminId,
   isAdminAuthenticated,
+  previousPage,
 }: ClassDetailsProps) {
   const [isUpdatingData, setIsUpdatingData] = useState<boolean>(false);
 
@@ -25,20 +26,38 @@ function ClassDetails({
     "Asia/Tokyo",
   );
 
-  // Set the active tab to the instructor calendar tab.
-  if (isAdminAuthenticated) localStorage.setItem("activeInstructorTab", "0");
-
-  const breadcrumbHref = isAdminAuthenticated
-    ? `/admins/${adminId}/instructor-list/${instructorId}`
-    : `/instructors/${instructorId}/class-schedule`;
+  // Set the breadcrumb href and labels based on the previous page
+  let breadcrumbHref: string = "";
+  let label1: string = "";
+  let label2: string = "";
+  switch (previousPage) {
+    case "instructor-calendar":
+      breadcrumbHref = `/instructors/${instructorId}/class-schedule`;
+      label1 = "Class Schedule";
+      label2 = "Class Details";
+      break;
+    case "class-list":
+      if (isAdminAuthenticated && adminId) {
+        breadcrumbHref = `/admins/${adminId}/class-list`;
+        label1 = "Class List";
+        label2 = `Class Details (Class ID: ${classId})`;
+      }
+      break;
+    case "instructor-list":
+      if (isAdminAuthenticated && adminId) {
+        breadcrumbHref = `/admins/${adminId}/instructor-list`;
+        label1 = "Instructor List";
+        label2 = `Class Details (Instructor ID: ${instructorId})`;
+        // Set the active tab to the instructor calendar tab.
+        localStorage.setItem("activeInstructorTab", "0");
+      }
+      break;
+  }
 
   return (
     <div className={styles.classDetails}>
       <Breadcrumb
-        links={[
-          { href: breadcrumbHref, label: "Class Schedule" },
-          { label: "Class Details" },
-        ]}
+        links={[{ href: breadcrumbHref, label: label1 }, { label: label2 }]}
       />
 
       <main className={styles.classDetails__container}>
@@ -59,6 +78,7 @@ function ClassDetails({
                     isUpdatingData={isUpdatingData}
                     setIsUpdatingData={setIsUpdatingData}
                     isAdminAuthenticated={isAdminAuthenticated}
+                    previousPage={previousPage}
                   />
                 ) : (
                   <ClassItem

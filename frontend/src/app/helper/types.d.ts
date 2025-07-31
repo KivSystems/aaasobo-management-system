@@ -585,6 +585,7 @@ type ClassDetailsProps = {
   classes: InstructorClassDetail[] | [];
   adminId?: number | null;
   isAdminAuthenticated?: boolean;
+  previousPage: "instructor-calendar" | "class-list" | "instructor-list";
 };
 
 type ClassItemProps = {
@@ -603,6 +604,7 @@ type ClassItemForAdminProps = {
   isUpdatingData: boolean;
   setIsUpdatingData: Dispatch<SetStateAction<boolean>>;
   isAdminAuthenticated: boolean;
+  previousPage: "instructor-calendar" | "class-list" | "instructor-list";
 };
 
 type HandleAttendanceUpdateParams = {

@@ -54,6 +54,7 @@ const Page = async ({
       isAdminAuthenticated={isAuthenticated}
       classDetails={selectedClassDetails}
       classes={sameDateClasses}
+      previousPage="class-list"
     />
   );
 };
