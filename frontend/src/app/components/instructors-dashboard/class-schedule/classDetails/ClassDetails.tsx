@@ -52,6 +52,11 @@ function ClassDetails({
         localStorage.setItem("activeInstructorTab", "0");
       }
       break;
+    default:
+      breadcrumbHref = "/admins/login"; // Default to login page if no previous page is specified
+      label1 = "Login";
+      label2 = "Unknown";
+      break;
   }
 
   return (
