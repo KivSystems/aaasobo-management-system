@@ -14,6 +14,7 @@ import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateScheduleAction } from "@/app/actions/updateContent";
 import { CONTENT_UPDATE_SUCCESS_MESSAGE } from "@/app/helper/messages/formValidation";
 import { getAllBusinessSchedules } from "@/app/helper/api/adminsApi";
+import { getDayCellColorHandler } from "@/app/helper/utils/calendarUtils";
 
 const BusinessCalendarClient = ({
   businessSchedule: initialSchedule,
@@ -35,24 +36,8 @@ const BusinessCalendarClient = ({
   const { localMessages, clearErrorMessage } =
     useFormMessages(updateResultState);
 
-  // Map to store date to color mapping
-  const dateToColorMap = new Map<string, string>(
-    businessSchedule.map((item) => [item.date, item.color]),
-  );
-
   // Set color for each date in the calendar
-  const dayCellColors = (arg: DayCellMountArg) => {
-    // Skip if the cell is not in the valid range (in previous or next month)
-    if (arg.isOther) {
-      return;
-    }
-    const dateStr = arg.date.toISOString().split("T")[0];
-    const color = dateToColorMap.get(dateStr);
-    // Set background color for the cell
-    if (color) {
-      arg.el.style.backgroundColor = color;
-    }
-  };
+  const dayCellColors = getDayCellColorHandler(businessSchedule);
 
   // Convert date to string in the format "MM/DD/YYYY"
   const dateToString = (date: Date) => {
