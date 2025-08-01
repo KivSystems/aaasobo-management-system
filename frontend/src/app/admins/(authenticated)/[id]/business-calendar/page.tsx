@@ -18,9 +18,10 @@ const Page = async ({ params }: { params: { id: string } }) => {
   const data = await getAllEvents();
   // Organize the event data by id and event name
   const events: BusinessEventType[] = [
-    ...data.map((item: { ID: number; Event: string }) => ({
+    ...data.map((item: EventColor) => ({
       id: item.ID,
       name: item.Event,
+      color: item["Color Code"],
     })),
   ].sort((a, b) => a.id - b.id);
 

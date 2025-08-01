@@ -38,8 +38,8 @@ export const registerEvent = async (eventData: {
       body: JSON.stringify(eventData),
     });
 
-    // Handle the duplicated error if the response status is 409
-    if (response.status === 409) {
+    // Handle the duplicated error if the response status is 409 or 422
+    if (response.status === 409 || response.status === 422) {
       const { items } = await response.json();
 
       if (items.length === 2) {
@@ -50,8 +50,10 @@ export const registerEvent = async (eventData: {
       }
       if (items.some((item: string) => item.includes("name"))) {
         return { name: ITEM_ALREADY_REGISTERED_ERROR(items) };
-      } else {
+      } else if (items.some((item: string) => item.includes("color"))) {
         return { color: ITEM_ALREADY_REGISTERED_ERROR(items) };
+      } else {
+        return { name: items };
       }
     }
 
@@ -90,8 +92,8 @@ export const updateEvent = async (
 
     const data = await response.json();
 
-    // Handle the duplicated error if the response status is 409
-    if (response.status === 409) {
+    // Handle the duplicated error if the response status is 409 or 422
+    if (response.status === 409 || response.status === 422) {
       const items = data.items;
       if (items.length === 2) {
         return {
@@ -101,8 +103,10 @@ export const updateEvent = async (
       }
       if (items.some((item: string) => item.includes("name"))) {
         return { name: ITEM_ALREADY_REGISTERED_ERROR(items) };
-      } else {
+      } else if (items.some((item: string) => item.includes("color"))) {
         return { color: ITEM_ALREADY_REGISTERED_ERROR(items) };
+      } else {
+        return { name: items };
       }
     }
 

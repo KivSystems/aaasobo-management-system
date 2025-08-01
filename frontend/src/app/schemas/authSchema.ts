@@ -114,12 +114,22 @@ export const planRegisterSchema = z.object({
 });
 
 export const eventRegisterSchema = z.object({
-  name: z.string().min(1, "Event Name is required."),
+  name: z
+    .string()
+    .min(1, "Event Name is required.")
+    .refine((name) => /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name), {
+      message: "Event Name must be in the format: 日本語名 / English Name",
+    }),
   color: z.string().min(1, "Color Code is required."),
 });
 
 export const eventUpdateSchema = z.object({
-  name: z.string().min(1, "Event Name is required."),
+  name: z
+    .string()
+    .min(1, "Event Name is required.")
+    .refine((name) => /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name), {
+      message: "Event Name must be in the format: 日本語名 / English Name",
+    }),
   color: z.string().min(1, "Color Code is required."),
 });
 

@@ -184,6 +184,7 @@ function InstructorProfile({
                     defaultValue={latestInstructor.workingTime}
                     onChange={(e) => handleInputChange(e, "workingTime")}
                     className={`${styles.workingTime__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
                   />
                 ) : (
                   <h4 className={styles.workingTime__text}>
@@ -205,6 +206,7 @@ function InstructorProfile({
                     defaultValue={latestInstructor.lifeHistory}
                     onChange={(e) => handleInputChange(e, "lifeHistory")}
                     className={`${styles.lifeHistory__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
                   />
                 ) : (
                   <h4 className={styles.lifeHistory__text}>
@@ -225,6 +227,7 @@ function InstructorProfile({
                     defaultValue={latestInstructor.favoriteFood}
                     onChange={(e) => handleInputChange(e, "favoriteFood")}
                     className={`${styles.favoriteFood__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
                   />
                 ) : (
                   <h4 className={styles.favoriteFood__text}>
@@ -245,6 +248,7 @@ function InstructorProfile({
                     defaultValue={latestInstructor.hobby}
                     onChange={(e) => handleInputChange(e, "hobby")}
                     className={`${styles.hobby__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
                   />
                 ) : (
                   <h4 className={styles.hobby__text}>
@@ -265,6 +269,7 @@ function InstructorProfile({
                     defaultValue={latestInstructor.messageForChildren}
                     onChange={(e) => handleInputChange(e, "messageForChildren")}
                     className={`${styles.messageForChildren__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
                   />
                 ) : (
                   <h4 className={styles.messageForChildren__text}>
@@ -285,6 +290,7 @@ function InstructorProfile({
                     defaultValue={latestInstructor.skill}
                     onChange={(e) => handleInputChange(e, "skill")}
                     className={`${styles.skill__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
                   />
                 ) : (
                   <h4 className={styles.skill__text}>

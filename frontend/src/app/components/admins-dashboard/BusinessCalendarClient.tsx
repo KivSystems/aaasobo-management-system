@@ -11,10 +11,12 @@ import { useFormState } from "react-dom";
 import Modal from "@/app/components/elements/modal/Modal";
 import BusinessCalendarModal from "@/app/components/admins-dashboard/BusinessCalendarModal";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 import { updateScheduleAction } from "@/app/actions/updateContent";
 import { CONTENT_UPDATE_SUCCESS_MESSAGE } from "@/app/helper/messages/formValidation";
 import { getAllBusinessSchedules } from "@/app/helper/api/adminsApi";
 import { getDayCellColorHandler } from "@/app/helper/utils/calendarUtils";
+import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLegend";
 
 const BusinessCalendarClient = ({
   businessSchedule: initialSchedule,
@@ -35,6 +37,7 @@ const BusinessCalendarClient = ({
   const [selectedDates, setSelectedDates] = useState<string[] | []>([]);
   const { localMessages, clearErrorMessage } =
     useFormMessages(updateResultState);
+  const { language } = useLanguage();
 
   // Set color for each date in the calendar
   const dayCellColors = getDayCellColorHandler(businessSchedule);
@@ -136,6 +139,14 @@ const BusinessCalendarClient = ({
     return <div>Failed to load AaasoBo! schedule.</div>;
   }
 
+  // Map events to the format required for the calendar legend
+  const colorsForEvents: { event: string; color: string }[] = events.map(
+    (e: BusinessEventType) => ({
+      event: e.name,
+      color: e.color!,
+    }),
+  );
+
   return (
     <>
       <FullCalendar
@@ -155,6 +166,9 @@ const BusinessCalendarClient = ({
         dayCellDidMount={dayCellColors}
         select={handleDateSelect}
       />
+      {events.length > 0 && (
+        <CalendarLegend colorsForEvents={colorsForEvents} language={language} />
+      )}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
