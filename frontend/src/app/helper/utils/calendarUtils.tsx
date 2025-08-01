@@ -139,9 +139,16 @@ export function getDayCellColorHandler(
   );
 
   return (arg: DayCellMountArg) => {
+    console.log("DayCellMountArg arg", arg);
     if (arg.isOther) return;
 
-    const dateStr = arg.date.toISOString().split("T")[0];
+    // Get offset in minutes from UTC
+    const offset = new Date().getTimezoneOffset();
+
+    // Adjust the date to the local timezone by subtracting the offset
+    const localDate = new Date(arg.date.getTime() - offset * 60 * 1000);
+    const dateStr = localDate.toISOString().split("T")[0];
+    console.log("DayCellMountArg localDate", localDate);
     const color = dateToColorMap.get(dateStr);
 
     if (color) {
