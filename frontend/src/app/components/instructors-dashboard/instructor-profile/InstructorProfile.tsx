@@ -30,7 +30,6 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
-import FormValidationMessage from "../formValidationMessage/FormValidationMessage";
 
 function InstructorProfile({
   instructor,
