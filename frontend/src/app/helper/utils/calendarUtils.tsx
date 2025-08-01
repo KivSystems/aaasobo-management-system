@@ -139,7 +139,6 @@ export function getDayCellColorHandler(
   );
 
   return (arg: DayCellMountArg) => {
-    console.log("DayCellMountArg arg", arg);
     if (arg.isOther) return;
 
     // Get offset in minutes from UTC
