@@ -656,7 +656,7 @@ export const getClassesWithinPeriodController = async (
         Instructor: instructorName,
         Customer: customerName,
         Date: date,
-        Time: time,
+        "JP Time": time,
         Status: statusText,
         "Class Code": classCode,
       };

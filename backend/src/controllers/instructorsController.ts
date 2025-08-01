@@ -32,6 +32,7 @@ import { type RequestWithId } from "../middlewares/parseId.middleware";
 import {
   getCalendarClasses,
   getSameDateClasses,
+  getClassByClassId,
 } from "../services/classesService";
 
 // Fetch all the instructors and their availabilities
@@ -118,6 +119,32 @@ function setErrorResponse(res: Response, error: unknown) {
     .status(500)
     .json({ message: error instanceof Error ? error.message : `${error}` });
 }
+
+// Fetch instructor id by class id
+export const getInstructorIdByClassIdController = async (
+  req: Request,
+  res: Response,
+) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid class ID." });
+  }
+
+  try {
+    const classInfo = await getClassByClassId(id);
+
+    if (!classInfo) {
+      return res.status(404).json({ error: "Applicable class not found." });
+    }
+
+    res.status(200).json({
+      instructorId: classInfo.instructorId,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    res.status(500).json({ error: "Failed to fetch classes." });
+  }
+};
 
 export const getInstructor = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);

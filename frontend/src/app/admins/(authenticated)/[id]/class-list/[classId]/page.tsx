@@ -1,11 +1,14 @@
 import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/classDetails/ClassDetails";
-import { getSameDateClasses } from "@/app/helper/api/instructorsApi";
+import {
+  getSameDateClasses,
+  getInstructorIdByClassId,
+} from "@/app/helper/api/instructorsApi";
 import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 const Page = async ({
   params,
 }: {
-  params: { id: string; instructorId: string; classId: string };
+  params: { id: string; classId: string };
 }) => {
   // Get the admin id from the URL parameters
   let adminId = parseInt(params.id);
@@ -15,18 +18,27 @@ const Page = async ({
 
     // If session is not found or user id is not present, throw an error
     if (!session || !session.user.id) {
-      throw new Error("Invalid adminId");
+      return <p>Class not found (invalid admin id)</p>;
     }
     adminId = parseInt(session.user.id);
   }
   // Set the authentication status based on the adminId
   const isAuthenticated: boolean = !isNaN(adminId);
 
-  // Get the instructorId and classId from the URL parameters
-  const instructorId = parseInt(params.instructorId);
+  // Get the classId from the URL parameters
   const classId = parseInt(params.classId);
   if (isNaN(classId)) {
-    throw new Error("Invalid classId");
+    return <p>Class not found (invalid class id)</p>;
+  }
+
+  // Get the instructorId from the applicable class information
+  const response = await getInstructorIdByClassId(classId);
+
+  let instructorId: number;
+  if (response && "instructorId" in response) {
+    instructorId = response.instructorId;
+  } else {
+    return <p>Class not found (invalid instructor id)</p>;
   }
 
   const { selectedClassDetails, sameDateClasses } = await getSameDateClasses(
@@ -42,7 +54,7 @@ const Page = async ({
       isAdminAuthenticated={isAuthenticated}
       classDetails={selectedClassDetails}
       classes={sameDateClasses}
-      previousPage="instructor-list"
+      previousPage="class-list"
     />
   );
 };
