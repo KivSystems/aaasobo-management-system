@@ -26,12 +26,12 @@ export default async function ClassCalendar({
   const createdAt = customer.createdAt;
   const hasSeenWelcomeModal = customer.hasSeenWelcome;
 
-  const colorsForEvents: { event: string; color: string }[] = events
-    .map((e: EventColor) => ({
+  const colorsForEvents: { event: string; color: string }[] = events.map(
+    (e: EventColor) => ({
       event: e.Event,
       color: e["Color Code"],
-    }))
-    .filter((e: { event: string; color: string }) => e.color !== "#FFFFFF"); // Filter out events with white color (#FFFFFF)
+    }),
+  );
 
   return (
     <main className={styles.calendarContainer}>
