@@ -1,3 +1,4 @@
+import styles from "./InputField.module.scss";
 import clsx from "clsx";
 import FormValidationMessage from "../formValidationMessage/FormValidationMessage";
 
@@ -10,6 +11,7 @@ function InputField({
   type = "text",
   className,
   placeholder,
+  display = "block",
 }: {
   name?: string;
   error?: string;
@@ -19,9 +21,10 @@ function InputField({
   type?: string;
   className?: string;
   placeholder?: string;
+  display?: "block" | "inline-block" | "flex";
 }) {
   return (
-    <div>
+    <div className={styles[`display__${display}`]}>
       <input
         name={name}
         className={clsx(className)}

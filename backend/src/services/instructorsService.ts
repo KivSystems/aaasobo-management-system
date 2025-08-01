@@ -9,6 +9,13 @@ export const registerInstructor = async (data: {
   email: string;
   password: string;
   icon: string;
+  birthdate: Date;
+  lifeHistory: string;
+  favoriteFood: string;
+  hobby: string;
+  messageForChildren: string;
+  workingTime: string;
+  skill: string;
   classURL: string;
   meetingId: string;
   passcode: string;
@@ -19,14 +26,21 @@ export const registerInstructor = async (data: {
   await prisma.instructor.create({
     data: {
       name: data.name,
+      nickname: data.nickname,
       email: data.email,
       password: hashedPassword,
+      birthdate: data.birthdate,
+      lifeHistory: data.lifeHistory,
+      favoriteFood: data.favoriteFood,
+      hobby: data.hobby,
+      messageForChildren: data.messageForChildren,
+      workingTime: data.workingTime,
+      skill: data.skill,
       icon: data.icon,
       classURL: data.classURL,
       meetingId: data.meetingId,
       passcode: data.passcode,
       introductionURL: data.introductionURL,
-      nickname: data.nickname,
     },
   });
 
@@ -36,7 +50,9 @@ export const registerInstructor = async (data: {
 // Fetch all instructors information
 export const getAllInstructors = async () => {
   try {
-    return await prisma.instructor.findMany();
+    return await prisma.instructor.findMany({
+      orderBy: { id: "asc" },
+    });
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch instructors.");
@@ -70,10 +86,17 @@ export async function getInstructorById(id: number) {
 export const updateInstructor = async (
   id: number,
   name: string,
+  nickname: string,
+  birthdate: Date,
+  workingTime: string,
+  lifeHistory: string,
+  favoriteFood: string,
+  hobby: string,
+  messageForChildren: string,
+  skill: string,
   email: string,
   classURL: string,
   icon: string,
-  nickname: string,
   meetingId: string,
   passcode: string,
   introductionURL: string,
@@ -86,10 +109,17 @@ export const updateInstructor = async (
       },
       data: {
         name,
+        nickname,
+        birthdate,
+        workingTime,
+        lifeHistory,
+        favoriteFood,
+        hobby,
+        messageForChildren,
+        skill,
         email,
         classURL,
         icon,
-        nickname,
         meetingId,
         passcode,
         introductionURL,

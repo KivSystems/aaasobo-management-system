@@ -152,29 +152,43 @@ export const registerInstructor = async (userData: {
 
 // PATCH instructor data
 export const updateInstructor = async (
-  instructorId: number,
-  instructorName: string,
-  instructorEmail: string,
-  instructorClassURL: string,
-  instructorIcon: string,
-  instructorNickname: string,
-  instructorMeetingId: string,
-  instructorPasscode: string,
-  instructorIntroductionURL: string,
+  id: number,
+  name: string,
+  nickname: string,
+  birthdate: string,
+  workingTime: string,
+  lifeHistory: string,
+  favoriteFood: string,
+  hobby: string,
+  messageForChildren: string,
+  skill: string,
+  email: string,
+  classURL: string,
+  icon: string,
+  meetingId: string,
+  passcode: string,
+  introductionURL: string,
   cookie: string,
 ) => {
   // Define the data to be sent to the server side.
-  const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}`;
+  const instructorURL = `${BACKEND_ORIGIN}/instructors/${id}`;
   const headers = { "Content-Type": "application/json", Cookie: cookie };
   const body = JSON.stringify({
-    name: instructorName,
-    email: instructorEmail,
-    classURL: instructorClassURL,
-    icon: instructorIcon,
-    nickname: instructorNickname,
-    meetingId: instructorMeetingId,
-    passcode: instructorPasscode,
-    introductionURL: instructorIntroductionURL,
+    name,
+    nickname,
+    birthdate,
+    workingTime,
+    lifeHistory,
+    favoriteFood,
+    hobby,
+    messageForChildren,
+    skill,
+    email,
+    classURL,
+    icon,
+    meetingId,
+    passcode,
+    introductionURL,
   });
 
   const response = await fetch(instructorURL, {
@@ -185,7 +199,7 @@ export const updateInstructor = async (
 
   const data = await response.json();
 
-  if (response.status !== 200) {
+  if (response.status === 500) {
     return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
   }
 

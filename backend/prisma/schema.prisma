@@ -26,6 +26,13 @@ model Instructor {
   classURL                        String                            @unique
   icon                            String                            @unique
   nickname                        String                            @unique
+  birthdate                       DateTime
+  lifeHistory                     String
+  favoriteFood                    String
+  hobby                           String
+  messageForChildren              String
+  workingTime                     String
+  skill                           String
   meetingId                       String                            @unique
   passcode                        String                            @unique
   instructorUnavailability        InstructorUnavailability[]

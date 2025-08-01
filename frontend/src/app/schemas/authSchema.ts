@@ -142,18 +142,18 @@ export const instructorUpdateSchema = z.object({
   classURL: z
     .string()
     .url("Invalid URL format.")
-    .min(1, "Class URL is required."),
-  // TODO: Display error message if URL does not start with http:// or https:// (GSS No.97)
-  // .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
-  //   message: "URL must start with http:// or https://",
-  // }),
+    .min(1, "Class URL is required.")
+    .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
+      message: "URL must start with http:// or https://",
+    }),
   meetingId: z.string().min(1, "Meeting ID is required."),
   passcode: z.string().min(1, "Passcode is required."),
-  introductionURL: z.string().url("Invalid URL format."),
-  // TODO: Display error message if URL does not start with http:// or https:// (GSS No.97)
-  // .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
-  //   message: "URL must start with http:// or https://",
-  // }),
+  introductionURL: z
+    .string()
+    .url("Invalid URL format.")
+    .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
+      message: "URL must start with http:// or https://",
+    }),
   userType: z.enum(["admin", "customer", "instructor"], {
     message: "Invalid user type.",
   }),
