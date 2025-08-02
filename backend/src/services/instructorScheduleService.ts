@@ -1,10 +1,23 @@
 import { prisma } from "../../prisma/prismaClient";
-import {
-  createJSTMidnight,
-  assertIsJSTMidnight,
-  toJSTDateString,
-  JAPAN_TIME_DIFF,
-} from "../helper/dateUtils";
+import { Prisma } from "@prisma/client";
+import { addDays, format, startOfDay, endOfDay } from "date-fns";
+import { fromZonedTime, toZonedTime } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
+
+type InstructorSchedule = Prisma.InstructorScheduleGetPayload<{
+  include: { slots: true };
+}>;
+
+type InstructorSlot = Prisma.InstructorSlotGetPayload<{}>;
+
+interface AvailableSlot {
+  dateTime: string;
+}
+
+// Extract time string (HH:MM) from DateTime
+const extractTimeFromDateTime = (dateTime: Date): string => {
+  return dateTime.toISOString().substring(11, 16);
+};
 
 export const getInstructorSchedules = async (instructorId: number) => {
   try {
@@ -20,12 +33,25 @@ export const getInstructorSchedules = async (instructorId: number) => {
 
 export const getScheduleWithSlots = async (scheduleId: number) => {
   try {
-    return await prisma.instructorSchedule.findUnique({
+    const schedule = await prisma.instructorSchedule.findUnique({
       where: { id: scheduleId },
       include: {
         slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
       },
     });
+
+    if (!schedule) {
+      return null;
+    }
+
+    // Transform startTime from DateTime to time string
+    return {
+      ...schedule,
+      slots: schedule.slots.map((slot) => ({
+        ...slot,
+        startTime: extractTimeFromDateTime(slot.startTime),
+      })),
+    };
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch schedule with slots.");
@@ -34,17 +60,14 @@ export const getScheduleWithSlots = async (scheduleId: number) => {
 
 export const createInstructorSchedule = async (data: {
   instructorId: number;
-  effectiveFrom: Date; // Date object representing JST date
+  effectiveFrom: Date;
+  timezone: string;
   slots: Array<{
     weekday: number;
-    startTime: Date;
+    startTime: string; // HH:MM format
   }>;
 }) => {
   try {
-    // Convert Date object to JST date string, then to JST midnight DateTime
-    const effectiveFromDateString = toJSTDateString(data.effectiveFrom);
-    const effectiveFromDateTime = createJSTMidnight(effectiveFromDateString);
-
     return await prisma.$transaction(async (tx) => {
       // Find the currently active schedule (effectiveTo: null)
       // Note: This should be findUnique since we have @@unique([instructorId, effectiveTo]),
@@ -61,15 +84,16 @@ export const createInstructorSchedule = async (data: {
       if (currentActiveSchedule) {
         await tx.instructorSchedule.update({
           where: { id: currentActiveSchedule.id },
-          data: { effectiveTo: effectiveFromDateTime },
+          data: { effectiveTo: data.effectiveFrom },
         });
       }
 
       const schedule = await tx.instructorSchedule.create({
         data: {
           instructorId: data.instructorId,
-          effectiveFrom: effectiveFromDateTime,
+          effectiveFrom: data.effectiveFrom,
           effectiveTo: null,
+          timezone: data.timezone,
         },
       });
 
@@ -77,14 +101,27 @@ export const createInstructorSchedule = async (data: {
         data: data.slots.map((slot) => ({
           scheduleId: schedule.id,
           weekday: slot.weekday,
-          startTime: slot.startTime,
+          startTime: new Date(`1970-01-01T${slot.startTime}:00.000Z`),
         })),
       });
 
-      return await tx.instructorSchedule.findUnique({
+      const createdSchedule = await tx.instructorSchedule.findUnique({
         where: { id: schedule.id },
         include: { slots: true },
       });
+
+      if (!createdSchedule) {
+        throw new Error("Failed to retrieve created schedule");
+      }
+
+      // Transform startTime from DateTime to time string
+      return {
+        ...createdSchedule,
+        slots: createdSchedule.slots.map((slot) => ({
+          ...slot,
+          startTime: extractTimeFromDateTime(slot.startTime),
+        })),
+      };
     });
   } catch (error) {
     console.error("Database Error:", error);
@@ -92,99 +129,115 @@ export const createInstructorSchedule = async (data: {
   }
 };
 
+const findEffectiveSchedule = (
+  schedules: InstructorSchedule[],
+  targetDate: Date,
+): InstructorSchedule | undefined => {
+  return schedules.find((s) => {
+    const targetDateStr = format(targetDate, "yyyy-MM-dd");
+
+    // Create TZDate objects representing the dates in the schedule timezone
+    const effectiveFromDateStr = format(s.effectiveFrom, "yyyy-MM-dd");
+    const effectiveFromTZ = new TZDate(
+      `${effectiveFromDateStr}T00:00:00`,
+      s.timezone,
+    );
+    const effectiveFromUtcStr = format(effectiveFromTZ, "yyyy-MM-dd");
+
+    const effectiveToUtcStr = s.effectiveTo
+      ? (() => {
+          const effectiveToDateStr = format(s.effectiveTo, "yyyy-MM-dd");
+          const effectiveToTZ = new TZDate(
+            `${effectiveToDateStr}T00:00:00`,
+            s.timezone,
+          );
+          return format(effectiveToTZ, "yyyy-MM-dd");
+        })()
+      : null;
+
+    return (
+      effectiveFromUtcStr <= targetDateStr &&
+      (effectiveToUtcStr === null || targetDateStr < effectiveToUtcStr)
+    );
+  });
+};
+
+const generateSlotsForDay = (
+  utcDate: Date,
+  schedule: InstructorSchedule,
+  absentDateTimes: Set<string>,
+): AvailableSlot[] => {
+  const timezone = schedule.timezone;
+
+  const zonedDate = toZonedTime(utcDate, timezone);
+  const weekday = zonedDate.getDay();
+  const dateStr = format(zonedDate, "yyyy-MM-dd");
+
+  const slotsForDay = schedule.slots.filter(
+    (slot: InstructorSlot) => slot.weekday === weekday,
+  );
+
+  const daySlots: AvailableSlot[] = [];
+  for (const slot of slotsForDay) {
+    const slotTimeStr = extractTimeFromDateTime(slot.startTime);
+    // Create a date object in the target timezone and convert to UTC
+    const dateTimeStr = `${dateStr}T${slotTimeStr}:00`;
+    const utcDateTime = fromZonedTime(dateTimeStr, timezone);
+    const utcDateTimeISO = utcDateTime.toISOString();
+
+    if (!absentDateTimes.has(utcDateTimeISO)) {
+      daySlots.push({ dateTime: utcDateTimeISO });
+    }
+  }
+
+  return daySlots;
+};
+
 export const getInstructorAvailableSlots = async (
   instructorId: number,
-  startDate: Date,
-  endDate: Date,
+  start: Date,
+  end: Date,
 ) => {
   try {
-    // Convert Date objects to JST date strings
-    const startDateString = toJSTDateString(startDate);
-    const endDateString = toJSTDateString(endDate);
+    const [allSchedules, absences] = await Promise.all([
+      prisma.instructorSchedule.findMany({
+        where: { instructorId },
+        include: {
+          slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+        },
+        orderBy: { effectiveFrom: "asc" },
+      }),
+      prisma.instructorAbsence.findMany({
+        where: {
+          instructorId,
+          absentAt: { gte: start, lt: end },
+        },
+      }),
+    ]);
 
-    const schedules = await prisma.instructorSchedule.findMany({
-      where: {
-        instructorId,
-        // Interval overlap detection: max(startDate, effectiveFrom) < min(endDate, effectiveTo)
-        // This formula is mathematically equivalent to:
-        // startDate < effectiveTo AND effectiveFrom < endDate
-        //
-        // Since we can't use max/min functions in Prisma where clause, we decompose:
-        // 1. effectiveFrom < endDate (schedule starts before range ends)
-        effectiveFrom: { lt: createJSTMidnight(endDateString) },
-        // 2. startDate < effectiveTo OR effectiveTo is null (schedule ends after range starts, or is infinite)
-        OR: [
-          { effectiveTo: null },
-          { effectiveTo: { gt: createJSTMidnight(startDateString) } },
-        ],
-      },
-      include: {
-        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
-      },
-      orderBy: { effectiveFrom: "asc" },
-    });
+    const absentDateTimes = new Set(
+      absences.map((absence) => absence.absentAt.toISOString()),
+    );
 
-    // Generate available slots for each day in the requested period
-    const availableSlots = [];
-    // Treat input dates as JST (create JST midnight DateTime objects)
-    const startDateObj = createJSTMidnight(startDateString);
-    const endDateObj = createJSTMidnight(endDateString);
-    const currentDate = new Date(startDateObj);
+    const availableSlots: AvailableSlot[] = [];
 
-    while (currentDate < endDateObj) {
-      // Find the schedule that is effective for this specific date
-      const effectiveSchedule = schedules.find((s) => {
-        // Validate that effectiveFrom and effectiveTo are JST midnight
-        assertIsJSTMidnight(s.effectiveFrom);
-        if (s.effectiveTo) {
-          assertIsJSTMidnight(s.effectiveTo);
-        }
-
-        // Check if current date is within the schedule's effective period
-        return (
-          s.effectiveFrom <= currentDate &&
-          (s.effectiveTo === null || currentDate < s.effectiveTo)
-        );
-      });
+    for (let current = start; current < end; current = addDays(current, 1)) {
+      const effectiveSchedule = findEffectiveSchedule(allSchedules, current);
 
       if (effectiveSchedule) {
-        // Calculate the day of the week in JST timezone
-        // Since currentDate represents JST midnight (09:00 UTC), we need to adjust for JST
-        const jstDate = new Date(
-          currentDate.getTime() - JAPAN_TIME_DIFF * 60 * 60 * 1000,
-        );
-        const dayOfWeek = jstDate.getUTCDay(); // 0 = Sunday, 6 = Saturday
-        const jstDateString = jstDate.toISOString().split("T")[0];
-
-        // Find slots for this day of the week
-        const slotsForDay = effectiveSchedule.slots.filter(
-          (slot) => slot.weekday === dayOfWeek,
+        const daySlots = generateSlotsForDay(
+          current,
+          effectiveSchedule,
+          absentDateTimes,
         );
 
-        for (const slot of slotsForDay) {
-          const utcTime = slot.startTime;
-          const utcTimeString = utcTime.toISOString().substring(11, 19); // Extract HH:MM:SS
+        const filteredSlots = daySlots.filter((slot) => {
+          const slotDate = new Date(slot.dateTime);
+          return start <= slotDate && slotDate < end;
+        });
 
-          const slotDateTimeJST = `${jstDateString}T${utcTimeString}Z`;
-          const slotDateTime = new Date(slotDateTimeJST);
-
-          // Assert that the weekday matches the actual day of week from the dateTime
-          if (slotDateTime.getUTCDay() !== dayOfWeek) {
-            throw new Error(
-              `Weekday assertion failed: dateTime weekday (${slotDateTime.getUTCDay()}) does not match expected weekday (${dayOfWeek})`,
-            );
-          }
-
-          availableSlots.push({
-            dateTime: slotDateTime.toISOString(),
-            weekday: dayOfWeek,
-            startTime: slot.startTime.toISOString(),
-          });
-        }
+        availableSlots.push(...filteredSlots);
       }
-
-      // Move to next day (add 24 hours to maintain JST midnight)
-      currentDate.setTime(currentDate.getTime() + 24 * 60 * 60 * 1000);
     }
 
     return availableSlots;

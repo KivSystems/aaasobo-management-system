@@ -220,8 +220,9 @@ model Event {
 model InstructorSchedule {
   id            Int              @id @default(autoincrement())
   instructorId  Int
-  effectiveFrom DateTime
-  effectiveTo   DateTime?
+  effectiveFrom DateTime         @db.Date
+  effectiveTo   DateTime?        @db.Date
+  timezone      String
   instructor    Instructor       @relation(fields: [instructorId], references: [id])
   slots         InstructorSlot[]
 
