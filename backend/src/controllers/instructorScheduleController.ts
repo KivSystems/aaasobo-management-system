@@ -65,11 +65,11 @@ export const createInstructorScheduleController = async (
   res: Response,
 ) => {
   try {
-    const { effectiveFrom, slots } = req.body;
+    const { effectiveFrom, slots, timezone } = req.body;
 
-    if (!effectiveFrom || !slots || !Array.isArray(slots)) {
+    if (!effectiveFrom || !slots || !Array.isArray(slots) || !timezone) {
       return res.status(400).json({
-        message: "effectiveFrom and slots array are required",
+        message: "effectiveFrom, slots array, and timezone are required",
       });
     }
 
@@ -92,21 +92,15 @@ export const createInstructorScheduleController = async (
           message: "Invalid weekday. Must be a number between 0-6",
         });
       }
-
-      const startTime = new Date(slot.startTime);
-      if (isNaN(startTime.getTime())) {
-        return res.status(400).json({
-          message: "Invalid startTime format",
-        });
-      }
     }
 
     const schedule = await createInstructorSchedule({
       instructorId: req.id,
       effectiveFrom: effectiveFromDate,
+      timezone,
       slots: slots.map((slot: any) => ({
         weekday: slot.weekday,
-        startTime: new Date(slot.startTime),
+        startTime: slot.startTime,
       })),
     });
 
@@ -128,41 +122,41 @@ export const getInstructorAvailableSlotsController = async (
   res: Response,
 ) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { start, end } = req.query;
 
-    if (!startDate || !endDate) {
+    if (!start || !end) {
       return res.status(400).json({
-        message: "startDate and endDate query parameters are required",
+        message:
+          "start and end query parameters are required (ISO datetime strings)",
       });
     }
 
-    // Validate and parse dates
-    const startDateObj = new Date(startDate as string);
-    const endDateObj = new Date(endDate as string);
-
-    if (isNaN(startDateObj.getTime())) {
+    if (typeof start !== "string" || typeof end !== "string") {
       return res.status(400).json({
-        message: "Invalid startDate format",
+        message: "start and end must be ISO datetime strings",
       });
     }
 
-    if (isNaN(endDateObj.getTime())) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return res.status(400).json({
-        message: "Invalid endDate format",
+        message:
+          "Invalid start or end datetime format. Use ISO format (e.g., 2025-06-01T00:00:00Z)",
       });
     }
 
-    // Validate date range
-    if (startDateObj >= endDateObj) {
+    if (startDate >= endDate) {
       return res.status(400).json({
-        message: "startDate must be before endDate",
+        message: "start must be before end",
       });
     }
 
     const availableSlots = await getInstructorAvailableSlots(
       req.id,
-      startDateObj,
-      endDateObj,
+      startDate,
+      endDate,
     );
 
     res.status(200).json({

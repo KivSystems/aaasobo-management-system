@@ -530,6 +530,7 @@ export const createInstructorSchedule = async (
       body: JSON.stringify({
         effectiveFrom,
         slots,
+        timezone: "Asia/Tokyo",
       }),
     });
 
@@ -562,11 +563,11 @@ export const getInstructorAvailableSlots = async (
   instructorId: number,
   startDate: string,
   endDate: string,
-): Promise<Response<{ availableSlots: AvailableSlot[] }>> => {
+): Promise<Response<{ data: AvailableSlot[] }>> => {
   try {
     const params = new URLSearchParams({
-      startDate,
-      endDate,
+      start: startDate,
+      end: endDate,
     });
 
     const response = await fetch(
@@ -588,9 +589,114 @@ export const getInstructorAvailableSlots = async (
     }
 
     // Return in the expected format
-    return { availableSlots: result.data };
+    return { data: result.data };
   } catch (error) {
     console.error("Failed to fetch instructor available slots:", error);
+    throw error;
+  }
+};
+
+// Instructor Absence APIs
+export type InstructorAbsence = {
+  instructorId: number;
+  absentAt: string;
+};
+
+export const getInstructorAbsences = async (
+  instructorId: number,
+): Promise<Response<{ absences: InstructorAbsence[] }>> => {
+  try {
+    const response = await fetch(`${BASE_URL}/${instructorId}/absences`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { absences: result.data };
+  } catch (error) {
+    console.error("Failed to fetch instructor absences:", error);
+    throw error;
+  }
+};
+
+export const addInstructorAbsence = async (
+  instructorId: number,
+  absentAt: string,
+  cookie: string,
+): Promise<Response<{ absence: InstructorAbsence }>> => {
+  try {
+    const response = await fetch(`${BASE_URL}/${instructorId}/absences`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookie,
+      },
+      credentials: "include",
+      body: JSON.stringify({ absentAt }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { absence: result.data };
+  } catch (error) {
+    console.error("Failed to add instructor absence:", error);
+    throw error;
+  }
+};
+
+export const deleteInstructorAbsence = async (
+  instructorId: number,
+  absentAt: string,
+  cookie: string,
+): Promise<Response<{ absence: InstructorAbsence }>> => {
+  try {
+    const encodedAbsentAt = encodeURIComponent(absentAt);
+    const response = await fetch(
+      `${BASE_URL}/${instructorId}/absences/${encodedAbsentAt}`,
+      {
+        method: "DELETE",
+        headers: {
+          Cookie: cookie,
+        },
+        credentials: "include",
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { absence: result.data };
+  } catch (error) {
+    console.error("Failed to delete instructor absence:", error);
     throw error;
   }
 };

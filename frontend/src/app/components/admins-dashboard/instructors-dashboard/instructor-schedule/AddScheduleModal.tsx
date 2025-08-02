@@ -2,12 +2,7 @@ import { useState, useEffect } from "react";
 import Modal from "@/app/components/elements/modal/Modal";
 import EditableScheduleCalendar from "./EditableScheduleCalendar";
 import { InstructorSlot } from "@/app/helper/api/instructorsApi";
-import {
-  utcToJstTime,
-  jstTimeToUtc,
-  slotToKey,
-  keyToSlot,
-} from "@/app/helper/utils/scheduleUtils";
+import { slotToKey, keyToSlot } from "@/app/helper/utils/scheduleUtils";
 import styles from "./AddScheduleModal.module.scss";
 
 interface AddScheduleModalProps {
@@ -32,8 +27,7 @@ export default function AddScheduleModal({
   const slotsToKeys = (slots: InstructorSlot[]): Set<string> => {
     return new Set(
       slots.map((slot) => {
-        const time = utcToJstTime(slot.startTime);
-        return slotToKey(slot.weekday, time);
+        return slotToKey(slot.weekday, slot.startTime);
       }),
     );
   };
@@ -45,7 +39,7 @@ export default function AddScheduleModal({
       const { weekday, startTime } = keyToSlot(key);
       return {
         weekday,
-        startTime: jstTimeToUtc(startTime),
+        startTime,
       };
     });
   };
@@ -59,7 +53,6 @@ export default function AddScheduleModal({
     }
   }, [isOpen, initialSlots]);
 
-  // Toggle slot function
   const toggleSlot = (weekday: number, time: string) => {
     const key = slotToKey(weekday, time);
     setEditedSlots((prev) => {
@@ -87,7 +80,7 @@ export default function AddScheduleModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} maxHeight="90vh">
       <div className={styles.content}>
         <div className={styles.header}>
           <h2>Add New Schedule Version</h2>

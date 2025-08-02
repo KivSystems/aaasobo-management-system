@@ -5,7 +5,6 @@ import {
   Weekday,
   WEEKDAYS,
   weekdayToDay,
-  utcToJstTime,
 } from "@/app/helper/utils/scheduleUtils";
 import {
   TimeColumn,
@@ -31,8 +30,7 @@ export default function VersionedScheduleCalendar({
       const day = weekdayToDay(slot.weekday);
       if (!acc[day]) acc[day] = [];
 
-      const time = utcToJstTime(slot.startTime);
-      acc[day].push(time);
+      acc[day].push(slot.startTime);
       return acc;
     },
     {} as Record<Weekday, string[]>,

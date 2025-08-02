@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { createJSTMidnight } from "../helper/dateUtils";
 
 const prisma = new PrismaClient();
 
@@ -1372,222 +1371,225 @@ async function insertInstructorSchedules() {
   const helenSchedule1 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: createJSTMidnight("2024-06-01"),
-      effectiveTo: createJSTMidnight("2024-08-01"),
+      effectiveFrom: new Date("2024-06-01"),
+      effectiveTo: new Date("2024-08-01"),
+      timezone: "Asia/Tokyo",
     },
   });
 
-  // Helen's first schedule slots (JST times converted to UTC: JST-9)
+  // Helen's first schedule slots
   await prisma.instructorSlot.createMany({
     data: [
-      // Monday (1) - 16:00-17:00 JST = 07:00-08:00 UTC
+      // Monday (1)
       {
         scheduleId: helenSchedule1.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:00:00Z"),
-      },
-      {
-        scheduleId: helenSchedule1.id,
-        weekday: 1,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:00:00Z"),
-      },
-      // Wednesday (3) - 16:00-17:30 JST = 07:00-08:30 UTC
-      {
-        scheduleId: helenSchedule1.id,
-        weekday: 3,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
-        weekday: 3,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        weekday: 1,
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
+      // Wednesday
       {
         scheduleId: helenSchedule1.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
-      // Friday (5) - 17:00-18:00 JST = 08:00-09:00 UTC
+      {
+        scheduleId: helenSchedule1.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T19:00:00Z"),
+      },
+      {
+        scheduleId: helenSchedule1.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T19:30:00Z"),
+      },
+      // Friday (5)
       {
         scheduleId: helenSchedule1.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
     ],
   });
 
-  // Helen's second schedule (historical - 2024-08-01 to 2024-12-31)
+  // Helen's second schedule
   const helenSchedule2 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: createJSTMidnight("2024-08-01"),
-      effectiveTo: createJSTMidnight("2025-01-01"),
+      effectiveFrom: new Date("2024-08-01"),
+      effectiveTo: new Date("2025-01-01"),
+      timezone: "Asia/Tokyo",
     },
   });
 
-  // Helen's second schedule slots (JST times converted to UTC: JST-9)
+  // Helen's second schedule slots
   await prisma.instructorSlot.createMany({
     data: [
-      // Monday (1) - 16:00-18:00 JST = 07:00-09:00 UTC
+      // Monday (1)
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
       // Wednesday (3)
       {
         scheduleId: helenSchedule2.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T09:30:00Z"),
+        startTime: new Date("1970-01-01T18:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T10:00:00Z"),
+        startTime: new Date("1970-01-01T19:00:00Z"),
       },
       // Thursday (4)
       {
         scheduleId: helenSchedule2.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
     ],
   });
 
-  // Helen's current schedule (effective from 2025-01-01)
+  // Helen's current schedule
   const helenSchedule3 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: createJSTMidnight("2025-01-01"),
+      effectiveFrom: new Date("2025-01-01"),
       effectiveTo: null, // Current schedule
+      timezone: "Asia/Tokyo",
     },
   });
 
-  // Helen's current (third) schedule slots (JST times converted to UTC: JST-9)
+  // Helen's current (third) schedule slots
   await prisma.instructorSlot.createMany({
     data: [
-      // Monday (1) - 16:00-18:00 JST = 07:00-09:00 UTC
+      // Monday (1)
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
       // Thursday (4)
       {
         scheduleId: helenSchedule3.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
       // Friday (5)
       {
         scheduleId: helenSchedule3.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T10:00:00Z"),
+        startTime: new Date("1970-01-01T19:00:00Z"),
       },
     ],
   });
@@ -1596,8 +1598,9 @@ async function insertInstructorSchedules() {
   const elianSchedule = await prisma.instructorSchedule.create({
     data: {
       instructorId: elian.id,
-      effectiveFrom: createJSTMidnight("2024-08-01"),
+      effectiveFrom: new Date("2024-08-01"),
       effectiveTo: null,
+      timezone: "Asia/Tokyo",
     },
   });
 
@@ -1608,24 +1611,24 @@ async function insertInstructorSchedules() {
       {
         scheduleId: elianSchedule.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: elianSchedule.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       // Tuesday (2)
       {
         scheduleId: elianSchedule.id,
         weekday: 2,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       // Wednesday (3)
       {
         scheduleId: elianSchedule.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
     ],
   });
@@ -1647,6 +1650,14 @@ async function insertInstructorAbsences() {
       {
         instructorId: elian.id,
         absentAt: new Date("2025-02-28T09:00:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        absentAt: new Date("2025-07-28T07:00:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        absentAt: new Date("2025-07-28T07:30:00Z"),
       },
     ],
   });
