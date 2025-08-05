@@ -34,10 +34,9 @@ export const months: Month[] = [
 
 // Get the first Date of the month after `months` months from `date`.
 export function getFirstDateInMonths(date: Date, months: number): Date {
-  const d = new Date(date);
-  d.setMonth(d.getMonth() + months);
-  d.setUTCDate(1);
-  d.setUTCHours(0, 0, 0);
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const d = new Date(Date.UTC(year, month + months, 1));
   return d;
 }
 

@@ -1,0 +1,50 @@
+@import "../../../../variables.module.scss";
+
+.timeSelect {
+  margin-bottom: 1rem;
+}
+
+.selectWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 0.3rem;
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+
+  &:focus-within {
+    border-color: $blue_primary;
+  }
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.select {
+  width: 100%;
+  border: none;
+  padding-left: 0.3rem;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// Individual styles for each class
+.customerProfile {
+  margin-bottom: unset;
+
+  .selectWrapper {
+    margin: unset;
+    background-color: white;
+    padding: 3px 6px;
+  }
+
+  .select {
+    padding-left: unset;
+    font-size: 1rem;
+  }
+}

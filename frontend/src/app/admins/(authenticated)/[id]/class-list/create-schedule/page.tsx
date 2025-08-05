@@ -1,9 +1,10 @@
 "use client";
 
+import TimeSelect from "@/app/components/admins-dashboard/TimeSelect";
 import { createMonthlyClasses } from "@/app/helper/api/classesApi";
 import { addAvailability } from "@/app/helper/api/instructorsApi";
 import { getInstructors } from "@/app/helper/api/instructorsApi";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 function Page() {
   const months = [
@@ -77,6 +78,21 @@ function Page() {
         <option value={year}>{year}</option>
       </select>
       <button onClick={clickHandler}>Make Schedule</button>
+      <form action="">
+        {/* <TimeSelect
+          onChange={useCallback(
+            (e) => {
+              handleChange("prefecture", e.target.value);
+              clearErrorMessage("prefecture");
+            },
+            [handleChange, clearErrorMessage],
+          )}
+          time={"year"}
+          timeArr={yearArr}
+          defaultValue={}
+          error={error}
+        /> */}
+      </form>
     </div>
   );
 }
