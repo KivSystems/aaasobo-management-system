@@ -1718,7 +1718,7 @@ async function insertEvents() {
         color: "#FAD7CD",
       },
       {
-        name: "お休み振替対象日 / Rebookable Day",
+        name: "お休み振替対象日 / No Class (Rebookable)",
         color: "#FF0000",
       },
       {
