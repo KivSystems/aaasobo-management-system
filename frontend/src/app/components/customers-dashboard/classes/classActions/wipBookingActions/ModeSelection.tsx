@@ -6,13 +6,11 @@ import styles from "./ModeSelection.module.scss";
 interface ModeSelectionProps {
   onModeSelect: (mode: "instructor" | "datetime") => void;
   language: "ja" | "en";
-  isFreeTrial: boolean;
 }
 
 export default function ModeSelection({
   onModeSelect,
   language,
-  isFreeTrial,
 }: ModeSelectionProps) {
   const instructorModeTitle =
     language === "ja" ? "講師から選択" : "Select by Instructor";
