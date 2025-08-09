@@ -336,7 +336,7 @@ describe("Available Slots API - Active Schedule", () => {
   it("startDate < endDate < effectiveFrom (no overlap)", async () => {
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-01`, end: jst`2025-06-30` })
+      .query({ start: "2025-06-01", end: "2025-06-30" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
   });
@@ -345,7 +345,7 @@ describe("Available Slots API - Active Schedule", () => {
   it("startDate < endDate = effectiveFrom (boundary, no overlap)", async () => {
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-01`, end: jst`2025-07-01` })
+      .query({ start: "2025-06-01", end: "2025-07-01" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
   });
@@ -354,7 +354,7 @@ describe("Available Slots API - Active Schedule", () => {
   it("startDate < effectiveFrom < endDate (partial overlap from effectiveFrom)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-01`, end: jst`2025-07-02` })
+      .query({ start: "2025-06-01", end: "2025-07-02" })
       .expect(200);
 
     expect(response.body.data).toEqual([
@@ -367,7 +367,7 @@ describe("Available Slots API - Active Schedule", () => {
   it("effectiveFrom = startDate < endDate (boundary, full overlap from startDate)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-07-01`, end: jst`2025-07-08` })
+      .query({ start: "2025-07-01", end: "2025-07-08" })
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -390,7 +390,7 @@ describe("Available Slots API - Active Schedule", () => {
   it("effectiveFrom < startDate < endDate (full overlap from startDate)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-07-10`, end: jst`2025-07-15` })
+      .query({ start: "2025-07-10", end: "2025-07-15" })
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -409,11 +409,11 @@ describe("Available Slots API - Active Schedule", () => {
   it("should return 400 error when startDate is missing", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ end: jst`2025-07-14` })
+      .query({ end: "2025-07-14" })
       .expect(400);
 
     expect(response.body.message).toBe(
-      "start and end query parameters are required (ISO datetime strings)",
+      "start and end query parameters are required (YYYY-MM-DD format)",
     );
   });
 });
@@ -472,7 +472,7 @@ describe("Available Slots API - Schedule End Date", () => {
   it("startDate < endDate < effectiveFrom (no overlap before schedule)", async () => {
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-01`, end: jst`2025-06-30` })
+      .query({ start: "2025-06-01", end: "2025-06-30" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
   });
@@ -481,7 +481,7 @@ describe("Available Slots API - Schedule End Date", () => {
   it("startDate < endDate = effectiveFrom (boundary, no overlap)", async () => {
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-01`, end: jst`2025-07-01` })
+      .query({ start: "2025-06-01", end: "2025-07-01" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
   });
@@ -490,7 +490,7 @@ describe("Available Slots API - Schedule End Date", () => {
   it("startDate < effectiveFrom < endDate <= effectiveTo (partial overlap from schedule start)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-25`, end: jst`2025-07-10` })
+      .query({ start: "2025-06-25", end: "2025-07-10" })
       .expect(200);
 
     expect(response.body.data).toEqual([
@@ -511,7 +511,7 @@ describe("Available Slots API - Schedule End Date", () => {
   it("effectiveFrom <= startDate < endDate <= effectiveTo (full overlap within schedule)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-07-05`, end: jst`2025-07-12` })
+      .query({ start: "2025-07-05", end: "2025-07-12" })
       .expect(200);
 
     expect(response.body.data).toEqual([
@@ -530,7 +530,7 @@ describe("Available Slots API - Schedule End Date", () => {
   it("startDate < effectiveFrom < effectiveTo < endDate (query encompasses entire schedule)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-15`, end: jst`2025-07-30` })
+      .query({ start: "2025-06-15", end: "2025-07-30" })
       .expect(200);
 
     expect(response.body.data).toEqual([
@@ -557,7 +557,7 @@ describe("Available Slots API - Schedule End Date", () => {
   it("effectiveFrom <= startDate < effectiveTo < endDate (partial overlap until schedule end)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-07-10`, end: jst`2025-07-20` })
+      .query({ start: "2025-07-10", end: "2025-07-20" })
       .expect(200);
 
     expect(response.body.data).toEqual([
@@ -574,7 +574,7 @@ describe("Available Slots API - Schedule End Date", () => {
   it("effectiveTo <= startDate < endDate (no overlap after schedule end)", async () => {
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-07-15`, end: jst`2025-07-25` })
+      .query({ start: "2025-07-15", end: "2025-07-25" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
   });
@@ -583,7 +583,7 @@ describe("Available Slots API - Schedule End Date", () => {
   it("effectiveTo < startDate < endDate (no overlap, clear gap after schedule)", async () => {
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-07-20`, end: jst`2025-07-30` })
+      .query({ start: "2025-07-20", end: "2025-07-30" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
   });
@@ -641,7 +641,7 @@ describe("Available Slots API - Multiple Schedules Adjacent", () => {
   it("startDate < endedSchedule.effectiveTo = activeSchedule.effectiveFrom < endDate (spans both schedules, no gap)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-25`, end: jst`2025-07-10` })
+      .query({ start: "2025-06-25", end: "2025-07-10" })
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -662,7 +662,7 @@ describe("Available Slots API - Multiple Schedules Adjacent", () => {
   it("startDate < endedSchedule.effectiveFrom and activeSchedule.effectiveFrom < endDate (spans entire ended schedule plus active)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-05-01`, end: jst`2025-07-05` })
+      .query({ start: "2025-05-01", end: "2025-07-05" })
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -736,7 +736,7 @@ describe("Available Slots API - Multiple Schedules Gap", () => {
   it("endedSchedule.effectiveTo < activeSchedule.effectiveFrom with query spanning gap", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-15`, end: jst`2025-07-15` }) // Within first schedule, Within second schedule, spans the gap
+      .query({ start: "2025-06-15", end: "2025-07-15" }) // Within first schedule, Within second schedule, spans the gap
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -753,7 +753,7 @@ describe("Available Slots API - Multiple Schedules Gap", () => {
   it("query spans entire ended schedule, gap, and part of active schedule", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-05-25`, end: jst`2025-07-12` }) // Before ended schedule starts, Within active schedule
+      .query({ start: "2025-05-25", end: "2025-07-12" }) // Before ended schedule starts, Within active schedule
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -774,7 +774,7 @@ describe("Available Slots API - Multiple Schedules Gap", () => {
   it("query period spans only the gap between schedules (no slots)", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-25`, end: jst`2025-07-05` }) // After first schedule ends, Before second schedule starts
+      .query({ start: "2025-06-25", end: "2025-07-05" }) // After first schedule ends, Before second schedule starts
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -787,7 +787,7 @@ describe("Available Slots API - Multiple Schedules Gap", () => {
   it("query period exactly matches the gap between schedules", async () => {
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-06-20`, end: jst`2025-07-10` }) // Exactly when first schedule ends, Exactly when second schedule starts
+      .query({ start: "2025-06-20", end: "2025-07-10" }) // Exactly when first schedule ends, Exactly when second schedule starts
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -834,12 +834,124 @@ describe("Available Slots API - With Absences", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
-      .query({ start: jst`2025-07-07`, end: jst`2025-07-09` })
+      .query({ start: "2025-07-07", end: "2025-07-09" })
       .expect(200);
 
     expect(response.body.message).toBe(
       "Available slots retrieved successfully",
     );
     expect(response.body.data).toEqual([{ dateTime: jst`2025-07-08 19:00` }]);
+  });
+});
+
+describe("All Available Slots API", () => {
+  it("should return available slots grouped by time with instructor lists", async () => {
+    // Create multiple test instructors
+    const instructor1 = { ...createTestInstructor(), id: 1 };
+    const instructor2 = { ...createTestInstructor(), id: 2 };
+    const instructor3 = { ...createTestInstructor(), id: 3 };
+
+    const schedule1 = {
+      id: 1,
+      instructorId: instructor1.id,
+      effectiveFrom: new Date("2025-08-01"),
+      effectiveTo: null,
+      timezone: "Asia/Tokyo",
+      slots: [
+        { scheduleId: 1, weekday: 1, startTime: new Date(time`10:00`) },
+        { scheduleId: 1, weekday: 1, startTime: new Date(time`11:00`) },
+      ],
+    };
+
+    const schedule2 = {
+      id: 2,
+      instructorId: instructor2.id,
+      effectiveFrom: new Date("2025-08-01"),
+      effectiveTo: null,
+      timezone: "Asia/Tokyo",
+      slots: [
+        { scheduleId: 2, weekday: 1, startTime: new Date(time`10:00`) },
+        { scheduleId: 2, weekday: 1, startTime: new Date(time`14:00`) },
+      ],
+    };
+
+    const schedule3 = {
+      id: 3,
+      instructorId: instructor3.id,
+      effectiveFrom: new Date("2025-08-01"),
+      effectiveTo: null,
+      timezone: "Asia/Tokyo",
+      slots: [{ scheduleId: 3, weekday: 1, startTime: new Date(time`11:00`) }],
+    };
+
+    const absences = [
+      {
+        instructorId: instructor2.id,
+        absentAt: new Date(jst`2025-08-04 14:00`),
+      },
+    ];
+
+    const bookings = [
+      {
+        instructorId: instructor3.id,
+        dateTime: new Date(jst`2025-08-04 11:00`),
+        status: "booked" as const,
+      },
+    ];
+
+    const holidays: any[] = [];
+
+    mockPrisma.instructorSchedule.findMany.mockResolvedValue([
+      schedule1,
+      schedule2,
+      schedule3,
+    ]);
+    mockPrisma.instructorAbsence.findMany.mockResolvedValue(absences);
+    mockPrisma.class.findMany.mockResolvedValue(bookings);
+    mockPrisma.schedule.findMany.mockResolvedValue(holidays);
+
+    const response = await request(server)
+      .get("/instructors/available-slots")
+      .query({
+        start: "2025-08-04",
+        end: "2025-08-05",
+      })
+      .expect(200);
+
+    expect(response.body.message).toBe(
+      "Available slots retrieved successfully",
+    );
+    expect(response.body.data).toEqual([
+      {
+        dateTime: jst`2025-08-04 10:00`,
+        availableInstructors: [1, 2],
+      },
+      {
+        dateTime: jst`2025-08-04 11:00`,
+        availableInstructors: [1],
+      },
+    ]);
+  });
+
+  it("should handle empty results when no instructors are available", async () => {
+    const instructor = createTestInstructor();
+
+    mockPrisma.instructorSchedule.findMany.mockResolvedValue([]);
+    mockPrisma.instructorAbsence.findMany.mockResolvedValue([]);
+    mockPrisma.class.findMany.mockResolvedValue([]);
+    mockPrisma.schedule.findMany.mockResolvedValue([]);
+
+    const response = await request(server)
+      .get("/instructors/available-slots")
+      .query({
+        start: "2025-08-04",
+        end: "2025-08-05",
+      })
+      .expect(200);
+
+    expect(response.body.message).toBe(
+      "Available slots retrieved successfully",
+    );
+    expect(response.body.data).toEqual([]);
   });
 });

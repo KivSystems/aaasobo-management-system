@@ -156,6 +156,10 @@ export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
   return new Date(dateTime.getTime() - n * 60 * 60 * 1000);
 };
 
+export const nDaysLater = (n: number, dateTime: Date = new Date()) => {
+  return nHoursLater(n * 24, dateTime);
+};
+
 export function isSameLocalDate(
   utcDateTime: Date | string,
   timeZone: string,

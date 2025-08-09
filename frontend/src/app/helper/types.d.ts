@@ -390,6 +390,7 @@ type RebookableClassListProps = RebookingModalProps & {
   setClassToRebook: Dispatch<SetStateAction<number | null>>;
   setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
+  childProfiles: Child[];
 };
 
 type LocalizedMessage = {
@@ -504,6 +505,7 @@ type RebookableClassesListProps = {
   setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
   isAdminAuthenticated?: boolean;
+  childProfiles: Child[];
 };
 
 type RebookableOptionsProps = {

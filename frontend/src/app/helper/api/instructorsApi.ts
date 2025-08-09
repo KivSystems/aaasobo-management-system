@@ -563,11 +563,13 @@ export const getInstructorAvailableSlots = async (
   instructorId: number,
   startDate: string,
   endDate: string,
+  excludeBookedSlots: boolean,
 ): Promise<Response<{ data: AvailableSlot[] }>> => {
   try {
     const params = new URLSearchParams({
       start: startDate,
       end: endDate,
+      excludeBookedSlots: excludeBookedSlots.toString(),
     });
 
     const response = await fetch(
@@ -593,6 +595,37 @@ export const getInstructorAvailableSlots = async (
   } catch (error) {
     console.error("Failed to fetch instructor available slots:", error);
     throw error;
+  }
+};
+
+export type AvailableSlotWithInstructors = {
+  dateTime: string;
+  availableInstructors: number[];
+};
+
+export const getAllInstructorAvailableSlots = async (
+  startDate: string,
+  endDate: string,
+): Promise<Response<{ data: AvailableSlotWithInstructors[]; meta: any }>> => {
+  try {
+    const params = new URLSearchParams({
+      start: startDate,
+      end: endDate,
+    });
+
+    const response = await fetch(`${BASE_URL}/available-slots?${params}`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch all instructor available slots:", error);
+    return { message: "Failed to fetch available slots" };
   }
 };
 

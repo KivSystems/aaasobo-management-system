@@ -4,8 +4,10 @@ import {
   getScheduleWithSlots,
   createInstructorSchedule,
   getInstructorAvailableSlots,
+  getAllAvailableSlots,
 } from "../services/instructorScheduleService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
+import { Request } from "express";
 
 export const getInstructorSchedulesController = async (
   req: RequestWithId,
@@ -122,18 +124,34 @@ export const getInstructorAvailableSlotsController = async (
   res: Response,
 ) => {
   try {
-    const { start, end } = req.query;
+    const { start, end, timezone, excludeBookedSlots } = req.query;
 
     if (!start || !end) {
       return res.status(400).json({
         message:
-          "start and end query parameters are required (ISO datetime strings)",
+          "start and end query parameters are required (YYYY-MM-DD format)",
       });
     }
 
     if (typeof start !== "string" || typeof end !== "string") {
       return res.status(400).json({
-        message: "start and end must be ISO datetime strings",
+        message: "start and end must be date strings in YYYY-MM-DD format",
+      });
+    }
+
+    // Validate timezone is Asia/Tokyo
+    if (timezone && timezone !== "Asia/Tokyo") {
+      return res.status(400).json({
+        message: "Only Asia/Tokyo timezone is supported",
+      });
+    }
+
+    // Validate date format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(start) || !dateRegex.test(end)) {
+      return res.status(400).json({
+        message:
+          "Invalid date format. Use YYYY-MM-DD format (e.g., 2025-06-01)",
       });
     }
 
@@ -142,8 +160,7 @@ export const getInstructorAvailableSlotsController = async (
 
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return res.status(400).json({
-        message:
-          "Invalid start or end datetime format. Use ISO format (e.g., 2025-06-01T00:00:00Z)",
+        message: "Invalid start or end date",
       });
     }
 
@@ -153,11 +170,82 @@ export const getInstructorAvailableSlotsController = async (
       });
     }
 
+    // Convert excludeBookedSlots parameter to boolean
+    const shouldExcludeBooked = excludeBookedSlots === "true";
+
     const availableSlots = await getInstructorAvailableSlots(
       req.id,
-      startDate,
-      endDate,
+      start,
+      end,
+      "Asia/Tokyo",
+      shouldExcludeBooked,
     );
+
+    res.status(200).json({
+      message: "Available slots retrieved successfully",
+      data: availableSlots,
+    });
+  } catch (error) {
+    console.error("Error fetching available slots:", error);
+    res.status(500).json({
+      message: "Failed to fetch available slots",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const getAllAvailableSlotsController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { start, end, timezone } = req.query;
+
+    if (!start || !end) {
+      return res.status(400).json({
+        message:
+          "start and end query parameters are required (YYYY-MM-DD format)",
+      });
+    }
+
+    if (typeof start !== "string" || typeof end !== "string") {
+      return res.status(400).json({
+        message: "start and end must be date strings in YYYY-MM-DD format",
+      });
+    }
+
+    // Validate timezone is Asia/Tokyo
+    if (timezone && timezone !== "Asia/Tokyo") {
+      return res.status(400).json({
+        message: "Only Asia/Tokyo timezone is supported",
+      });
+    }
+
+    // Validate date format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(start) || !dateRegex.test(end)) {
+      return res.status(400).json({
+        message:
+          "Invalid date format. Use YYYY-MM-DD format (e.g., 2025-06-01)",
+      });
+    }
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return res.status(400).json({
+        message: "Invalid start or end date",
+      });
+    }
+
+    if (startDate >= endDate) {
+      return res.status(400).json({
+        message: "start must be before end",
+      });
+    }
+
+    const availableSlots = await getAllAvailableSlots(start, end, "Asia/Tokyo");
 
     res.status(200).json({
       message: "Available slots retrieved successfully",
