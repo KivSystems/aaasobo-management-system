@@ -66,7 +66,7 @@ export default function VersionedAvailabilityCalendar({
       try {
         // Fetch both available slots and absences in parallel
         const [slotsResponse, absencesResponse] = await Promise.all([
-          getInstructorAvailableSlots(instructorId, startStr, endStr),
+          getInstructorAvailableSlots(instructorId, startStr, endStr, false),
           getInstructorAbsences(instructorId),
         ]);
 

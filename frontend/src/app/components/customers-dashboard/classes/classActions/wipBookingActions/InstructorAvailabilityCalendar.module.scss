@@ -1,0 +1,24 @@
+@import "@/app/variables.module.scss";
+
+.container {
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+}
+
+.calendarHeader {
+  margin-bottom: 1rem;
+  text-align: center;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: $text-dark;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: $text-medium;
+  }
+}

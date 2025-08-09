@@ -1,23 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Prisma } from "@prisma/client";
-import { addDays, format, startOfDay, endOfDay } from "date-fns";
-import { fromZonedTime, toZonedTime } from "date-fns-tz";
-import { TZDate } from "@date-fns/tz";
-
-type InstructorSchedule = Prisma.InstructorScheduleGetPayload<{
-  include: { slots: true };
-}>;
-
-type InstructorSlot = Prisma.InstructorSlotGetPayload<{}>;
-
-interface AvailableSlot {
-  dateTime: string;
-}
-
-// Extract time string (HH:MM) from DateTime
-const extractTimeFromDateTime = (dateTime: Date): string => {
-  return dateTime.toISOString().substring(11, 16);
-};
+import { nDaysLater } from "../helper/dateUtils";
 
 export const getInstructorSchedules = async (instructorId: number) => {
   try {
@@ -49,7 +32,7 @@ export const getScheduleWithSlots = async (scheduleId: number) => {
       ...schedule,
       slots: schedule.slots.map((slot) => ({
         ...slot,
-        startTime: extractTimeFromDateTime(slot.startTime),
+        startTime: extractTime(slot.startTime),
       })),
     };
   } catch (error) {
@@ -119,7 +102,7 @@ export const createInstructorSchedule = async (data: {
         ...createdSchedule,
         slots: createdSchedule.slots.map((slot) => ({
           ...slot,
-          startTime: extractTimeFromDateTime(slot.startTime),
+          startTime: extractTime(slot.startTime),
         })),
       };
     });
@@ -129,120 +112,310 @@ export const createInstructorSchedule = async (data: {
   }
 };
 
-const findEffectiveSchedule = (
-  schedules: InstructorSchedule[],
-  targetDate: Date,
-): InstructorSchedule | undefined => {
-  return schedules.find((s) => {
-    const targetDateStr = format(targetDate, "yyyy-MM-dd");
-
-    // Create TZDate objects representing the dates in the schedule timezone
-    const effectiveFromDateStr = format(s.effectiveFrom, "yyyy-MM-dd");
-    const effectiveFromTZ = new TZDate(
-      `${effectiveFromDateStr}T00:00:00`,
-      s.timezone,
-    );
-    const effectiveFromUtcStr = format(effectiveFromTZ, "yyyy-MM-dd");
-
-    const effectiveToUtcStr = s.effectiveTo
-      ? (() => {
-          const effectiveToDateStr = format(s.effectiveTo, "yyyy-MM-dd");
-          const effectiveToTZ = new TZDate(
-            `${effectiveToDateStr}T00:00:00`,
-            s.timezone,
-          );
-          return format(effectiveToTZ, "yyyy-MM-dd");
-        })()
-      : null;
-
-    return (
-      effectiveFromUtcStr <= targetDateStr &&
-      (effectiveToUtcStr === null || targetDateStr < effectiveToUtcStr)
-    );
-  });
-};
-
-const generateSlotsForDay = (
-  utcDate: Date,
-  schedule: InstructorSchedule,
-  absentDateTimes: Set<string>,
-): AvailableSlot[] => {
-  const timezone = schedule.timezone;
-
-  const zonedDate = toZonedTime(utcDate, timezone);
-  const weekday = zonedDate.getDay();
-  const dateStr = format(zonedDate, "yyyy-MM-dd");
-
-  const slotsForDay = schedule.slots.filter(
-    (slot: InstructorSlot) => slot.weekday === weekday,
-  );
-
-  const daySlots: AvailableSlot[] = [];
-  for (const slot of slotsForDay) {
-    const slotTimeStr = extractTimeFromDateTime(slot.startTime);
-    // Create a date object in the target timezone and convert to UTC
-    const dateTimeStr = `${dateStr}T${slotTimeStr}:00`;
-    const utcDateTime = fromZonedTime(dateTimeStr, timezone);
-    const utcDateTimeISO = utcDateTime.toISOString();
-
-    if (!absentDateTimes.has(utcDateTimeISO)) {
-      daySlots.push({ dateTime: utcDateTimeISO });
-    }
-  }
-
-  return daySlots;
-};
-
 export const getInstructorAvailableSlots = async (
   instructorId: number,
-  start: Date,
-  end: Date,
+  startDate: string, // YYYY-MM-DD format
+  endDate: string, // YYYY-MM-DD format
+  timezone: string,
+  excludeBookedSlots: boolean,
 ) => {
   try {
-    const [allSchedules, absences] = await Promise.all([
-      prisma.instructorSchedule.findMany({
-        where: { instructorId },
-        include: {
-          slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
-        },
-        orderBy: { effectiveFrom: "asc" },
-      }),
-      prisma.instructorAbsence.findMany({
-        where: {
-          instructorId,
-          absentAt: { gte: start, lt: end },
-        },
-      }),
-    ]);
+    if (timezone !== "Asia/Tokyo") {
+      throw new Error("Only Asia/Tokyo timezone is supported");
+    }
 
-    const absentDateTimes = new Set(
-      absences.map((absence) => absence.absentAt.toISOString()),
+    const { schedules, excludeSlots } = await getSlotConstraints(
+      instructorId,
+      startDate,
+      endDate,
+      excludeBookedSlots,
     );
 
-    const availableSlots: AvailableSlot[] = [];
-
-    for (let current = start; current < end; current = addDays(current, 1)) {
-      const effectiveSchedule = findEffectiveSchedule(allSchedules, current);
-
-      if (effectiveSchedule) {
-        const daySlots = generateSlotsForDay(
-          current,
-          effectiveSchedule,
-          absentDateTimes,
-        );
-
-        const filteredSlots = daySlots.filter((slot) => {
-          const slotDate = new Date(slot.dateTime);
-          return start <= slotDate && slotDate < end;
-        });
-
-        availableSlots.push(...filteredSlots);
-      }
-    }
+    const availableSlots = generateInstructorSlots(
+      instructorId,
+      schedules,
+      new Date(startDate),
+      new Date(endDate),
+      excludeSlots,
+    );
 
     return availableSlots;
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch instructor available slots.");
   }
+};
+
+interface AvailableSlotWithInstructors {
+  dateTime: string;
+  availableInstructors: number[];
+}
+
+export const getAllAvailableSlots = async (
+  startDate: string, // YYYY-MM-DD format
+  endDate: string, // YYYY-MM-DD format
+  timezone: string,
+): Promise<AvailableSlotWithInstructors[]> => {
+  try {
+    if (timezone !== "Asia/Tokyo") {
+      throw new Error("Only Asia/Tokyo timezone is supported");
+    }
+
+    const { schedulesByInstructor, excludeSlots } =
+      await getAllInstructorsConstraints(startDate, endDate);
+
+    const slotToInstructorIds = new Map<string, Set<number>>();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    for (const [instructorId, instructorSchedules] of schedulesByInstructor) {
+      const instructorSlots = generateInstructorSlots(
+        instructorId,
+        instructorSchedules,
+        start,
+        end,
+        excludeSlots,
+      );
+
+      for (const slot of instructorSlots) {
+        if (!slotToInstructorIds.has(slot.dateTime)) {
+          slotToInstructorIds.set(slot.dateTime, new Set());
+        }
+        slotToInstructorIds.get(slot.dateTime)!.add(instructorId);
+      }
+    }
+
+    const result: AvailableSlotWithInstructors[] = Array.from(
+      slotToInstructorIds.entries(),
+    )
+      .map(([dateTime, instructorSet]) => ({
+        dateTime,
+        availableInstructors: Array.from(instructorSet).sort((a, b) => a - b),
+      }))
+      .sort((a, b) => a.dateTime.localeCompare(b.dateTime));
+
+    return result;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch all available slots.");
+  }
+};
+
+type InstructorSchedule = Prisma.InstructorScheduleGetPayload<{
+  include: { slots: true };
+}>;
+
+interface AvailableSlot {
+  dateTime: string;
+}
+
+// Extract time string (HH:MM) from DateTime
+const extractTime = (dateTime: Date): string => {
+  return dateTime.toISOString().substring(11, 16);
+};
+
+// Extract date string (YYYY-MM-DD) from DateTime
+const extractDate = (dateTime: Date): string => {
+  return dateTime.toISOString().split("T")[0];
+};
+
+// Create a Date object in JST (Japan Standard Time) from a date string
+const jst = (dateStr: string): Date => {
+  return new Date(dateStr + "T00:00:00+09:00");
+};
+
+interface SlotConstraints {
+  schedules: InstructorSchedule[];
+  excludeSlots: Set<string>;
+}
+
+const getSlotConstraints = async (
+  instructorId: number,
+  startDate: string,
+  endDate: string,
+  excludeBookedSlots: boolean,
+): Promise<SlotConstraints> => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const [schedules, absences] = await Promise.all([
+    prisma.instructorSchedule.findMany({
+      where: {
+        instructorId,
+        timezone: "Asia/Tokyo",
+        // Interval overlap: Two intervals [effectiveFrom, effectiveTo) and [start, end) overlap when:
+        // max(effectiveFrom, start) < min(effectiveTo, end)
+        // This simplifies to: effectiveFrom < end AND effectiveTo > start
+        // Since effectiveTo can be NULL (infinite), we use OR condition:
+        effectiveFrom: { lt: end },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gt: start } }],
+      },
+      include: {
+        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+      },
+      orderBy: { effectiveFrom: "asc" },
+    }),
+    prisma.instructorAbsence.findMany({
+      where: {
+        instructorId,
+        absentAt: { gte: jst(startDate), lt: jst(endDate) },
+      },
+    }),
+  ]);
+
+  const bookings = excludeBookedSlots
+    ? await prisma.class.findMany({
+        where: {
+          instructorId,
+          dateTime: {
+            gte: jst(startDate),
+            lt: jst(endDate),
+          },
+          status: { in: ["booked", "rebooked"] },
+        },
+        select: { instructorId: true, dateTime: true },
+      })
+    : [];
+
+  const absenceSet = new Set(
+    absences.map(
+      (absence) => `${instructorId}-${absence.absentAt.toISOString()}`,
+    ),
+  );
+
+  const bookingSet = new Set(
+    bookings
+      .filter((booking) => booking.dateTime !== null)
+      .map((booking) => `${instructorId}-${booking.dateTime!.toISOString()}`),
+  );
+
+  const excludeSlots = new Set([...absenceSet, ...bookingSet]);
+  return { schedules, excludeSlots };
+};
+
+interface AllInstructorsConstraints {
+  schedulesByInstructor: Map<number, InstructorSchedule[]>;
+  excludeSlots: Set<string>;
+}
+
+const getAllInstructorsConstraints = async (
+  startDate: string,
+  endDate: string,
+): Promise<AllInstructorsConstraints> => {
+  const [schedules, absences, bookings] = await Promise.all([
+    prisma.instructorSchedule.findMany({
+      where: {
+        timezone: "Asia/Tokyo",
+        // Interval overlap: schedule overlaps with [start, end)
+        effectiveFrom: { lt: new Date(endDate) },
+        OR: [
+          { effectiveTo: null },
+          { effectiveTo: { gt: new Date(startDate) } },
+        ],
+      },
+      include: {
+        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+      },
+      orderBy: { effectiveFrom: "asc" },
+    }),
+    prisma.instructorAbsence.findMany({
+      where: {
+        absentAt: {
+          gte: jst(startDate),
+          lt: jst(endDate),
+        },
+      },
+    }),
+    prisma.class.findMany({
+      where: {
+        dateTime: {
+          gte: jst(startDate),
+          lt: jst(endDate),
+        },
+        status: { in: ["booked", "rebooked"] },
+      },
+      select: {
+        instructorId: true,
+        dateTime: true,
+      },
+    }),
+  ]);
+
+  const absentDateTimes = new Set(
+    absences.map(
+      (absence) => `${absence.instructorId}-${absence.absentAt.toISOString()}`,
+    ),
+  );
+  const bookedDateTimes = new Set(
+    bookings.map(
+      (booking) => `${booking.instructorId}-${booking.dateTime?.toISOString()}`,
+    ),
+  );
+
+  const excludeSlots = new Set([...absentDateTimes, ...bookedDateTimes]);
+
+  // Group schedules by instructor ID
+  const schedulesByInstructor = new Map<number, InstructorSchedule[]>();
+  for (const schedule of schedules) {
+    if (!schedulesByInstructor.has(schedule.instructorId)) {
+      schedulesByInstructor.set(schedule.instructorId, []);
+    }
+    schedulesByInstructor.get(schedule.instructorId)!.push(schedule);
+  }
+
+  return { schedulesByInstructor, excludeSlots };
+};
+
+// Find the schedule that is effective for a given date
+const findEffectiveSchedule = (
+  schedules: InstructorSchedule[],
+  dateStr: string, // YYYY-MM-DD
+): InstructorSchedule | undefined => {
+  return schedules.find((s) => {
+    const scheduleStart = extractDate(s.effectiveFrom);
+    const scheduleEnd = s.effectiveTo ? extractDate(s.effectiveTo) : null;
+
+    return (
+      scheduleStart <= dateStr &&
+      (scheduleEnd === null || dateStr < scheduleEnd)
+    );
+  });
+};
+
+// Generate available slots for all schedules of an instructor
+const generateInstructorSlots = (
+  instructorId: number,
+  schedules: InstructorSchedule[],
+  start: Date,
+  end: Date,
+  excludeSlots: Set<string>,
+): AvailableSlot[] => {
+  const slots: AvailableSlot[] = [];
+
+  for (let current = start; current < end; current = nDaysLater(1, current)) {
+    const currentDateStr = extractDate(current);
+
+    const effectiveSchedule = findEffectiveSchedule(schedules, currentDateStr);
+    if (!effectiveSchedule) {
+      continue;
+    }
+
+    const daySlots = effectiveSchedule.slots.filter(
+      (slot) => slot.weekday === current.getUTCDay(),
+    );
+
+    for (const slot of daySlots) {
+      const timeStr = extractTime(slot.startTime);
+      const tokyoDateTime = new Date(`${currentDateStr}T${timeStr}:00+09:00`);
+      const utcDateTime = tokyoDateTime.toISOString();
+
+      if (excludeSlots.has(`${instructorId}-${utcDateTime}`)) {
+        continue;
+      }
+
+      slots.push({ dateTime: utcDateTime });
+    }
+  }
+
+  return slots;
 };
