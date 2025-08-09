@@ -315,7 +315,6 @@ export default function ProgressiveBookingFlow({
               <ModeSelection
                 onModeSelect={handleModeSelect}
                 language={language}
-                isFreeTrial={isFreeTrial}
               />
             </div>
           )}
