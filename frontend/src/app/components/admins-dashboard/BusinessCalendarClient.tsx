@@ -3,7 +3,7 @@
 import FullCalendar from "@fullcalendar/react";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
-import { DateSelectArg, DayCellMountArg } from "@fullcalendar/core";
+import { DateSelectArg } from "@fullcalendar/core";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -157,7 +157,10 @@ const BusinessCalendarClient = ({
         initialDate={getInitialDate()}
         headerToolbar={{ left: "prev,next today", center: "title", right: "" }}
         timeZone="Asia/Tokyo"
-        locale="en"
+        locale={language === "ja" ? "ja" : "en"}
+        dayCellContent={(arg) => {
+          return { html: String(arg.date.getDate()) };
+        }}
         contentHeight="auto"
         selectable
         multiMonthMinWidth={300}
@@ -169,20 +172,22 @@ const BusinessCalendarClient = ({
       {events.length > 0 && (
         <CalendarLegend colorsForEvents={colorsForEvents} language={language} />
       )}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        className="businessCalendarModal"
-      >
-        <form action={formAction}>
-          <BusinessCalendarModal
-            selectedDates={selectedDates}
-            events={events}
-            localMessages={localMessages}
-            clearErrorMessage={clearErrorMessage}
-          />
-        </form>
-      </Modal>
+      {isAdminAuthenticated && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          className="businessCalendarModal"
+        >
+          <form action={formAction}>
+            <BusinessCalendarModal
+              selectedDates={selectedDates}
+              events={events}
+              localMessages={localMessages}
+              clearErrorMessage={clearErrorMessage}
+            />
+          </form>
+        </Modal>
+      )}
     </>
   );
 };

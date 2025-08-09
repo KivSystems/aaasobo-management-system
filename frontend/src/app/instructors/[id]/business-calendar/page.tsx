@@ -4,12 +4,11 @@ import {
 } from "@/app/helper/api/adminsApi";
 import { businessCalendarValidRange } from "@/app/helper/utils/calendarUtils";
 import BusinessCalendarClient from "@/app/components/admins-dashboard/BusinessCalendarClient";
-import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 const Page = async ({ params }: { params: { id: string } }) => {
-  const adminId = parseInt(params.id);
-  if (isNaN(adminId)) {
-    throw new Error("Invalid adminId");
+  const instructorId = parseInt(params.id);
+  if (isNaN(instructorId)) {
+    throw new Error("Invalid instructorId");
   }
 
   // Fetch all schedule data
@@ -28,17 +27,12 @@ const Page = async ({ params }: { params: { id: string } }) => {
   // Calculate the valid range (from 1 year ago to 1 year later) for the calendar
   const calendarValidRange = businessCalendarValidRange();
 
-  // Set the authentication status based on the session
-  const session = await getUserSession("admin");
-  const isAuthenticated = !!(session && Number(session.user.id) === adminId);
-
   return (
     <>
       <BusinessCalendarClient
         businessSchedule={schedule.organizedData}
         events={events}
         validRange={calendarValidRange}
-        isAdminAuthenticated={isAuthenticated}
       />
     </>
   );

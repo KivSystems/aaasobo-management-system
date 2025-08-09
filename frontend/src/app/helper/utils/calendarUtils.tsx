@@ -154,3 +154,15 @@ export function getDayCellColorHandler(
     }
   };
 }
+
+// Calculate the first day of the previous year (e.g., 20XX-01-01)
+export const firstDayOfPreviousYear = () => {
+  const now = new Date();
+  return new Date(now.getFullYear() - 1, 0, 2).toISOString().split("T")[0];
+};
+
+// Calculate the valid range (from 1 year ago to 1 year later) for the business calendar
+export const businessCalendarValidRange = () => {
+  const firstDay = firstDayOfPreviousYear();
+  return getValidRange(firstDay, 24 - new Date().getMonth());
+};
