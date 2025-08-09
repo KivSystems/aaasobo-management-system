@@ -106,6 +106,7 @@ export default function InstructorSelection({
               instructor={instructor}
               onSelect={onInstructorSelect}
               language={language}
+              isAvailable={true}
             />
           ))
         ) : (

@@ -9,14 +9,14 @@ interface InstructorItemProps {
   instructor: InstructorRebookingProfile;
   onSelect: (instructor: InstructorRebookingProfile) => void;
   language: "ja" | "en";
-  isAvailable?: boolean;
+  isAvailable: boolean;
 }
 
 export default function InstructorItem({
   instructor,
   onSelect,
   language,
-  isAvailable = true,
+  isAvailable,
 }: InstructorItemProps) {
   const [imageError, setImageError] = useState(false);
 
