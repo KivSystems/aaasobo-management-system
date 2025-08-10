@@ -90,7 +90,7 @@ export const handleClassStatusUpdate = async ({
 
   if (isAdminAuthenticated && selectedStatus) {
     const confirmed = window.confirm(
-      `Are you sure you want to change the class status to "${selectedStatus}"?`,
+      "Are you sure you want to change the class status?",
     );
     if (!confirmed) return;
   }
