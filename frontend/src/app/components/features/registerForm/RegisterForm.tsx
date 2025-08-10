@@ -202,7 +202,7 @@ const RegisterForm = ({
             id="name"
             label="Plan Name"
             type="text"
-            name="name"
+            name="planName"
             placeholder="e.g., 3,180 yen/month"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
@@ -243,7 +243,7 @@ const RegisterForm = ({
             label="Event Name"
             type="text"
             name="eventName"
-            placeholder="e.g., AaasoBo! Event"
+            placeholder="e.g., アーソボイベント / AaasoBo! Event"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
             error={localMessages.name}
