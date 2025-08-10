@@ -223,21 +223,12 @@ function ListTable({
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </div>
-          {categoryType ? (
-            <ActionButton
-              btnText={`Add ${categoryType}`}
-              className="addBtn"
-              onClick={() => setIsModalOpen(true)}
-              Icon={PlusIcon}
-            />
-          ) : (
-            <ActionButton
-              btnText={`Add ${userType}`}
-              className="addBtn"
-              onClick={() => setIsModalOpen(true)}
-              Icon={PlusIcon}
-            />
-          )}
+          <ActionButton
+            btnText={`Add ${categoryType ? categoryType : userType}`}
+            className="addBtn"
+            onClick={() => setIsModalOpen(true)}
+            Icon={PlusIcon}
+          />
         </div>
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>
