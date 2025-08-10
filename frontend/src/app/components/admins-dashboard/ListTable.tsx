@@ -24,7 +24,7 @@ type ListTableProps = {
   linkItems: string[];
   linkUrls: string[];
   replaceItems: string[];
-  userType?: UserType;
+  userType?: UserType; // TODO: Change this type from optional to required after all modal registration forms are updated
   categoryType?: CategoryType;
   addUserLink?: string[]; // TODO: Remove this property after all modal registration forms are updated
 };

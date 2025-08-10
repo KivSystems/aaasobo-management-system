@@ -8,6 +8,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   const linkItems = ["ID"]; // Set the item to be a link
   const replaceItems = ["ID"]; // Replace the item with the value(e.g., ID -> 1,2,3...)
   const linkUrls = [`/admins/${adminId}/event-list/[ID]`]; // Set the link URL
+  const userType = "admin"; // Set the user type for the registration form
   const categoryType = "event"; // Set the category type for the registration form
   const data = await getAllEvents(); // Fetch all events data
 
@@ -20,6 +21,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         linkItems={linkItems}
         linkUrls={linkUrls}
         replaceItems={replaceItems}
+        userType={userType}
         categoryType={categoryType}
       />
     </div>
