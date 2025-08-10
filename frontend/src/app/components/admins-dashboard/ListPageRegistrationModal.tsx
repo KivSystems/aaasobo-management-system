@@ -6,12 +6,14 @@ import RegisterForm from "@/app/components/features/registerForm/RegisterForm";
 const ListPageRegistrationModal = ({
   userType,
   categoryType,
+  width = "100%",
 }: {
   userType: UserType;
   categoryType?: CategoryType;
+  width?: string;
 }) => {
   return (
-    <div className={styles.modalContent}>
+    <div className={styles.modalContent} style={{ width }}>
       <RegisterForm userType={userType} categoryType={categoryType} />
     </div>
   );

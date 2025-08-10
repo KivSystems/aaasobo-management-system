@@ -13,7 +13,8 @@ export async function registerContent(
   formData: FormData,
 ): Promise<RegisterFormState> {
   try {
-    const name = formData.get("eventName");
+    const planName = formData.get("planName");
+    const eventName = formData.get("eventName");
     const weeklyClassTimes = Number(formData.get("weeklyClassTimes"));
     const color = formData.get("color");
     const description = formData.get("description");
@@ -22,11 +23,13 @@ export async function registerContent(
     // Get the cookies from the request headers
     const cookie = await getCookie();
 
+    let name;
     let parsedForm;
     let response;
 
     switch (categoryType) {
       case "plan":
+        name = planName;
         parsedForm = planRegisterSchema.safeParse({
           name,
           weeklyClassTimes,
@@ -50,6 +53,7 @@ export async function registerContent(
         return response;
 
       case "event":
+        name = eventName;
         parsedForm = eventRegisterSchema.safeParse({
           name,
           color,

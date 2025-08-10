@@ -14,7 +14,6 @@ import {
 import Link from "next/link";
 import Modal from "@/app/components/elements/modal/Modal";
 import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
-import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 type ListTableProps = {
@@ -24,9 +23,8 @@ type ListTableProps = {
   linkItems: string[];
   linkUrls: string[];
   replaceItems: string[];
-  userType?: UserType; // TODO: Change this type from optional to required after all modal registration forms are updated
+  userType: UserType;
   categoryType?: CategoryType;
-  addUserLink?: string[]; // TODO: Remove this property after all modal registration forms are updated
 };
 
 function ListTable({
@@ -38,7 +36,6 @@ function ListTable({
   replaceItems,
   userType,
   categoryType,
-  addUserLink,
 }: ListTableProps) {
   const [data, setData] = useState<any[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -46,6 +43,7 @@ function ListTable({
   const [filterValue, setFilterValue] = useState<string>("");
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [width, setWidth] = useState("100%");
 
   useEffect(() => {
     const listData = async () => {
@@ -56,6 +54,8 @@ function ListTable({
           case "Instructor List":
             // Set the active tab to the instructor calendar tab.
             localStorage.setItem("activeInstructorTab", "0");
+            // Set the width of the modal registration form.
+            setWidth("700px");
             break;
           case "Customer List":
             // Set the active tab to the customer calendar tab.
@@ -69,6 +69,14 @@ function ListTable({
             // Set the previous list page to child list.
             localStorage.setItem("previousListPage", "child-list");
             break;
+          case "Admin List":
+            // Set the width of the modal registration form.
+            setWidth("500px");
+            break;
+          case "Plan List":
+            // Set the width of the modal registration form.
+            setWidth("500px");
+            break;
           default:
             break;
         }
@@ -79,7 +87,7 @@ function ListTable({
     };
 
     listData();
-  }, [fetchedData, listType]);
+  }, [fetchedData, listType, width]);
 
   useEffect(() => {
     // Handle the click event on the table cell
@@ -215,14 +223,6 @@ function ListTable({
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </div>
-          {addUserLink ? (
-            <RedirectButton
-              linkURL={addUserLink[0]}
-              btnText={addUserLink[1]}
-              className="addBtn"
-              Icon={PlusIcon}
-            />
-          ) : null}
           {categoryType ? (
             <ActionButton
               btnText={`Add ${categoryType}`}
@@ -293,7 +293,11 @@ function ListTable({
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <ListPageRegistrationModal categoryType={categoryType} />
+        <ListPageRegistrationModal
+          userType={userType}
+          categoryType={categoryType}
+          width={width}
+        />
       </Modal>
     </>
   );
