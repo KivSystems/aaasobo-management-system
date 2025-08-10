@@ -41,7 +41,12 @@ const ClassItemForAdmin = ({
     "rebooked",
     "completed",
   ];
-  const bookedStatuses: ClassStatus[] = ["booked", "rebooked"];
+  const bookedStatuses: ClassStatus[] = [
+    "booked",
+    "rebooked",
+    "completed",
+    "canceledByInstructor",
+  ];
 
   const classDateTime = new Date(classItem.dateTime);
   const classStartTime = formatTime24Hour(classDateTime);
