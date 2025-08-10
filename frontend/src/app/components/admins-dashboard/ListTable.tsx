@@ -12,7 +12,10 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import Link from "next/link";
-import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
+import Modal from "@/app/components/elements/modal/Modal";
+import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
+import RedirectButton from "@/app/components/elements/buttons/redirectButton/RedirectButton";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 type ListTableProps = {
   listType: string;
@@ -21,7 +24,9 @@ type ListTableProps = {
   linkItems: string[];
   linkUrls: string[];
   replaceItems: string[];
-  addUserLink?: string[];
+  userType?: UserType;
+  categoryType?: CategoryType;
+  addUserLink?: string[]; // TODO: Remove this property after all modal registration forms are updated
 };
 
 function ListTable({
@@ -31,6 +36,8 @@ function ListTable({
   linkItems,
   linkUrls,
   replaceItems,
+  userType,
+  categoryType,
   addUserLink,
 }: ListTableProps) {
   const [data, setData] = useState<any[]>([]);
@@ -38,6 +45,7 @@ function ListTable({
   const [filterColumn, setFilterColumn] = useState<string>("0");
   const [filterValue, setFilterValue] = useState<string>("");
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const listData = async () => {
@@ -215,6 +223,21 @@ function ListTable({
               Icon={PlusIcon}
             />
           ) : null}
+          {categoryType ? (
+            <ActionButton
+              btnText={`Add ${categoryType}`}
+              className="addBtn"
+              onClick={() => setIsModalOpen(true)}
+              Icon={PlusIcon}
+            />
+          ) : (
+            <ActionButton
+              btnText={`Add ${userType}`}
+              className="addBtn"
+              onClick={() => setIsModalOpen(true)}
+              Icon={PlusIcon}
+            />
+          )}
         </div>
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>
@@ -269,6 +292,9 @@ function ListTable({
           </table>
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ListPageRegistrationModal categoryType={categoryType} />
+      </Modal>
     </>
   );
 }
