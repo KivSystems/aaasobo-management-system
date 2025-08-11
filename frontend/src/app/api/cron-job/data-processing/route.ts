@@ -5,7 +5,6 @@ import { updateSundayColor } from "@/app/helper/api/calendarsApi";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
-  console.log("CRON_SECRET:", process.env.CRON_SECRET);
   if (
     req.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`
   ) {
@@ -13,20 +12,23 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log("Cron job started");
+    console.log("Cron job (data processing) started");
     // === Add cron job ===
     await updateSundayColor(); // Update next year's all Sunday's color of business calendar
 
     // === End of cron job ===
-    console.log("All cron jobs executed successfully");
+    console.log("All cron jobs (data processing) executed successfully");
     return NextResponse.json(
-      { message: "All cron jobs executed successfully" },
+      { message: "All cron jobs (data processing) executed successfully" },
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error during cron job execution:", error);
+    console.error("Error during cron job (data processing) execution:", error);
     return NextResponse.json(
-      { error: "Cron job failed", details: (error as Error).message },
+      {
+        error: "Cron job (data processing) failed",
+        details: (error as Error).message,
+      },
       { status: 500 },
     );
   }
