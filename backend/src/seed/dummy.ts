@@ -2360,6 +2360,14 @@ async function insertSchedules() {
   });
 }
 
+async function insertSystemStatus() {
+  await prisma.systemStatus.create({
+    data: {
+      status: "Running",
+    },
+  });
+}
+
 async function getCustomer(name: "Alice" | "Bob" | "山田 花") {
   const customer = await prisma.customer.findFirst({
     where: { name },
@@ -2431,6 +2439,7 @@ async function main() {
     await insertInstructors();
     await insertAdmins();
     await insertEvents();
+    await insertSystemStatus();
 
     // Dependant on the above
     await insertInstructorAvailabilities();
