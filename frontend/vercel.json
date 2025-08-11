@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron-job/system-status-update",
-      "schedule": "0 0 1 1 0"
+      "schedule": "0 0 1 1 *"
     }
   ]
 }

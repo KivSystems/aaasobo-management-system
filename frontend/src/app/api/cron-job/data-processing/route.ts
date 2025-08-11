@@ -15,7 +15,6 @@ export async function GET(req: NextRequest) {
     console.log("Cron job (data processing) started");
     // === Add cron job ===
     await updateSundayColor(); // Update next year's all Sunday's color of business calendar
-
     // === End of cron job ===
     console.log("All cron jobs (data processing) executed successfully");
     return NextResponse.json(

@@ -33,7 +33,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const systemStatus = await getSystemStatus();
-  console.log("System Status:", systemStatus);
 
   // If the system is under maintenance, show the maintenance page
   if (systemStatus === "Stop") {

@@ -21,15 +21,16 @@ export const getSystemStatus = async () => {
 
 // Update system status
 export const updateSystemStatus = async () => {
+  const systemStatusID = 1;
   try {
     // Update the system status in the database.
     const result = await prisma.systemStatus.update({
-      where: { id: 1 },
+      where: { id: systemStatusID },
       data: {
         status:
           (
             await prisma.systemStatus.findUnique({
-              where: { id: 1 },
+              where: { id: systemStatusID },
               select: { status: true },
             })
           )?.status === "Running"
