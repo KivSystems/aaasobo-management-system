@@ -124,12 +124,22 @@ export const planRegisterSchema = z.object({
 });
 
 export const eventRegisterSchema = z.object({
-  name: z.string().min(1, "Event Name is required."),
+  name: z
+    .string()
+    .min(1, "Event Name is required.")
+    .refine((name) => /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name), {
+      message: "Event Name must be in the format: 日本語名 / English Name",
+    }),
   color: z.string().min(1, "Color Code is required."),
 });
 
 export const eventUpdateSchema = z.object({
-  name: z.string().min(1, "Event Name is required."),
+  name: z
+    .string()
+    .min(1, "Event Name is required.")
+    .refine((name) => /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name), {
+      message: "Event Name must be in the format: 日本語名 / English Name",
+    }),
   color: z.string().min(1, "Color Code is required."),
 });
 
@@ -152,18 +162,18 @@ export const instructorUpdateSchema = z.object({
   classURL: z
     .string()
     .url("Invalid URL format.")
-    .min(1, "Class URL is required."),
-  // TODO: Display error message if URL does not start with http:// or https:// (GSS No.97)
-  // .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
-  //   message: "URL must start with http:// or https://",
-  // }),
+    .min(1, "Class URL is required.")
+    .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
+      message: "URL must start with http:// or https://",
+    }),
   meetingId: z.string().min(1, "Meeting ID is required."),
   passcode: z.string().min(1, "Passcode is required."),
-  introductionURL: z.string().url("Invalid URL format."),
-  // TODO: Display error message if URL does not start with http:// or https:// (GSS No.97)
-  // .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
-  //   message: "URL must start with http:// or https://",
-  // }),
+  introductionURL: z
+    .string()
+    .url("Invalid URL format.")
+    .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
+      message: "URL must start with http:// or https://",
+    }),
   userType: z.enum(["admin", "customer", "instructor"], {
     message: "Invalid user type.",
   }),

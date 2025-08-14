@@ -12,7 +12,9 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import Link from "next/link";
-import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
+import Modal from "@/app/components/elements/modal/Modal";
+import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
+import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 
 type ListTableProps = {
   listType: string;
@@ -21,7 +23,8 @@ type ListTableProps = {
   linkItems: string[];
   linkUrls: string[];
   replaceItems: string[];
-  addUserLink?: string[];
+  userType: UserType;
+  categoryType?: CategoryType;
 };
 
 function ListTable({
@@ -31,13 +34,16 @@ function ListTable({
   linkItems,
   linkUrls,
   replaceItems,
-  addUserLink,
+  userType,
+  categoryType,
 }: ListTableProps) {
   const [data, setData] = useState<any[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterColumn, setFilterColumn] = useState<string>("0");
   const [filterValue, setFilterValue] = useState<string>("");
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [width, setWidth] = useState("100%");
 
   useEffect(() => {
     const listData = async () => {
@@ -48,6 +54,8 @@ function ListTable({
           case "Instructor List":
             // Set the active tab to the instructor calendar tab.
             localStorage.setItem("activeInstructorTab", "0");
+            // Set the width of the modal registration form.
+            setWidth("700px");
             break;
           case "Customer List":
             // Set the active tab to the customer calendar tab.
@@ -61,6 +69,14 @@ function ListTable({
             // Set the previous list page to child list.
             localStorage.setItem("previousListPage", "child-list");
             break;
+          case "Admin List":
+            // Set the width of the modal registration form.
+            setWidth("500px");
+            break;
+          case "Plan List":
+            // Set the width of the modal registration form.
+            setWidth("500px");
+            break;
           default:
             break;
         }
@@ -71,7 +87,7 @@ function ListTable({
     };
 
     listData();
-  }, [fetchedData, listType]);
+  }, [fetchedData, listType, width]);
 
   useEffect(() => {
     // Handle the click event on the table cell
@@ -207,14 +223,12 @@ function ListTable({
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </div>
-          {addUserLink ? (
-            <RedirectButton
-              linkURL={addUserLink[0]}
-              btnText={addUserLink[1]}
-              className="addBtn"
-              Icon={PlusIcon}
-            />
-          ) : null}
+          <ActionButton
+            btnText={`Add ${categoryType ? categoryType : userType}`}
+            className="addBtn"
+            onClick={() => setIsModalOpen(true)}
+            Icon={PlusIcon}
+          />
         </div>
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>
@@ -269,6 +283,13 @@ function ListTable({
           </table>
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ListPageRegistrationModal
+          userType={userType}
+          categoryType={categoryType}
+          width={width}
+        />
+      </Modal>
     </>
   );
 }

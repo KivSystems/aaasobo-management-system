@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styles from "./RebookableClassList.module.scss";
 import {
   formatShortDate,
@@ -17,6 +17,7 @@ import {
   FREE_TRIAL_BOOKING_HOURS,
   REGULAR_REBOOKING_HOURS,
 } from "@/app/helper/data/data";
+import WipBookingModal from "../../wipBookingActions/WipBookingModal";
 
 export default function RebookableClassList({
   customerId,
@@ -25,6 +26,7 @@ export default function RebookableClassList({
   setRebookingStep,
   language,
   isAdminAuthenticated,
+  childProfiles,
 }: RebookableClassListProps) {
   const handleRebook = (
     id: number,
@@ -51,6 +53,23 @@ export default function RebookableClassList({
 
     setClassToRebook(id);
     setRebookingStep("selectOption");
+  };
+
+  const [wipModalOpen, setWipModalOpen] = useState(false);
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [selectedIsFreeTrial, setSelectedIsFreeTrial] =
+    useState<boolean>(false);
+  const [selectedClassCode, setSelectedClassCode] = useState<string>("");
+
+  const handleWipRebook = (
+    id: number,
+    isFreeTrial: boolean,
+    classCode?: string,
+  ) => {
+    setSelectedClassId(id);
+    setSelectedIsFreeTrial(isFreeTrial);
+    setSelectedClassCode(classCode || "");
+    setWipModalOpen(true);
   };
 
   return (
@@ -85,6 +104,15 @@ export default function RebookableClassList({
             : isFreeTrial
               ? "Book"
               : "Rebook";
+
+        const wipBtnText =
+          language === "ja"
+            ? isFreeTrial
+              ? "予約 (WIP)"
+              : "振替予約 (WIP)"
+            : isFreeTrial
+              ? "Book (WIP)"
+              : "Rebook (WIP)";
 
         return (
           <li key={classItem.id} className={styles.listItem}>
@@ -135,10 +163,36 @@ export default function RebookableClassList({
                   )
                 }
               />
+              <div style={{ marginLeft: "12px" }}>
+                <ActionButton
+                  className="selectRebookingClass"
+                  btnText={wipBtnText}
+                  onClick={() =>
+                    handleWipRebook(
+                      classItem.id,
+                      classItem.isFreeTrial,
+                      classItem.classCode,
+                    )
+                  }
+                />
+              </div>
             </div>
           </li>
         );
       })}
+
+      {selectedClassId && (
+        <WipBookingModal
+          isOpen={wipModalOpen}
+          onClose={() => setWipModalOpen(false)}
+          classId={selectedClassId}
+          isFreeTrial={selectedIsFreeTrial}
+          language={language}
+          classCode={selectedClassCode}
+          childProfiles={childProfiles}
+          customerId={customerId}
+        />
+      )}
     </ul>
   );
 }

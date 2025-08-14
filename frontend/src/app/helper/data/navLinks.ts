@@ -23,6 +23,11 @@ export function getLinks(
       icon: CalendarDaysIcon,
     },
     {
+      name: language === "ja" ? "アーソボカレンダー" : "AaasoBo! Calendar",
+      href: `/customers/${userId}/business-calendar`,
+      icon: CalendarDaysIcon,
+    },
+    {
       name: language === "ja" ? "プロフィール" : "Customer Profile",
       href: `/customers/${userId}/profile`,
       icon: UserIcon,
@@ -92,6 +97,11 @@ export function getLinks(
       name: "Class Schedule",
       href: `/instructors/${userId}/class-schedule`,
       icon: CalendarIcon,
+    },
+    {
+      name: "AaasoBo! Calendar",
+      href: `/instructors/${userId}/business-calendar`,
+      icon: CalendarDaysIcon,
     },
     {
       name: "Profile",

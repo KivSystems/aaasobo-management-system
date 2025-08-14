@@ -26,6 +26,13 @@ model Instructor {
   classURL                        String                            @unique
   icon                            String                            @unique
   nickname                        String                            @unique
+  birthdate                       DateTime
+  lifeHistory                     String
+  favoriteFood                    String
+  hobby                           String
+  messageForChildren              String
+  workingTime                     String
+  skill                           String
   meetingId                       String                            @unique
   passcode                        String                            @unique
   instructorUnavailability        InstructorUnavailability[]
@@ -131,7 +138,7 @@ model Children {
 model ClassAttendance {
   classId    Int
   childrenId Int
-  class      Class    @relation(fields: [classId], references: [id])
+  class      Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
   children   Children @relation(fields: [childrenId], references: [id])
 
   @@id([classId, childrenId])
@@ -213,8 +220,9 @@ model Event {
 model InstructorSchedule {
   id            Int              @id @default(autoincrement())
   instructorId  Int
-  effectiveFrom DateTime
-  effectiveTo   DateTime?
+  effectiveFrom DateTime         @db.Date
+  effectiveTo   DateTime?        @db.Date
+  timezone      String
   instructor    Instructor       @relation(fields: [instructorId], references: [id])
   slots         InstructorSlot[]
 
@@ -236,4 +244,11 @@ model InstructorAbsence {
   instructor   Instructor @relation(fields: [instructorId], references: [id])
 
   @@id([instructorId, absentAt])
+}
+
+model SystemStatus {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("Running")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

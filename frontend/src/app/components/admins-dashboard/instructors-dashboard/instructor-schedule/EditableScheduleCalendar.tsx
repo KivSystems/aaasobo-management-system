@@ -5,7 +5,6 @@ import {
   Weekday,
   WEEKDAYS,
   weekdayToDay,
-  utcToJstTime,
 } from "@/app/helper/utils/scheduleUtils";
 import {
   TimeColumn,
@@ -35,8 +34,8 @@ export default function EditableScheduleCalendar({
   // Convert initial slots to keys for comparison
   const initialKeys = new Set(
     initialSlots.map((slot) => {
-      const time = utcToJstTime(slot.startTime);
-      return `${slot.weekday}-${time}`;
+      // Backend now returns clean time strings in HH:MM format
+      return `${slot.weekday}-${slot.startTime}`;
     }),
   );
 

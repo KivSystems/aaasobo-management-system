@@ -11,10 +11,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const linkItems = ["ID"]; // Set the item to be a link
   const replaceItems = ["ID"]; // Replace the item with the value(e.g., ID -> 1,2,3...)
   const linkUrls = [`/admins/${adminId}/instructor-list/[ID]`]; // Set the link URL
-  const addUserLink = [
-    `/admins/${adminId}/instructor-list/register`,
-    "Add instructor",
-  ]; // Set the link URL and name to add a user
+  const userType = "instructor"; // Set the user type for the registration form
   const [data, setData] = useState<Instructor[]>([]);
 
   useEffect(() => {
@@ -39,7 +36,7 @@ export default function Page({ params }: { params: { id: string } }) {
         linkItems={linkItems}
         linkUrls={linkUrls}
         replaceItems={replaceItems}
-        addUserLink={addUserLink}
+        userType={userType}
       />
     </div>
   );

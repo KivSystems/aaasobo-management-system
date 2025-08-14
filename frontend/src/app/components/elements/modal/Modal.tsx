@@ -8,6 +8,8 @@ interface ModalProps {
   children?: React.ReactNode;
   className?: string;
   overlayClosable?: boolean;
+  maxHeight?: string;
+  padding?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -16,6 +18,8 @@ const Modal: React.FC<ModalProps> = ({
   children,
   className,
   overlayClosable = false,
+  maxHeight,
+  padding,
 }) => {
   if (!isOpen) return null;
 
@@ -34,9 +38,14 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <div
       className={`${styles.modalOverlay} ${className ? styles[className] : ""} `}
+      style={padding ? { padding } : {}}
       onClick={handleOverlayClick}
     >
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.modalContent}
+        style={maxHeight ? { maxHeight } : {}}
+        onClick={(e) => e.stopPropagation()}
+      >
         {onClose && (
           <div className={styles.closeButton} onClick={handleCloseClick}>
             <XMarkIcon strokeWidth={2.5} />

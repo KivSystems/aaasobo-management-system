@@ -259,6 +259,13 @@ export const registerInstructorController = async (
     nickname,
     email,
     password,
+    birthdate,
+    lifeHistory,
+    favoriteFood,
+    hobby,
+    messageForChildren,
+    workingTime,
+    skill,
     classURL,
     meetingId,
     passcode,
@@ -332,6 +339,13 @@ export const registerInstructorController = async (
       email: normalizedEmail,
       password,
       icon,
+      birthdate,
+      lifeHistory,
+      favoriteFood,
+      hobby,
+      messageForChildren,
+      workingTime,
+      skill,
       classURL,
       meetingId,
       passcode,
@@ -460,8 +474,17 @@ export const getAllEventsController = async (_: Request, res: Response) => {
 export const registerEventController = async (req: Request, res: Response) => {
   const { name, color } = req.body;
 
+  // Validate the input
   if (!name || !color) {
     return res.sendStatus(400);
+  }
+
+  // Check if the event name is in the correct format
+  const nameFormatCheck = /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name);
+  if (nameFormatCheck === false) {
+    return res.status(422).json({
+      items: ["Event Name must be in the format: 日本語名 / English Name"],
+    });
   }
 
   // Normalize the event name and color code
@@ -515,8 +538,17 @@ export const updateEventProfileController = async (
   const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
 
   try {
+    // Validate the input
     if (!name || !color) {
       return res.sendStatus(400);
+    }
+
+    // Check if the event name is in the correct format
+    const nameFormatCheck = /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name);
+    if (nameFormatCheck === false) {
+      return res.status(422).json({
+        items: ["Event Name must be in the format: 日本語名 / English Name"],
+      });
     }
 
     // Check if the event with the same name and color already exists
@@ -652,7 +684,7 @@ export const getClassesWithinPeriodController = async (
         Instructor: instructorName,
         Customer: customerName,
         Date: date,
-        Time: time,
+        "JP Time": time,
         Status: statusText,
         "Class Code": classCode,
       };

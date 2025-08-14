@@ -20,6 +20,7 @@ const ClassItemForAdmin = ({
   isUpdatingData,
   setIsUpdatingData,
   isAdminAuthenticated,
+  previousPage,
 }: ClassItemForAdminProps) => {
   const initialAttendedChildrenIds = classItem.attendingChildren.map(
     (child) => child.id,
@@ -40,7 +41,12 @@ const ClassItemForAdmin = ({
     "rebooked",
     "completed",
   ];
-  const bookedStatuses: ClassStatus[] = ["booked", "rebooked"];
+  const bookedStatuses: ClassStatus[] = [
+    "booked",
+    "rebooked",
+    "completed",
+    "canceledByInstructor",
+  ];
 
   const classDateTime = new Date(classItem.dateTime);
   const classStartTime = formatTime24Hour(classDateTime);
@@ -65,9 +71,19 @@ const ClassItemForAdmin = ({
       key={classItem.id}
       className={`${styles.classItem} ${isFreeTrial ? styles.freeTrial : styles[classItem.status]} ${classItem.id === classId ? styles["classItem--selected"] : ""}`}
       onClick={() => {
-        router.replace(
-          `/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${classItem.id}`,
-        );
+        let redirectPath: string;
+        switch (previousPage) {
+          case "class-list":
+            redirectPath = `/admins/${adminId}/class-list/${classItem.id}`;
+            break;
+          case "instructor-list":
+            redirectPath = `/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${classItem.id}`;
+            break;
+          default:
+            redirectPath = "/admins/login"; // Redirect login page if no previous page is specified
+            break;
+        }
+        router.replace(redirectPath);
       }}
     >
       <div className={styles.classItem__head}>

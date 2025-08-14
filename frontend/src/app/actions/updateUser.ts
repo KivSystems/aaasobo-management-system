@@ -79,6 +79,13 @@ export async function updateInstructorAction(
   try {
     const name = formData.get("name");
     const nickname = formData.get("nickname");
+    const birthdate = String(formData.get("birthdate"));
+    const workingTime = String(formData.get("workingTime"));
+    const lifeHistory = String(formData.get("lifeHistory"));
+    const favoriteFood = String(formData.get("favoriteFood"));
+    const hobby = String(formData.get("hobby"));
+    const messageForChildren = String(formData.get("messageForChildren"));
+    const skill = String(formData.get("skill"));
     const email = formData.get("email");
     const classURL = formData.get("classURL");
     const meetingId = formData.get("meetingId");
@@ -107,13 +114,23 @@ export async function updateInstructorAction(
         return extractUpdateValidationErrors(validationErrors);
       }
 
+      // Get the cookies from the request headers
+      const cookie = await getCookie();
+
       // Call the API to update the instructor data
       const response = await updateInstructor(
         id,
         parsedForm.data.name,
+        parsedForm.data.nickname,
+        birthdate,
+        workingTime,
+        lifeHistory,
+        favoriteFood,
+        hobby,
+        messageForChildren,
+        skill,
         parsedForm.data.email,
         parsedForm.data.classURL,
-        parsedForm.data.nickname,
         parsedForm.data.meetingId,
         parsedForm.data.passcode,
         parsedForm.data.introductionURL,

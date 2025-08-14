@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { createJSTMidnight } from "../helper/dateUtils";
 
 const prisma = new PrismaClient();
 
@@ -11,6 +10,13 @@ async function insertInstructors() {
       email: "kiv-developers@googlegroups.com",
       name: "Helene Gay Santos",
       nickname: "Helen",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "https://t6bgu8umfoykvmu2.public.blob.vercel-storage.com/helen-1-tUI1pBOcbi0uBmRh3XsfH7uOwZIECC.jpg",
       classURL: "https://zoom.us/j/12345?pwd=ABCde",
       meetingId: "123 456 7890",
@@ -26,6 +32,13 @@ async function insertInstructors() {
       email: "elian@example.com",
       name: "Elian P.Quilisadio",
       nickname: "Elian",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "https://t6bgu8umfoykvmu2.public.blob.vercel-storage.com/elian-1-69ThGTdsTK2vhDetFBJgWy83aEM49U.jpg",
       classURL: "https://zoom.us/j/67890?pwd=FGHij",
       meetingId: "234 567 8901",
@@ -41,6 +54,13 @@ async function insertInstructors() {
       email: "lori@example.com",
       name: "Lorraine Nuesca",
       nickname: "Lori",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "lori-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=lori",
       meetingId: "lori 123 456",
@@ -56,6 +76,13 @@ async function insertInstructors() {
       email: "kaori@example.com",
       name: "Kaori Jean Garcia",
       nickname: "Kaori",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "kaori-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=kaori",
       meetingId: "kaori 123 456",
@@ -71,6 +98,13 @@ async function insertInstructors() {
       email: "winnie@example.com",
       name: "Winnelyn Balangbang",
       nickname: "Winnie",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "winnie-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=winnie",
       meetingId: "winnie 123 456",
@@ -86,6 +120,13 @@ async function insertInstructors() {
       email: "claude@example.com",
       name: "Claude Jean Hinampas",
       nickname: "Claude",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "claude-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=claude",
       meetingId: "claude 123 456",
@@ -101,6 +142,13 @@ async function insertInstructors() {
       email: "jdy@example.com",
       name: "Jiesheru Dy Bandisa",
       nickname: "JDY",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "jdy-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=jdy",
       meetingId: "jdy 123 456",
@@ -116,6 +164,13 @@ async function insertInstructors() {
       email: "mae@example.com",
       name: "Mae Reantazo",
       nickname: "Mae",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "mae-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=mae",
       meetingId: "mae 123 456",
@@ -131,6 +186,13 @@ async function insertInstructors() {
       email: "eiyd@example.com",
       name: "Eiyd",
       nickname: "Eiyd",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "eiyd-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=eiyd",
       meetingId: "eiyd 123 456",
@@ -146,6 +208,13 @@ async function insertInstructors() {
       email: "kechia@example.com",
       name: "Kechia Oline Aquino",
       nickname: "Kechia",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "kechia-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=kechia",
       meetingId: "kechia 123 456",
@@ -161,6 +230,13 @@ async function insertInstructors() {
       email: "yasmin@example.com",
       name: "Yasmin Luda",
       nickname: "Yasmin",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "yasmin-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=yasmin",
       meetingId: "yasmin 123 456",
@@ -176,6 +252,13 @@ async function insertInstructors() {
       email: "dani@example.com",
       name: "Dani",
       nickname: "Dani",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "dani-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=dani",
       meetingId: "dani 123 456",
@@ -191,6 +274,13 @@ async function insertInstructors() {
       email: "angela@example.com",
       name: "Angela Siega",
       nickname: "Angela",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "angela-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=angela",
       meetingId: "angela 123 456",
@@ -206,6 +296,13 @@ async function insertInstructors() {
       email: "ronilo@example.com",
       name: "Ronilo Salimbot",
       nickname: "Ronilo",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "ronilo-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=ronilo",
       meetingId: "ronilo 123 456",
@@ -221,6 +318,13 @@ async function insertInstructors() {
       email: "sheryll@example.com",
       name: "Sheryll",
       nickname: "Sheryll",
+      birthdate: new Date("1988-05-15"),
+      lifeHistory: "I am a dedicated instructor with a passion for teaching.",
+      favoriteFood: "Sushi",
+      hobby: "Reading",
+      messageForChildren: "Always do your best!",
+      workingTime: "9 AM - 5 PM (Philippines) on weekdays",
+      skill: "Japanese Language",
       icon: "sheryll-1.jpg",
       classURL: "https://zoom.us/j/12345?pwd=sheryll",
       meetingId: "sheryll 123 456",
@@ -1267,222 +1371,225 @@ async function insertInstructorSchedules() {
   const helenSchedule1 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: createJSTMidnight("2024-06-01"),
-      effectiveTo: createJSTMidnight("2024-08-01"),
+      effectiveFrom: new Date("2024-06-01"),
+      effectiveTo: new Date("2024-08-01"),
+      timezone: "Asia/Tokyo",
     },
   });
 
-  // Helen's first schedule slots (JST times converted to UTC: JST-9)
+  // Helen's first schedule slots
   await prisma.instructorSlot.createMany({
     data: [
-      // Monday (1) - 16:00-17:00 JST = 07:00-08:00 UTC
+      // Monday (1)
       {
         scheduleId: helenSchedule1.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:00:00Z"),
-      },
-      {
-        scheduleId: helenSchedule1.id,
-        weekday: 1,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:00:00Z"),
-      },
-      // Wednesday (3) - 16:00-17:30 JST = 07:00-08:30 UTC
-      {
-        scheduleId: helenSchedule1.id,
-        weekday: 3,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
-        weekday: 3,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        weekday: 1,
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
+      // Wednesday
       {
         scheduleId: helenSchedule1.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
-      // Friday (5) - 17:00-18:00 JST = 08:00-09:00 UTC
+      {
+        scheduleId: helenSchedule1.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T19:00:00Z"),
+      },
+      {
+        scheduleId: helenSchedule1.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T19:30:00Z"),
+      },
+      // Friday (5)
       {
         scheduleId: helenSchedule1.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule1.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
     ],
   });
 
-  // Helen's second schedule (historical - 2024-08-01 to 2024-12-31)
+  // Helen's second schedule
   const helenSchedule2 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: createJSTMidnight("2024-08-01"),
-      effectiveTo: createJSTMidnight("2025-01-01"),
+      effectiveFrom: new Date("2024-08-01"),
+      effectiveTo: new Date("2025-01-01"),
+      timezone: "Asia/Tokyo",
     },
   });
 
-  // Helen's second schedule slots (JST times converted to UTC: JST-9)
+  // Helen's second schedule slots
   await prisma.instructorSlot.createMany({
     data: [
-      // Monday (1) - 16:00-18:00 JST = 07:00-09:00 UTC
+      // Monday (1)
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
       // Wednesday (3)
       {
         scheduleId: helenSchedule2.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T09:30:00Z"),
+        startTime: new Date("1970-01-01T18:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T10:00:00Z"),
+        startTime: new Date("1970-01-01T19:00:00Z"),
       },
       // Thursday (4)
       {
         scheduleId: helenSchedule2.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule2.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
     ],
   });
 
-  // Helen's current schedule (effective from 2025-01-01)
+  // Helen's current schedule
   const helenSchedule3 = await prisma.instructorSchedule.create({
     data: {
       instructorId: helen.id,
-      effectiveFrom: createJSTMidnight("2025-01-01"),
+      effectiveFrom: new Date("2025-01-01"),
       effectiveTo: null, // Current schedule
+      timezone: "Asia/Tokyo",
     },
   });
 
-  // Helen's current (third) schedule slots (JST times converted to UTC: JST-9)
+  // Helen's current (third) schedule slots
   await prisma.instructorSlot.createMany({
     data: [
-      // Monday (1) - 16:00-18:00 JST = 07:00-09:00 UTC
+      // Monday (1)
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
       // Thursday (4)
       {
         scheduleId: helenSchedule3.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T08:30:00Z"),
+        startTime: new Date("1970-01-01T17:30:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 4,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
       // Friday (5)
       {
         scheduleId: helenSchedule3.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T08:00:00Z"),
+        startTime: new Date("1970-01-01T17:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T09:00:00Z"),
+        startTime: new Date("1970-01-01T18:00:00Z"),
       },
       {
         scheduleId: helenSchedule3.id,
         weekday: 5,
-        startTime: new Date("1970-01-01T10:00:00Z"),
+        startTime: new Date("1970-01-01T19:00:00Z"),
       },
     ],
   });
@@ -1491,8 +1598,9 @@ async function insertInstructorSchedules() {
   const elianSchedule = await prisma.instructorSchedule.create({
     data: {
       instructorId: elian.id,
-      effectiveFrom: createJSTMidnight("2024-08-01"),
+      effectiveFrom: new Date("2024-08-01"),
       effectiveTo: null,
+      timezone: "Asia/Tokyo",
     },
   });
 
@@ -1503,24 +1611,24 @@ async function insertInstructorSchedules() {
       {
         scheduleId: elianSchedule.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
         scheduleId: elianSchedule.id,
         weekday: 1,
-        startTime: new Date("1970-01-01T07:30:00Z"),
+        startTime: new Date("1970-01-01T16:30:00Z"),
       },
       // Tuesday (2)
       {
         scheduleId: elianSchedule.id,
         weekday: 2,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
       // Wednesday (3)
       {
         scheduleId: elianSchedule.id,
         weekday: 3,
-        startTime: new Date("1970-01-01T07:00:00Z"),
+        startTime: new Date("1970-01-01T16:00:00Z"),
       },
     ],
   });
@@ -1542,6 +1650,14 @@ async function insertInstructorAbsences() {
       {
         instructorId: elian.id,
         absentAt: new Date("2025-02-28T09:00:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        absentAt: new Date("2025-07-28T07:00:00Z"),
+      },
+      {
+        instructorId: helen.id,
+        absentAt: new Date("2025-07-28T07:30:00Z"),
       },
     ],
   });
@@ -1602,7 +1718,7 @@ async function insertEvents() {
         color: "#FAD7CD",
       },
       {
-        name: "お休み振替対象日 / Rebookable Day",
+        name: "お休み振替対象日 / No Class (Rebookable)",
         color: "#FF0000",
       },
       {
@@ -2244,6 +2360,14 @@ async function insertSchedules() {
   });
 }
 
+async function insertSystemStatus() {
+  await prisma.systemStatus.create({
+    data: {
+      status: "Running",
+    },
+  });
+}
+
 async function getCustomer(name: "Alice" | "Bob" | "山田 花") {
   const customer = await prisma.customer.findFirst({
     where: { name },
@@ -2315,6 +2439,7 @@ async function main() {
     await insertInstructors();
     await insertAdmins();
     await insertEvents();
+    await insertSystemStatus();
 
     // Dependant on the above
     await insertInstructorAvailabilities();

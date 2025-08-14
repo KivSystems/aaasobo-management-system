@@ -15,6 +15,13 @@ type Instructor = {
   unavailabilities: Availability[];
   email: string;
   nickname: string;
+  birthdate: string;
+  lifeHistory: string;
+  favoriteFood: string;
+  hobby: string;
+  messageForChildren: string;
+  workingTime: string;
+  skill: string;
   classURL: string;
   icon: { url: string };
   meetingId: string;
@@ -383,6 +390,7 @@ type RebookableClassListProps = RebookingModalProps & {
   setClassToRebook: Dispatch<SetStateAction<number | null>>;
   setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
+  childProfiles: Child[];
 };
 
 type LocalizedMessage = {
@@ -497,6 +505,7 @@ type RebookableClassesListProps = {
   setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
   language: LanguageType;
   isAdminAuthenticated?: boolean;
+  childProfiles: Child[];
 };
 
 type RebookableOptionsProps = {
@@ -585,6 +594,7 @@ type ClassDetailsProps = {
   classes: InstructorClassDetail[] | [];
   adminId?: number | null;
   isAdminAuthenticated?: boolean;
+  previousPage: "instructor-calendar" | "class-list" | "instructor-list";
 };
 
 type ClassItemProps = {
@@ -603,6 +613,7 @@ type ClassItemForAdminProps = {
   isUpdatingData: boolean;
   setIsUpdatingData: Dispatch<SetStateAction<boolean>>;
   isAdminAuthenticated: boolean;
+  previousPage: "instructor-calendar" | "class-list" | "instructor-list";
 };
 
 type HandleAttendanceUpdateParams = {

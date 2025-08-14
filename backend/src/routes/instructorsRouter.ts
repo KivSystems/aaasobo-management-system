@@ -5,6 +5,7 @@ import {
   addAvailability,
   deleteAvailability,
   RecurringAvailability,
+  getInstructorIdByClassIdController,
   getInstructorAvailabilities,
   getAllInstructorsController,
   getRecurringAvailabilityById,
@@ -30,6 +31,7 @@ import {
   getInstructorScheduleController,
   createInstructorScheduleController,
   getInstructorAvailableSlotsController,
+  getAllAvailableSlotsController,
 } from "../../src/controllers/instructorScheduleController";
 import {
   getInstructorAbsencesController,
@@ -43,6 +45,8 @@ export const instructorsRouter = express.Router();
 // http://localhost:4000/instructors
 
 instructorsRouter.get("/", getAllInstructorsAvailabilitiesController);
+instructorsRouter.get("/available-slots", getAllAvailableSlotsController);
+instructorsRouter.get("/class/:id", getInstructorIdByClassIdController);
 instructorsRouter.get("/profiles", getInstructorProfilesController);
 instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>

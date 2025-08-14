@@ -16,6 +16,7 @@ export default function RebookableClassesList({
   setRebookingStep,
   language,
   isAdminAuthenticated,
+  childProfiles,
 }: RebookableClassesListProps) {
   const hasRebookableClasses = rebookableClasses.length > 0;
   const hasFreeTrial =
@@ -66,6 +67,7 @@ export default function RebookableClassesList({
               setRebookingStep={setRebookingStep}
               language={language}
               isAdminAuthenticated={isAdminAuthenticated}
+              childProfiles={childProfiles}
             />
           </Table>
 

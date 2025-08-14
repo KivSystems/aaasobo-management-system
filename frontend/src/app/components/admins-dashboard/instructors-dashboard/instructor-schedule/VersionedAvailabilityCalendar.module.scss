@@ -1,0 +1,125 @@
+.header {
+  margin-bottom: 16px;
+}
+
+.modal {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modalHeader {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+.legend {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.legendBox {
+  width: 20px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid #d1d5db;
+
+  &.available {
+    background-color: #a2b098;
+  }
+
+  &.absence {
+    background-color: #dc2626;
+  }
+
+  &.withBadge {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1.5px solid white;
+      box-sizing: border-box;
+    }
+
+    &.willBeAbsent::after {
+      background-color: #dc2626;
+    }
+
+    &.willBeAvailable::after {
+      background-color: #a2b098;
+    }
+  }
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.calendarContainer {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+// Dynamic badge styles for calendar events
+.eventBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-sizing: border-box;
+  z-index: 10;
+
+  &.willBeAbsent {
+    background-color: #dc2626;
+  }
+
+  &.willBeAvailable {
+    background-color: #a2b098;
+  }
+}

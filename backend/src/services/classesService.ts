@@ -73,6 +73,25 @@ export const getClassesByCustomerId = async (customerId: number) => {
   }
 };
 
+// Fetch class information by class id
+export const getClassByClassId = async (classId: number) => {
+  try {
+    const classInfo = await prisma.class.findUnique({
+      where: { id: classId },
+      include: {
+        instructor: true,
+        customer: true,
+        classAttendance: { include: { children: true } },
+      },
+    });
+
+    return classInfo;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch class information.");
+  }
+};
+
 // Create a new class in the DB
 export const createClass = async (
   classData: {

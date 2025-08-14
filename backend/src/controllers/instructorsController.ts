@@ -8,6 +8,7 @@ import {
   JAPAN_TIME_DIFF,
   createDatesBetween,
   calculateFirstDate,
+  convertToISOString,
 } from "../helper/dateUtils";
 import {
   getAllInstructorsAvailabilities,
@@ -27,12 +28,19 @@ import {
   getInstructorProfile,
   updateInstructor,
   getInstructorProfiles,
+  getInstructorByEmail,
+  getInstructorByNickname,
+  getInstructorByClassURL,
+  getInstructorByMeetingId,
+  getInstructorByPasscode,
+  getInstructorByIntroductionURL,
   updateInstructorWithIcon,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import {
   getCalendarClasses,
   getSameDateClasses,
+  getClassByClassId,
 } from "../services/classesService";
 import { head } from "@vercel/blob";
 
@@ -121,6 +129,32 @@ function setErrorResponse(res: Response, error: unknown) {
     .json({ message: error instanceof Error ? error.message : `${error}` });
 }
 
+// Fetch instructor id by class id
+export const getInstructorIdByClassIdController = async (
+  req: Request,
+  res: Response,
+) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid class ID." });
+  }
+
+  try {
+    const classInfo = await getClassByClassId(id);
+
+    if (!classInfo) {
+      return res.status(404).json({ error: "Applicable class not found." });
+    }
+
+    res.status(200).json({
+      instructorId: classInfo.instructorId,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    res.status(500).json({ error: "Failed to fetch classes." });
+  }
+};
+
 export const getInstructor = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
@@ -142,6 +176,13 @@ export const getInstructor = async (req: Request, res: Response) => {
         nickname: instructor.nickname,
         email: instructor.email,
         icon: blob,
+        birthdate: instructor.birthdate,
+        lifeHistory: instructor.lifeHistory,
+        favoriteFood: instructor.favoriteFood,
+        hobby: instructor.hobby,
+        messageForChildren: instructor.messageForChildren,
+        workingTime: instructor.workingTime,
+        skill: instructor.skill,
         classURL: instructor.classURL,
         meetingId: instructor.meetingId,
         passcode: instructor.passcode,
@@ -155,24 +196,93 @@ export const getInstructor = async (req: Request, res: Response) => {
 
 // Update the applicable instructor data
 export const updateInstructorProfile = async (req: Request, res: Response) => {
-  const instructorId = parseInt(req.params.id);
+  const id = parseInt(req.params.id);
   const {
     name,
     email,
-    classURL,
     nickname,
+    birthdate,
+    workingTime,
+    lifeHistory,
+    favoriteFood,
+    hobby,
+    messageForChildren,
+    skill,
+    classURL,
     meetingId,
     passcode,
     introductionURL,
   } = req.body;
 
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+  // Normalize birthdate
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
+
+  // Set unique checks list
+  const uniqueChecks = [
+    { fn: getInstructorByNickname, value: nickname },
+    { fn: getInstructorByEmail, value: normalizedEmail },
+    { fn: getInstructorByClassURL, value: classURL },
+    { fn: getInstructorByMeetingId, value: meetingId },
+    { fn: getInstructorByPasscode, value: passcode },
+    { fn: getInstructorByIntroductionURL, value: introductionURL },
+  ];
+  let errorItems: { [key: string]: string } = {};
+
   try {
+    const results = await Promise.all(
+      uniqueChecks.map(({ fn, value }) => fn(value)),
+    );
+
+    const [
+      nicknameExists,
+      emailExists,
+      iconExists,
+      classURLExists,
+      meetingIdExists,
+      passcodeExists,
+      introductionURLExists,
+    ] = results;
+
+    if (nicknameExists && nicknameExists.id !== id) {
+      errorItems.nickname = "The nickname is already in use.";
+    }
+    if (emailExists && emailExists.id !== id) {
+      errorItems.email = "The email is already in use.";
+    }
+    if (iconExists && iconExists.id !== id) {
+      errorItems.icon = "The icon is already in use.";
+    }
+    if (classURLExists && classURLExists.id !== id) {
+      errorItems.classURL = "The class URL is already in use.";
+    }
+    if (meetingIdExists && meetingIdExists.id !== id) {
+      errorItems.meetingId = "The meeting ID is already in use.";
+    }
+    if (passcodeExists && passcodeExists.id !== id) {
+      errorItems.passcode = "The passcode is already in use.";
+    }
+    if (introductionURLExists && introductionURLExists.id !== id) {
+      errorItems.introductionURL = "The introduction URL is already in use.";
+    }
+    if (Object.keys(errorItems).length > 0) {
+      return res.status(400).json(errorItems);
+    }
+
     const instructor = await updateInstructor(
-      instructorId,
+      id,
       name,
       email,
-      classURL,
       nickname,
+      birthdate,
+      workingTime,
+      lifeHistory,
+      favoriteFood,
+      hobby,
+      messageForChildren,
+      skill,
+      classURL,
       meetingId,
       passcode,
       introductionURL,
@@ -192,39 +302,99 @@ export const updateInstructorProfileWithIcon = async (
   req: Request,
   res: Response,
 ) => {
-  const instructorId = parseInt(req.params.id);
+  const id = parseInt(req.params.id);
   const icon = req.file;
   const {
     name,
     email,
-    classURL,
     nickname,
+    birthdate,
+    workingTime,
+    lifeHistory,
+    favoriteFood,
+    hobby,
+    messageForChildren,
+    skill,
+    classURL,
     meetingId,
     passcode,
     introductionURL,
   } = req.body;
 
-  if (
-    !name ||
-    !email ||
-    !nickname ||
-    !icon ||
-    !classURL ||
-    !meetingId ||
-    !passcode ||
-    !introductionURL
-  ) {
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+  // Normalize birthdate
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
+
+  // Set unique checks list
+  const uniqueChecks = [
+    { fn: getInstructorByNickname, value: nickname },
+    { fn: getInstructorByEmail, value: normalizedEmail },
+    { fn: getInstructorByClassURL, value: classURL },
+    { fn: getInstructorByMeetingId, value: meetingId },
+    { fn: getInstructorByPasscode, value: passcode },
+    { fn: getInstructorByIntroductionURL, value: introductionURL },
+  ];
+  let errorItems: { [key: string]: string } = {};
+
+  if (!icon) {
     return res.sendStatus(400);
   }
 
   try {
+    const results = await Promise.all(
+      uniqueChecks.map(({ fn, value }) => fn(value)),
+    );
+
+    const [
+      nicknameExists,
+      emailExists,
+      iconExists,
+      classURLExists,
+      meetingIdExists,
+      passcodeExists,
+      introductionURLExists,
+    ] = results;
+
+    if (nicknameExists && nicknameExists.id !== id) {
+      errorItems.nickname = "The nickname is already in use.";
+    }
+    if (emailExists && emailExists.id !== id) {
+      errorItems.email = "The email is already in use.";
+    }
+    if (iconExists && iconExists.id !== id) {
+      errorItems.icon = "The icon is already in use.";
+    }
+    if (classURLExists && classURLExists.id !== id) {
+      errorItems.classURL = "The class URL is already in use.";
+    }
+    if (meetingIdExists && meetingIdExists.id !== id) {
+      errorItems.meetingId = "The meeting ID is already in use.";
+    }
+    if (passcodeExists && passcodeExists.id !== id) {
+      errorItems.passcode = "The passcode is already in use.";
+    }
+    if (introductionURLExists && introductionURLExists.id !== id) {
+      errorItems.introductionURL = "The introduction URL is already in use.";
+    }
+    if (Object.keys(errorItems).length > 0) {
+      return res.status(400).json(errorItems);
+    }
+
     const instructor = await updateInstructorWithIcon(
-      instructorId,
+      id,
+      icon,
       name,
       email,
-      classURL,
-      icon,
       nickname,
+      birthdate,
+      workingTime,
+      lifeHistory,
+      favoriteFood,
+      hobby,
+      messageForChildren,
+      skill,
+      classURL,
       meetingId,
       passcode,
       introductionURL,

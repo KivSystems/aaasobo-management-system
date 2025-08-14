@@ -71,6 +71,7 @@ export default function RebookingForm({
           setRebookingStep={setRebookingStep}
           language={language}
           isAdminAuthenticated={isAdminAuthenticated}
+          childProfiles={childProfiles}
         />
       )}
 
