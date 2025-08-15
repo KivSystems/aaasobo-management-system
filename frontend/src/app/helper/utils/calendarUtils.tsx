@@ -35,11 +35,12 @@ export const createRenderEventContent = (userType: UserType) => {
         (classStatus === "booked" || classStatus === "rebooked") &&
         instructorIcon ? (
           <Image
-            src={`/instructors/${instructorIcon}`}
+            src={`${instructorIcon}?t=${Date.now()}`}
             alt={instructorNickname || "Instructor"}
             width={30}
             height={30}
             priority
+            unoptimized
             className={`${styles.instructorIcon} ${styles[classStatus]}`}
           />
         ) : classStatus === "completed" ? (

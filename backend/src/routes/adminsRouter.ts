@@ -23,6 +23,7 @@ import {
 } from "../../src/controllers/schedulesController";
 
 import { verifyAuthentication } from "../middlewares/auth.middleware";
+import upload from "../middlewares/upload.middleware";
 
 export const adminsRouter = express.Router();
 
@@ -41,7 +42,7 @@ adminsRouter.delete(
 );
 adminsRouter.post(
   "/instructor-list/register",
-  verifyAuthentication,
+  upload.single("icon"),
   registerInstructorController,
 );
 adminsRouter.post(

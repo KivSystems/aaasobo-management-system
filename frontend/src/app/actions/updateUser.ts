@@ -1,7 +1,10 @@
 "use server";
 
 import { updateAdmin } from "@/app/helper/api/adminsApi";
-import { updateInstructor } from "@/app/helper/api/instructorsApi";
+import {
+  updateInstructor,
+  updateInstructorWithIcon,
+} from "@/app/helper/api/instructorsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import {
   extractProfileUpdateErrors,
@@ -10,6 +13,7 @@ import {
 import {
   adminUpdateSchema,
   instructorUpdateSchema,
+  instructorUpdateSchemaWithIcon,
 } from "../schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
 import { getCookie } from "../../middleware";
@@ -90,52 +94,84 @@ export async function updateInstructorAction(
     // Hidden input tag fields
     const userType = formData.get("userType");
     const id = Number(formData.get("id"));
-    const icon = String(formData.get("icon"));
+    const icon = formData.get("icon") as File;
 
-    const parsedForm = instructorUpdateSchema.safeParse({
-      name,
-      nickname,
-      email,
-      classURL,
-      meetingId,
-      passcode,
-      introductionURL,
-      userType,
-    });
+    // If the icon file is empty, update the instructor data without icon.
+    if (icon.name === "undefined") {
+      const parsedForm = instructorUpdateSchema.safeParse({
+        name,
+        nickname,
+        email,
+        classURL,
+        meetingId,
+        passcode,
+        introductionURL,
+        userType,
+      });
 
-    if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
-      return extractUpdateValidationErrors(validationErrors);
+      if (!parsedForm.success) {
+        const validationErrors = parsedForm.error.errors;
+        return extractUpdateValidationErrors(validationErrors);
+      }
+
+      // Get the cookies from the request headers
+      const cookie = await getCookie();
+
+      // Call the API to update the instructor data
+      const response = await updateInstructor(
+        id,
+        parsedForm.data.name,
+        parsedForm.data.nickname,
+        birthdate,
+        workingTime,
+        lifeHistory,
+        favoriteFood,
+        hobby,
+        messageForChildren,
+        skill,
+        parsedForm.data.email,
+        parsedForm.data.classURL,
+        parsedForm.data.meetingId,
+        parsedForm.data.passcode,
+        parsedForm.data.introductionURL,
+      );
+
+      // Refresh cached instructor data for the instructor list page
+      revalidateInstructorList();
+
+      return response;
+    } else {
+      // If the icon file is not empty, update the instructor data with icon.
+      const parsedForm = instructorUpdateSchemaWithIcon.safeParse({
+        name,
+        nickname,
+        email,
+        classURL,
+        meetingId,
+        passcode,
+        introductionURL,
+        userType,
+        icon,
+      });
+
+      if (!parsedForm.success) {
+        const validationErrors = parsedForm.error.errors;
+        return extractUpdateValidationErrors(validationErrors);
+      }
+
+      const userData = new FormData();
+      userData.append("name", parsedForm.data.name);
+      userData.append("nickname", parsedForm.data.nickname);
+      userData.append("email", parsedForm.data.email);
+      userData.append("icon", parsedForm.data.icon);
+      userData.append("classURL", parsedForm.data.classURL);
+      userData.append("meetingId", parsedForm.data.meetingId);
+      userData.append("passcode", parsedForm.data.passcode);
+      userData.append("introductionURL", parsedForm.data.introductionURL);
+      const response = await updateInstructorWithIcon(id, userData);
+
+      return response;
     }
-
-    // Get the cookies from the request headers
-    const cookie = await getCookie();
-
-    // Call the API to update the instructor data
-    const response = await updateInstructor(
-      id,
-      parsedForm.data.name,
-      parsedForm.data.nickname,
-      birthdate,
-      workingTime,
-      lifeHistory,
-      favoriteFood,
-      hobby,
-      messageForChildren,
-      skill,
-      parsedForm.data.email,
-      parsedForm.data.classURL,
-      icon,
-      parsedForm.data.meetingId,
-      parsedForm.data.passcode,
-      parsedForm.data.introductionURL,
-      cookie,
-    );
-
-    // Refresh cached instructor data for the instructor list page
-    revalidateInstructorList();
-
-    return response;
   } catch (error) {
     console.error("Unexpected error in updateUser server action:", error);
     return {

@@ -30,11 +30,11 @@ import {
   getInstructorProfiles,
   getInstructorByEmail,
   getInstructorByNickname,
-  getInstructorByIcon,
   getInstructorByClassURL,
   getInstructorByMeetingId,
   getInstructorByPasscode,
   getInstructorByIntroductionURL,
+  updateInstructorWithIcon,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import {
@@ -42,6 +42,7 @@ import {
   getSameDateClasses,
   getClassByClassId,
 } from "../services/classesService";
+import { head } from "@vercel/blob";
 
 // Fetch all the instructors and their availabilities
 export const getAllInstructorsAvailabilitiesController = async (
@@ -164,6 +165,8 @@ export const getInstructor = async (req: Request, res: Response) => {
     if (!instructor) {
       return res.status(404).json({ message: "Instructor not found." });
     }
+    const blob = await head(instructor.icon);
+
     return res.status(200).json({
       instructor: {
         id: instructor.id,
@@ -172,7 +175,7 @@ export const getInstructor = async (req: Request, res: Response) => {
         unavailabilities: instructor.instructorUnavailability,
         nickname: instructor.nickname,
         email: instructor.email,
-        icon: instructor.icon,
+        icon: blob,
         birthdate: instructor.birthdate,
         lifeHistory: instructor.lifeHistory,
         favoriteFood: instructor.favoriteFood,
@@ -206,7 +209,6 @@ export const updateInstructorProfile = async (req: Request, res: Response) => {
     messageForChildren,
     skill,
     classURL,
-    icon,
     meetingId,
     passcode,
     introductionURL,
@@ -221,7 +223,6 @@ export const updateInstructorProfile = async (req: Request, res: Response) => {
   const uniqueChecks = [
     { fn: getInstructorByNickname, value: nickname },
     { fn: getInstructorByEmail, value: normalizedEmail },
-    { fn: getInstructorByIcon, value: icon },
     { fn: getInstructorByClassURL, value: classURL },
     { fn: getInstructorByMeetingId, value: meetingId },
     { fn: getInstructorByPasscode, value: passcode },
@@ -272,17 +273,128 @@ export const updateInstructorProfile = async (req: Request, res: Response) => {
     const instructor = await updateInstructor(
       id,
       name,
+      email,
       nickname,
-      normalizedBirthdate,
+      birthdate,
       workingTime,
       lifeHistory,
       favoriteFood,
       hobby,
       messageForChildren,
       skill,
-      email,
       classURL,
+      meetingId,
+      passcode,
+      introductionURL,
+    );
+
+    res.status(200).json({
+      message: "Instructor is updated successfully",
+      instructor,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
+  }
+};
+
+// Update the applicable instructor data with icon
+export const updateInstructorProfileWithIcon = async (
+  req: Request,
+  res: Response,
+) => {
+  const id = parseInt(req.params.id);
+  const icon = req.file;
+  const {
+    name,
+    email,
+    nickname,
+    birthdate,
+    workingTime,
+    lifeHistory,
+    favoriteFood,
+    hobby,
+    messageForChildren,
+    skill,
+    classURL,
+    meetingId,
+    passcode,
+    introductionURL,
+  } = req.body;
+
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+  // Normalize birthdate
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
+
+  // Set unique checks list
+  const uniqueChecks = [
+    { fn: getInstructorByNickname, value: nickname },
+    { fn: getInstructorByEmail, value: normalizedEmail },
+    { fn: getInstructorByClassURL, value: classURL },
+    { fn: getInstructorByMeetingId, value: meetingId },
+    { fn: getInstructorByPasscode, value: passcode },
+    { fn: getInstructorByIntroductionURL, value: introductionURL },
+  ];
+  let errorItems: { [key: string]: string } = {};
+
+  if (!icon) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const results = await Promise.all(
+      uniqueChecks.map(({ fn, value }) => fn(value)),
+    );
+
+    const [
+      nicknameExists,
+      emailExists,
+      iconExists,
+      classURLExists,
+      meetingIdExists,
+      passcodeExists,
+      introductionURLExists,
+    ] = results;
+
+    if (nicknameExists && nicknameExists.id !== id) {
+      errorItems.nickname = "The nickname is already in use.";
+    }
+    if (emailExists && emailExists.id !== id) {
+      errorItems.email = "The email is already in use.";
+    }
+    if (iconExists && iconExists.id !== id) {
+      errorItems.icon = "The icon is already in use.";
+    }
+    if (classURLExists && classURLExists.id !== id) {
+      errorItems.classURL = "The class URL is already in use.";
+    }
+    if (meetingIdExists && meetingIdExists.id !== id) {
+      errorItems.meetingId = "The meeting ID is already in use.";
+    }
+    if (passcodeExists && passcodeExists.id !== id) {
+      errorItems.passcode = "The passcode is already in use.";
+    }
+    if (introductionURLExists && introductionURLExists.id !== id) {
+      errorItems.introductionURL = "The introduction URL is already in use.";
+    }
+    if (Object.keys(errorItems).length > 0) {
+      return res.status(400).json(errorItems);
+    }
+
+    const instructor = await updateInstructorWithIcon(
+      id,
       icon,
+      name,
+      email,
+      nickname,
+      birthdate,
+      workingTime,
+      lifeHistory,
+      favoriteFood,
+      hobby,
+      messageForChildren,
+      skill,
+      classURL,
       meetingId,
       passcode,
       introductionURL,

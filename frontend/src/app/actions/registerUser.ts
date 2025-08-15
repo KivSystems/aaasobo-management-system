@@ -21,7 +21,7 @@ export async function registerUser(
     const email = formData.get("email");
     const password = formData.get("password");
     const passConfirmation = formData.get("passConfirmation");
-    const icon = formData.get("icon");
+    const icon = formData.get("icon") as File;
     const classURL = formData.get("classURL");
     const meetingId = formData.get("meetingId");
     const passcode = formData.get("passcode");
@@ -59,18 +59,17 @@ export async function registerUser(
           return extractRegisterValidationErrors(validationErrors);
         }
 
-        response = await registerInstructor({
-          name: parsedForm.data.name,
-          nickname: parsedForm.data.nickname,
-          email: parsedForm.data.email,
-          password: parsedForm.data.password,
-          icon: parsedForm.data.icon,
-          classURL: parsedForm.data.classURL,
-          meetingId: parsedForm.data.meetingId,
-          passcode: parsedForm.data.passcode,
-          introductionURL: parsedForm.data.introductionURL,
-          cookie,
-        });
+        const userData = new FormData();
+        userData.append("name", parsedForm.data.name);
+        userData.append("nickname", parsedForm.data.nickname);
+        userData.append("email", parsedForm.data.email);
+        userData.append("password", parsedForm.data.password);
+        userData.append("icon", parsedForm.data.icon);
+        userData.append("classURL", parsedForm.data.classURL);
+        userData.append("meetingId", parsedForm.data.meetingId);
+        userData.append("passcode", parsedForm.data.passcode);
+        userData.append("introductionURL", parsedForm.data.introductionURL);
+        response = await registerInstructor(userData);
 
         // Refresh cached instructor data for the instructor list page
         revalidateInstructorList();

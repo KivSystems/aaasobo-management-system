@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useInput } from "@/app/hooks/useInput";
 import styles from "./RegisterForm.module.scss";
 import {
@@ -11,7 +11,6 @@ import {
   IdentificationIcon,
   KeyIcon,
   LinkIcon,
-  PhotoIcon,
   AcademicCapIcon,
   CalendarIcon,
 } from "@heroicons/react/24/outline";
@@ -24,6 +23,7 @@ import { registerContent } from "@/app/actions/registerContent";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
+import Uploader from "./uploadImages/Uploader";
 
 const RegisterForm = ({
   categoryType,
@@ -48,9 +48,14 @@ const RegisterForm = ({
   const { localMessages, clearErrorMessage } =
     useFormMessages(registerResultState);
   const { passwordStrength } = usePasswordStrength(password);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <form action={formAction} className={styles.form}>
+    <form
+      action={formAction}
+      className={styles.form}
+      encType="multipart/form-data"
+    >
       {/* Hidden fields to include in form submission */}
       <input type="hidden" name="userType" value={userType ?? ""} />
       <input type="hidden" name="categoryType" value={categoryType ?? ""} />
@@ -139,15 +144,26 @@ const RegisterForm = ({
 
           {userType === "instructor" && (
             <>
-              <TextInput
-                id="icon"
-                label="Icon"
-                type="text"
+              <input
+                type="file"
                 name="icon"
-                placeholder="e.g., john-1.jpg"
-                icon={<PhotoIcon className={styles.icon} />}
-                inputRequired
-                onChange={() => clearErrorMessage("icon")}
+                ref={fileInputRef}
+                style={{ display: "none" }}
+              />
+              <Uploader
+                onFileSelect={(file) => {
+                  if (fileInputRef.current && file) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInputRef.current.files = dataTransfer.files;
+                  }
+                }}
+                clearFileInputRef={() => {
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                  }
+                }}
+                label={"Instructor profile image"}
               />
               <TextInput
                 id="classURL"

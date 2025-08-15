@@ -103,24 +103,14 @@ export const getInstructorIdByClassId = async (
 };
 
 // Register instructor data
-export const registerInstructor = async (userData: {
-  name: string;
-  nickname: string;
-  email: string;
-  password: string;
-  icon: string;
-  classURL: string;
-  meetingId: string;
-  passcode: string;
-  introductionURL: string;
-  cookie: string;
-}): Promise<RegisterFormState> => {
+export const registerInstructor = async (
+  userData: FormData,
+): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
     const response = await fetch(registerURL, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: userData.cookie },
-      body: JSON.stringify(userData),
+      body: userData,
     });
 
     if (response.status === 409) {
@@ -164,15 +154,13 @@ export const updateInstructor = async (
   skill: string,
   email: string,
   classURL: string,
-  icon: string,
   meetingId: string,
   passcode: string,
   introductionURL: string,
-  cookie: string,
 ) => {
   // Define the data to be sent to the server side.
   const instructorURL = `${BACKEND_ORIGIN}/instructors/${id}`;
-  const headers = { "Content-Type": "application/json", Cookie: cookie };
+  const headers = { "Content-Type": "application/json" };
   const body = JSON.stringify({
     name,
     nickname,
@@ -185,7 +173,6 @@ export const updateInstructor = async (
     skill,
     email,
     classURL,
-    icon,
     meetingId,
     passcode,
     introductionURL,
@@ -200,6 +187,28 @@ export const updateInstructor = async (
   const data = await response.json();
 
   if (response.status === 500) {
+    return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
+  }
+
+  return data;
+};
+
+// PATCH instructor data with icon
+export const updateInstructorWithIcon = async (
+  instructorId: number,
+  userData: FormData,
+) => {
+  // Define the data to be sent to the server side.
+  const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/withIcon`;
+
+  const response = await fetch(instructorURL, {
+    method: "PATCH",
+    body: userData,
+  });
+
+  const data = await response.json();
+
+  if (response.status !== 200) {
     return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
   }
 

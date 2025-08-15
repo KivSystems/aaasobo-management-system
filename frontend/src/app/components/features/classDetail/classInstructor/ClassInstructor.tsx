@@ -17,11 +17,12 @@ const ClassInstructor = ({
   return (
     <div className={`${styles.instructor} ${className && styles[className]}`}>
       <Image
-        src={`/instructors/${instructorIcon}`}
+        src={`${instructorIcon}?t=${Date.now()}`}
         alt={instructorNickname}
         width={width}
         height={width}
         priority
+        unoptimized
         className={`${styles.instructor__icon} ${styles[classStatus]}`}
       />
       <div className={styles.instructor__name}>{instructorNickname}</div>

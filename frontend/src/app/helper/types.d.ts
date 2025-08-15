@@ -23,7 +23,7 @@ type Instructor = {
   workingTime: string;
   skill: string;
   classURL: string;
-  icon: string;
+  icon: { url: string };
   meetingId: string;
   passcode: string;
   introductionURL: string;
@@ -67,7 +67,7 @@ type ClassType = {
   instructor: {
     id: number;
     name: string;
-    icon: string;
+    icon: File;
     classURL: string;
     nickname: string;
     meetingId: string;

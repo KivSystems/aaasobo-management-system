@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import styles from "./InstructorProfile.module.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateInstructorAction } from "@/app/actions/updateUser";
@@ -30,6 +29,8 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
+import Uploader from "../../features/registerForm/uploadImages/Uploader";
+import Image from "next/image";
 
 function InstructorProfile({
   instructor,
@@ -52,6 +53,7 @@ function InstructorProfile({
     typeof instructor !== "string" ? instructor : null,
   );
   const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -83,6 +85,14 @@ function InstructorProfile({
         const result = updateResultState as { instructor: Instructor };
         toast.success("Profile updated successfully!");
         setIsEditing(false);
+
+        const newInstructor = result.instructor;
+        if (typeof newInstructor.icon === "string") {
+          newInstructor.icon = {
+            url: `${newInstructor.icon}?t=${Date.now()}`,
+          };
+        }
+
         setPreviousInstructor(result.instructor);
         setLatestInstructor(result.instructor);
       } else {
@@ -102,13 +112,39 @@ function InstructorProfile({
         {latestInstructor ? (
           <form action={formAction} className={styles.profileCard}>
             <Image
-              src={`/instructors/${latestInstructor.icon}`}
+              src={`${latestInstructor.icon.url}?t=${Date.now()}`}
               alt={latestInstructor.name}
               width={100}
               height={100}
-              priority
+              unoptimized
               className={styles.pic}
             />
+            {isEditing ? (
+              <>
+                <input
+                  type="file"
+                  name="icon"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                />
+                <Uploader
+                  onFileSelect={(file) => {
+                    if (fileInputRef.current && file) {
+                      const dataTransfer = new DataTransfer();
+                      dataTransfer.items.add(file);
+                      fileInputRef.current.files = dataTransfer.files;
+                    }
+                  }}
+                  clearFileInputRef={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = "";
+                    }
+                  }}
+                />
+              </>
+            ) : (
+              <></>
+            )}
 
             {/* Name*/}
             <div className={styles.instructorName__nameSection}>
@@ -421,7 +457,11 @@ function InstructorProfile({
             {/* Hidden input fields */}
             <input type="hidden" name="userType" value="instructor" />
             <input type="hidden" name="id" value={latestInstructor.id} />
-            <input type="hidden" name="icon" value={latestInstructor.icon} />
+            <input
+              type="hidden"
+              name="icon"
+              value={latestInstructor.icon.url}
+            />
 
             {/* Action buttons for only admin */}
             {isAdminAuthenticated ? (

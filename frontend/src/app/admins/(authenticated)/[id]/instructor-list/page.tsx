@@ -1,7 +1,10 @@
+"use client";
+
 import ListTable from "@/app/components/admins-dashboard/ListTable";
 import { getAllInstructors } from "@/app/helper/api/adminsApi";
+import { useEffect, useState } from "react";
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default function Page({ params }: { params: { id: string } }) {
   const adminId = parseInt(params.id);
   const listType = "Instructor List";
   const omitItems = [""]; // Omit the item from the table
@@ -9,7 +12,20 @@ export default async function Page({ params }: { params: { id: string } }) {
   const replaceItems = ["ID"]; // Replace the item with the value(e.g., ID -> 1,2,3...)
   const linkUrls = [`/admins/${adminId}/instructor-list/[ID]`]; // Set the link URL
   const userType = "instructor"; // Set the user type for the registration form
-  const data = await getAllInstructors(); // Fetch all instructors data
+  const [data, setData] = useState<Instructor[]>([]);
+
+  useEffect(() => {
+    try {
+      const fetchInstructors = async () => {
+        const instructors = await getAllInstructors(); // Fetch all instructors data
+        setData(instructors);
+      };
+
+      fetchInstructors();
+    } catch (error) {
+      console.error("Failed to fetch the instructor data.");
+    }
+  }, []);
 
   return (
     <div>
