@@ -61,12 +61,13 @@ export type InstructorScheduleWithSlots = InstructorSchedule & {
 // GET instructors data
 export const getInstructors = async () => {
   try {
-    const response = await fetch(BASE_URL);
+    // Use the admin endpoint that returns simple instructor list
+    const response = await fetch(`${BACKEND_ORIGIN}/admins/instructor-list`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result = await response.json();
+    return result.instructors || [];
   } catch (error) {
     console.error("Failed to fetch instructors:", error);
     throw error;
@@ -739,6 +740,38 @@ export const deleteInstructorAbsence = async (
     return { absence: result.data };
   } catch (error) {
     console.error("Failed to delete instructor absence:", error);
+    throw error;
+  }
+};
+
+// Get active schedule for an instructor
+export const getActiveInstructorSchedule = async (
+  instructorId: number,
+  effectiveDate: string,
+): Promise<Response<InstructorScheduleWithSlots>> => {
+  try {
+    const url = new URL(`${BASE_URL}/${instructorId}/schedules/active`);
+    url.searchParams.append("effectiveDate", effectiveDate);
+
+    const response = await fetch(url.toString(), {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return the schedule directly (not wrapped in additional object)
+    return result.data;
+  } catch (error) {
+    console.error("Failed to fetch active instructor schedule:", error);
     throw error;
   }
 };

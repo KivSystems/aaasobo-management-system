@@ -108,6 +108,7 @@ export const createMockPrisma = () => {
     },
     $queryRaw: vi.fn(),
     $transaction: vi.fn(),
+    $executeRaw: vi.fn(),
   };
 
   mock.$transaction = vi.fn((callback) => callback(mock));

@@ -32,6 +32,7 @@ import {
   createInstructorScheduleController,
   getInstructorAvailableSlotsController,
   getAllAvailableSlotsController,
+  getActiveInstructorScheduleController,
 } from "../../src/controllers/instructorScheduleController";
 import {
   getInstructorAbsencesController,
@@ -84,7 +85,6 @@ instructorsRouter.get("/:id/availability", parseId, (req, res) => {
 instructorsRouter.get("/:id/recurringAvailabilityById", parseId, (req, res) =>
   getRecurringAvailabilityById(req as RequestWithId, res),
 );
-instructorsRouter.get("/", getAllInstructorsController);
 
 instructorsRouter.get(
   "/:id/classes/:classId/same-date",
@@ -105,6 +105,10 @@ instructorsRouter.get("/:id/calendar-classes", parseId, (req, res) => {
 // Instructor schedule system routes (WIP)
 instructorsRouter.get("/:id/schedules", parseId, (req, res) => {
   getInstructorSchedulesController(req as RequestWithId, res);
+});
+
+instructorsRouter.get("/:id/schedules/active", parseId, (req, res) => {
+  getActiveInstructorScheduleController(req as RequestWithId, res);
 });
 
 instructorsRouter.get("/:id/schedules/:scheduleId", parseId, (req, res) => {

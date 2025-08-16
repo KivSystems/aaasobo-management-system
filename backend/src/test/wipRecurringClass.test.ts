@@ -47,7 +47,7 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
     });
 
     // Mock no conflicting regular class
-    mockPrisma.recurringClass.findFirst.mockResolvedValue(null);
+    mockPrisma.$queryRaw.mockResolvedValue([{ exists: false }]);
 
     // Mock successful creation
     mockPrisma.recurringClass.create.mockResolvedValue({
@@ -129,13 +129,7 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
     });
 
     // Mock existing conflicting regular class
-    mockPrisma.recurringClass.findFirst.mockResolvedValue({
-      id: 99,
-      instructorId: 1,
-      subscriptionId: 2, // Different subscription but same instructor/time
-      startAt: new Date(jst`2025-01-20 10:00`), // Same Monday 10:00
-      endAt: null,
-    });
+    mockPrisma.$queryRaw.mockResolvedValue([{ exists: true }]);
 
     const response = await request(server)
       .post("/wip-recurring-classes")
@@ -166,8 +160,8 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
       },
     });
 
-    // Mock no conflicting regular class (different time slot)
-    mockPrisma.recurringClass.findFirst.mockResolvedValue(null);
+    // Mock no conflicting regular class
+    mockPrisma.$queryRaw.mockResolvedValue([{ exists: false }]);
 
     // Mock RecurringClass creation
     mockPrisma.recurringClass.create.mockResolvedValue({
@@ -228,11 +222,8 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
     );
     expect(response.body).toHaveProperty("recurringClass");
 
-    // Verify conflicting class was canceled
-    expect(mockPrisma.class.updateMany).toHaveBeenCalledWith({
-      where: { id: { in: [50] } },
-      data: { status: "canceledByInstructor" },
-    });
+    // Verify the conflicting classes were canceled using executeRaw
+    expect(mockPrisma.$executeRaw).toHaveBeenCalled();
   });
 });
 
@@ -303,7 +294,7 @@ describe("WIP Recurring Classes API - PUT /wip-recurring-classes/:id", () => {
     customerId: 1,
     childrenIds: [1],
     subscriptionId: 1,
-    startDate: "2025-01-22",
+    startDate: nDaysLater(8).toISOString().split("T")[0], // At least one week from today (8 days to be safe)
     timezone: "Asia/Tokyo",
   };
 
@@ -333,31 +324,36 @@ describe("WIP Recurring Classes API - PUT /wip-recurring-classes/:id", () => {
       },
     });
 
+    // Mock finding the existing recurring class (first call)
+    mockPrisma.recurringClass.findFirst.mockResolvedValueOnce({
+      id: 1,
+      instructorId: 1,
+      subscriptionId: 1,
+      startAt: new Date(jst`2025-01-15 10:00`),
+      endAt: null,
+    });
+
     // Mock no conflicting regular class with new instructor
-    mockPrisma.recurringClass.findFirst
-      .mockResolvedValueOnce({
-        id: 1,
-        instructorId: 1,
-        subscriptionId: 1,
-        startAt: new Date(jst`2025-01-15 10:00`),
-        endAt: null,
-      })
-      .mockResolvedValueOnce(null); // No conflict for new schedule
+    mockPrisma.$queryRaw.mockResolvedValue([{ exists: false }]);
+
+    // Calculate dynamic dates for mocking
+    const mockEndAtDate = nDaysLater(8); // Same as validUpdateData.startDate
+    const mockStartAt = new Date(jst`2025-01-15 10:00`); // Keep original start for old class
 
     // Mock successful termination and creation
     mockPrisma.recurringClass.update.mockResolvedValue({
       id: 1,
       instructorId: 1,
       subscriptionId: 1,
-      startAt: new Date(jst`2025-01-15 10:00`),
-      endAt: new Date(jst`2025-01-22 14:00`), // Same as new RecurringClass startAt (no gap)
+      startAt: mockStartAt,
+      endAt: mockEndAtDate, // Same as new RecurringClass startAt (no gap)
     });
 
     mockPrisma.recurringClass.create.mockResolvedValue({
       id: 2,
       instructorId: 2,
       subscriptionId: 1,
-      startAt: new Date(jst`2025-01-22 14:00`),
+      startAt: mockEndAtDate,
       endAt: null,
     });
 
@@ -378,9 +374,9 @@ describe("WIP Recurring Classes API - PUT /wip-recurring-classes/:id", () => {
         customerId: 1,
         recurringClassId: 2,
         subscriptionId: 1,
-        dateTime: new Date(jst`2025-01-22 14:00`),
+        dateTime: mockEndAtDate,
         status: "booked",
-        rebookableUntil: nDaysLater(180, new Date(jst`2025-01-22 14:00`)),
+        rebookableUntil: nDaysLater(180, mockEndAtDate),
         classCode: "2-0",
       },
     ]);
