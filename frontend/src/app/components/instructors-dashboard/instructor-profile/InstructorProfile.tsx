@@ -30,13 +30,16 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 import Uploader from "../../features/registerForm/uploadImages/Uploader";
+import { defaultUserImageUrl } from "@/app/helper/data/data";
 import Image from "next/image";
 
 function InstructorProfile({
   instructor,
+  token,
   isAdminAuthenticated,
 }: {
   instructor: Instructor | string;
+  token: string;
   isAdminAuthenticated?: boolean;
 }) {
   const [updateResultState, formAction] = useFormState(
@@ -54,6 +57,7 @@ function InstructorProfile({
   );
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const defaultUrl = defaultUserImageUrl;
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -87,14 +91,21 @@ function InstructorProfile({
         setIsEditing(false);
 
         const newInstructor = result.instructor;
-        if (typeof newInstructor.icon === "string") {
+        if (
+          typeof newInstructor.icon === "string" &&
+          token !== "" &&
+          (newInstructor.icon as string).includes(token)
+        ) {
           newInstructor.icon = {
             url: `${newInstructor.icon}?t=${Date.now()}`,
           };
+        } else {
+          newInstructor.icon = {
+            url: defaultUrl,
+          };
         }
-
-        setPreviousInstructor(result.instructor);
-        setLatestInstructor(result.instructor);
+        setPreviousInstructor(newInstructor);
+        setLatestInstructor(newInstructor);
       } else {
         const result = updateResultState as { errorMessage: string };
         toast.error(result.errorMessage);
@@ -114,8 +125,8 @@ function InstructorProfile({
             <Image
               src={
                 latestInstructor.icon.url === "default-user-icon"
-                  ? "/images/default-user-icon.jpg"
-                  : `${latestInstructor.icon.url}?t=${Date.now()}`
+                  ? defaultUrl
+                  : latestInstructor.icon.url
               }
               alt={latestInstructor.name}
               width={100}

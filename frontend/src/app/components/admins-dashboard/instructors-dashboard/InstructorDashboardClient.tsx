@@ -13,11 +13,13 @@ export default function InstructorTabs({
   adminId,
   instructorId,
   instructor,
+  token,
   classScheduleComponent,
 }: {
   adminId: number;
   instructorId: number;
   instructor: Instructor | string;
+  token: string;
   classScheduleComponent: React.ReactNode;
 }) {
   const breadcrumb = [
@@ -46,6 +48,7 @@ export default function InstructorTabs({
       content: (
         <InstructorProfile
           instructor={instructor}
+          token={token}
           isAdminAuthenticated={isAuthenticated}
         />
       ),

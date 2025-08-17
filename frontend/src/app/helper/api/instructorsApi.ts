@@ -147,9 +147,9 @@ export const updateInstructor = async (
   cookie: string,
 ) => {
   // Handle api based on whether an icon is included
-  let apiUrl = `${BACKEND_ORIGIN}/instructors/${id}`;
+  let apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}`;
   if (userData.has("icon")) {
-    apiUrl = `${BACKEND_ORIGIN}/instructors/${id}/withIcon`;
+    apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}/withIcon`;
   }
 
   // Define the data to be sent to the server side.
