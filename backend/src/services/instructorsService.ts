@@ -129,7 +129,7 @@ export const updateInstructor = async (
     let blob;
     if (icon) {
       // Update the instructor profile icon.
-      await del(prevData?.icon);
+      await del(prevData.icon);
       blob = await put(icon.originalname, icon.buffer, {
         access: "public",
         addRandomSuffix: true,

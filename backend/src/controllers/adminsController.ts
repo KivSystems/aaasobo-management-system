@@ -309,8 +309,8 @@ export const registerInstructorController = async (
     );
 
     const [
-      emailExists,
       nicknameExists,
+      emailExists,
       classURLExists,
       meetingIdExists,
       passcodeExists,
