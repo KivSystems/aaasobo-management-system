@@ -39,7 +39,7 @@ function InstructorProfile({
   isAdminAuthenticated,
 }: {
   instructor: Instructor | string;
-  token: string;
+  token?: string;
   isAdminAuthenticated?: boolean;
 }) {
   const [updateResultState, formAction] = useFormState(
@@ -92,6 +92,7 @@ function InstructorProfile({
         const newInstructor = result.instructor;
         if (
           typeof newInstructor.icon === "string" &&
+          token &&
           token !== "" &&
           (newInstructor.icon as string).includes(token)
         ) {
