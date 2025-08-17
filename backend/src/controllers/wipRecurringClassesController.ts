@@ -1,10 +1,114 @@
 import { Request, Response } from "express";
 import {
   createRegularClass,
+  getRegularClassById,
   getRegularClassesBySubscriptionId,
   updateRegularClass,
 } from "../services/wipRecurringClassesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
+
+interface RegularClassParams {
+  instructorId: number;
+  weekday: number;
+  startTime: string;
+  customerId: number;
+  childrenIds: number[];
+  subscriptionId: number;
+  startDate: string;
+  timezone?: string;
+}
+
+function validateRegularClassParams(params: RegularClassParams): string | null {
+  const {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    subscriptionId,
+    startDate,
+  } = params;
+
+  if (
+    !instructorId ||
+    weekday === undefined ||
+    !startTime ||
+    !customerId ||
+    !childrenIds ||
+    !subscriptionId ||
+    !startDate
+  ) {
+    return "Missing required parameters";
+  }
+
+  if (weekday < 0 || weekday > 6) {
+    return "Invalid weekday. Must be 0-6";
+  }
+
+  if (!/^\d{2}:\d{2}$/.test(startTime)) {
+    return "Invalid time format. Use HH:mm";
+  }
+
+  return null;
+}
+
+// Validation for updates - subscriptionId is not required since we get it from existing record
+function validateUpdateRegularClassParams(
+  params: Omit<RegularClassParams, "subscriptionId">,
+): string | null {
+  const {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    startDate,
+  } = params;
+
+  if (
+    !instructorId ||
+    weekday === undefined ||
+    !startTime ||
+    !customerId ||
+    !childrenIds ||
+    !startDate
+  ) {
+    return "Missing required parameters";
+  }
+
+  if (weekday < 0 || weekday > 6) {
+    return "Invalid weekday. Must be 0-6";
+  }
+
+  if (!/^\d{2}:\d{2}$/.test(startTime)) {
+    return "Invalid time format. Use HH:mm";
+  }
+
+  return null;
+}
+
+function handleRegularClassError(error: unknown, res: Response): Response {
+  const err =
+    error instanceof Error ? error : new Error("An unknown error occurred");
+
+  const businessLogicErrors = [
+    "Instructor is not available at the requested time slot",
+    "Instructor schedule not found",
+    "Only Asia/Tokyo timezone is supported",
+    "Regular class already exists at this time slot",
+    "Start date must be at least one week from today",
+  ];
+
+  if (businessLogicErrors.includes(err.message)) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  if (err.message === "Regular class not found") {
+    return res.status(404).json({ message: err.message });
+  }
+
+  return res.status(500).json({ error: err.message });
+}
 
 export const createRegularClassController = async (
   req: Request,
@@ -21,58 +125,31 @@ export const createRegularClassController = async (
     timezone = "Asia/Tokyo",
   } = req.body;
 
-  if (
-    !instructorId ||
-    weekday === undefined ||
-    !startTime ||
-    !customerId ||
-    !childrenIds ||
-    !subscriptionId ||
-    !startDate
-  ) {
-    return res.status(400).json({ message: "Missing required parameters" });
-  }
+  const params = {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    subscriptionId,
+    startDate,
+    timezone,
+  };
 
-  if (weekday < 0 || weekday > 6) {
-    return res.status(400).json({ message: "Invalid weekday. Must be 0-6" });
-  }
-
-  if (!/^\d{2}:\d{2}$/.test(startTime)) {
-    return res.status(400).json({ message: "Invalid time format. Use HH:mm" });
+  const validationError = validateRegularClassParams(params);
+  if (validationError) {
+    return res.status(400).json({ message: validationError });
   }
 
   try {
-    const recurringClass = await createRegularClass({
-      instructorId,
-      weekday,
-      startTime,
-      customerId,
-      childrenIds,
-      subscriptionId,
-      startDate,
-      timezone,
-    });
+    const recurringClass = await createRegularClass(params);
 
     res.status(201).json({
       message: "Regular class created successfully",
       recurringClass,
     });
   } catch (error) {
-    const err =
-      error instanceof Error ? error : new Error("An unknown error occurred");
-
-    // Handle specific business logic errors with 400 status
-    if (
-      err.message ===
-        "Instructor is not available at the requested time slot" ||
-      err.message === "Instructor schedule not found" ||
-      err.message === "Only Asia/Tokyo timezone is supported" ||
-      err.message === "Regular class already exists at this time slot"
-    ) {
-      return res.status(400).json({ message: err.message });
-    }
-
-    res.status(500).json({ error: err.message });
+    return handleRegularClassError(error, res);
   }
 };
 
@@ -81,6 +158,7 @@ export const getRegularClassesBySubscriptionIdController = async (
   res: Response,
 ) => {
   const subscriptionId = parseInt(req.query.subscriptionId as string);
+  const status = req.query.status as string;
 
   if (!req.query.subscriptionId) {
     return res.status(400).json({ message: "subscriptionId is required" });
@@ -90,9 +168,18 @@ export const getRegularClassesBySubscriptionIdController = async (
     return res.status(400).json({ message: "Invalid subscription ID" });
   }
 
+  // Validate status parameter
+  if (status && !["active", "history"].includes(status)) {
+    return res
+      .status(400)
+      .json({ message: "status must be 'active' or 'history'" });
+  }
+
   try {
-    const recurringClasses =
-      await getRegularClassesBySubscriptionId(subscriptionId);
+    const recurringClasses = await getRegularClassesBySubscriptionId(
+      subscriptionId,
+      status as "active" | "history" | undefined,
+    );
 
     res.json({ recurringClasses });
   } catch (error) {
@@ -112,42 +199,29 @@ export const updateRegularClassController = async (
     startTime,
     customerId,
     childrenIds,
-    subscriptionId,
     startDate,
     timezone = "Asia/Tokyo",
   } = req.body;
 
-  if (
-    !instructorId ||
-    weekday === undefined ||
-    !startTime ||
-    !customerId ||
-    !childrenIds ||
-    !subscriptionId ||
-    !startDate
-  ) {
-    return res.status(400).json({ message: "Missing required parameters" });
-  }
+  const updateParams = {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    startDate,
+    timezone,
+  };
 
-  if (weekday < 0 || weekday > 6) {
-    return res.status(400).json({ message: "Invalid weekday. Must be 0-6" });
-  }
-
-  if (!/^\d{2}:\d{2}$/.test(startTime)) {
-    return res.status(400).json({ message: "Invalid time format. Use HH:mm" });
+  const validationError = validateUpdateRegularClassParams(updateParams);
+  if (validationError) {
+    return res.status(400).json({ message: validationError });
   }
 
   try {
     const result = await updateRegularClass({
       recurringClassId: req.id,
-      instructorId,
-      weekday,
-      startTime,
-      customerId,
-      childrenIds,
-      subscriptionId,
-      startDate,
-      timezone,
+      ...updateParams,
     });
 
     res.status(200).json({
@@ -156,23 +230,26 @@ export const updateRegularClassController = async (
       newRecurringClass: result.newRecurringClass,
     });
   } catch (error) {
+    return handleRegularClassError(error, res);
+  }
+};
+
+export const getRegularClassByIdController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  try {
+    const recurringClass = await getRegularClassById(req.id);
+    res.status(200).json(recurringClass);
+  } catch (error) {
     const err =
       error instanceof Error ? error : new Error("An unknown error occurred");
 
-    // Handle specific business logic errors
-    if (err.message === "Regular class not found") {
+    if (err.message === "Recurring class not found") {
       return res.status(404).json({ message: err.message });
     }
 
-    if (
-      err.message ===
-        "Instructor is not available at the requested time slot" ||
-      err.message === "Only Asia/Tokyo timezone is supported" ||
-      err.message === "Regular class already exists at this time slot"
-    ) {
-      return res.status(400).json({ message: err.message });
-    }
-
+    console.error("Error getting recurring class by ID:", err);
     res.status(500).json({ error: err.message });
   }
 };

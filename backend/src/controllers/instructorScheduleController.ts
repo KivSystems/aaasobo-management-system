@@ -5,6 +5,7 @@ import {
   createInstructorSchedule,
   getInstructorAvailableSlots,
   getAllAvailableSlots,
+  getActiveInstructorSchedule,
 } from "../services/instructorScheduleService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import { Request } from "express";
@@ -255,6 +256,42 @@ export const getAllAvailableSlotsController = async (
     console.error("Error fetching available slots:", error);
     res.status(500).json({
       message: "Failed to fetch available slots",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const getActiveInstructorScheduleController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  try {
+    const effectiveDate = req.query.effectiveDate;
+    if (!effectiveDate || typeof effectiveDate !== "string") {
+      return res.status(400).json({
+        message: "effectiveDate must be a string in YYYY-MM-DD format",
+      });
+    }
+
+    const activeSchedule = await getActiveInstructorSchedule(
+      req.id,
+      effectiveDate,
+    );
+
+    if (!activeSchedule) {
+      return res.status(404).json({
+        message: "No active schedule found for this instructor",
+      });
+    }
+
+    res.status(200).json({
+      message: "Active schedule retrieved successfully",
+      data: activeSchedule,
+    });
+  } catch (error) {
+    console.error("Error fetching active instructor schedule:", error);
+    res.status(500).json({
+      message: "Failed to fetch active instructor schedule",
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }

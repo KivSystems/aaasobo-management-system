@@ -27,7 +27,6 @@ export const getScheduleWithSlots = async (scheduleId: number) => {
       return null;
     }
 
-    // Transform startTime from DateTime to time string
     return {
       ...schedule,
       slots: schedule.slots.map((slot) => ({
@@ -38,6 +37,39 @@ export const getScheduleWithSlots = async (scheduleId: number) => {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch schedule with slots.");
+  }
+};
+
+export const getActiveInstructorSchedule = async (
+  instructorId: number,
+  effectiveDate: string,
+) => {
+  try {
+    const activeSchedule = await prisma.instructorSchedule.findFirst({
+      where: {
+        instructorId,
+        effectiveFrom: { lte: new Date(effectiveDate) },
+        effectiveTo: null,
+      },
+      include: {
+        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+      },
+    });
+
+    if (!activeSchedule) {
+      return null;
+    }
+
+    return {
+      ...activeSchedule,
+      slots: activeSchedule.slots.map((slot) => ({
+        ...slot,
+        startTime: extractTime(slot.startTime),
+      })),
+    };
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch active instructor schedule.");
   }
 };
 
@@ -97,7 +129,6 @@ export const createInstructorSchedule = async (data: {
         throw new Error("Failed to retrieve created schedule");
       }
 
-      // Transform startTime from DateTime to time string
       return {
         ...createdSchedule,
         slots: createdSchedule.slots.map((slot) => ({

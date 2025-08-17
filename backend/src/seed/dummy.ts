@@ -1218,6 +1218,12 @@ async function insertSubscriptions() {
         endAt: null,
       },
       {
+        customerId: alice.id,
+        planId: plan2.id,
+        startAt: new Date("2025-01-01"),
+        endAt: null,
+      },
+      {
         customerId: bob.id,
         planId: plan2.id,
         startAt: new Date("2024-06-01"),
@@ -1244,29 +1250,48 @@ async function insertRecurringClasses() {
     data: {
       subscriptionId: alice.subscription[0].id,
       instructorId: helen.id,
-      startAt: "2025-02-03T07:00:00Z",
+      startAt: "2025-02-03T07:30:00Z", // Monday 16:30 JST
       recurringClassAttendance: {
         create: [
           {
             childrenId: alice.children[0].id,
           },
-          // {
-          //   childrenId: alice.children[1].id,
-          // },
+          {
+            childrenId: alice.children[1].id,
+          },
         ],
       },
     },
   });
 
+  // Additional recurring classes for Alice for comprehensive testing
+  // Historical class with Elian (ended) - customer changed time but kept same instructor
   await prisma.recurringClass.create({
     data: {
       subscriptionId: alice.subscription[0].id,
-      instructorId: helen.id,
-      startAt: "2025-02-04T07:00:00Z",
+      instructorId: elian.id,
+      startAt: "2024-12-02T07:00:00Z", // Monday 16:00 JST
+      endAt: "2025-02-03T07:00:00Z", // Ends exactly when new class begins
       recurringClassAttendance: {
         create: [
           {
-            childrenId: alice.children[0].id,
+            childrenId: alice.children[0].id, // Peppa (same as new class)
+          },
+        ],
+      },
+    },
+  });
+
+  // New active class with Elian (continuation after time change)
+  await prisma.recurringClass.create({
+    data: {
+      subscriptionId: alice.subscription[0].id,
+      instructorId: elian.id,
+      startAt: "2025-02-03T07:00:00Z", // Monday 16:00 JST
+      recurringClassAttendance: {
+        create: [
+          {
+            childrenId: alice.children[0].id, // Peppa (same child as historical)
           },
         ],
       },
