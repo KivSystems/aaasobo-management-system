@@ -43,6 +43,13 @@ adminsRouter.delete(
 );
 adminsRouter.post(
   "/instructor-list/register",
+  verifyAuthentication,
+  upload.none(),
+  registerInstructorController,
+);
+adminsRouter.post(
+  "/instructor-list/register/withIcon",
+  verifyAuthentication,
   upload.single("icon"),
   registerInstructorController,
 );

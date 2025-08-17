@@ -279,7 +279,6 @@ export const registerInstructorController = async (
     !email ||
     !password ||
     !nickname ||
-    !icon ||
     !classURL ||
     !meetingId ||
     !passcode ||
@@ -290,6 +289,8 @@ export const registerInstructorController = async (
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
+  // Normalize birthdate
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
 
   // Set unique checks list
   const uniqueChecks = [
@@ -341,7 +342,7 @@ export const registerInstructorController = async (
       email: normalizedEmail,
       password,
       icon,
-      birthdate,
+      birthdate: normalizedBirthdate,
       lifeHistory,
       favoriteFood,
       hobby,

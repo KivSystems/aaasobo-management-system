@@ -9,7 +9,7 @@ export const registerInstructor = async (data: {
   nickname: string;
   email: string;
   password: string;
-  icon: Express.Multer.File;
+  icon: Express.Multer.File | undefined;
   birthdate: Date;
   lifeHistory: string;
   favoriteFood: string;
@@ -23,11 +23,18 @@ export const registerInstructor = async (data: {
   introductionURL: string;
 }) => {
   const hashedPassword = await hashPassword(data.password);
+  const icon = data.icon;
 
-  const blob = await put(data.icon.originalname, data.icon.buffer, {
-    access: "public",
-    addRandomSuffix: true,
-  });
+  // Check if a new icon is provided.
+  let blob;
+  if (icon) {
+    blob = await put(icon.originalname, icon.buffer, {
+      access: "public",
+      addRandomSuffix: true,
+    });
+  } else {
+    blob = { url: `${defaultUserImageUrl}?t=${Date.now()}` };
+  }
 
   await prisma.instructor.create({
     data: {

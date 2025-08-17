@@ -105,12 +105,20 @@ export const getInstructorIdByClassId = async (
 // Register instructor data
 export const registerInstructor = async (
   userData: FormData,
+  cookie: string,
 ): Promise<RegisterFormState> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
-    const response = await fetch(registerURL, {
+    // Handle api based on whether an icon is included
+    let apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
+    if (userData.has("icon")) {
+      apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/register/withIcon`;
+    }
+    const response = await fetch(apiUrl, {
       method: "POST",
       body: userData,
+      headers: {
+        Cookie: cookie,
+      },
     });
 
     if (response.status === 409) {
