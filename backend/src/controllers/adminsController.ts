@@ -9,13 +9,13 @@ import {
 import {
   getAllInstructors,
   registerInstructor,
+  updateInstructor,
   getInstructorByEmail,
   getInstructorByNickname,
   getInstructorByClassURL,
   getInstructorByMeetingId,
   getInstructorByPasscode,
   getInstructorByIntroductionURL,
-  updateInstructor,
 } from "../services/instructorsService";
 import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";

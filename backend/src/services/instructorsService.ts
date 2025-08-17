@@ -1,7 +1,7 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
-import { hashPassword } from "../helper/commonUtils";
-import { put, del } from "@vercel/blob";
+import { hashPassword, defaultUserImageUrl } from "../helper/commonUtils";
+import { put, del, head } from "@vercel/blob";
 
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {
@@ -130,7 +130,13 @@ export const updateInstructor = async (
     } else {
       // Set the previous icon URL.
       const prevIconUrl = prevData.icon;
-      blob = { url: prevIconUrl };
+      // Check if the previous icon URL is valid.
+      try {
+        blob = await head(prevIconUrl);
+      } catch (error) {
+        console.warn("Failed to fetch previous icon URL:", error);
+        blob = { url: defaultUserImageUrl };
+      }
     }
 
     // Update the instructor data.

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import { pickProperties } from "../helper/commonUtils";
+import { pickProperties, defaultUserImageUrl } from "../helper/commonUtils";
 import {
   Day,
   days,
@@ -165,8 +165,8 @@ export const getInstructor = async (req: Request, res: Response) => {
       }
     } catch (error) {
       console.warn("Failed to fetch blob for instructor icon:", error);
-      // Set a default empty URL
-      blob = { url: "default-user-icon" };
+      // Set a default URL
+      blob = { url: defaultUserImageUrl };
     }
 
     return res.status(200).json({

@@ -57,7 +57,6 @@ function InstructorProfile({
   );
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const defaultUrl = defaultUserImageUrl;
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -101,7 +100,7 @@ function InstructorProfile({
           };
         } else {
           newInstructor.icon = {
-            url: defaultUrl,
+            url: defaultUserImageUrl,
           };
         }
         setPreviousInstructor(newInstructor);
@@ -124,8 +123,8 @@ function InstructorProfile({
           <form action={formAction} className={styles.profileCard}>
             <Image
               src={
-                latestInstructor.icon.url === "default-user-icon"
-                  ? defaultUrl
+                latestInstructor.icon.url === defaultUserImageUrl
+                  ? defaultUserImageUrl
                   : latestInstructor.icon.url
               }
               alt={latestInstructor.name}

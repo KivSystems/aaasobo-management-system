@@ -35,3 +35,6 @@ export const hashPassword = async (password: string): Promise<string> => {
 export const hashPasswordSync = (password: string): string => {
   return bcrypt.hashSync(password, saltRounds);
 };
+
+// Default user image URL
+export const defaultUserImageUrl = "/images/default-user-icon.jpg";
