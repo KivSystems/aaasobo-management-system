@@ -18,7 +18,7 @@ import ActionButton from "@/app/components/elements/buttons/actionButton/ActionB
 
 type ListTableProps = {
   listType: string;
-  fetchedData: Instructor[];
+  fetchedData: any[];
   omitItems: string[];
   linkItems: string[];
   linkUrls: string[];

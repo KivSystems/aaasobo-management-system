@@ -91,6 +91,7 @@ export async function getInstructorById(id: number) {
 
 export const updateInstructor = async (
   id: number,
+  icon: Express.Multer.File | undefined,
   name: string,
   nickname: string,
   birthdate: Date,
@@ -107,69 +108,30 @@ export const updateInstructor = async (
   introductionURL: string,
 ) => {
   try {
-    // Update the instructor data.
-    const instructor = await prisma.instructor.update({
-      where: {
-        id,
-      },
-      data: {
-        name,
-        email,
-        nickname,
-        birthdate,
-        workingTime,
-        lifeHistory,
-        favoriteFood,
-        hobby,
-        messageForChildren,
-        skill,
-        classURL,
-        meetingId,
-        passcode,
-        introductionURL,
-      },
-    });
-    return instructor;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to update the instructor data.");
-  }
-};
-
-export const updateInstructorWithIcon = async (
-  id: number,
-  icon: Express.Multer.File,
-  name: string,
-  nickname: string,
-  birthdate: Date,
-  workingTime: string,
-  lifeHistory: string,
-  favoriteFood: string,
-  hobby: string,
-  messageForChildren: string,
-  skill: string,
-  email: string,
-  classURL: string,
-  meetingId: string,
-  passcode: string,
-  introductionURL: string,
-) => {
-  try {
+    // Fetch the previous instructor data.
     const prevData = await prisma.instructor.findFirst({
       where: {
         id,
       },
     });
 
+    // If no previous data is found, return early.
     if (!prevData) return;
 
-    // Update the instructor profile icon.
-    await del(prevData?.icon);
-
-    const blob = await put(icon.originalname, icon.buffer, {
-      access: "public",
-      addRandomSuffix: true,
-    });
+    // Check if a new icon is provided.
+    let blob;
+    if (icon) {
+      // Update the instructor profile icon.
+      await del(prevData?.icon);
+      blob = await put(icon.originalname, icon.buffer, {
+        access: "public",
+        addRandomSuffix: true,
+      });
+    } else {
+      // Set the previous icon URL.
+      const prevIconUrl = prevData.icon;
+      blob = { url: prevIconUrl };
+    }
 
     // Update the instructor data.
     const instructor = await prisma.instructor.update({

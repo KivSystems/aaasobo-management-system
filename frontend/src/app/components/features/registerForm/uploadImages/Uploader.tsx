@@ -84,7 +84,7 @@ function Uploader({ onFileSelect, clearFileInputRef, label }: UploaderProps) {
             />
           </label>
         </div>
-        <p>Supports: JPG, PNG</p>
+        <p>Supports: JPG and PNG formats (up to 5MB)</p>
       </div>
 
       {file && (

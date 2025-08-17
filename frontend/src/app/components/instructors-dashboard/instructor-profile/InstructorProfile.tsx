@@ -112,14 +112,19 @@ function InstructorProfile({
         {latestInstructor ? (
           <form action={formAction} className={styles.profileCard}>
             <Image
-              src={`${latestInstructor.icon.url}?t=${Date.now()}`}
+              src={
+                latestInstructor.icon.url === "default-user-icon"
+                  ? "/images/default-user-icon.jpg"
+                  : `${latestInstructor.icon.url}?t=${Date.now()}`
+              }
               alt={latestInstructor.name}
               width={100}
               height={100}
               unoptimized
               className={styles.pic}
             />
-            {isEditing ? (
+
+            {isEditing && (
               <>
                 <input
                   type="file"
@@ -142,8 +147,6 @@ function InstructorProfile({
                   }}
                 />
               </>
-            ) : (
-              <></>
             )}
 
             {/* Name*/}

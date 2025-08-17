@@ -14,7 +14,6 @@ import {
   getCalendarClassesController,
   getInstructorProfilesController,
   getSameDateClassesController,
-  updateInstructorProfileWithIcon,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -52,11 +51,17 @@ instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
 );
-instructorsRouter.patch("/:id", updateInstructorProfile);
+instructorsRouter.patch(
+  "/:id",
+  verifyAuthentication,
+  upload.none(),
+  updateInstructorProfile,
+);
 instructorsRouter.patch(
   "/:id/withIcon",
+  verifyAuthentication,
   upload.single("icon"),
-  updateInstructorProfileWithIcon,
+  updateInstructorProfile,
 );
 instructorsRouter.get("/:id/recurringAvailability", parseId, (req, res) =>
   RecurringAvailability.get(req as RequestWithId, res),
