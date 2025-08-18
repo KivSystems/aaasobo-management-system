@@ -166,9 +166,14 @@ type RecurringClass = {
   instructorId: number;
   instructor: Instructor;
   childrenIds: Set<number>;
-  subscription: Subscriptions;
+  subscription: Subscription | null;
   recurringClassAttendance: Attendance[];
   endAt: Date;
+  classes?: Array<{
+    dateTime: string | null;
+  }>;
+  startAt?: string | null;
+  subscriptionId?: number | null;
 };
 
 type Attendance = {
