@@ -164,7 +164,10 @@ export const getInstructor = async (req: Request, res: Response) => {
         blob = await head(instructor.icon);
       }
     } catch (error) {
-      console.warn("Failed to fetch blob for instructor icon:", error);
+      console.warn(
+        "[Warning]: Failed to fetch blob for instructor icon:",
+        error,
+      );
       // Set a default URL
       blob = { url: defaultUserImageUrl };
     }
