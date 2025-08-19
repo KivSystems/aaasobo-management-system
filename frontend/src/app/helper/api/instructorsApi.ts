@@ -376,14 +376,15 @@ export const getInstructorProfiles = async (): Promise<
   }
 };
 
-// GET all instructors profiles
-export const getAllInstructorProfiles = async () => {
+// GET all instructors profiles for customer dashboard
+export const getAllInstructorProfiles = async (cookie: string) => {
   try {
     const apiUrl = `${BASE_URL}/all-profiles`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["instructor-list"] },
-      cache: "no-store",
+      next: { tags: ["instructor-list"] },
+      headers: {
+        Cookie: cookie,
+      },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

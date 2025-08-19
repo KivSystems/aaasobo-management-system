@@ -617,7 +617,7 @@ export const getInstructorProfilesController = async (
         time: new Date().toISOString(),
       },
     });
-    res.sendStatus(500);
+    return setErrorResponse(res, error);
   }
 };
 

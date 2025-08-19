@@ -33,7 +33,7 @@ export async function getUserSessionType(userType: UserType, id: string) {
 
 export async function authenticateUserSession(userType: UserType, id: string) {
   const userSessionType = await getUserSessionType(userType, id);
-  if (!userSessionType && userSessionType !== userType) {
+  if (!userSessionType || userSessionType !== userType) {
     switch (userType) {
       case "customer":
         throw new Error(INVALID_CUSTOMER_ID);
