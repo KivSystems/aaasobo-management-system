@@ -30,13 +30,16 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
 import Uploader from "../../features/registerForm/uploadImages/Uploader";
+import { defaultUserImageUrl } from "@/app/helper/data/data";
 import Image from "next/image";
 
 function InstructorProfile({
   instructor,
+  token,
   isAdminAuthenticated,
 }: {
   instructor: Instructor | string;
+  token?: string;
   isAdminAuthenticated?: boolean;
 }) {
   const [updateResultState, formAction] = useFormState(
@@ -87,14 +90,22 @@ function InstructorProfile({
         setIsEditing(false);
 
         const newInstructor = result.instructor;
-        if (typeof newInstructor.icon === "string") {
+        if (
+          typeof newInstructor.icon === "string" &&
+          token &&
+          token !== "" &&
+          (newInstructor.icon as string).includes(token)
+        ) {
           newInstructor.icon = {
             url: `${newInstructor.icon}?t=${Date.now()}`,
           };
+        } else {
+          newInstructor.icon = {
+            url: defaultUserImageUrl,
+          };
         }
-
-        setPreviousInstructor(result.instructor);
-        setLatestInstructor(result.instructor);
+        setPreviousInstructor(newInstructor);
+        setLatestInstructor(newInstructor);
       } else {
         const result = updateResultState as { errorMessage: string };
         toast.error(result.errorMessage);
@@ -112,14 +123,19 @@ function InstructorProfile({
         {latestInstructor ? (
           <form action={formAction} className={styles.profileCard}>
             <Image
-              src={`${latestInstructor.icon.url}?t=${Date.now()}`}
+              src={
+                latestInstructor.icon.url === defaultUserImageUrl
+                  ? defaultUserImageUrl
+                  : latestInstructor.icon.url
+              }
               alt={latestInstructor.name}
               width={100}
               height={100}
               unoptimized
               className={styles.pic}
             />
-            {isEditing ? (
+
+            {isEditing && (
               <>
                 <input
                   type="file"
@@ -142,8 +158,6 @@ function InstructorProfile({
                   }}
                 />
               </>
-            ) : (
-              <></>
             )}
 
             {/* Name*/}

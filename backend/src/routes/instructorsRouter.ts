@@ -10,11 +10,9 @@ import {
   getAllInstructorsController,
   getRecurringAvailabilityById,
   getInstructorProfileController,
-  updateInstructorProfile,
   getCalendarClassesController,
   getInstructorProfilesController,
   getSameDateClassesController,
-  updateInstructorProfileWithIcon,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
@@ -39,7 +37,6 @@ import {
   addInstructorAbsenceController,
   removeInstructorAbsenceController,
 } from "../../src/controllers/instructorAbsenceController";
-import upload from "../middlewares/upload.middleware";
 
 export const instructorsRouter = express.Router();
 
@@ -52,12 +49,6 @@ instructorsRouter.get("/profiles", getInstructorProfilesController);
 instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
-);
-instructorsRouter.patch("/:id", updateInstructorProfile);
-instructorsRouter.patch(
-  "/:id/withIcon",
-  upload.single("icon"),
-  updateInstructorProfileWithIcon,
 );
 instructorsRouter.get("/:id/recurringAvailability", parseId, (req, res) =>
   RecurringAvailability.get(req as RequestWithId, res),

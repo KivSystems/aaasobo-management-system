@@ -18,6 +18,12 @@ export default async function InstructorDashboardForAdmin({
   } else {
     instructor = data.instructor;
   }
+  const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN;
+  const extractTokenLetters = (token: string) => {
+    const parts = token.split("_");
+    return parts[3] ? parts[3].toLowerCase() : "";
+  };
+  const tokenSpecificLetters = extractTokenLetters(blobReadWriteToken || "");
 
   // TODO: Add fetching functions for the following purposes:
   // InstructorCalendar, AvailabilityCalendar, and InstructorSchedule
@@ -27,6 +33,7 @@ export default async function InstructorDashboardForAdmin({
       adminId={adminId}
       instructorId={instructorId}
       instructor={instructor}
+      token={tokenSpecificLetters}
       classScheduleComponent={
         <InstructorCalendar
           adminId={adminId}

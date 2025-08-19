@@ -9,6 +9,7 @@ import {
 import {
   getAllInstructors,
   registerInstructor,
+  updateInstructor,
   getInstructorByEmail,
   getInstructorByNickname,
   getInstructorByClassURL,
@@ -26,6 +27,7 @@ import {
   updateEvent,
   deleteEvent,
 } from "../services/eventsService";
+import { convertToISOString } from "../helper/dateUtils";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -277,7 +279,6 @@ export const registerInstructorController = async (
     !email ||
     !password ||
     !nickname ||
-    !icon ||
     !classURL ||
     !meetingId ||
     !passcode ||
@@ -288,6 +289,8 @@ export const registerInstructorController = async (
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
+  // Normalize birthdate
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
 
   // Set unique checks list
   const uniqueChecks = [
@@ -306,8 +309,8 @@ export const registerInstructorController = async (
     );
 
     const [
-      emailExists,
       nicknameExists,
+      emailExists,
       classURLExists,
       meetingIdExists,
       passcodeExists,
@@ -339,7 +342,7 @@ export const registerInstructorController = async (
       email: normalizedEmail,
       password,
       icon,
-      birthdate,
+      birthdate: normalizedBirthdate,
       lifeHistory,
       favoriteFood,
       hobby,
@@ -356,6 +359,110 @@ export const registerInstructorController = async (
   } catch (error) {
     console.error("Error registering instructor", { error });
     res.sendStatus(500);
+  }
+};
+
+// Update the applicable instructor data
+export const updateInstructorProfileController = async (
+  req: Request,
+  res: Response,
+) => {
+  const id = parseInt(req.params.id);
+  const icon = req.file;
+  const {
+    name,
+    email,
+    nickname,
+    birthdate,
+    workingTime,
+    lifeHistory,
+    favoriteFood,
+    hobby,
+    messageForChildren,
+    skill,
+    classURL,
+    meetingId,
+    passcode,
+    introductionURL,
+  } = req.body;
+
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+  // Normalize birthdate
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
+
+  // Set unique checks list
+  const uniqueChecks = [
+    { fn: getInstructorByNickname, value: nickname },
+    { fn: getInstructorByEmail, value: normalizedEmail },
+    { fn: getInstructorByClassURL, value: classURL },
+    { fn: getInstructorByMeetingId, value: meetingId },
+    { fn: getInstructorByPasscode, value: passcode },
+    { fn: getInstructorByIntroductionURL, value: introductionURL },
+  ];
+  let errorItems: { [key: string]: string } = {};
+
+  try {
+    const results = await Promise.all(
+      uniqueChecks.map(({ fn, value }) => fn(value)),
+    );
+
+    const [
+      nicknameExists,
+      emailExists,
+      classURLExists,
+      meetingIdExists,
+      passcodeExists,
+      introductionURLExists,
+    ] = results;
+
+    if (nicknameExists && nicknameExists.id !== id) {
+      errorItems.nickname = "The nickname is already in use.";
+    }
+    if (emailExists && emailExists.id !== id) {
+      errorItems.email = "The email is already in use.";
+    }
+    if (classURLExists && classURLExists.id !== id) {
+      errorItems.classURL = "The class URL is already in use.";
+    }
+    if (meetingIdExists && meetingIdExists.id !== id) {
+      errorItems.meetingId = "The meeting ID is already in use.";
+    }
+    if (passcodeExists && passcodeExists.id !== id) {
+      errorItems.passcode = "The passcode is already in use.";
+    }
+    if (introductionURLExists && introductionURLExists.id !== id) {
+      errorItems.introductionURL = "The introduction URL is already in use.";
+    }
+    if (Object.keys(errorItems).length > 0) {
+      return res.status(400).json(errorItems);
+    }
+
+    const instructor = await updateInstructor(
+      id,
+      icon,
+      name,
+      nickname,
+      normalizedBirthdate,
+      workingTime,
+      lifeHistory,
+      favoriteFood,
+      hobby,
+      messageForChildren,
+      skill,
+      email,
+      classURL,
+      meetingId,
+      passcode,
+      introductionURL,
+    );
+
+    res.status(200).json({
+      message: "Instructor is updated successfully",
+      instructor,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
   }
 };
 

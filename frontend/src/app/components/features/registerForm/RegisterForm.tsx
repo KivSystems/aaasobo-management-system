@@ -13,6 +13,13 @@ import {
   LinkIcon,
   AcademicCapIcon,
   CalendarIcon,
+  CakeIcon,
+  CalendarDaysIcon,
+  NewspaperIcon,
+  PencilSquareIcon,
+  LightBulbIcon,
+  FaceSmileIcon,
+  HandThumbUpIcon,
 } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import TextInput from "../../elements/textInput/TextInput";
@@ -22,6 +29,7 @@ import { registerUser } from "@/app/actions/registerUser";
 import { registerContent } from "@/app/actions/registerContent";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
+import { defaultColor } from "@/app/helper/data/data";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 import Uploader from "./uploadImages/Uploader";
 
@@ -44,18 +52,14 @@ const RegisterForm = ({
 
   const [password, onPasswordChange] = useInput();
   const [showPassword, setShowPassword] = useState(false);
-  const [colorValue, setColorValue] = useState("#000000"); // Default color value
+  const [colorValue, setColorValue] = useState(defaultColor);
   const { localMessages, clearErrorMessage } =
     useFormMessages(registerResultState);
   const { passwordStrength } = usePasswordStrength(password);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <form
-      action={formAction}
-      className={styles.form}
-      encType="multipart/form-data"
-    >
+    <form action={formAction} className={styles.form}>
       {/* Hidden fields to include in form submission */}
       <input type="hidden" name="userType" value={userType ?? ""} />
       <input type="hidden" name="categoryType" value={categoryType ?? ""} />
@@ -69,6 +73,8 @@ const RegisterForm = ({
         userType === "instructor") && (
         <>
           <p className={styles.required}>*Required</p>
+
+          {/* Name */}
           <TextInput
             id="name"
             label="Name"
@@ -82,19 +88,35 @@ const RegisterForm = ({
           />
 
           {userType === "instructor" && (
-            <TextInput
-              id="nickname"
-              label="Nickname"
-              type="text"
-              name="nickname"
-              placeholder="e.g., John"
-              icon={<UserCircleIcon className={styles.icon} />}
-              inputRequired
-              error={localMessages.name}
-              onChange={() => clearErrorMessage("nickname")}
-            />
+            <>
+              {/* Nickname */}
+              <TextInput
+                id="nickname"
+                label="Nickname"
+                type="text"
+                name="nickname"
+                placeholder="e.g., John"
+                icon={<UserCircleIcon className={styles.icon} />}
+                inputRequired
+                error={localMessages.name}
+                onChange={() => clearErrorMessage("nickname")}
+              />
+
+              {/* Birthday */}
+              <TextInput
+                id="birthdate"
+                label="Birthday"
+                type="date"
+                name="birthdate"
+                placeholder="e.g., 2000-01-01"
+                icon={<CakeIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("birthdate")}
+              />
+            </>
           )}
 
+          {/* Email */}
           <TextInput
             id="email"
             label="Email"
@@ -106,6 +128,8 @@ const RegisterForm = ({
             error={localMessages.email}
             onChange={() => clearErrorMessage("email")}
           />
+
+          {/* Password */}
           <TextInput
             id="password"
             label="Password"
@@ -124,10 +148,14 @@ const RegisterForm = ({
             showPassword={showPassword}
             onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
           />
+
+          {/* Password strength meter */}
           <PasswordStrengthMeter
             password={password}
             passwordStrength={passwordStrength}
           />
+
+          {/* Password Confirmation */}
           <TextInput
             id="passConfirmation"
             label="Password Confirmation"
@@ -144,6 +172,149 @@ const RegisterForm = ({
 
           {userType === "instructor" && (
             <>
+              {/* Class URL */}
+              <TextInput
+                id="classURL"
+                label="Class URL"
+                type="text"
+                name="classURL"
+                placeholder="e.g., https://zoom.us/j/..."
+                icon={<LinkIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("classURL")}
+              />
+
+              {/* Meeting ID */}
+              <TextInput
+                id="meetingId"
+                label="Meeting ID"
+                type="text"
+                name="meetingId"
+                placeholder="e.g., 123 456 7890"
+                icon={<IdentificationIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("meetingId")}
+              />
+
+              {/* Pass Code */}
+              <TextInput
+                id="passcode"
+                label="Pass Code"
+                type="text"
+                name="passcode"
+                placeholder="e.g., 123456"
+                icon={<KeyIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("passcode")}
+              />
+
+              {/* Introduction URL */}
+              <TextInput
+                id="introductionURL"
+                label="Introduction URL"
+                type="text"
+                name="introductionURL"
+                placeholder="e.g., https://..."
+                icon={<DocumentTextIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("introductionURL")}
+              />
+
+              {/* Available Class */}
+              <label className={styles.label}>Available Class</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <CalendarDaysIcon
+                    className={styles.textareaContainer__icon}
+                  />
+                </div>
+                <textarea
+                  id="workingTime"
+                  name="workingTime"
+                  placeholder="e.g., 9 AM - 5 PM (Philippines) on weekdays"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Life History */}
+              <label className={styles.label}>Life History</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <NewspaperIcon className={styles.textareaContainer__icon} />
+                </div>
+                <textarea
+                  id="lifeHistory"
+                  name="lifeHistory"
+                  placeholder="e.g., I am a dedicated instructor with a passion for teaching."
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Favorite Food */}
+              <label className={styles.label}>Favorite Food</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <FaceSmileIcon className={styles.textareaContainer__icon} />
+                </div>
+                <textarea
+                  id="favoriteFood"
+                  name="favoriteFood"
+                  placeholder="e.g., Sushi"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Hobby */}
+              <label className={styles.label}>Hobby</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <LightBulbIcon className={styles.textareaContainer__icon} />
+                </div>
+                <textarea
+                  id="hobby"
+                  name="hobby"
+                  placeholder="e.g., Reading"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Message For Children */}
+              <label className={styles.label}>Message For Children</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <PencilSquareIcon
+                    className={styles.textareaContainer__icon}
+                  />
+                </div>
+                <textarea
+                  id="messageForChildren"
+                  name="messageForChildren"
+                  placeholder="e.g., Always do your best!"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Skill */}
+              <label className={styles.label}>Skill</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <HandThumbUpIcon className={styles.textareaContainer__icon} />
+                </div>
+                <textarea
+                  id="skill"
+                  name="skill"
+                  placeholder="e.g., Japanese Language"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Image File */}
               <input
                 type="file"
                 name="icon"
@@ -164,46 +335,6 @@ const RegisterForm = ({
                   }
                 }}
                 label={"Instructor profile image"}
-              />
-              <TextInput
-                id="classURL"
-                label="Class URL"
-                type="text"
-                name="classURL"
-                placeholder="e.g., https://zoom.us/j/..."
-                icon={<LinkIcon className={styles.icon} />}
-                inputRequired
-                onChange={() => clearErrorMessage("classURL")}
-              />
-              <TextInput
-                id="meetingId"
-                label="Meeting ID"
-                type="text"
-                name="meetingId"
-                placeholder="e.g., 123 456 7890"
-                icon={<IdentificationIcon className={styles.icon} />}
-                inputRequired
-                onChange={() => clearErrorMessage("meetingId")}
-              />
-              <TextInput
-                id="passcode"
-                label="Pass Code"
-                type="text"
-                name="passcode"
-                placeholder="e.g., 123456"
-                icon={<KeyIcon className={styles.icon} />}
-                inputRequired
-                onChange={() => clearErrorMessage("passcode")}
-              />
-              <TextInput
-                id="introductionURL"
-                label="Introduction URL"
-                type="text"
-                name="introductionURL"
-                placeholder="e.g., https://..."
-                icon={<DocumentTextIcon className={styles.icon} />}
-                inputRequired
-                onChange={() => clearErrorMessage("introductionURL")}
               />
             </>
           )}

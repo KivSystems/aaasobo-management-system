@@ -1,7 +1,7 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
-import { hashPassword } from "../helper/commonUtils";
-import { put, del } from "@vercel/blob";
+import { hashPassword, defaultUserImageUrl } from "../helper/commonUtils";
+import { put, del, head } from "@vercel/blob";
 
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {
@@ -9,7 +9,7 @@ export const registerInstructor = async (data: {
   nickname: string;
   email: string;
   password: string;
-  icon: Express.Multer.File;
+  icon: Express.Multer.File | undefined;
   birthdate: Date;
   lifeHistory: string;
   favoriteFood: string;
@@ -23,11 +23,18 @@ export const registerInstructor = async (data: {
   introductionURL: string;
 }) => {
   const hashedPassword = await hashPassword(data.password);
+  const icon = data.icon;
 
-  const blob = await put(data.icon.originalname, data.icon.buffer, {
-    access: "public",
-    addRandomSuffix: true,
-  });
+  // Check if a new icon is provided.
+  let blob;
+  if (icon) {
+    blob = await put(icon.originalname, icon.buffer, {
+      access: "public",
+      addRandomSuffix: true,
+    });
+  } else {
+    blob = { url: `${defaultUserImageUrl}?t=${Date.now()}` };
+  }
 
   await prisma.instructor.create({
     data: {
@@ -91,6 +98,7 @@ export async function getInstructorById(id: number) {
 
 export const updateInstructor = async (
   id: number,
+  icon: Express.Multer.File | undefined,
   name: string,
   nickname: string,
   birthdate: Date,
@@ -107,69 +115,36 @@ export const updateInstructor = async (
   introductionURL: string,
 ) => {
   try {
-    // Update the instructor data.
-    const instructor = await prisma.instructor.update({
-      where: {
-        id,
-      },
-      data: {
-        name,
-        email,
-        nickname,
-        birthdate,
-        workingTime,
-        lifeHistory,
-        favoriteFood,
-        hobby,
-        messageForChildren,
-        skill,
-        classURL,
-        meetingId,
-        passcode,
-        introductionURL,
-      },
-    });
-    return instructor;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to update the instructor data.");
-  }
-};
-
-export const updateInstructorWithIcon = async (
-  id: number,
-  icon: Express.Multer.File,
-  name: string,
-  nickname: string,
-  birthdate: Date,
-  workingTime: string,
-  lifeHistory: string,
-  favoriteFood: string,
-  hobby: string,
-  messageForChildren: string,
-  skill: string,
-  email: string,
-  classURL: string,
-  meetingId: string,
-  passcode: string,
-  introductionURL: string,
-) => {
-  try {
+    // Fetch the previous instructor data.
     const prevData = await prisma.instructor.findFirst({
       where: {
         id,
       },
     });
 
+    // If no previous data is found, return early.
     if (!prevData) return;
 
-    // Update the instructor profile icon.
-    await del(prevData?.icon);
-
-    const blob = await put(icon.originalname, icon.buffer, {
-      access: "public",
-      addRandomSuffix: true,
-    });
+    // Check if a new icon is provided.
+    let blob;
+    if (icon) {
+      // Update the instructor profile icon.
+      await del(prevData.icon);
+      blob = await put(icon.originalname, icon.buffer, {
+        access: "public",
+        addRandomSuffix: true,
+      });
+    } else {
+      // Set the previous icon URL.
+      const prevIconUrl = prevData.icon;
+      // Check if the previous icon URL is valid.
+      try {
+        blob = await head(prevIconUrl);
+      } catch (error) {
+        console.warn("Failed to fetch previous icon URL:", error);
+        blob = { url: defaultUserImageUrl };
+      }
+    }
 
     // Update the instructor data.
     const instructor = await prisma.instructor.update({

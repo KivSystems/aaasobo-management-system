@@ -5,6 +5,7 @@ import {
   registerPlanController,
   registerEventController,
   updateAdminProfileController,
+  updateInstructorProfileController,
   updateEventProfileController,
   deleteAdminController,
   deleteEventController,
@@ -42,15 +43,33 @@ adminsRouter.delete(
 );
 adminsRouter.post(
   "/instructor-list/register",
+  verifyAuthentication,
+  upload.none(),
+  registerInstructorController,
+);
+adminsRouter.post(
+  "/instructor-list/register/withIcon",
+  verifyAuthentication,
   upload.single("icon"),
   registerInstructorController,
+);
+adminsRouter.patch(
+  "/instructor-list/update/:id",
+  verifyAuthentication,
+  upload.none(),
+  updateInstructorProfileController,
+);
+adminsRouter.patch(
+  "/instructor-list/update/:id/withIcon",
+  verifyAuthentication,
+  upload.single("icon"),
+  updateInstructorProfileController,
 );
 adminsRouter.post(
   "/plan-list/register",
   verifyAuthentication,
   registerPlanController,
 );
-
 adminsRouter.post(
   "/event-list/register",
   verifyAuthentication,

@@ -106,12 +106,20 @@ export const getInstructorIdByClassId = async (
 // Register instructor data
 export const registerInstructor = async (
   userData: FormData,
+  cookie: string,
 ): Promise<RegisterFormState> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
-    const response = await fetch(registerURL, {
+    // Handle api based on whether an icon is included
+    let apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
+    if (userData.has("icon")) {
+      apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/register/withIcon`;
+    }
+    const response = await fetch(apiUrl, {
       method: "POST",
       body: userData,
+      headers: {
+        Cookie: cookie,
+      },
     });
 
     if (response.status === 409) {
@@ -144,72 +152,27 @@ export const registerInstructor = async (
 // PATCH instructor data
 export const updateInstructor = async (
   id: number,
-  name: string,
-  nickname: string,
-  birthdate: string,
-  workingTime: string,
-  lifeHistory: string,
-  favoriteFood: string,
-  hobby: string,
-  messageForChildren: string,
-  skill: string,
-  email: string,
-  classURL: string,
-  meetingId: string,
-  passcode: string,
-  introductionURL: string,
+  userData: FormData,
+  cookie: string,
 ) => {
-  // Define the data to be sent to the server side.
-  const instructorURL = `${BACKEND_ORIGIN}/instructors/${id}`;
-  const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({
-    name,
-    nickname,
-    birthdate,
-    workingTime,
-    lifeHistory,
-    favoriteFood,
-    hobby,
-    messageForChildren,
-    skill,
-    email,
-    classURL,
-    meetingId,
-    passcode,
-    introductionURL,
-  });
+  // Handle api based on whether an icon is included
+  let apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}`;
+  if (userData.has("icon")) {
+    apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}/withIcon`;
+  }
 
-  const response = await fetch(instructorURL, {
+  // Define the data to be sent to the server side.
+  const response = await fetch(apiUrl, {
     method: "PATCH",
-    headers,
-    body,
+    body: userData,
+    headers: {
+      Cookie: cookie,
+    },
   });
 
   const data = await response.json();
 
   if (response.status === 500) {
-    return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
-  }
-
-  return data;
-};
-
-// PATCH instructor data with icon
-export const updateInstructorWithIcon = async (
-  instructorId: number,
-  userData: FormData,
-) => {
-  // Define the data to be sent to the server side.
-  const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/withIcon`;
-
-  const response = await fetch(instructorURL, {
-    method: "PATCH",
-    body: userData,
-  });
-
-  const data = await response.json();
-
-  if (response.status !== 200) {
     return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
   }
 

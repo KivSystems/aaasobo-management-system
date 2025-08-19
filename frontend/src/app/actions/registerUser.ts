@@ -6,6 +6,7 @@ import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractRegisterValidationErrors } from "../helper/utils/validationErrorUtils";
 import {
   instructorRegisterSchema,
+  instructorIconRegisterSchema,
   adminRegisterSchema,
 } from "../schemas/authSchema";
 import { revalidateInstructorList, revalidateAdminList } from "./revalidate";
@@ -22,6 +23,13 @@ export async function registerUser(
     const password = formData.get("password");
     const passConfirmation = formData.get("passConfirmation");
     const icon = formData.get("icon") as File;
+    const birthdate = String(formData.get("birthdate"));
+    const workingTime = String(formData.get("workingTime"));
+    const lifeHistory = String(formData.get("lifeHistory"));
+    const favoriteFood = String(formData.get("favoriteFood"));
+    const hobby = String(formData.get("hobby"));
+    const messageForChildren = String(formData.get("messageForChildren"));
+    const skill = String(formData.get("skill"));
     const classURL = formData.get("classURL");
     const meetingId = formData.get("meetingId");
     const passcode = formData.get("passcode");
@@ -36,11 +44,14 @@ export async function registerUser(
     const cookie = await getCookie();
 
     let parsedForm;
+    let parsedForm1;
+    let parsedForm2;
+    let validationErrors;
     let response;
 
     switch (userType) {
       case "instructor":
-        parsedForm = instructorRegisterSchema.safeParse({
+        parsedForm1 = instructorRegisterSchema.safeParse({
           name,
           nickname,
           email,
@@ -54,22 +65,42 @@ export async function registerUser(
           introductionURL,
           userType,
         });
-        if (!parsedForm.success) {
-          const validationErrors = parsedForm.error.errors;
+        if (!parsedForm1.success) {
+          const validationErrors = parsedForm1.error.errors;
           return extractRegisterValidationErrors(validationErrors);
         }
 
         const userData = new FormData();
-        userData.append("name", parsedForm.data.name);
-        userData.append("nickname", parsedForm.data.nickname);
-        userData.append("email", parsedForm.data.email);
-        userData.append("password", parsedForm.data.password);
-        userData.append("icon", parsedForm.data.icon);
-        userData.append("classURL", parsedForm.data.classURL);
-        userData.append("meetingId", parsedForm.data.meetingId);
-        userData.append("passcode", parsedForm.data.passcode);
-        userData.append("introductionURL", parsedForm.data.introductionURL);
-        response = await registerInstructor(userData);
+        userData.append("name", parsedForm1.data.name);
+        userData.append("nickname", parsedForm1.data.nickname);
+        userData.append("email", parsedForm1.data.email);
+        userData.append("password", parsedForm1.data.password);
+        userData.append("birthdate", birthdate);
+        userData.append("workingTime", workingTime);
+        userData.append("lifeHistory", lifeHistory);
+        userData.append("favoriteFood", favoriteFood);
+        userData.append("hobby", hobby);
+        userData.append("messageForChildren", messageForChildren);
+        userData.append("skill", skill);
+        userData.append("classURL", parsedForm1.data.classURL);
+        userData.append("meetingId", parsedForm1.data.meetingId);
+        userData.append("passcode", parsedForm1.data.passcode);
+        userData.append("introductionURL", parsedForm1.data.introductionURL);
+
+        // Append the icon file if it exists
+        if (icon.name && icon.size > 0) {
+          parsedForm2 = instructorIconRegisterSchema.safeParse({
+            icon,
+          });
+          if (!parsedForm2.success) {
+            validationErrors = parsedForm2.error.errors;
+            return extractRegisterValidationErrors(validationErrors);
+          }
+
+          userData.append("icon", parsedForm2.data.icon);
+        }
+
+        response = await registerInstructor(userData, cookie);
 
         // Refresh cached instructor data for the instructor list page
         revalidateInstructorList();
