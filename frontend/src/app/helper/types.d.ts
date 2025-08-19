@@ -33,7 +33,19 @@ type InstructorProfile = {
   id: number;
   name: string;
   nickname: string;
-  createdAt: string;
+  email: string;
+  icon: { url: string };
+  birthdate: string;
+  lifeHistory: string;
+  favoriteFood: string;
+  hobby: string;
+  messageForChildren: string;
+  workingTime: string;
+  skill: string;
+  classURL: string;
+  meetingId: string;
+  passcode: string;
+  introductionURL: string;
 };
 
 type InstructorRebookingProfile = {

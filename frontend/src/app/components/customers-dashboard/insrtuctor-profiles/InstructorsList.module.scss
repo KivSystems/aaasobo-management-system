@@ -1,0 +1,10 @@
+.instructors {
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 20px;
+    width: 100%;
+    overflow-x: auto;
+  }
+}

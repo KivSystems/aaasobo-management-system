@@ -38,7 +38,7 @@ function InstructorProfile({
   token,
   isAdminAuthenticated,
 }: {
-  instructor: Instructor | string;
+  instructor: Instructor | InstructorProfile | string;
   token?: string;
   isAdminAuthenticated?: boolean;
 }) {
@@ -48,13 +48,12 @@ function InstructorProfile({
   );
   const { localMessages, clearErrorMessage } =
     useFormMessages(updateResultState);
-  const [previousInstructor, setPreviousInstructor] =
-    useState<Instructor | null>(
-      typeof instructor !== "string" ? instructor : null,
-    );
-  const [latestInstructor, setLatestInstructor] = useState<Instructor | null>(
-    typeof instructor !== "string" ? instructor : null,
-  );
+  const [previousInstructor, setPreviousInstructor] = useState<
+    Instructor | InstructorProfile | null
+  >(typeof instructor !== "string" ? instructor : null);
+  const [latestInstructor, setLatestInstructor] = useState<
+    Instructor | InstructorProfile | null
+  >(typeof instructor !== "string" ? instructor : null);
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
