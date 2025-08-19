@@ -39,6 +39,15 @@ export function getLinks(
       icon: UsersIcon,
     },
     {
+      name:
+        language === "ja"
+          ? "インストラクター　　プロフィール"
+          : "Instructor Profiles",
+      href: `/customers/${userId}/instructor-profiles`,
+      icon: UsersIcon,
+    },
+
+    {
       name: language === "ja" ? "レギュラークラス" : "Regular Classes",
       href: `/customers/${userId}/regular-classes`,
       icon: ClipboardDocumentListIcon,
