@@ -494,7 +494,6 @@ function InstructorProfile({
             )}
 
             {/* Hidden input fields */}
-            <input type="hidden" name="userType" value="instructor" />
             <input type="hidden" name="id" value={latestInstructor.id} />
             <input
               type="hidden"

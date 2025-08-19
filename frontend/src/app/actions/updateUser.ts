@@ -90,7 +90,6 @@ export async function updateInstructorAction(
     const introductionURL = formData.get("introductionURL");
     const icon = formData.get("icon") as File;
     // Hidden input tag fields
-    const userType = formData.get("userType");
     const id = Number(formData.get("id"));
 
     let validationErrors;
@@ -103,7 +102,6 @@ export async function updateInstructorAction(
       meetingId,
       passcode,
       introductionURL,
-      userType,
     });
 
     if (!parsedForm1.success) {
