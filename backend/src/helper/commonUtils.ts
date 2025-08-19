@@ -1,6 +1,7 @@
 // This file contains common functions that are used in multiple controllers or services.
 
 import bcrypt from "bcrypt";
+import { head } from "@vercel/blob";
 
 // Create a new object that contains only the properties specified in the array.
 export const pickProperties = (
@@ -38,3 +39,18 @@ export const hashPasswordSync = (password: string): string => {
 
 // Default user image URL
 export const defaultUserImageUrl = "/images/default-user-icon.jpg";
+
+// Validate user image url
+export const validateUserImageUrl = async (url: string) => {
+  let blob;
+  try {
+    blob = await head(url);
+  } catch (error) {
+    console.warn(
+      "[Warning]: Failed to fetch blob for instructor icon so default image URL will be used:",
+      error,
+    );
+    blob = { url: defaultUserImageUrl };
+  }
+  return blob;
+};

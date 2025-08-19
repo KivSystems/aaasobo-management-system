@@ -8,6 +8,7 @@ import {
   getInstructorIdByClassIdController,
   getInstructorAvailabilities,
   getAllInstructorsController,
+  getAllInstructorProfilesController,
   getRecurringAvailabilityById,
   getInstructorProfileController,
   getCalendarClassesController,
@@ -46,6 +47,7 @@ instructorsRouter.get("/", getAllInstructorsAvailabilitiesController);
 instructorsRouter.get("/available-slots", getAllAvailableSlotsController);
 instructorsRouter.get("/class/:id", getInstructorIdByClassIdController);
 instructorsRouter.get("/profiles", getInstructorProfilesController);
+instructorsRouter.get("/all-profiles", getAllInstructorProfilesController);
 instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),

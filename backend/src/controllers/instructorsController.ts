@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import { pickProperties, defaultUserImageUrl } from "../helper/commonUtils";
+import {
+  pickProperties,
+  defaultUserImageUrl,
+  validateUserImageUrl,
+} from "../helper/commonUtils";
 import {
   Day,
   days,
@@ -158,19 +162,7 @@ export const getInstructor = async (req: Request, res: Response) => {
     }
 
     // Fetch the blob for the instructor's icon
-    let blob;
-    try {
-      if (instructor.icon) {
-        blob = await head(instructor.icon);
-      }
-    } catch (error) {
-      console.warn(
-        "[Warning]: Failed to fetch blob for instructor icon:",
-        error,
-      );
-      // Set a default URL
-      blob = { url: defaultUserImageUrl };
-    }
+    const blob = await validateUserImageUrl(instructor.icon);
 
     return res.status(200).json({
       instructor: {
@@ -490,6 +482,49 @@ export const getAllInstructorsController = async (
       return res.status(404).json({ message: "Instructors not found." });
     }
     return res.status(200).json({ instructors });
+  } catch (error) {
+    return setErrorResponse(res, error);
+  }
+};
+
+// Get all instructor profiles
+export const getAllInstructorProfilesController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    const instructors = await getAllInstructors();
+    if (!instructors) {
+      return res.status(404).json({ message: "Instructors not found." });
+    }
+
+    // Map the instructors to include only the necessary fields for the profile.
+    const instructorProfiles = await Promise.all(
+      instructors.map(async (instructor) => {
+        // Validate the instructor's icon URL
+        const blob = await validateUserImageUrl(instructor.icon);
+        return {
+          id: instructor.id,
+          name: instructor.name,
+          email: instructor.email,
+          icon: blob,
+          nickname: instructor.nickname,
+          birthdate: instructor.birthdate,
+          lifeHistory: instructor.lifeHistory,
+          favoriteFood: instructor.favoriteFood,
+          hobby: instructor.hobby,
+          messageForChildren: instructor.messageForChildren,
+          workingTime: instructor.workingTime,
+          skill: instructor.skill,
+          classURL: instructor.classURL,
+          meetingId: instructor.meetingId,
+          passcode: instructor.passcode,
+          introductionURL: instructor.introductionURL,
+        };
+      }),
+    );
+
+    return res.status(200).json({ instructorProfiles });
   } catch (error) {
     return setErrorResponse(res, error);
   }
