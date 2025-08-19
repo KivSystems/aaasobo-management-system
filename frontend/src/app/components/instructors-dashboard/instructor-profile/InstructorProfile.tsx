@@ -132,8 +132,9 @@ function InstructorProfile({
                   : latestInstructor.icon.url
               }
               alt={latestInstructor.name}
-              width={100}
-              height={100}
+              width={150}
+              height={150}
+              priority
               unoptimized
               className={styles.pic}
             />
