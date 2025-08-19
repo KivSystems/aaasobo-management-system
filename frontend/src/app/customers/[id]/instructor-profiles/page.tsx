@@ -27,7 +27,7 @@ async function InstructorProfilesPage({ params }: { params: { id: string } }) {
         ]}
         className="profile"
       />
-      <InstructorsList instructorProfiles={instructorProfiles} />;
+      <InstructorsList instructorProfiles={instructorProfiles} />
     </>
   );
 }
