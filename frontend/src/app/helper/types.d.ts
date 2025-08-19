@@ -46,6 +46,8 @@ type InstructorProfile = {
   meetingId: string;
   passcode: string;
   introductionURL: string;
+  createdAt: string;
+  inactiveAt: string;
 };
 
 type InstructorRebookingProfile = {

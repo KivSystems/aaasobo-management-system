@@ -1,4 +1,4 @@
-import InstructorsList from "@/app/components/customers-dashboard/insrtuctor-profiles/InstructorsList";
+import InstructorsList from "@/app/components/customers-dashboard/instructor-profiles/InstructorsList";
 import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
 import { getAllInstructorProfiles } from "@/app/helper/api/instructorsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";

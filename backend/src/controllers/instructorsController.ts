@@ -37,7 +37,6 @@ import {
   getSameDateClasses,
   getClassByClassId,
 } from "../services/classesService";
-import { head } from "@vercel/blob";
 
 // Fetch all the instructors and their availabilities
 export const getAllInstructorsAvailabilitiesController = async (
@@ -162,11 +161,13 @@ export const getInstructor = async (req: Request, res: Response) => {
     }
 
     // Fetch the blob for the instructor's icon
-    const blob = await validateUserImageUrl(instructor.icon);
+    const instructorId = instructor.id;
+    const instructorIcon = instructor.icon;
+    const blob = await validateUserImageUrl(instructorIcon, instructorId);
 
     return res.status(200).json({
       instructor: {
-        id: instructor.id,
+        id: instructorId,
         name: instructor.name,
         availabilities: instructor.instructorAvailability,
         unavailabilities: instructor.instructorUnavailability,
@@ -487,7 +488,7 @@ export const getAllInstructorsController = async (
   }
 };
 
-// Get all instructor profiles
+// Get all instructor profiles for customer dashboard
 export const getAllInstructorProfilesController = async (
   _: Request,
   res: Response,
@@ -502,11 +503,13 @@ export const getAllInstructorProfilesController = async (
     const instructorProfiles = await Promise.all(
       instructors.map(async (instructor) => {
         // Validate the instructor's icon URL
-        const blob = await validateUserImageUrl(instructor.icon);
+        const instructorId = instructor.id;
+        const instructorIcon = instructor.icon;
+        const blob = await validateUserImageUrl(instructorIcon, instructorId);
+
         return {
-          id: instructor.id,
+          id: instructorId,
           name: instructor.name,
-          email: instructor.email,
           icon: blob,
           nickname: instructor.nickname,
           birthdate: instructor.birthdate,
@@ -516,10 +519,8 @@ export const getAllInstructorProfilesController = async (
           messageForChildren: instructor.messageForChildren,
           workingTime: instructor.workingTime,
           skill: instructor.skill,
-          classURL: instructor.classURL,
-          meetingId: instructor.meetingId,
-          passcode: instructor.passcode,
-          introductionURL: instructor.introductionURL,
+          createdAt: instructor.createdAt,
+          inactiveAt: instructor.inactiveAt,
         };
       }),
     );

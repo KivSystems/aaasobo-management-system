@@ -139,10 +139,10 @@ export const updateInstructor = async (
         addRandomSuffix: true,
       });
     } else {
-      // Set the previous icon URL.
-      const prevIconUrl = prevData.icon;
       // Check if the previous icon URL is valid. If not, use the default icon.
-      blob = await validateUserImageUrl(prevIconUrl);
+      const prevIconUrl = prevData.icon;
+      const prevIconId = prevData.id;
+      blob = await validateUserImageUrl(prevIconUrl, prevIconId);
     }
 
     // Update the instructor data.

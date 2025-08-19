@@ -6,7 +6,7 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 import Modal from "@/app/components/elements/modal/Modal";
 import InputField from "@/app/components/elements/inputField/InputField";
 import ClassInstructor from "@/app/components/features/classDetail/classInstructor/ClassInstructor";
-import InstructorProfileModal from "@/app/components/customers-dashboard/insrtuctor-profiles/InstructorProfileModal";
+import InstructorProfileModal from "@/app/components/customers-dashboard/instructor-profiles/InstructorProfileModal";
 
 export default function InstructorsList({
   instructorProfiles,

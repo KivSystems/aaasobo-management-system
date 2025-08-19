@@ -41,14 +41,13 @@ export const hashPasswordSync = (password: string): string => {
 export const defaultUserImageUrl = "/images/default-user-icon.jpg";
 
 // Validate user image url
-export const validateUserImageUrl = async (url: string) => {
+export const validateUserImageUrl = async (url: string, id: number) => {
   let blob;
   try {
     blob = await head(url);
   } catch (error) {
     console.warn(
-      "[Warning]: Failed to fetch blob for instructor icon so default image URL will be used:",
-      error,
+      `[Warning]: Failed to fetch blob for instructor icon (ID: ${id}) so default image URL will be used:`,
     );
     blob = { url: defaultUserImageUrl };
   }

@@ -43,7 +43,7 @@ function InstructorProfile({
   instructor: Instructor | InstructorProfile | string;
   token?: string;
   isAdminAuthenticated?: boolean;
-  userSessionType: UserType;
+  userSessionType?: UserType; // TODO: Set mandatory in a future version
 }) {
   const [updateResultState, formAction] = useFormState(
     updateInstructorAction,
