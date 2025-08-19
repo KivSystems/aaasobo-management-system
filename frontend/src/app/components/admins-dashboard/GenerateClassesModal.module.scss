@@ -28,6 +28,10 @@
   align-items: center;
   padding: 10px;
 
+  .grayOption {
+    color: gray;
+  }
+
   .icon {
     width: 2rem;
     height: 2rem;
@@ -36,6 +40,7 @@
 
   p,
   select {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
   }
 }

@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-table";
 import Link from "next/link";
 import RedirectButton from "../elements/buttons/redirectButton/RedirectButton";
+import GenerateClassesForm from "./GenerateClassesForm";
 
 type ListTableProps = {
   listType: string;
@@ -208,12 +209,16 @@ function ListTable({
             />
           </div>
           {addUserLink ? (
-            <RedirectButton
-              linkURL={addUserLink[0]}
-              btnText={addUserLink[1]}
-              className="addBtn"
-              Icon={PlusIcon}
-            />
+            addUserLink[1] === "Generate classes" ? (
+              <GenerateClassesForm />
+            ) : (
+              <RedirectButton
+                linkURL={addUserLink[0]}
+                btnText={addUserLink[1]}
+                className="addBtn"
+                Icon={PlusIcon}
+              />
+            )
           ) : null}
         </div>
         <div className={styles.tableWrapper}>

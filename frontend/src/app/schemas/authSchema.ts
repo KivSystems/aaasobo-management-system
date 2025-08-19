@@ -279,3 +279,8 @@ export const createChildRegisterSchema = (language: LanguageType) => {
     personalInfo: z.string().min(1, REQUIRED_MESSAGE[language]),
   });
 };
+
+export const generateClassesSchema = z.object({
+  year: z.string().min(4, "Please select year."),
+  month: z.string().min(2, "Please select month."),
+});

@@ -116,15 +116,16 @@ export const cancelClass = async (classId: number) => {
 };
 
 // POST create monthly classes
-export const createMonthlyClasses = async (data: {
-  year: number;
-  month: string;
-}) => {
+export const generateClasses = async (
+  year: string,
+  month: string,
+  cookie: string,
+) => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/classes/create-classes`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json", Cookie: cookie },
+      body: JSON.stringify({ year, month }),
     });
 
     if (!response.ok) {
