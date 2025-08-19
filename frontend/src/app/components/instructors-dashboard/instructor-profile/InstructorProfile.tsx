@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateInstructorAction } from "@/app/actions/updateUser";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
@@ -36,11 +37,13 @@ import Image from "next/image";
 function InstructorProfile({
   instructor,
   token,
-  isAdminAuthenticated,
+  isAdminAuthenticated, // TODO: Remove in a future version
+  userSessionType,
 }: {
   instructor: Instructor | InstructorProfile | string;
   token?: string;
   isAdminAuthenticated?: boolean;
+  userSessionType: UserType;
 }) {
   const [updateResultState, formAction] = useFormState(
     updateInstructorAction,
@@ -56,6 +59,7 @@ function InstructorProfile({
   >(typeof instructor !== "string" ? instructor : null);
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { language } = useLanguage();
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -161,7 +165,9 @@ function InstructorProfile({
 
             {/* Name*/}
             <div className={styles.instructorName__nameSection}>
-              <p className={styles.instructorName__text}>Name</p>
+              <p className={styles.instructorName__text}>
+                {language === "en" ? "Name" : "名前"}
+              </p>
               {isEditing ? (
                 <InputField
                   name="name"
@@ -182,7 +188,7 @@ function InstructorProfile({
             <div className={styles.insideContainer}>
               <UserCircleIcon className={styles.icon} />
               <div className={styles.userInfo}>
-                <p>Nickname</p>
+                <p>{language === "en" ? "Nickname" : "ニックネーム"}</p>
                 {isEditing ? (
                   <InputField
                     name="nickname"
@@ -203,7 +209,7 @@ function InstructorProfile({
             <div className={styles.insideContainer}>
               <CakeIcon className={styles.icon} />
               <div className={styles.userInfo}>
-                <p>Birthday</p>
+                <p>{language === "en" ? "Birthday" : "お誕生日"}</p>
                 {isEditing ? (
                   <InputField
                     name="birthdate"
@@ -225,7 +231,7 @@ function InstructorProfile({
             <div className={styles.insideContainer}>
               <CalendarDaysIcon className={styles.icon} />
               <div className={styles.userInfo}>
-                <p>Available Class</p>
+                <p>{language === "en" ? "Available Class" : "開講クラス"}</p>
                 {isEditing ? (
                   <textarea
                     id="workingTime"
@@ -247,7 +253,7 @@ function InstructorProfile({
             <div className={styles.insideContainer}>
               <NewspaperIcon className={styles.icon} />
               <div className={styles.userInfo}>
-                <p>Life History</p>
+                <p>{language === "en" ? "Life History" : "経歴"}</p>
                 {isEditing ? (
                   <textarea
                     id="lifeHistory"
@@ -269,7 +275,7 @@ function InstructorProfile({
             <div className={styles.insideContainer}>
               <FaceSmileIcon className={styles.icon} />
               <div className={styles.userInfo}>
-                <p>Favorite Food</p>
+                <p>{language === "en" ? "Favorite Food" : "好きな食べ物"}</p>
                 {isEditing ? (
                   <textarea
                     name="favoriteFood"
@@ -290,7 +296,7 @@ function InstructorProfile({
             <div className={styles.insideContainer}>
               <LightBulbIcon className={styles.icon} />
               <div className={styles.userInfo}>
-                <p>Hobby</p>
+                <p>{language === "en" ? "Hobby" : "趣味"}</p>
                 {isEditing ? (
                   <textarea
                     name="hobby"
@@ -311,7 +317,11 @@ function InstructorProfile({
             <div className={styles.insideContainer}>
               <PencilSquareIcon className={styles.icon} />
               <div className={styles.userInfo}>
-                <p>Message For Children</p>
+                <p>
+                  {language === "en"
+                    ? "Message For Children"
+                    : "子どもたちへメッセージ"}
+                </p>
                 {isEditing ? (
                   <textarea
                     name="messageForChildren"
@@ -332,7 +342,7 @@ function InstructorProfile({
             <div className={styles.insideContainer}>
               <HandThumbUpIcon className={styles.icon} />
               <div className={styles.userInfo}>
-                <p>Skill</p>
+                <p>{language === "en" ? "Skill" : "スキル"}</p>
                 {isEditing ? (
                   <textarea
                     name="skill"
@@ -350,122 +360,137 @@ function InstructorProfile({
             </div>
 
             {/* Email */}
-            <div className={styles.insideContainer}>
-              <EnvelopeIcon className={styles.icon} />
-              <div className={styles.userInfo}>
-                <p>Email</p>
-                {isEditing ? (
-                  <InputField
-                    name="email"
-                    type="email"
-                    value={latestInstructor.email}
-                    onChange={(e) => handleInputChange(e, "email")}
-                    error={localMessages.email}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4 className={styles.email__text}>
-                    {latestInstructor.email}
-                  </h4>
-                )}
+            {userSessionType !== "customer" && (
+              <div className={styles.insideContainer}>
+                <EnvelopeIcon className={styles.icon} />
+                <div className={styles.userInfo}>
+                  <p>Email</p>
+                  {isEditing ? (
+                    <InputField
+                      name="email"
+                      type="email"
+                      value={latestInstructor.email}
+                      onChange={(e) => handleInputChange(e, "email")}
+                      error={localMessages.email}
+                      className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4 className={styles.email__text}>
+                      {latestInstructor.email}
+                    </h4>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Class URL, Meeting ID, and Passcode */}
-            <div className={styles.insideContainer}>
-              <VideoCameraIcon className={styles.icon} />
-              <div className={styles.userInfo}>
-                <p>Class URL</p>
-                {isEditing ? (
-                  <InputField
-                    name="classURL"
-                    type="url"
-                    value={latestInstructor.classURL}
-                    onChange={(e) => handleInputChange(e, "classURL")}
-                    error={localMessages.classURL}
-                    className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>
-                    <a
-                      href={latestInstructor.classURL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.url}
-                    >
-                      {latestInstructor.classURL}
-                    </a>
-                  </h4>
-                )}
+            {userSessionType !== "customer" && (
+              <div className={styles.insideContainer}>
+                <VideoCameraIcon className={styles.icon} />
+                <div className={styles.userInfo}>
+                  <p>Class URL</p>
+                  {isEditing ? (
+                    <InputField
+                      name="classURL"
+                      type="url"
+                      value={latestInstructor.classURL}
+                      onChange={(e) => handleInputChange(e, "classURL")}
+                      error={localMessages.classURL}
+                      className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4>
+                      <a
+                        href={latestInstructor.classURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.url}
+                      >
+                        {latestInstructor.classURL}
+                      </a>
+                    </h4>
+                  )}
 
-                <div className={styles.urlInfo}>
-                  <p>Meeting ID&nbsp;:&nbsp;</p>
-                  {isEditing ? (
-                    <InputField
-                      name="meetingId"
-                      value={latestInstructor.meetingId}
-                      onChange={(e) => handleInputChange(e, "meetingId")}
-                      error={localMessages.meetingId}
-                      className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
-                      display="flex"
-                    />
-                  ) : (
-                    <p>{latestInstructor.meetingId}</p>
-                  )}
-                </div>
-                <div className={styles.urlInfo}>
-                  <p>Passcode&nbsp;&nbsp;:&nbsp;</p>
-                  {isEditing ? (
-                    <InputField
-                      name="passcode"
-                      value={latestInstructor.passcode}
-                      onChange={(e) => handleInputChange(e, "passcode")}
-                      error={localMessages.passcode}
-                      className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
-                      display="flex"
-                    />
-                  ) : (
-                    <p>{latestInstructor.passcode}</p>
-                  )}
+                  <div className={styles.urlInfo}>
+                    <p>Meeting ID&nbsp;:&nbsp;</p>
+                    {isEditing ? (
+                      <InputField
+                        name="meetingId"
+                        value={latestInstructor.meetingId}
+                        onChange={(e) => handleInputChange(e, "meetingId")}
+                        error={localMessages.meetingId}
+                        className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
+                        display="flex"
+                      />
+                    ) : (
+                      <p>{latestInstructor.meetingId}</p>
+                    )}
+                  </div>
+                  <div className={styles.urlInfo}>
+                    <p>Passcode&nbsp;&nbsp;:&nbsp;</p>
+                    {isEditing ? (
+                      <InputField
+                        name="passcode"
+                        value={latestInstructor.passcode}
+                        onChange={(e) => handleInputChange(e, "passcode")}
+                        error={localMessages.passcode}
+                        className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
+                        display="flex"
+                      />
+                    ) : (
+                      <p>{latestInstructor.passcode}</p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Instructor introduction URL */}
-            <div className={styles.insideContainer}>
-              <LinkIcon className={styles.icon} />
-              <div className={styles.userInfo}>
-                <p>Self Introduction URL</p>
-                {isEditing ? (
-                  <InputField
-                    name="introductionURL"
-                    type="url"
-                    value={latestInstructor.introductionURL}
-                    onChange={(e) => handleInputChange(e, "introductionURL")}
-                    error={localMessages.introductionURL}
-                    className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>
-                    <a
-                      href={latestInstructor.introductionURL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.url}
-                    >
-                      {latestInstructor.introductionURL}
-                    </a>
-                  </h4>
-                )}
+            {/* TODO: Remove this section in a future version */}
+            {userSessionType !== "customer" &&
+              userSessionType !== "instructor" &&
+              userSessionType !== "admin" && (
+                <div className={styles.insideContainer}>
+                  <LinkIcon className={styles.icon} />
+                  <div className={styles.userInfo}>
+                    <p>Self Introduction URL</p>
+                    {isEditing ? (
+                      <InputField
+                        name="introductionURL"
+                        type="url"
+                        value={latestInstructor.introductionURL}
+                        onChange={(e) =>
+                          handleInputChange(e, "introductionURL")
+                        }
+                        error={localMessages.introductionURL}
+                        className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
+                      />
+                    ) : (
+                      <h4>
+                        <a
+                          href={latestInstructor.introductionURL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.url}
+                        >
+                          {latestInstructor.introductionURL}
+                        </a>
+                      </h4>
+                    )}
+                  </div>
+                </div>
+              )}
+
+            {/* Instructor introduction URL */}
+            {userSessionType !== "customer" && (
+              <div className={styles.insideContainer}>
+                <InformationCircleIcon className={styles.icon} />
+                <p className={styles.info}>
+                  If you wish to update the profile information above, please
+                  contact the staff via Facebook.
+                </p>
               </div>
-            </div>
-            <div className={styles.insideContainer}>
-              <InformationCircleIcon className={styles.icon} />
-              <p className={styles.info}>
-                If you wish to update the profile information above, please
-                contact the staff via Facebook.
-              </p>
-            </div>
+            )}
 
             {/* Hidden input fields */}
             <input type="hidden" name="userType" value="instructor" />

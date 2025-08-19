@@ -5,14 +5,19 @@ import InstructorProfile from "@/app/components/instructors-dashboard/instructor
 
 const InstructorProfileModal = ({
   instructor,
+  userSessionType,
   width = "100%",
 }: {
   instructor: InstructorProfile;
+  userSessionType: UserType;
   width?: string;
 }) => {
   return (
     <div className={styles.modalContent} style={{ width }}>
-      <InstructorProfile instructor={instructor} />
+      <InstructorProfile
+        instructor={instructor}
+        userSessionType={userSessionType}
+      />
     </div>
   );
 };

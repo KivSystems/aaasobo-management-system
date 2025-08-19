@@ -1,16 +1,15 @@
 import InstructorsList from "@/app/components/customers-dashboard/insrtuctor-profiles/InstructorsList";
 import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
 import { getAllInstructorProfiles } from "@/app/helper/api/instructorsApi";
-import { INVALID_CUSTOMER_ID } from "@/app/helper/messages/customerDashboard";
+import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
 async function InstructorProfilesPage({ params }: { params: { id: string } }) {
-  const customerId = parseInt(params.id);
-
-  if (isNaN(customerId)) {
-    console.error(`Invalid customer ID: ID = ${customerId}`);
-    throw new Error(INVALID_CUSTOMER_ID);
-  }
-
+  const customerId = params.id;
+  // Authenticate user session
+  const userSessionType: UserType = await authenticateUserSession(
+    "customer",
+    customerId,
+  );
   // Fetch instructor profiles
   const instructorProfiles = await getAllInstructorProfiles();
 
@@ -27,7 +26,10 @@ async function InstructorProfilesPage({ params }: { params: { id: string } }) {
         ]}
         className="profile"
       />
-      <InstructorsList instructorProfiles={instructorProfiles} />
+      <InstructorsList
+        instructorProfiles={instructorProfiles}
+        userSessionType={userSessionType}
+      />
     </>
   );
 }

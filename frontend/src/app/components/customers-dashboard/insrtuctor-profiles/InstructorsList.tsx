@@ -10,8 +10,10 @@ import InstructorProfileModal from "@/app/components/customers-dashboard/insrtuc
 
 export default function InstructorsList({
   instructorProfiles,
+  userSessionType,
 }: {
   instructorProfiles: InstructorProfile[];
+  userSessionType: UserType;
 }) {
   const [filteredInstructors, setFilteredInstructors] = useState<
     InstructorProfile[] | null
@@ -57,7 +59,10 @@ export default function InstructorsList({
             isOpen={!!selectedInstructor}
             onClose={() => setSelectedInstructor(null)}
           >
-            <InstructorProfileModal instructor={selectedInstructor} />
+            <InstructorProfileModal
+              instructor={selectedInstructor}
+              userSessionType={userSessionType}
+            />
           </Modal>
         )}
       </div>
