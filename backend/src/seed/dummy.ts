@@ -337,316 +337,6 @@ async function insertInstructors() {
   });
 }
 
-async function insertInstructorAvailabilities() {
-  const helen = await getInstructor("Helen");
-  const elian = await getInstructor("Elian");
-  await prisma.instructorRecurringAvailability.createMany({
-    data: [
-      { startAt: "2025-06-02T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      { startAt: "2025-06-02T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      { startAt: "2025-06-03T07:00:00Z", instructorId: helen.id },
-      { startAt: "2025-06-04T07:00:00Z", instructorId: helen.id },
-      { startAt: "2025-06-05T07:00:00Z", instructorId: helen.id },
-      { startAt: "2025-06-06T07:00:00Z", instructorId: helen.id },
-      { startAt: "2025-06-07T07:00:00Z", instructorId: helen.id },
-      { startAt: "2025-06-08T07:00:00Z", instructorId: helen.id },
-
-      // { startAt: "2025-02-03T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      // { startAt: "2025-02-03T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      // { startAt: "2025-02-03T08:00:00Z", instructorId: helen.id }, // 17:00 in Japan
-      // { startAt: "2025-02-03T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
-      // { startAt: "2025-02-03T09:00:00Z", instructorId: helen.id }, // 18:00 in Japan
-      // { startAt: "2025-02-03T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
-      // { startAt: "2025-02-03T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
-      // { startAt: "2025-02-04T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      // { startAt: "2025-02-04T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      // { startAt: "2025-02-04T08:00:00Z", instructorId: helen.id }, // 17:00 in Japan
-      // { startAt: "2025-02-04T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
-      // { startAt: "2025-02-04T09:00:00Z", instructorId: helen.id }, // 18:00 in Japan
-      // { startAt: "2025-02-04T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
-      // { startAt: "2025-02-04T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
-      // { startAt: "2025-02-05T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      // { startAt: "2025-02-05T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      // { startAt: "2025-02-05T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
-      // { startAt: "2025-02-05T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
-      // { startAt: "2025-02-05T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
-      // { startAt: "2025-02-05T10:30:00Z", instructorId: helen.id }, // 19:30 in Japan
-      // { startAt: "2025-02-05T11:00:00Z", instructorId: helen.id }, // 20:00 in Japan
-      // { startAt: "2025-02-07T07:00:00Z", instructorId: helen.id }, // 16:00 in Japan
-      // { startAt: "2025-02-07T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      // { startAt: "2025-02-07T08:30:00Z", instructorId: helen.id }, // 17:30 in Japan
-      // { startAt: "2025-02-07T09:30:00Z", instructorId: helen.id }, // 18:30 in Japan
-      // { startAt: "2025-02-07T10:00:00Z", instructorId: helen.id }, // 19:00 in Japan
-      // { startAt: "2025-02-07T10:30:00Z", instructorId: helen.id }, // 19:30 in Japan
-      // { startAt: "2025-02-07T11:00:00Z", instructorId: helen.id }, // 20:00 in Japan
-      // { startAt: "2025-02-03T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      // { startAt: "2025-02-03T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
-      // { startAt: "2025-02-03T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
-      // { startAt: "2025-02-03T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
-      // { startAt: "2025-02-03T09:00:00Z", instructorId: elian.id }, // 18:00 in Japan
-      // { startAt: "2025-02-03T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
-      // { startAt: "2025-02-03T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
-      // { startAt: "2025-02-04T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      // { startAt: "2025-02-04T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
-      // { startAt: "2025-02-04T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
-      // { startAt: "2025-02-04T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
-      // { startAt: "2025-02-04T09:00:00Z", instructorId: elian.id }, // 18:00 in Japan
-      // { startAt: "2025-02-04T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
-      // { startAt: "2025-02-04T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
-      // { startAt: "2025-02-05T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      // { startAt: "2025-02-05T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
-      // { startAt: "2025-02-05T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
-      // { startAt: "2025-02-05T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
-      // { startAt: "2025-02-05T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
-      // { startAt: "2025-02-05T10:30:00Z", instructorId: elian.id }, // 19:30 in Japan
-      // { startAt: "2025-02-05T11:00:00Z", instructorId: elian.id }, // 20:00 in Japan
-      // { startAt: "2025-02-07T07:00:00Z", instructorId: elian.id }, // 16:00 in Japan
-      // { startAt: "2025-02-07T07:30:00Z", instructorId: elian.id }, // 16:30 in Japan
-      // { startAt: "2025-02-07T08:30:00Z", instructorId: elian.id }, // 17:30 in Japan
-      // { startAt: "2025-02-07T09:30:00Z", instructorId: elian.id }, // 18:30 in Japan
-      // { startAt: "2025-02-07T10:00:00Z", instructorId: elian.id }, // 19:00 in Japan
-      // { startAt: "2025-02-07T10:30:00Z", instructorId: elian.id }, // 19:30 in Japan
-      // { startAt: "2025-02-07T11:00:00Z", instructorId: elian.id }, // 20:00 in Japan
-      // { startAt: "2024-07-01T07:30:00Z", instructorId: helen.id }, // 16:30 in Japan
-      // { startAt: "2024-07-01T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
-      // { startAt: "2024-07-02T08:00:00Z", instructorId: elian.id }, // 17:00 in Japan
-      // {
-      //   startAt: "2024-07-02T08:30:00Z",
-      //   instructorId: elian.id,
-      //   endAt: "2024-07-24T00:00:00Z",
-      // }, // 17:30 in Japan
-    ],
-  });
-
-  const insertAvailabilities = async (
-    instructorId: number,
-    startAt: string,
-    dateTimes: string[],
-  ) => {
-    const r = await prisma.instructorRecurringAvailability.findFirst({
-      where: { instructorId, startAt },
-    });
-    if (!r) {
-      throw new Error("Recurring availability not found");
-    }
-    await prisma.instructorAvailability.createMany({
-      data: dateTimes.map((dateTime) => ({
-        dateTime,
-        instructorId,
-        instructorRecurringAvailabilityId: r!.id,
-      })),
-    });
-  };
-
-  await insertAvailabilities(helen.id, "2025-06-02T07:00:00Z", [
-    "2025-07-14T07:00:00Z",
-    "2025-07-21T07:00:00Z",
-    "2025-07-28T07:00:00Z",
-    "2025-08-04T07:00:00Z",
-    "2025-08-11T07:00:00Z",
-    "2025-08-18T07:00:00Z",
-    "2025-08-25T07:00:00Z",
-  ]);
-
-  await insertAvailabilities(elian.id, "2025-06-02T07:00:00Z", [
-    "2025-07-14T07:00:00Z",
-    "2025-07-21T07:00:00Z",
-    "2025-07-28T07:00:00Z",
-    "2025-08-04T07:00:00Z",
-    "2025-08-11T07:00:00Z",
-    "2025-08-18T07:00:00Z",
-    "2025-08-25T07:00:00Z",
-  ]);
-
-  await insertAvailabilities(helen.id, "2025-06-03T07:00:00Z", [
-    "2025-07-08T07:00:00Z",
-    "2025-07-15T07:00:00Z",
-    "2025-07-22T07:00:00Z",
-    "2025-07-29T07:00:00Z",
-    "2025-08-05T07:00:00Z",
-    "2025-08-12T07:00:00Z",
-    "2025-08-19T07:00:00Z",
-    "2025-08-26T07:00:00Z",
-  ]);
-
-  await insertAvailabilities(helen.id, "2025-06-04T07:00:00Z", [
-    "2025-07-09T07:00:00Z",
-    "2025-07-16T07:00:00Z",
-    "2025-07-23T07:00:00Z",
-    "2025-07-30T07:00:00Z",
-    "2025-08-06T07:00:00Z",
-    "2025-08-13T07:00:00Z",
-    "2025-08-20T07:00:00Z",
-    "2025-08-27T07:00:00Z",
-  ]);
-
-  await insertAvailabilities(helen.id, "2025-06-05T07:00:00Z", [
-    "2025-07-10T07:00:00Z",
-    "2025-07-17T07:00:00Z",
-    "2025-07-24T07:00:00Z",
-    "2025-07-31T07:00:00Z",
-    "2025-08-07T07:00:00Z",
-    "2025-08-14T07:00:00Z",
-    "2025-08-21T07:00:00Z",
-    "2025-08-28T07:00:00Z",
-  ]);
-
-  await insertAvailabilities(helen.id, "2025-06-06T07:00:00Z", [
-    "2025-07-11T07:00:00Z",
-    "2025-07-18T07:00:00Z",
-    "2025-07-25T07:00:00Z",
-    // "2025-08-01T07:00:00Z",
-    "2025-08-08T07:00:00Z",
-    "2025-08-15T07:00:00Z",
-    "2025-08-22T07:00:00Z",
-    "2025-08-29T07:00:00Z",
-  ]);
-
-  await insertAvailabilities(helen.id, "2025-06-07T07:00:00Z", [
-    "2025-07-12T00:00:00Z",
-    "2025-07-19T00:00:00Z",
-    "2025-07-26T00:00:00Z",
-    "2025-08-02T00:00:00Z",
-    "2025-08-09T00:00:00Z",
-    "2025-08-16T00:00:00Z",
-    "2025-08-23T00:00:00Z",
-    "2025-08-30T00:00:00Z",
-  ]);
-
-  await insertAvailabilities(helen.id, "2025-06-08T07:00:00Z", [
-    "2025-08-01T06:00:00Z",
-    "2025-08-01T06:30:00Z",
-    "2025-08-01T07:00:00Z",
-    "2025-08-01T07:30:00Z",
-    "2025-08-01T08:00:00Z",
-    "2025-08-01T08:30:00Z",
-    "2025-08-01T09:00:00Z",
-    "2025-08-01T09:30:00Z",
-    "2025-08-01T10:00:00Z",
-    "2025-08-01T10:30:00Z",
-    "2025-08-01T11:00:00Z",
-    "2025-08-01T11:30:00Z",
-    "2025-08-01T12:00:00Z",
-    "2025-08-01T12:30:00Z",
-  ]);
-
-  // await insertAvailabilities(helen.id, "2025-02-03T07:00:00Z", [
-  //   "2025-02-03T07:00:00Z",
-  //   "2025-02-10T07:00:00Z",
-  //   "2025-02-17T07:00:00Z",
-  //   "2025-02-24T07:00:00Z",
-  //   "2025-03-03T07:00:00Z",
-  //   "2025-03-10T07:00:00Z",
-  //   "2025-03-17T07:00:00Z",
-  //   "2025-03-24T07:00:00Z",
-  //   "2025-03-31T07:00:00Z",
-  // ]);
-
-  // await insertAvailabilities(helen.id, "2025-02-03T07:30:00Z", [
-  //   "2025-02-03T07:30:00Z",
-  //   "2025-02-10T07:30:00Z",
-  //   "2025-02-17T07:30:00Z",
-  //   "2025-02-24T07:30:00Z",
-  //   "2025-03-03T07:30:00Z",
-  //   "2025-03-10T07:30:00Z",
-  //   "2025-03-17T07:30:00Z",
-  //   "2025-03-24T07:30:00Z",
-  //   "2025-03-31T07:30:00Z",
-  // ]);
-
-  // await insertAvailabilities(elian.id, "2025-02-03T07:00:00Z", [
-  //   "2025-02-03T07:00:00Z",
-  //   "2025-02-10T07:00:00Z",
-  //   "2025-02-17T07:00:00Z",
-  //   "2025-02-24T07:00:00Z",
-  //   "2025-03-03T07:00:00Z",
-  //   "2025-03-10T07:00:00Z",
-  //   "2025-03-17T07:00:00Z",
-  //   "2025-03-24T07:00:00Z",
-  //   "2025-03-31T07:00:00Z",
-  // ]);
-
-  // await insertAvailabilities(elian.id, "2025-02-03T07:30:00Z", [
-  //   "2025-02-03T07:30:00Z",
-  //   "2025-02-10T07:30:00Z",
-  //   "2025-02-17T07:30:00Z",
-  //   "2025-02-24T07:30:00Z",
-  //   "2025-03-03T07:30:00Z",
-  //   "2025-03-10T07:30:00Z",
-  //   "2025-03-17T07:30:00Z",
-  //   "2025-03-24T07:30:00Z",
-  //   "2025-03-31T07:30:00Z",
-  // ]);
-
-  // await insertAvailabilities(helen.id, "2024-07-01T07:30:00Z", [
-  //   "2024-07-01T07:30:00Z",
-  //   "2024-07-08T07:30:00Z",
-  //   "2024-07-15T07:30:00Z",
-  //   "2024-07-22T07:30:00Z",
-  //   "2024-07-27T07:30:00Z",
-  //   "2024-07-29T07:30:00Z",
-  //   "2024-07-30T07:30:00Z",
-  //   "2024-07-31T07:30:00Z",
-  //   "2024-08-01T07:30:00Z",
-  //   "2024-08-02T07:30:00Z",
-  //   "2024-08-03T07:30:00Z",
-  //   "2024-08-04T07:30:00Z",
-  //   "2024-08-05T07:30:00Z",
-  //   "2024-08-06T07:30:00Z",
-  //   "2024-08-07T07:30:00Z",
-  //   "2024-08-08T07:30:00Z",
-  //   "2024-08-09T07:30:00Z",
-  //   "2024-08-10T07:30:00Z",
-  //   "2024-08-12T07:30:00Z",
-  //   "2024-08-13T07:30:00Z",
-  //   "2024-08-14T07:30:00Z",
-  //   "2024-08-15T07:30:00Z",
-  //   "2024-08-16T07:30:00Z",
-  //   "2024-08-17T07:30:00Z",
-  //   "2024-08-19T07:30:00Z",
-  //   "2024-08-20T07:30:00Z",
-  //   "2024-08-21T07:30:00Z",
-  //   "2024-08-22T07:30:00Z",
-  //   "2024-08-23T07:30:00Z",
-  // ]);
-  // await insertAvailabilities(elian.id, "2024-07-01T08:00:00Z", [
-  //   "2024-07-01T08:00:00Z",
-  //   "2024-07-08T08:00:00Z",
-  //   "2024-07-15T08:00:00Z",
-  //   "2024-07-22T08:00:00Z",
-  //   "2024-07-29T08:00:00Z",
-  //   "2024-08-03T07:30:00Z",
-  //   "2024-08-04T07:30:00Z",
-  //   "2024-08-05T07:30:00Z",
-  //   "2024-08-06T07:30:00Z",
-  // ]);
-  // await insertAvailabilities(elian.id, "2024-07-02T08:00:00Z", [
-  //   "2024-07-02T08:00:00Z",
-  //   "2024-07-09T08:00:00Z",
-  //   "2024-07-16T08:00:00Z",
-  //   "2024-07-23T08:00:00Z",
-  //   "2024-07-30T08:00:00Z",
-  // ]);
-  // await insertAvailabilities(elian.id, "2024-07-02T08:30:00Z", [
-  //   "2024-07-02T08:30:00Z",
-  //   "2024-07-09T08:30:00Z",
-  //   "2024-07-16T08:30:00Z",
-  //   "2024-07-23T08:30:00Z",
-  //   "2024-08-10T07:30:00Z",
-  //   "2024-08-12T07:30:00Z",
-  //   "2024-08-13T07:30:00Z",
-  //   "2024-08-14T07:30:00Z",
-  //   "2024-08-15T07:30:00Z",
-  //   "2024-08-16T07:30:00Z",
-  //   "2024-08-17T07:30:00Z",
-  //   "2024-08-19T07:30:00Z",
-  //   "2024-08-20T07:30:00Z",
-  //   "2024-08-21T07:30:00Z",
-  //   "2024-08-22T07:30:00Z",
-  //   "2024-08-23T07:30:00Z",
-  // ]);
-}
-
 async function insertCustomers() {
   await prisma.customer.createMany({
     data: [
@@ -1688,49 +1378,6 @@ async function insertInstructorAbsences() {
   });
 }
 
-async function insertInstructorUnavailabilities() {
-  const helen = await getInstructor("Helen");
-  const elian = await getInstructor("Elian");
-
-  await prisma.instructorUnavailability.createMany({
-    data: [
-      {
-        instructorId: helen.id,
-        dateTime: new Date("2025-03-17T07:00:00Z"),
-      },
-      {
-        instructorId: helen.id,
-        dateTime: new Date("2025-03-17T07:30:00Z"),
-      },
-      // Helen is unavailable on Saturday, May 31.
-      {
-        instructorId: helen.id,
-        dateTime: new Date("2025-05-31T09:00:00Z"),
-      },
-      {
-        instructorId: helen.id,
-        dateTime: new Date("2025-05-31T09:30:00Z"),
-      },
-      {
-        instructorId: helen.id,
-        dateTime: new Date("2025-05-31T10:00:00Z"),
-      },
-      {
-        instructorId: helen.id,
-        dateTime: new Date("2025-05-31T10:30:00Z"),
-      },
-      {
-        instructorId: helen.id,
-        dateTime: new Date("2025-05-31T11:00:00Z"),
-      },
-      {
-        instructorId: helen.id,
-        dateTime: new Date("2025-05-31T11:30:00Z"),
-      },
-    ],
-  });
-}
-
 async function insertEvents() {
   await prisma.event.createMany({
     data: [
@@ -2438,16 +2085,14 @@ async function main() {
     // Dependent on the below
     await deleteAll("class");
     await deleteAll("recurringClass");
-    await deleteAll("instructorAvailability");
     await deleteAll("instructorSlot");
 
     // Dependent on the below
     await deleteAll("children");
     await deleteAll("subscription");
-    await deleteAll("instructorRecurringAvailability");
     await deleteAll("instructorSchedule");
     await deleteAll("schedule");
-    await deleteAll("instructorUnavailability");
+    await deleteAll("instructorAbsence");
 
     // Independent
     await deleteAll("admins");
@@ -2467,7 +2112,6 @@ async function main() {
     await insertSystemStatus();
 
     // Dependant on the above
-    await insertInstructorAvailabilities();
     await insertInstructorSchedules();
     await insertSubscriptions();
     await insertChildren();
@@ -2478,7 +2122,6 @@ async function main() {
     await insertClasses();
 
     // Dependant on the above
-    await insertInstructorUnavailabilities();
     await insertInstructorAbsences();
 
     // Dependant on the above

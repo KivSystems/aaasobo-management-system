@@ -7,7 +7,7 @@ import RebookableInstructorsList from "./rebookableInstructorsList/RebookableIns
 import RebookableTimeSlots from "./rebookableTimeSlots/RebookableTimeSlots";
 import ConfirmRebooking from "./confirmRebooking/ConfirmRebooking";
 import RebookableClassesList from "./rebookableClassesList/RebookableClassesList";
-import { getInstructorAvailabilities } from "@/app/helper/api/classesApi";
+import { getAllInstructorAvailableSlots } from "@/app/helper/api/instructorsApi";
 import Loading from "@/app/components/elements/loading/Loading";
 import RebookingCompleteMessage from "./rebookingCompleteMessage/RebookingCompleteMessage";
 import { useLanguage } from "@/app/contexts/LanguageContext";
@@ -20,7 +20,7 @@ export default function RebookingForm({
   userSessionType,
 }: RebookingFormProps) {
   const [instructorAvailabilities, setInstructorAvailabilities] = useState<
-    InstructorAvailability[] | []
+    { dateTime: string; availableInstructors: number[] }[] | []
   >([]);
   const [rebookingStep, setRebookingStep] =
     useState<RebookingSteps>("selectClass");
@@ -41,9 +41,20 @@ export default function RebookingForm({
     if (!classToRebook) return;
 
     const fetchInstructorAvailabilities = async () => {
-      const instructorAvailabilities =
-        await getInstructorAvailabilities(classToRebook);
-      setInstructorAvailabilities(instructorAvailabilities);
+      // Get date range for next 30 days for rebooking
+      const startDate = new Date();
+      startDate.setHours(startDate.getHours() + 3); // 3 hours from now
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 30); // 30 days from now
+
+      const result = await getAllInstructorAvailableSlots(
+        startDate.toISOString().split("T")[0],
+        endDate.toISOString().split("T")[0],
+      );
+
+      if ("data" in result) {
+        setInstructorAvailabilities(result.data);
+      }
     };
     setIsLoading(true);
     fetchInstructorAvailabilities();

@@ -71,18 +71,6 @@ export class BusinessTime {
   private static readonly sundayDisabledTimes = BusinessTime.times;
 }
 
-export const utcToJstTime = (utcDateString: string): string => {
-  const utcDate = new Date(utcDateString);
-  const jstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000);
-  return jstDate.toISOString().substring(11, 16);
-};
-
-export const jstTimeToUtc = (jstTime: string): string => {
-  const timeWithSeconds = jstTime.length === 5 ? `${jstTime}:00` : jstTime;
-  const jstDate = new Date(`1970-01-01T${timeWithSeconds}+09:00`);
-  return jstDate.toISOString();
-};
-
 export const slotToKey = (weekday: number, startTime: string): string =>
   `${weekday}-${startTime}`;
 

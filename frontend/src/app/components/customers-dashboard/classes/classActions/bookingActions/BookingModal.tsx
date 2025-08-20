@@ -3,7 +3,7 @@
 import Modal from "@/app/components/elements/modal/Modal";
 import ProgressiveBookingFlow from "./ProgressiveBookingFlow";
 
-interface WipBookingModalProps {
+interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   classId: number;
@@ -14,7 +14,7 @@ interface WipBookingModalProps {
   customerId: number;
 }
 
-export default function WipBookingModal({
+export default function BookingModal({
   isOpen,
   onClose,
   classId,
@@ -23,9 +23,9 @@ export default function WipBookingModal({
   classCode,
   childProfiles,
   customerId,
-}: WipBookingModalProps) {
+}: BookingModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="wipBooking">
+    <Modal isOpen={isOpen} onClose={onClose} className="booking">
       <ProgressiveBookingFlow
         classId={classId}
         isFreeTrial={isFreeTrial}

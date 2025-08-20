@@ -1,5 +1,4 @@
 import {
-  getCalendarAvailabilities,
   getCalendarClasses,
   getInstructorProfile,
 } from "@/app/helper/api/instructorsApi";
@@ -19,16 +18,14 @@ async function InstructorCalendar({
   instructorId: number;
   userSessionType?: UserType;
 }) {
-  const [classes, availabilities, profile, schedule, events] =
-    await Promise.all([
-      getCalendarClasses(instructorId),
-      getCalendarAvailabilities(instructorId),
-      getInstructorProfile(instructorId),
-      getAllBusinessSchedules(),
-      getAllEvents(),
-    ]);
+  const [classes, profile, schedule, events] = await Promise.all([
+    getCalendarClasses(instructorId),
+    getInstructorProfile(instructorId),
+    getAllBusinessSchedules(),
+    getAllEvents(),
+  ]);
 
-  const instructorCalendarEvents = [...classes, ...availabilities];
+  const instructorCalendarEvents = classes;
   const createdAt: string = profile.createdAt;
   const validRange = getValidRange(createdAt, 3);
 

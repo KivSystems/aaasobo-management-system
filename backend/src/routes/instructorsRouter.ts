@@ -1,30 +1,22 @@
 import express from "express";
 import {
-  getAllInstructorsAvailabilitiesController,
   getInstructor,
-  addAvailability,
-  deleteAvailability,
-  RecurringAvailability,
   getInstructorIdByClassIdController,
-  getInstructorAvailabilities,
   getAllInstructorsController,
   getAllInstructorProfilesController,
-  getRecurringAvailabilityById,
   getInstructorProfileController,
   getCalendarClassesController,
   getInstructorProfilesController,
   getSameDateClassesController,
+  updateInstructorProfile,
+  updateInstructorProfileWithIcon,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
   parseId,
 } from "../../src/middlewares/parseId.middleware";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
-import {
-  createInstructorUnavailability,
-  getInstructorUnavailabilities,
-} from "../../src/controllers/instructorsUnavailabilityController";
-import { getCalendarAvailabilitiesController } from "../../src/controllers/instructorsAvailabilityController";
+import upload from "../middlewares/upload.middleware";
 import {
   getInstructorSchedulesController,
   getInstructorScheduleController,
@@ -43,7 +35,6 @@ export const instructorsRouter = express.Router();
 
 // http://localhost:4000/instructors
 
-instructorsRouter.get("/", getAllInstructorsAvailabilitiesController);
 instructorsRouter.get("/available-slots", getAllAvailableSlotsController);
 instructorsRouter.get("/class/:id", getInstructorIdByClassIdController);
 instructorsRouter.get("/profiles", getInstructorProfilesController);
@@ -56,31 +47,11 @@ instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
 );
-instructorsRouter.get("/:id/recurringAvailability", parseId, (req, res) =>
-  RecurringAvailability.get(req as RequestWithId, res),
-);
-instructorsRouter.put("/:id/recurringAvailability", parseId, (req, res) =>
-  RecurringAvailability.put(req as RequestWithId, res),
-);
-instructorsRouter.put("/:id/availability", parseId, (req, res) =>
-  addAvailability(req as RequestWithId, res),
-);
-instructorsRouter.delete("/:id/availability", parseId, (req, res) =>
-  deleteAvailability(req as RequestWithId, res),
-);
-
-instructorsRouter.get("/:id/unavailability", parseId, (req, res) => {
-  getInstructorUnavailabilities(req as RequestWithId, res);
-});
-instructorsRouter.put("/:id/unavailability", parseId, (req, res) => {
-  createInstructorUnavailability(req as RequestWithId, res);
-});
-
-instructorsRouter.get("/:id/availability", parseId, (req, res) => {
-  getInstructorAvailabilities(req as RequestWithId, res);
-});
-instructorsRouter.get("/:id/recurringAvailabilityById", parseId, (req, res) =>
-  getRecurringAvailabilityById(req as RequestWithId, res),
+instructorsRouter.patch("/:id", updateInstructorProfile);
+instructorsRouter.patch(
+  "/:id/withIcon",
+  upload.single("icon"),
+  updateInstructorProfileWithIcon,
 );
 
 instructorsRouter.get(
@@ -91,15 +62,11 @@ instructorsRouter.get(
   },
 );
 
-instructorsRouter.get("/:id/calendar-availabilities", parseId, (req, res) => {
-  getCalendarAvailabilitiesController(req as RequestWithId, res);
-});
-
 instructorsRouter.get("/:id/calendar-classes", parseId, (req, res) => {
   getCalendarClassesController(req as RequestWithId, res);
 });
 
-// Instructor schedule system routes (WIP)
+// Instructor schedule system routes
 instructorsRouter.get("/:id/schedules", parseId, (req, res) => {
   getInstructorSchedulesController(req as RequestWithId, res);
 });

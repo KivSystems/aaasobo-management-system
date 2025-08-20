@@ -12,7 +12,7 @@ import {
   BaseCalendarRoot,
 } from "./BaseScheduleCalendar";
 
-export enum CellType {
+enum CellType {
   UNCHANGED = "unchanged",
   ADDED = "added",
   REMOVED = "removed",

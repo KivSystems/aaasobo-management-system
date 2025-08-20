@@ -1,4 +1,4 @@
-import styles from "./VersionedInstructorSchedule.module.scss";
+import styles from "./InstructorSchedule.module.scss";
 
 import { useEffect, useState, useCallback } from "react";
 import {
@@ -9,7 +9,7 @@ import {
   InstructorScheduleWithSlots,
   InstructorSlot,
 } from "@/app/helper/api/instructorsApi";
-import VersionedScheduleCalendar from "./VersionedScheduleCalendar";
+import ScheduleCalendar from "./ScheduleCalendar";
 import AddScheduleModal from "./AddScheduleModal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import { toast } from "react-toastify";
@@ -159,9 +159,7 @@ export default function InstructorSchedule({
         </div>
       </div>
 
-      {selectedSchedule && (
-        <VersionedScheduleCalendar slots={selectedSchedule.slots} />
-      )}
+      {selectedSchedule && <ScheduleCalendar slots={selectedSchedule.slots} />}
 
       {!selectedSchedule && schedules.length === 0 && (
         <div className={styles.noSchedules}>

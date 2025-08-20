@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Modal from "../../elements/modal/Modal";
-import { editWipRecurringClass } from "@/app/helper/api/recurringClassesApi";
-import InstructorSelection from "../classes/classActions/wipBookingActions/InstructorSelection";
-import InstructorScheduleWip from "./InstructorScheduleWip";
+import { editRecurringClass } from "@/app/helper/api/recurringClassesApi";
+import InstructorSelection from "../classes/classActions/bookingActions/InstructorSelection";
+import InstructorSchedule from "./InstructorSchedule";
 import {
   CalendarIcon,
   UserGroupIcon,
@@ -203,7 +203,7 @@ export default function EditRegularClassModal({
         startDate: startDate,
       };
 
-      await editWipRecurringClass(recurringClass.id, updateData);
+      await editRecurringClass(recurringClass.id, updateData);
       onSuccess?.();
       onClose();
     } catch (error: any) {
@@ -298,7 +298,7 @@ export default function EditRegularClassModal({
                 {modalStep === "schedule" &&
                   selectedInstructor &&
                   startDate && (
-                    <InstructorScheduleWip
+                    <InstructorSchedule
                       instructorId={selectedInstructor.id}
                       effectiveDate={startDate}
                       onSlotSelect={handleScheduleSlotSelect}

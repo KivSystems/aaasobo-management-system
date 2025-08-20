@@ -34,81 +34,41 @@ async function insertInstructors() {
   });
 }
 
-async function insertInstructorAvailabilities() {
+async function insertInstructorSchedules() {
   const helen = await getInstructor("Helen");
-  await prisma.instructorRecurringAvailability.create({
+  // Create InstructorSchedule for Helen with Monday 17:00 and 17:30, Tuesday 17:30 JST
+  const helenSchedule = await prisma.instructorSchedule.create({
     data: {
-      startAt: "2024-08-05T08:00:00Z", // Mon 17:00 JST
       instructorId: helen.id,
-      instructorAvailability: {
-        create: createDates("2024-08-05T08:00:00Z").map((dateTime) => ({
-          dateTime,
-          instructorId: helen.id,
-        })),
-      },
-    },
-  });
-  await prisma.instructorRecurringAvailability.create({
-    data: {
-      startAt: "2024-08-05T08:30:00Z", // Mon 17:30 JST
-      instructorId: helen.id,
-      instructorAvailability: {
-        create: createDates("2024-08-05T08:30:00Z").map((dateTime) => ({
-          dateTime,
-          instructorId: helen.id,
-        })),
-      },
-    },
-  });
-  await prisma.instructorRecurringAvailability.create({
-    data: {
-      startAt: "2024-08-06T08:30:00Z", // Tue 17:30 JST
-      instructorId: helen.id,
-      instructorAvailability: {
-        create: createDates("2024-08-06T08:30:00Z").map((dateTime) => ({
-          dateTime,
-          instructorId: helen.id,
-        })),
-      },
+      effectiveFrom: new Date("2024-08-05T00:00:00+09:00"), // JST midnight
+      effectiveTo: null,
     },
   });
 
+  await prisma.instructorSlot.createMany({
+    data: [
+      { scheduleId: helenSchedule.id, weekday: 1, startTime: "17:00" }, // Monday 17:00
+      { scheduleId: helenSchedule.id, weekday: 1, startTime: "17:30" }, // Monday 17:30
+      { scheduleId: helenSchedule.id, weekday: 2, startTime: "17:30" }, // Tuesday 17:30
+    ],
+  });
+
   const elian = await getInstructor("Elian");
-  await prisma.instructorRecurringAvailability.create({
+  // Create InstructorSchedule for Elian with same slots
+  const elianSchedule = await prisma.instructorSchedule.create({
     data: {
-      startAt: "2024-08-05T08:00:00Z", // Mon 17:00 JST
       instructorId: elian.id,
-      instructorAvailability: {
-        create: createDates("2024-08-05T08:00:00Z").map((dateTime) => ({
-          dateTime,
-          instructorId: elian.id,
-        })),
-      },
+      effectiveFrom: new Date("2024-08-05T00:00:00+09:00"), // JST midnight
+      effectiveTo: null,
     },
   });
-  await prisma.instructorRecurringAvailability.create({
-    data: {
-      startAt: "2024-08-05T08:30:00Z", // Mon 17:30 JST
-      instructorId: elian.id,
-      instructorAvailability: {
-        create: createDates("2024-08-05T08:30:00Z").map((dateTime) => ({
-          dateTime,
-          instructorId: elian.id,
-        })),
-      },
-    },
-  });
-  await prisma.instructorRecurringAvailability.create({
-    data: {
-      startAt: "2024-08-06T08:30:00Z", // Tue 17:30 JST
-      instructorId: elian.id,
-      instructorAvailability: {
-        create: createDates("2024-08-06T08:30:00Z").map((dateTime) => ({
-          dateTime,
-          instructorId: elian.id,
-        })),
-      },
-    },
+
+  await prisma.instructorSlot.createMany({
+    data: [
+      { scheduleId: elianSchedule.id, weekday: 1, startTime: "17:00" }, // Monday 17:00
+      { scheduleId: elianSchedule.id, weekday: 1, startTime: "17:30" }, // Monday 17:30
+      { scheduleId: elianSchedule.id, weekday: 2, startTime: "17:30" }, // Tuesday 17:30
+    ],
   });
 }
 
@@ -360,19 +320,19 @@ async function main() {
     // Dependent on the below
     await deleteAll("class");
     await deleteAll("recurringClass");
-    await deleteAll("instructorAvailability");
 
     // Dependent on the below
     await deleteAll("children");
     await deleteAll("subscription");
-    await deleteAll("instructorRecurringAvailability");
+    await deleteAll("instructorSlot");
+    await deleteAll("instructorSchedule");
 
     // Independent
     await deleteAll("admins");
     await deleteAll("instructor");
     await deleteAll("customer");
     await deleteAll("plan");
-    await deleteAll("instructorUnavailability");
+    await deleteAll("instructorAbsence");
   }
 
   // Instructor Helen is empty.
@@ -385,7 +345,7 @@ async function main() {
     await insertAdmins();
 
     // Dependant on the above
-    await insertInstructorAvailabilities();
+    await insertInstructorSchedules();
     await insertSubscriptions();
     await insertChildren();
 
