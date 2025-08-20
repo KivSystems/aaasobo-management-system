@@ -562,7 +562,7 @@ export const getInstructorProfileController = async (
     const profile = await getInstructorProfile(instructorId);
 
     if (!profile) {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
 
     res.status(200).json(profile);
