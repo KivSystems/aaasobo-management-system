@@ -376,6 +376,27 @@ export const getInstructorProfiles = async (): Promise<
   }
 };
 
+// GET all instructors profiles for customer dashboard
+export const getAllInstructorProfiles = async (cookie: string) => {
+  try {
+    const apiUrl = `${BASE_URL}/all-profiles`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["instructor-list"] },
+      headers: {
+        Cookie: cookie,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.instructorProfiles;
+  } catch (error) {
+    console.error("Failed to fetch all instructor profiles:", error);
+    throw error;
+  }
+};
+
 export const getCalendarClasses = async (
   instructorId: number,
 ): Promise<EventType[] | []> => {

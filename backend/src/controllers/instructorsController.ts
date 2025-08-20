@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import { pickProperties, defaultUserImageUrl } from "../helper/commonUtils";
+import {
+  pickProperties,
+  defaultUserImageUrl,
+  validateUserImageUrl,
+} from "../helper/commonUtils";
 import {
   Day,
   days,
@@ -33,7 +37,6 @@ import {
   getSameDateClasses,
   getClassByClassId,
 } from "../services/classesService";
-import { head } from "@vercel/blob";
 
 // Fetch all the instructors and their availabilities
 export const getAllInstructorsAvailabilitiesController = async (
@@ -158,23 +161,13 @@ export const getInstructor = async (req: Request, res: Response) => {
     }
 
     // Fetch the blob for the instructor's icon
-    let blob;
-    try {
-      if (instructor.icon) {
-        blob = await head(instructor.icon);
-      }
-    } catch (error) {
-      console.warn(
-        "[Warning]: Failed to fetch blob for instructor icon:",
-        error,
-      );
-      // Set a default URL
-      blob = { url: defaultUserImageUrl };
-    }
+    const instructorId = instructor.id;
+    const instructorIcon = instructor.icon;
+    const blob = await validateUserImageUrl(instructorIcon, instructorId);
 
     return res.status(200).json({
       instructor: {
-        id: instructor.id,
+        id: instructorId,
         name: instructor.name,
         availabilities: instructor.instructorAvailability,
         unavailabilities: instructor.instructorUnavailability,
@@ -495,6 +488,49 @@ export const getAllInstructorsController = async (
   }
 };
 
+// Get all instructor profiles for customer dashboard
+export const getAllInstructorProfilesController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    const instructors = await getAllInstructors();
+    if (!instructors) {
+      return res.status(404).json({ message: "Instructors not found." });
+    }
+
+    // Map the instructors to include only the necessary fields for the profile.
+    const instructorProfiles = await Promise.all(
+      instructors.map(async (instructor) => {
+        // Validate the instructor's icon URL
+        const instructorId = instructor.id;
+        const instructorIcon = instructor.icon;
+        const blob = await validateUserImageUrl(instructorIcon, instructorId);
+
+        return {
+          id: instructorId,
+          name: instructor.name,
+          icon: blob,
+          nickname: instructor.nickname,
+          birthdate: instructor.birthdate,
+          lifeHistory: instructor.lifeHistory,
+          favoriteFood: instructor.favoriteFood,
+          hobby: instructor.hobby,
+          messageForChildren: instructor.messageForChildren,
+          workingTime: instructor.workingTime,
+          skill: instructor.skill,
+          createdAt: instructor.createdAt,
+          inactiveAt: instructor.inactiveAt,
+        };
+      }),
+    );
+
+    return res.status(200).json({ instructorProfiles });
+  } catch (error) {
+    return setErrorResponse(res, error);
+  }
+};
+
 // GET recurring availability by instructor id.
 export const getRecurringAvailabilityById = async (
   req: RequestWithId,
@@ -526,7 +562,7 @@ export const getInstructorProfileController = async (
     const profile = await getInstructorProfile(instructorId);
 
     if (!profile) {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
 
     res.status(200).json(profile);
@@ -581,7 +617,7 @@ export const getInstructorProfilesController = async (
         time: new Date().toISOString(),
       },
     });
-    res.sendStatus(500);
+    return setErrorResponse(res, error);
   }
 };
 

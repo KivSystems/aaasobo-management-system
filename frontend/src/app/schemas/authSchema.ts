@@ -177,9 +177,6 @@ export const instructorUpdateSchema = z.object({
     .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
       message: "URL must start with http:// or https://",
     }),
-  userType: z.enum(["admin", "customer", "instructor"], {
-    message: "Invalid user type.",
-  }),
 });
 
 export const instructorIconUpdateSchema = z.object({

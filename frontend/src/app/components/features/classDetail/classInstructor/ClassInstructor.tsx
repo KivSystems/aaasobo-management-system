@@ -7,12 +7,14 @@ const ClassInstructor = ({
   instructorNickname,
   className,
   width = 135,
+  onClick,
 }: {
   classStatus: string;
   instructorIcon: string;
   instructorNickname: string;
   className?: string;
   width?: number;
+  onClick?: () => void;
 }) => {
   return (
     <div className={`${styles.instructor} ${className && styles[className]}`}>
@@ -24,6 +26,7 @@ const ClassInstructor = ({
         priority
         unoptimized
         className={`${styles.instructor__icon} ${styles[classStatus]}`}
+        onClick={onClick}
       />
       <div className={styles.instructor__name}>{instructorNickname}</div>
     </div>
