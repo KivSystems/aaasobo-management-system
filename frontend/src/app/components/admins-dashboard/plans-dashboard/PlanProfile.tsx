@@ -18,10 +18,10 @@ import Loading from "@/app/components/elements/loading/Loading";
 
 function PlanProfile({
   plan,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   plan: Plan | string;
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
 }) {
   // TODO: Uncomment the import when the updatePlanAction action is implemented
   // const [updateResultState, formAction] = useFormState(updatePlanAction, {});
@@ -136,7 +136,7 @@ function PlanProfile({
             <input type="hidden" name="id" value={latestPlan.id} />
 
             {/* Action buttons for only admin */}
-            {isAdminAuthenticated ? (
+            {userSessionType === "admin" ? (
               <>
                 {isEditing ? (
                   <div className={styles.buttons}>

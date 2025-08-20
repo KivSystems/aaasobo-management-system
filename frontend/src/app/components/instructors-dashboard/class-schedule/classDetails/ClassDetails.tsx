@@ -14,7 +14,7 @@ function ClassDetails({
   classDetails,
   classes,
   adminId,
-  isAdminAuthenticated,
+  userSessionType,
   previousPage,
 }: ClassDetailsProps) {
   const [isUpdatingData, setIsUpdatingData] = useState<boolean>(false);
@@ -37,14 +37,14 @@ function ClassDetails({
       label2 = "Class Details";
       break;
     case "class-list":
-      if (isAdminAuthenticated && adminId) {
+      if (userSessionType === "admin" && adminId) {
         breadcrumbHref = `/admins/${adminId}/class-list`;
         label1 = "Class List";
         label2 = `Class Details (Class ID: ${classId})`;
       }
       break;
     case "instructor-list":
-      if (isAdminAuthenticated && adminId) {
+      if (userSessionType === "admin" && adminId) {
         breadcrumbHref = `/admins/${adminId}/instructor-list`;
         label1 = "Instructor List";
         label2 = `Class Details (Instructor ID: ${instructorId})`;
@@ -73,7 +73,7 @@ function ClassDetails({
           <ul className={styles.classItems__list}>
             {classes.length > 0 ? (
               classes.map((classItem) =>
-                isAdminAuthenticated && adminId ? (
+                userSessionType === "admin" && adminId ? (
                   <ClassItemForAdmin
                     key={classItem.id}
                     adminId={adminId}
@@ -82,7 +82,6 @@ function ClassDetails({
                     classId={classId}
                     isUpdatingData={isUpdatingData}
                     setIsUpdatingData={setIsUpdatingData}
-                    isAdminAuthenticated={isAdminAuthenticated}
                     previousPage={previousPage}
                   />
                 ) : (

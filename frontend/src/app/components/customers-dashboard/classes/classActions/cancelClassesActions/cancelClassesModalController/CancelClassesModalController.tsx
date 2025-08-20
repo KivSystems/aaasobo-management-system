@@ -9,7 +9,7 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 export default function CancelClassesModalController({
   upcomingClasses,
   customerId,
-  isAdminAuthenticated,
+  userSessionType,
 }: CancelClassesModalControllerProps) {
   const [isCancelingModalOpen, setIsCancelingModalOpen] = useState(false);
   const { language } = useLanguage();
@@ -31,7 +31,7 @@ export default function CancelClassesModalController({
         <CancelClassesModal
           upcomingClasses={upcomingClasses}
           customerId={customerId}
-          isAdminAuthenticated={isAdminAuthenticated}
+          userSessionType={userSessionType}
           isCancelingModalOpen={isCancelingModalOpen}
           setIsCancelingModalOpen={setIsCancelingModalOpen}
         />

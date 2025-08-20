@@ -136,7 +136,6 @@ const ClassItem = ({
                   classEndTime,
                   initialAttendedChildrenIds,
                   attendedChildrenIdsToUpdate,
-                  isAdminAuthenticated: false,
                   setIsUpdatingData,
                   setIsEditingAttendance,
                 });
@@ -172,7 +171,6 @@ const ClassItem = ({
                     classId: classItem.id,
                     selectedStatus: "completed",
                     classEndTime,
-                    isAdminAuthenticated: false,
                     instructorId,
                     setIsUpdatingData,
                   });

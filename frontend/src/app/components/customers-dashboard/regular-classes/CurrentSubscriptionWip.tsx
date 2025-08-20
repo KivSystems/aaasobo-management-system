@@ -5,12 +5,12 @@ import styles from "./CurrentSubscription.module.scss";
 
 function CurrentSubscriptionWip({
   subscriptionsData,
-  isAdminAuthenticated,
+  userSessionType,
   adminId,
   customerId,
 }: {
   subscriptionsData?: Subscriptions | null;
-  isAdminAuthenticated?: boolean | null;
+  userSessionType?: UserType;
   adminId?: number;
   customerId: number;
 }) {
@@ -43,7 +43,7 @@ function CurrentSubscriptionWip({
               <div className={styles.classesContent}>
                 <RegularClassesTableWip
                   subscriptionId={id}
-                  isAdminAuthenticated={isAdminAuthenticated}
+                  userSessionType={userSessionType}
                   adminId={adminId}
                   customerId={customerId}
                 />

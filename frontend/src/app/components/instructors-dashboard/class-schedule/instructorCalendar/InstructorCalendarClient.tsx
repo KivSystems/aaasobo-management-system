@@ -17,7 +17,7 @@ import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLeg
 const InstructorCalendarClient = ({
   adminId,
   instructorId,
-  isAdminAuthenticated,
+  userSessionType,
   instructorCalendarEvents,
   validRange,
   businessSchedule,
@@ -29,9 +29,10 @@ const InstructorCalendarClient = ({
     if (clickInfo.event.title === "No booked class") return;
 
     const classId = clickInfo.event.extendedProps.classId;
-    const redirectURL = isAdminAuthenticated
-      ? `/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${classId}`
-      : `/instructors/${instructorId}/class-schedule/${classId}`;
+    const redirectURL =
+      userSessionType === "admin"
+        ? `/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${classId}`
+        : `/instructors/${instructorId}/class-schedule/${classId}`;
 
     router.push(redirectURL);
   };

@@ -6,12 +6,12 @@ import { CalendarIcon, TagIcon } from "@heroicons/react/24/solid";
 
 function CurrentSubscription({
   subscriptionsData,
-  isAdminAuthenticated,
+  userSessionType,
   adminId,
   customerId,
 }: {
   subscriptionsData?: Subscriptions | null;
-  isAdminAuthenticated?: boolean | null;
+  userSessionType?: UserType;
   adminId?: number;
   customerId: number;
 }) {
@@ -40,7 +40,7 @@ function CurrentSubscription({
               </div>
               <RegularClassesTable
                 subscriptionId={id}
-                isAdminAuthenticated={isAdminAuthenticated}
+                userSessionType={userSessionType}
                 adminId={adminId}
                 customerId={customerId}
               />

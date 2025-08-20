@@ -4,9 +4,11 @@ import { getPlanById } from "@/app/helper/api/plansApi";
 export default async function PlanDashboardForAdmin({
   userId,
   planId,
+  userSessionType,
 }: {
   userId: number;
   planId: number;
+  userSessionType: UserType;
 }) {
   // Fetch plan data
   const data = await getPlanById(planId);
@@ -17,5 +19,12 @@ export default async function PlanDashboardForAdmin({
     plan = data.plan;
   }
 
-  return <PlanTabs userId={userId} planId={planId} plan={plan} />;
+  return (
+    <PlanTabs
+      userId={userId}
+      planId={planId}
+      plan={plan}
+      userSessionType={userSessionType}
+    />
+  );
 }

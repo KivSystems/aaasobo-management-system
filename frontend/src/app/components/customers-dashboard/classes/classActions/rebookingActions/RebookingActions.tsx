@@ -7,10 +7,10 @@ import RebookingForm from "./rebookingForm/RebookingForm";
 import { getInstructorProfiles } from "@/app/helper/api/instructorsApi";
 
 export default async function RebookingActions({
-  isAdminAuthenticated,
+  userSessionType,
   customerId,
 }: {
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
   customerId: number;
 }) {
   const [rebookableClasses, instructorProfiles, childProfiles] =
@@ -32,7 +32,7 @@ export default async function RebookingActions({
           rebookableClasses={rebookableClasses}
           instructorProfiles={instructorProfiles}
           childProfiles={childProfiles}
-          isAdminAuthenticated={isAdminAuthenticated}
+          userSessionType={userSessionType}
         />
       }
     />

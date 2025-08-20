@@ -19,7 +19,6 @@ const ClassItemForAdmin = ({
   classId,
   isUpdatingData,
   setIsUpdatingData,
-  isAdminAuthenticated,
   previousPage,
 }: ClassItemForAdminProps) => {
   const initialAttendedChildrenIds = classItem.attendingChildren.map(
@@ -181,7 +180,6 @@ const ClassItemForAdmin = ({
                     classEndTime,
                     initialAttendedChildrenIds,
                     attendedChildrenIdsToUpdate,
-                    isAdminAuthenticated,
                     adminId,
                     setIsUpdatingData,
                     setIsEditingAttendance,
@@ -200,7 +198,6 @@ const ClassItemForAdmin = ({
                     classId: classItem.id,
                     selectedStatus,
                     classEndTime,
-                    isAdminAuthenticated,
                     instructorId,
                     setIsUpdatingData,
                     adminId,

@@ -6,8 +6,8 @@ import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 export const cancelSelectedClasses = async (
   classesToCancel: number[],
-  isAdminAuthenticated: boolean | undefined,
   customerId: number,
+  userSessionType?: UserType,
 ) => {
   // Check if the user is authenticated and has the right permissions
   const session = await getUserSession();
@@ -23,7 +23,7 @@ export const cancelSelectedClasses = async (
     }
   } else if (session.user.userType === "admin") {
     adminId = Number(session.user.id);
-    if (!adminId && isAdminAuthenticated) {
+    if (!adminId && userSessionType === "admin") {
       throw new Error("Admin ID is required for authenticated admin actions.");
     }
   } else {
@@ -31,9 +31,10 @@ export const cancelSelectedClasses = async (
   }
 
   // Determine the path to revalidate based on whether the action is admin authenticated
-  const path = isAdminAuthenticated
-    ? `/admins/${adminId}/customer-list/${customerId}`
-    : `/customers/${customerId}/classes`;
+  const path =
+    userSessionType === "admin"
+      ? `/admins/${adminId}/customer-list/${customerId}`
+      : `/customers/${customerId}/classes`;
 
   const cancelationResult = await cancelClasses(classesToCancel);
 
@@ -46,8 +47,8 @@ export const cancelSelectedClasses = async (
 
 export const cancelClassAction = async (
   classId: number,
-  isAdminAuthenticated: boolean | undefined,
   customerId: number,
+  userSessionType?: UserType,
 ) => {
   // Check if the user is authenticated and has the right permissions
   const session = await getUserSession();
@@ -63,7 +64,7 @@ export const cancelClassAction = async (
     }
   } else if (session.user.userType === "admin") {
     adminId = Number(session.user.id);
-    if (!adminId && isAdminAuthenticated) {
+    if (!adminId) {
       throw new Error("Admin ID is required for authenticated admin actions.");
     }
   } else {
@@ -71,9 +72,10 @@ export const cancelClassAction = async (
   }
 
   // Determine the path to revalidate based on whether the action is admin authenticated
-  const path = isAdminAuthenticated
-    ? `/admins/${adminId}/customer-list/${customerId}`
-    : `/customers/${customerId}/classes`;
+  const path =
+    userSessionType === "admin"
+      ? `/admins/${adminId}/customer-list/${customerId}`
+      : `/customers/${customerId}/classes`;
 
   const cancelationResult = await cancelClass(classId);
 

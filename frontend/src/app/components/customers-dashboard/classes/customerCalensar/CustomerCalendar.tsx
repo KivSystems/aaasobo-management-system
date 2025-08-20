@@ -23,6 +23,7 @@ export default function CustomerCalendar({
   createdAt,
   businessSchedule,
   colorsForEvents,
+  userSessionType,
 }: CustomerCalendarProps) {
   const [isClassDetailModalOpen, setIsClassDetailModalOpen] = useState(false);
   const [classDetail, setClassDetail] = useState<CustomerClass | null>(null);
@@ -91,9 +92,9 @@ export default function CustomerCalendar({
         <ClassDetail
           classDetail={classDetail}
           customerId={customerId}
-          isAdminAuthenticated
           handleModalClose={handleModalClose}
           language={language}
+          userSessionType={userSessionType}
         />
       </Modal>
     </>

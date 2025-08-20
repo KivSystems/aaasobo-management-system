@@ -17,7 +17,7 @@ export default function RebookingForm({
   rebookableClasses,
   instructorProfiles,
   childProfiles,
-  isAdminAuthenticated,
+  userSessionType,
 }: RebookingFormProps) {
   const [instructorAvailabilities, setInstructorAvailabilities] = useState<
     InstructorAvailability[] | []
@@ -70,7 +70,7 @@ export default function RebookingForm({
           setClassToRebook={setClassToRebook}
           setRebookingStep={setRebookingStep}
           language={language}
-          isAdminAuthenticated={isAdminAuthenticated}
+          userSessionType={userSessionType}
           childProfiles={childProfiles}
         />
       )}
@@ -117,7 +117,7 @@ export default function RebookingForm({
           rebookableClasses={rebookableClasses}
           setRebookableClassesNumber={setRebookableClassesNumber}
           classId={classToRebook!}
-          isAdminAuthenticated={isAdminAuthenticated}
+          userSessionType={userSessionType}
           language={language}
         />
       )}

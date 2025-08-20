@@ -2,10 +2,7 @@
 
 import { getUserSession } from "../helper/auth/sessionUtils";
 
-export const validateSession = async (
-  userId?: number,
-  isAdminAuthenticated?: boolean,
-) => {
+export const validateSession = async (userId?: number) => {
   const session = await getUserSession();
 
   if (!session) {
@@ -22,7 +19,7 @@ export const validateSession = async (
       return { isValid: false, error: "unauthorized" };
     }
   } else if (session.user.userType === "admin") {
-    if (!userId && isAdminAuthenticated) {
+    if (!userId) {
       return {
         isValid: false,
         error: "Admin ID is required for authenticated admin actions.",
@@ -32,5 +29,5 @@ export const validateSession = async (
     return { isValid: false, error: "unauthorized" };
   }
 
-  return { isValid: true, session };
+  return { isValid: true, userType: session.user.userType };
 };
