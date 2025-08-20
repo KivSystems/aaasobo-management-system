@@ -23,9 +23,9 @@ import { cancelClassAction } from "@/app/actions/cancelSelectedClasses";
 const ClassDetail = ({
   customerId,
   classDetail,
-  isAdminAuthenticated,
   handleModalClose,
   language,
+  userSessionType,
 }: ClassDetailProps) => {
   if (!classDetail) {
     return <div>{NO_CLASS_DETAILS[language]}</div>;
@@ -57,8 +57,8 @@ const ClassDetail = ({
 
     const cancelationResult = await cancelClassAction(
       classId,
-      isAdminAuthenticated,
       customerId,
+      userSessionType,
     );
 
     if (!cancelationResult.success)

@@ -11,11 +11,11 @@ import Loading from "../../elements/loading/Loading";
 function EditRegularClass({
   adminId,
   customerId,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   adminId?: number;
   customerId: number;
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
 }) {
   const searchParams = useSearchParams();
   const subscriptionId = searchParams.get("subscriptionId");
@@ -67,7 +67,7 @@ function EditRegularClass({
           adminId={adminId}
           customerId={customerId}
           subscriptionId={subscriptionData.id}
-          isAdminAuthenticated={isAdminAuthenticated}
+          userSessionType={userSessionType}
         />
       </div>
     </div>

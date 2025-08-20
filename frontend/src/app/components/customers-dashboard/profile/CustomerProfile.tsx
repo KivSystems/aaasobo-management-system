@@ -15,10 +15,10 @@ import FormValidationMessage from "../../elements/formValidationMessage/FormVali
 
 function CustomerProfile({
   customerProfile,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   customerProfile: CustomerProfile;
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
 }) {
   const [profileUpdateResult, formAction] = useFormState(
     updateCustomerProfileAction,
@@ -174,7 +174,7 @@ function CustomerProfile({
       {/* Hidden fields to include in form submission */}
 
       {/* For security, pass the customer ID through a hidden input only if the admin is authenticated */}
-      {isAdminAuthenticated && (
+      {userSessionType === "admin" && (
         <input type="hidden" name="id" value={customerProfile.id ?? ""} />
       )}
       <input

@@ -10,12 +10,12 @@ import EditRegularClassModal from "./EditRegularClassModal";
 
 function RegularClassesTableWip({
   subscriptionId,
-  isAdminAuthenticated,
+  userSessionType,
   adminId,
   customerId,
 }: {
   subscriptionId: number;
-  isAdminAuthenticated?: boolean | null;
+  userSessionType?: UserType;
   adminId?: number;
   customerId: number;
 }) {
@@ -185,7 +185,7 @@ function RegularClassesTableWip({
           recurringClass={editingClass}
           customerId={customerId}
           allChildren={allChildren}
-          isAdminAuthenticated={isAdminAuthenticated}
+          userSessionType={userSessionType}
           adminId={adminId}
           onSuccess={handleEditSuccess}
         />

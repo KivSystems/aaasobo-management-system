@@ -20,10 +20,10 @@ import Loading from "@/app/components/elements/loading/Loading";
 
 function EventProfile({
   event,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   event: BusinessEventType | string;
-  isAdminAuthenticated?: boolean;
+  userSessionType: UserType;
 }) {
   // Use `useFormState` hook for updating an event profile
   const [updateResultState, formAction] = useFormState(updateEventAction, {});
@@ -177,7 +177,7 @@ function EventProfile({
               <input type="hidden" name="id" value={latestEvent.id} />
 
               {/* Action buttons for only admin */}
-              {isAdminAuthenticated ? (
+              {userSessionType === "admin" ? (
                 <>
                   {isEditing ? (
                     <div className={styles.buttons}>

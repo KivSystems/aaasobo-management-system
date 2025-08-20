@@ -5,9 +5,11 @@ import InstructorDashboardClient from "@/app/components/admins-dashboard/instruc
 export default async function InstructorDashboardForAdmin({
   adminId,
   instructorId,
+  userSessionType,
 }: {
   adminId: number;
   instructorId: number;
+  userSessionType: UserType;
 }) {
   // Fetch instructor's data
   // [For InstructorProfile]
@@ -34,11 +36,12 @@ export default async function InstructorDashboardForAdmin({
       instructorId={instructorId}
       instructor={instructor}
       token={tokenSpecificLetters}
+      userSessionType={userSessionType}
       classScheduleComponent={
         <InstructorCalendar
           adminId={adminId}
           instructorId={instructorId}
-          isAdminAuthenticated={true}
+          userSessionType={userSessionType}
         />
       }
     />

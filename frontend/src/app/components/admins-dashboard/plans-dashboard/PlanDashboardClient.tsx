@@ -9,10 +9,12 @@ export default function PlanTabs({
   userId,
   planId,
   plan,
+  userSessionType,
 }: {
   userId: number;
   planId: number;
   plan: Plan | string;
+  userSessionType: UserType;
 }) {
   const breadcrumb = [
     "Plan List",
@@ -21,9 +23,6 @@ export default function PlanTabs({
   ];
   const activeTabName = "activePlanTab";
 
-  // Set the authentication status as true.
-  const isAuthenticated = true;
-
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect("activePlanTab");
 
@@ -31,9 +30,7 @@ export default function PlanTabs({
   const tabs = [
     {
       label: "Plan's Profile",
-      content: (
-        <PlanProfile plan={plan} isAdminAuthenticated={isAuthenticated} />
-      ),
+      content: <PlanProfile plan={plan} userSessionType={userSessionType} />,
     },
   ];
 

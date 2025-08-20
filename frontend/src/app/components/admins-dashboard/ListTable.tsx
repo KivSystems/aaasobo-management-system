@@ -25,6 +25,7 @@ type ListTableProps = {
   replaceItems: string[];
   userType: UserType;
   categoryType?: CategoryType;
+  isAddButton: boolean;
 };
 
 function ListTable({
@@ -36,6 +37,7 @@ function ListTable({
   replaceItems,
   userType,
   categoryType,
+  isAddButton,
 }: ListTableProps) {
   const [data, setData] = useState<any[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -223,12 +225,14 @@ function ListTable({
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </div>
-          <ActionButton
-            btnText={`Add ${categoryType ? categoryType : userType}`}
-            className="addBtn"
-            onClick={() => setIsModalOpen(true)}
-            Icon={PlusIcon}
-          />
+          {isAddButton && (
+            <ActionButton
+              btnText={`Add ${categoryType ? categoryType : userType}`}
+              className="addBtn"
+              onClick={() => setIsModalOpen(true)}
+              Icon={PlusIcon}
+            />
+          )}
         </div>
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>

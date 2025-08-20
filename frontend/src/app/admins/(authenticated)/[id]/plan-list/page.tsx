@@ -1,8 +1,13 @@
 import ListTable from "@/app/components/admins-dashboard/ListTable";
 import { getAllPlans } from "@/app/helper/api/adminsApi";
+import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
 export default async function Page({ params }: { params: { id: string } }) {
-  const adminId = parseInt(params.id);
+  // Authenticate user session
+  const adminId = params.id;
+  await authenticateUserSession("admin", adminId);
+
+  // Define table configuration
   const listType = "Plan List";
   const omitItems = [""]; // Omit the item from the table
   const linkItems = ["ID"]; // Set the item to be a link
@@ -10,6 +15,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   const linkUrls = [`/admins/${adminId}/plan-list/[ID]`]; // Set the link URL
   const userType = "admin"; // Set the user type for the registration form
   const categoryType = "plan"; // Set the category type for the registration form
+  const isAddButton = true; // Enable the add button
   const data = await getAllPlans(); // Fetch all plans data
 
   return (
@@ -23,6 +29,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         replaceItems={replaceItems}
         userType={userType}
         categoryType={categoryType}
+        isAddButton={isAddButton}
       />
     </div>
   );

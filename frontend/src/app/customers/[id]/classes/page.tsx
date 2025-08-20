@@ -1,15 +1,17 @@
 import ClassCalendar from "@/app/components/customers-dashboard/classes/ClassCalendar";
-import { INVALID_CUSTOMER_ID } from "@/app/helper/messages/customerDashboard";
+import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
-const ClassesPage = ({ params }: { params: { id: string } }) => {
+const ClassesPage = async ({ params }: { params: { id: string } }) => {
+  // Authenticate user session
+  const userSessionType: UserType = await authenticateUserSession(
+    "customer",
+    params.id,
+  );
   const customerId = parseInt(params.id);
 
-  if (isNaN(customerId)) {
-    console.error(`Invalid customer ID: ID = ${customerId}`);
-    throw new Error(INVALID_CUSTOMER_ID);
-  }
-
-  return <ClassCalendar customerId={customerId} />;
+  return (
+    <ClassCalendar customerId={customerId} userSessionType={userSessionType} />
+  );
 };
 
 export default ClassesPage;

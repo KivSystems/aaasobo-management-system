@@ -14,12 +14,14 @@ export default function InstructorTabs({
   instructorId,
   instructor,
   token,
+  userSessionType,
   classScheduleComponent,
 }: {
   adminId: number;
   instructorId: number;
   instructor: Instructor | string;
   token: string;
+  userSessionType: UserType;
   classScheduleComponent: React.ReactNode;
 }) {
   const breadcrumb = [
@@ -28,9 +30,6 @@ export default function InstructorTabs({
     `ID: ${instructorId}`,
   ];
   const activeTabName = "activeInstructorTab";
-
-  // Set the authentication status as true.
-  const isAuthenticated = true;
 
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect(
@@ -49,7 +48,7 @@ export default function InstructorTabs({
         <InstructorProfile
           instructor={instructor}
           token={token}
-          isAdminAuthenticated={isAuthenticated}
+          userSessionType={userSessionType}
         />
       ),
     },

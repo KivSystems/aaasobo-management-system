@@ -18,7 +18,7 @@ interface EditRegularClassModalProps {
   recurringClass: RecurringClass;
   customerId: number;
   allChildren: Child[];
-  isAdminAuthenticated?: boolean | null;
+  userSessionType?: UserType;
   adminId?: number;
   onSuccess?: () => void;
 }
@@ -29,7 +29,7 @@ export default function EditRegularClassModal({
   recurringClass,
   customerId,
   allChildren,
-  isAdminAuthenticated,
+  userSessionType,
   adminId,
   onSuccess,
 }: EditRegularClassModalProps) {

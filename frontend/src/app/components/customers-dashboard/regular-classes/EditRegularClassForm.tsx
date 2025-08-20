@@ -20,12 +20,12 @@ function EditRegularClassForm({
   adminId,
   customerId,
   subscriptionId,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   adminId?: number;
   customerId: number;
   subscriptionId?: number | null;
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
 }) {
   const [instructorsData, setInstructorsData] = useState<Instructor[]>();
   const [children, setChildren] = useState<Child[] | undefined>([]);
@@ -146,14 +146,16 @@ function EditRegularClassForm({
 
       // Set the URL depending on authenticated admin or not.
       if (data.messages[1]) {
-        const targetURL = isAdminAuthenticated
-          ? `/admins/${adminId}/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`
-          : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`;
+        const targetURL =
+          userSessionType === "admin"
+            ? `/admins/${adminId}/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`
+            : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}&warningMessage=${encodeURIComponent(data.messages[1])}`;
         router.push(targetURL);
       } else {
-        const targetURL = isAdminAuthenticated
-          ? `/admins/${adminId}/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}`
-          : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}`;
+        const targetURL =
+          userSessionType === "admin"
+            ? `/admins/${adminId}/customer-list/${customerId}?successMessage=${encodeURIComponent(data.messages[0])}`
+            : `/customers/${customerId}/regular-classes?successMessage=${encodeURIComponent(data.messages[0])}`;
         router.push(targetURL);
       }
     } catch (error) {
@@ -200,7 +202,7 @@ function EditRegularClassForm({
         </tbody>
       </table>
       <div className={styles.buttonWrapper}>
-        {isAdminAuthenticated ? (
+        {userSessionType === "admin" ? (
           <RedirectButton
             btnText="Back"
             linkURL={`/admins/${adminId}/customer-list/${customerId}`}

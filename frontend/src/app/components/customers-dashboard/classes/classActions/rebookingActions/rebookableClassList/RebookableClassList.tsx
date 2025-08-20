@@ -25,7 +25,7 @@ export default function RebookableClassList({
   setClassToRebook,
   setRebookingStep,
   language,
-  isAdminAuthenticated,
+  userSessionType,
   childProfiles,
 }: RebookableClassListProps) {
   const handleRebook = (
@@ -129,7 +129,7 @@ export default function RebookableClassList({
                       onClick={() =>
                         confirmAndDeclineFreeTrialClass({
                           customerId,
-                          isAdminAuthenticated,
+                          userSessionType,
                           language,
                           classCode: classItem.classCode,
                         })

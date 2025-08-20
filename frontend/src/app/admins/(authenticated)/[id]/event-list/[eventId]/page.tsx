@@ -1,17 +1,25 @@
 import EventDashboardForAdmin from "@/app/components/admins-dashboard/events-dashboard/EventDashboardForAdmin";
+import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
-function Page({ params }: { params: { id: string; eventId: string } }) {
+async function Page({ params }: { params: { id: string; eventId: string } }) {
+  // Authenticate user session
+  const userSessionType: UserType = await authenticateUserSession(
+    "admin",
+    params.id,
+  );
   const userId = parseInt(params.id);
-  if (isNaN(userId)) {
-    throw new Error("Invalid userId");
-  }
-
   const eventId = parseInt(params.eventId);
   if (isNaN(eventId)) {
     throw new Error("Invalid eventId");
   }
 
-  return <EventDashboardForAdmin userId={userId} eventId={eventId} />;
+  return (
+    <EventDashboardForAdmin
+      userId={userId}
+      eventId={eventId}
+      userSessionType={userSessionType}
+    />
+  );
 }
 
 export default Page;

@@ -10,12 +10,14 @@ import Loading from "@/app/components/elements/loading/Loading";
 function CustomerDashboardClient({
   adminId,
   customerId,
+  userSessionType,
   classCalendarComponent,
   customerProfile,
   childProfiles,
 }: {
   adminId: number;
   customerId: number;
+  userSessionType: UserType;
   classCalendarComponent: React.ReactNode;
   customerProfile: CustomerProfile;
   childProfiles: Child[];
@@ -43,9 +45,6 @@ function CustomerDashboardClient({
   // Get the active tab name to set the active tab in the TabFunction component.
   const activeTabName = "activeCustomerTab";
 
-  // Set the authentication status as true.
-  const isAuthenticated = true;
-
   // Get the active tab from local storage
   const { initialActiveTab, isTabInitialized } =
     useTabSelect("activeCustomerTab");
@@ -60,7 +59,7 @@ function CustomerDashboardClient({
       content: (
         <CustomerProfile
           customerProfile={customerProfile}
-          isAdminAuthenticated={isAuthenticated}
+          userSessionType={userSessionType}
         />
       ),
     },
@@ -69,7 +68,7 @@ function CustomerDashboardClient({
       content: (
         <ChildrenProfiles
           customerId={customerId}
-          isAdminAuthenticated={isAuthenticated}
+          userSessionType={userSessionType}
           childProfiles={childProfiles}
         />
       ),
@@ -80,7 +79,7 @@ function CustomerDashboardClient({
         <RegularClasses
           adminId={adminId}
           customerId={customerId}
-          isAdminAuthenticated={isAuthenticated}
+          userSessionType={userSessionType}
         />
       ),
     },
@@ -90,7 +89,7 @@ function CustomerDashboardClient({
     return <Loading />;
   }
 
-  return isAuthenticated ? (
+  return userSessionType === "admin" ? (
     <TabFunction
       tabs={tabs}
       breadcrumb={breadcrumb}

@@ -9,10 +9,12 @@ export default function AdminTabs({
   userId,
   adminId,
   admin,
+  userSessionType,
 }: {
   userId: number;
   adminId: number;
   admin: Admin | string;
+  userSessionType: UserType;
 }) {
   const breadcrumb = [
     "Admin List",
@@ -35,7 +37,7 @@ export default function AdminTabs({
         <AdminProfile
           userId={userId}
           admin={admin}
-          isAdminAuthenticated={isAuthenticated}
+          userSessionType={userSessionType}
         />
       ),
     },

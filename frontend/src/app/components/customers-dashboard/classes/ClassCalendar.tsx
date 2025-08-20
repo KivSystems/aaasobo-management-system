@@ -11,10 +11,10 @@ import {
 
 export default async function ClassCalendar({
   customerId,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   customerId: number;
-  isAdminAuthenticated?: boolean;
+  userSessionType: UserType;
 }) {
   const [classes, customer, schedule, events] = await Promise.all([
     getClasses(customerId),
@@ -35,10 +35,7 @@ export default async function ClassCalendar({
 
   return (
     <main className={styles.calendarContainer}>
-      <ClassActions
-        isAdminAuthenticated={isAdminAuthenticated}
-        customerId={customerId}
-      />
+      <ClassActions userSessionType={userSessionType} customerId={customerId} />
 
       <CustomerCalendar
         customerId={customerId}
@@ -46,11 +43,12 @@ export default async function ClassCalendar({
         createdAt={createdAt}
         businessSchedule={schedule.organizedData}
         colorsForEvents={colorsForEvents}
+        userSessionType={userSessionType}
       />
 
       {!hasSeenWelcomeModal && (
         <WelcomeModalController
-          isAdminAuthenticated={isAdminAuthenticated}
+          userSessionType={userSessionType}
           customerId={customerId}
         />
       )}

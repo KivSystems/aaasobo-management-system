@@ -3,10 +3,10 @@ import { getUpcomingClasses } from "@/app/helper/api/customersApi";
 
 export default async function CancelClassesActions({
   customerId,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   customerId: number;
-  isAdminAuthenticated?: boolean;
+  userSessionType: UserType;
 }) {
   const upcomingClasses: UpcomingClass[] | [] =
     await getUpcomingClasses(customerId);
@@ -15,7 +15,7 @@ export default async function CancelClassesActions({
     <CancelClassesModalController
       customerId={customerId}
       upcomingClasses={upcomingClasses}
-      isAdminAuthenticated={isAdminAuthenticated}
+      userSessionType={userSessionType}
     />
   );
 }

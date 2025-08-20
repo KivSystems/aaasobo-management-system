@@ -9,7 +9,9 @@ import {
 } from "@/app/helper/api/instructorsApi";
 import Loading from "../elements/loading/Loading";
 import { getValidRange } from "@/app/helper/utils/calendarUtils";
+import { initialSetup } from "@/app/helper/utils/initialSetup";
 import InstructorCalendarClient from "../instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendarClient";
+import InstructorSearch from "@/app/components/admins-dashboard/InstructorSearch";
 import {
   getAllBusinessSchedules,
   getAllEvents,
@@ -17,15 +19,13 @@ import {
 
 function InstructorCalendarForAdmin({
   adminId,
-  instructorId,
-  name,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
-  adminId?: number | null;
-  instructorId: number | null;
-  name?: string | null;
-  isAdminAuthenticated?: boolean;
+  adminId: number | null;
+  userSessionType: UserType;
 }) {
+  const [instructorId, setInstructorId] = useState<number | null>(null);
+  const [instructorName, setInstructorName] = useState<string | null>(null);
   const [instructorCalendarEvents, setInstructorCalendarEvents] = useState<
     EventType[]
   >([]);
@@ -81,6 +81,28 @@ function InstructorCalendarForAdmin({
     fetchData();
   }, [fetchData]);
 
+  // Perform initial setup for the admin user
+  useEffect(() => {
+    initialSetup("admin");
+  }, []);
+
+  const handleSendInstructor = async (id: number, name: string) => {
+    localStorage.setItem("activeInstructor", [String(id), name].join(","));
+    setInstructorId(id);
+    setInstructorName(name);
+  };
+
+  useEffect(() => {
+    const activeInstructor = localStorage.getItem("activeInstructor");
+
+    if (activeInstructor === null) {
+      return;
+    }
+    const [id, name] = activeInstructor.split(",");
+    setInstructorId(parseInt(id));
+    setInstructorName(name);
+  }, []);
+
   if (!instructorId) return <></>;
 
   if (error) {
@@ -93,9 +115,10 @@ function InstructorCalendarForAdmin({
       {error && <div>{error}</div>}
       {!isLoading && !error && (
         <>
-          {isAdminAuthenticated && name ? (
+          <InstructorSearch handleSendInstructor={handleSendInstructor} />
+          {userSessionType === "admin" && instructorName ? (
             <span className={styles.instructorName}>
-              Instructor: &nbsp;{name}
+              Instructor: &nbsp;{instructorName}
             </span>
           ) : null}
           <InstructorCalendarClient
@@ -103,7 +126,7 @@ function InstructorCalendarForAdmin({
             instructorId={instructorId}
             instructorCalendarEvents={instructorCalendarEvents}
             validRange={calendarValidRange!}
-            isAdminAuthenticated={isAdminAuthenticated}
+            userSessionType={userSessionType}
             businessSchedule={schedule.organizedData}
             colorsForEvents={colorsForEvents}
           />

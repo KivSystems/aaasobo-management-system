@@ -13,11 +13,11 @@ import {
 async function InstructorCalendar({
   adminId,
   instructorId,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   adminId?: number;
   instructorId: number;
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
 }) {
   const [classes, availabilities, profile, schedule, events] =
     await Promise.all([
@@ -43,7 +43,7 @@ async function InstructorCalendar({
     <InstructorCalendarClient
       adminId={adminId}
       instructorId={instructorId}
-      isAdminAuthenticated={isAdminAuthenticated}
+      userSessionType={userSessionType}
       instructorCalendarEvents={instructorCalendarEvents}
       validRange={validRange}
       businessSchedule={schedule.organizedData}

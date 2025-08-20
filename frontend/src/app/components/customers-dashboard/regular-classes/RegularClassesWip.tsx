@@ -12,11 +12,11 @@ import Loading from "../../elements/loading/Loading";
 function RegularClassesWip({
   adminId,
   customerId,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   adminId?: number;
   customerId: number;
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
 }) {
   const [subscriptionsData, setSubscriptionsData] =
     useState<Subscriptions | null>(null);
@@ -53,7 +53,7 @@ function RegularClassesWip({
 
   return (
     <>
-      {isAdminAuthenticated ? (
+      {userSessionType === "admin" ? (
         <div className={styles.addBtn}>
           <ActionButton
             onClick={handleAddRegularClass}
@@ -75,7 +75,7 @@ function RegularClassesWip({
         subscriptionsData={subscriptionsData}
         adminId={adminId}
         customerId={customerId}
-        isAdminAuthenticated={isAdminAuthenticated}
+        userSessionType={userSessionType}
       />
     </>
   );

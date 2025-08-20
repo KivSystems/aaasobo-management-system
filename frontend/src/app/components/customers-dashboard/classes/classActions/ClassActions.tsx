@@ -3,10 +3,10 @@ import CancelClassesActions from "./cancelClassesActions/CancelClassesActions";
 import RebookingActions from "./rebookingActions/RebookingActions";
 
 export default async function ClassActions({
-  isAdminAuthenticated,
+  userSessionType,
   customerId,
 }: {
-  isAdminAuthenticated?: boolean;
+  userSessionType: UserType;
   customerId: number;
 }) {
   return (
@@ -15,12 +15,12 @@ export default async function ClassActions({
         <div className={styles.calendarActions__container}>
           <CancelClassesActions
             customerId={customerId}
-            isAdminAuthenticated={isAdminAuthenticated}
+            userSessionType={userSessionType}
           />
 
           <RebookingActions
             customerId={customerId}
-            isAdminAuthenticated={isAdminAuthenticated}
+            userSessionType={userSessionType}
           />
         </div>
       </div>

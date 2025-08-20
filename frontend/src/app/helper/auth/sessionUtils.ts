@@ -38,13 +38,16 @@ export async function authenticateUserSession(userType: UserType, id: string) {
   if (!userSessionType || userSessionType !== userType) {
     switch (userType) {
       case "customer":
+        console.error(`Invalid customer ID: ID = ${id}`);
         throw new Error(INVALID_CUSTOMER_ID);
       case "instructor":
+        console.error(`Invalid instructor ID: ID = ${id}`);
         throw new Error(INVALID_INSTRUCTOR_ID);
       case "admin":
+        console.error(`Invalid admin ID: ID = ${id}`);
         throw new Error(INVALID_ADMIN_ID);
       default:
-        throw new Error("Invalid user type or id");
+        throw new Error("Invalid user type");
     }
   }
 

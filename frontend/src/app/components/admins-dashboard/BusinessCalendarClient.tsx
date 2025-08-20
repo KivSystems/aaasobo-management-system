@@ -22,7 +22,7 @@ const BusinessCalendarClient = ({
   businessSchedule: initialSchedule,
   events,
   validRange,
-  isAdminAuthenticated,
+  userSessionType,
 }: BusinessCalendarClientProps) => {
   const calendarRef = useRef<FullCalendar | null>(null);
   const [updateResultState, formAction] = useFormState(
@@ -54,7 +54,7 @@ const BusinessCalendarClient = ({
   // Register or delete event on selected date
   const handleDateSelect = (arg: DateSelectArg) => {
     // Check if the user is authenticated as an admin
-    if (!isAdminAuthenticated) {
+    if (userSessionType !== "admin") {
       return;
     }
 
@@ -172,7 +172,7 @@ const BusinessCalendarClient = ({
       {events.length > 0 && (
         <CalendarLegend colorsForEvents={colorsForEvents} language={language} />
       )}
-      {isAdminAuthenticated && (
+      {userSessionType === "admin" && (
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
