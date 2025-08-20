@@ -63,7 +63,7 @@ function InstructorsSchedule() {
     };
 
     fetchInstructorAvailabilities();
-  }, [selectedInstructorId]);
+  }, [selectedInstructorId, timeZone]);
 
   return (
     <div>

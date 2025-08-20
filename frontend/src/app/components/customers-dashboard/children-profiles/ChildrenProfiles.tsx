@@ -61,7 +61,7 @@ function ChildrenProfiles({
         setEditingChildId(null);
       }
     }
-  }, [updateResult]);
+  }, [updateResult, editingChildId, setLocalMessages]);
 
   useEffect(() => {
     if (addResult !== undefined) {
@@ -72,7 +72,7 @@ function ChildrenProfiles({
         clearErrorMessage("all");
       }
     }
-  }, [addResult]);
+  }, [addResult, clearErrorMessage, language, setLocalMessages]);
 
   const handleDeleteClick = async (childId: number) => {
     clearErrorMessage("all");

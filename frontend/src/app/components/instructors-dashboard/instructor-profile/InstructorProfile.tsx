@@ -111,7 +111,7 @@ function InstructorProfile({
         toast.error(result.errorMessage);
       }
     }
-  }, [updateResultState]);
+  }, [updateResultState, token]);
 
   if (typeof instructor === "string") {
     return <p>{instructor}</p>;
