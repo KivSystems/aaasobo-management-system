@@ -805,7 +805,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-08-15T07:00:00Z",
+        dateTime: "2025-08-22T07:00:00Z",
         status: "booked",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -818,7 +818,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-08-15T08:00:00Z",
+        dateTime: "2025-08-22T08:00:00Z",
         status: "rebooked",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -831,7 +831,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-08-15T09:00:00Z",
+        dateTime: "2025-08-22T09:00:00Z",
         status: "canceledByCustomer",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -844,7 +844,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-08-15T10:00:00Z",
+        dateTime: "2025-08-22T10:00:00Z",
         status: "canceledByInstructor",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -857,7 +857,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-08-15T06:00:00Z",
+        dateTime: "2025-08-22T06:00:00Z",
         status: "completed",
         subscriptionId: alice.subscription[0].id,
         recurringClassId: 1,
@@ -870,7 +870,7 @@ async function insertClasses() {
       {
         instructorId: helen.id,
         customerId: alice.id,
-        dateTime: "2025-08-15T11:00:00Z",
+        dateTime: "2025-08-22T11:00:00Z",
         status: "rebooked",
         rebookableUntil: "2025-11-30T09:00:00Z",
         createdAt: "2025-05-20T07:00:00Z",
