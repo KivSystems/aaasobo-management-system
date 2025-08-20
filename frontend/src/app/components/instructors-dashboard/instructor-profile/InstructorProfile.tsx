@@ -446,39 +446,35 @@ function InstructorProfile({
 
             {/* Instructor introduction URL */}
             {/* TODO: Remove this section in a future version */}
-            {userSessionType !== "customer" &&
-              userSessionType !== "instructor" &&
-              userSessionType !== "admin" && (
-                <div className={styles.insideContainer}>
-                  <LinkIcon className={styles.icon} />
-                  <div className={styles.userInfo}>
-                    <p>Self Introduction URL</p>
-                    {isEditing ? (
-                      <InputField
-                        name="introductionURL"
-                        type="url"
-                        value={latestInstructor.introductionURL}
-                        onChange={(e) =>
-                          handleInputChange(e, "introductionURL")
-                        }
-                        error={localMessages.introductionURL}
-                        className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
-                      />
-                    ) : (
-                      <h4>
-                        <a
-                          href={latestInstructor.introductionURL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.url}
-                        >
-                          {latestInstructor.introductionURL}
-                        </a>
-                      </h4>
-                    )}
-                  </div>
+            {userSessionType === "admin" && (
+              <div className={styles.insideContainer}>
+                <LinkIcon className={styles.icon} />
+                <div className={styles.userInfo}>
+                  <p>Self Introduction URL</p>
+                  {isEditing ? (
+                    <InputField
+                      name="introductionURL"
+                      type="url"
+                      value={latestInstructor.introductionURL}
+                      onChange={(e) => handleInputChange(e, "introductionURL")}
+                      error={localMessages.introductionURL}
+                      className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4>
+                      <a
+                        href={latestInstructor.introductionURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.url}
+                      >
+                        {latestInstructor.introductionURL}
+                      </a>
+                    </h4>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
             {/* Instructor introduction URL */}
             {userSessionType !== "customer" && (
