@@ -18,9 +18,9 @@ async function InstructorProfilesPage({ params }: { params: { id: string } }) {
   // Fetch instructor profiles
   const instructorProfiles = await getAllInstructorProfiles(cookie);
 
-  // Show not found message when no instructor profiles are found
-  if (instructorProfiles === null) {
-    return <p>No instructor profiles found.</p>;
+  // Show error message when no instructor profiles are found
+  if (!instructorProfiles || instructorProfiles.length === 0) {
+    return <p>Error: No instructor profiles found.</p>;
   }
 
   return (

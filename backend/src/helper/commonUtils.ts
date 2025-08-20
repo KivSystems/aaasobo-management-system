@@ -40,16 +40,45 @@ export const hashPasswordSync = (password: string): string => {
 // Default user image URL
 export const defaultUserImageUrl = "/images/default-user-icon.jpg";
 
+// Extract specific letters from the blob read/write token
+const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN;
+const extractTokenLetters = (token: string) => {
+  const parts = token.split("_");
+  return parts[3] ? parts[3].toLowerCase() : "";
+};
+const tokenSpecificLetters = extractTokenLetters(blobReadWriteToken || "");
+
+// Create a cache for storing validated user image URLs
+const cache = new Map<string, { url: string; checkedAt: number }>();
+const CACHE_TTL = 1000 * 60 * 60 * 1; // 1 hour
+
 // Validate user image url
 export const validateUserImageUrl = async (url: string, id: number) => {
-  let blob;
-  try {
-    blob = await head(url);
-  } catch (error) {
-    console.warn(
-      `[Warning]: Failed to fetch blob for instructor icon (ID: ${id}) so default image URL will be used:`,
-    );
-    blob = { url: defaultUserImageUrl };
+  const now = Date.now();
+  const cached = cache.get(url);
+
+  // Check if the cached URL is still valid
+  if (cached && now - cached.checkedAt < CACHE_TTL) {
+    return { url: cached.url };
   }
-  return blob;
+
+  let blobUrl = defaultUserImageUrl;
+  // Validate the URL against the token-specific letters
+  if (tokenSpecificLetters && !url.includes(tokenSpecificLetters)) {
+    cache.set(url, { url: blobUrl, checkedAt: now });
+    return { url: blobUrl };
+  }
+
+  // Attempt to fetch the URL to ensure it's valid
+  try {
+    await head(url);
+    blobUrl = url;
+  } catch {
+    console.warn(
+      `[Warning]: Failed to fetch blob for instructor icon (ID: ${id})`,
+    );
+  }
+
+  cache.set(url, { url: blobUrl, checkedAt: now });
+  return { url: blobUrl };
 };

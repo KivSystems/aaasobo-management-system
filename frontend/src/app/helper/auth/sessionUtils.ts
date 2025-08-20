@@ -1,5 +1,7 @@
 import { auth } from "../../../../auth.config";
+import { INVALID_ADMIN_ID } from "@/app/helper/messages/adminDashboard";
 import { INVALID_CUSTOMER_ID } from "@/app/helper/messages/customerDashboard";
+import { INVALID_INSTRUCTOR_ID } from "@/app/helper/messages/instructorDashboard";
 
 export async function getUserSession(userType?: UserType) {
   const session = await auth();
@@ -37,7 +39,10 @@ export async function authenticateUserSession(userType: UserType, id: string) {
     switch (userType) {
       case "customer":
         throw new Error(INVALID_CUSTOMER_ID);
-      // TODO: Add more cases as needed
+      case "instructor":
+        throw new Error(INVALID_INSTRUCTOR_ID);
+      case "admin":
+        throw new Error(INVALID_ADMIN_ID);
       default:
         throw new Error("Invalid user type or id");
     }
