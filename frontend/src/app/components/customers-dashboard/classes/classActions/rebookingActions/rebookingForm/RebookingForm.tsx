@@ -11,6 +11,7 @@ import { getAllInstructorAvailableSlots } from "@/app/helper/api/instructorsApi"
 import Loading from "@/app/components/elements/loading/Loading";
 import RebookingCompleteMessage from "./rebookingCompleteMessage/RebookingCompleteMessage";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { nHoursLater } from "@/app/helper/utils/dateUtils";
 
 export default function RebookingForm({
   customerId,
@@ -42,10 +43,10 @@ export default function RebookingForm({
 
     const fetchInstructorAvailabilities = async () => {
       // Get date range for next 30 days for rebooking
-      const startDate = new Date();
-      startDate.setHours(startDate.getHours() + 3); // 3 hours from now
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 30); // 30 days from now
+      const REGULAR_REBOOKING_HOURS = 3;
+      const INSTRUCTOR_AVAILABILITY_WINDOW_HOURS = 30 * 24;
+      const startDate = nHoursLater(REGULAR_REBOOKING_HOURS);
+      const endDate = nHoursLater(INSTRUCTOR_AVAILABILITY_WINDOW_HOURS);
 
       const result = await getAllInstructorAvailableSlots(
         startDate.toISOString().split("T")[0],

@@ -439,7 +439,9 @@ export const updateRegularClass = async (params: UpdateRegularClassParams) => {
 
     // Validate that the start date is at least one week from now
     const startDateObj = new Date(startDate);
-    if (startDateObj < nDaysLater(7)) {
+    const inOneWeek = nDaysLater(7);
+    inOneWeek.setUTCHours(0, 0, 0, 0);
+    if (startDateObj < inOneWeek) {
       throw new Error("Start date must be at least one week from today");
     }
 

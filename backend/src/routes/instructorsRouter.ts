@@ -2,21 +2,17 @@ import express from "express";
 import {
   getInstructor,
   getInstructorIdByClassIdController,
-  getAllInstructorsController,
   getAllInstructorProfilesController,
   getInstructorProfileController,
   getCalendarClassesController,
   getInstructorProfilesController,
   getSameDateClassesController,
-  updateInstructorProfile,
-  updateInstructorProfileWithIcon,
 } from "../../src/controllers/instructorsController";
 import {
   type RequestWithId,
   parseId,
 } from "../../src/middlewares/parseId.middleware";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
-import upload from "../middlewares/upload.middleware";
 import {
   getInstructorSchedulesController,
   getInstructorScheduleController,
@@ -46,12 +42,6 @@ instructorsRouter.get(
 instructorsRouter.get("/:id", getInstructor);
 instructorsRouter.get("/:id/profile", parseId, (req, res) =>
   getInstructorProfileController(req as RequestWithId, res),
-);
-instructorsRouter.patch("/:id", updateInstructorProfile);
-instructorsRouter.patch(
-  "/:id/withIcon",
-  upload.single("icon"),
-  updateInstructorProfileWithIcon,
 );
 
 instructorsRouter.get(

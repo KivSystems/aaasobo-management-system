@@ -91,12 +91,14 @@ function RegularClassCard({ recurringClass, onEdit }: RegularClassCardProps) {
         <div className={styles.detailItem}>
           <span className={styles.text}>
             <strong>Started:</strong>{" "}
-            {classDateTime.toLocaleDateString("en-US", {
-              timeZone,
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
+            {recurringClass.dateTime
+              ? new Date(recurringClass.dateTime).toLocaleDateString("en-US", {
+                  timeZone,
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "No date selected"}
           </span>
         </div>
 

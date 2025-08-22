@@ -1,7 +1,6 @@
 "use client";
 
 import { createMonthlyClasses } from "@/app/helper/api/classesApi";
-import { getInstructors } from "@/app/helper/api/instructorsApi";
 import React, { useState } from "react";
 
 function Page() {

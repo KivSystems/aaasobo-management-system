@@ -46,7 +46,12 @@ export const getInstructors = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result = await response.json();
-    return result.instructors || [];
+    return result.data.map(
+      (instructor: { ID: number; Instructor: string }) => ({
+        id: instructor.ID,
+        name: instructor.Instructor,
+      }),
+    );
   } catch (error) {
     console.error("Failed to fetch instructors:", error);
     throw error;
@@ -146,28 +151,6 @@ export const updateInstructor = async (
   const data = await response.json();
 
   if (response.status === 500) {
-    return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
-  }
-
-  return data;
-};
-
-// PATCH instructor data with icon
-export const updateInstructorWithIcon = async (
-  instructorId: number,
-  userData: FormData,
-) => {
-  // Define the data to be sent to the server side.
-  const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/withIcon`;
-
-  const response = await fetch(instructorURL, {
-    method: "PATCH",
-    body: userData,
-  });
-
-  const data = await response.json();
-
-  if (response.status !== 200) {
     return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
   }
 
