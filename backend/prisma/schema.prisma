@@ -38,6 +38,7 @@ model Instructor {
   instructorUnavailability        InstructorUnavailability[]
   introductionURL                 String                            @unique
   createdAt                       DateTime                          @default(now())
+  updatedAt                       DateTime                          @default(now()) @updatedAt
   inactiveAt                      DateTime?
   instructorSchedules             InstructorSchedule[]
   instructorAbsences              InstructorAbsence[]
@@ -83,6 +84,7 @@ model Customer {
   hasSeenWelcome Boolean        @default(false)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  inactiveAt     DateTime?
 }
 
 model Class {
@@ -116,10 +118,13 @@ enum Status {
 }
 
 model Admins {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
+  id         Int       @id @default(autoincrement())
+  name       String
+  email      String    @unique
+  password   String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+  inactiveAt DateTime?
 }
 
 model Children {
