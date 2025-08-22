@@ -23,9 +23,6 @@ export default function EventTabs({
   ];
   const activeTabName = "activeEventTab";
 
-  // Set the authentication status as true.
-  const isAuthenticated = true;
-
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect("activeEventTab");
 

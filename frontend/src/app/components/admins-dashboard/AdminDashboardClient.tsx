@@ -23,9 +23,6 @@ export default function AdminTabs({
   ];
   const activeTabName = "activeAdminTab";
 
-  // Set the authentication status as true.
-  const isAuthenticated = true;
-
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect("activeAdminTab");
 
