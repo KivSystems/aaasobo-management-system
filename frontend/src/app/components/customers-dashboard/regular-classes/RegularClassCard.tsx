@@ -7,13 +7,28 @@ import {
   getWeekday,
 } from "@/app/helper/utils/dateUtils";
 import styles from "./RegularClassCard.module.scss";
+import {
+  CHILDREN_LABEL,
+  CLASS_URL_LABEL,
+  STARTED_LABEL,
+  ENDED_LABEL,
+  NO_CHILDREN_ASSIGNED,
+  NO_URL_PROVIDED,
+  NO_DATE_SELECTED,
+  EDIT_CLASS_ARIA_LABEL,
+} from "@/app/helper/messages/customerDashboard";
 
 interface RegularClassCardProps {
   recurringClass: RecurringClass;
   onEdit?: (id: number) => void;
+  language: LanguageType;
 }
 
-function RegularClassCard({ recurringClass, onEdit }: RegularClassCardProps) {
+function RegularClassCard({
+  recurringClass,
+  onEdit,
+  language,
+}: RegularClassCardProps) {
   const timeZone = "Asia/Tokyo"; // Use JST for consistency
 
   const classDateTime = new Date(recurringClass.dateTime);
@@ -46,7 +61,7 @@ function RegularClassCard({ recurringClass, onEdit }: RegularClassCardProps) {
           <button
             onClick={handleEdit}
             className={styles.editButtonTopRight}
-            aria-label="Edit class"
+            aria-label={EDIT_CLASS_ARIA_LABEL[language]}
           >
             <PencilIcon className={styles.editIcon} />
           </button>
@@ -58,16 +73,16 @@ function RegularClassCard({ recurringClass, onEdit }: RegularClassCardProps) {
       <div className={styles.details}>
         <div className={styles.detailItem}>
           <span className={styles.text}>
-            <strong>Children:</strong>{" "}
+            <strong>{CHILDREN_LABEL[language]}:</strong>{" "}
             {recurringClass.recurringClassAttendance
               .map((attendance) => attendance.children.name)
-              .join(", ") || "No children assigned"}
+              .join(", ") || NO_CHILDREN_ASSIGNED[language]}
           </span>
         </div>
 
         <div className={styles.detailItem}>
           <span className={styles.text}>
-            <strong>Class URL:</strong>{" "}
+            <strong>{CLASS_URL_LABEL[language]}:</strong>{" "}
             <a
               href={recurringClass.instructor?.classURL}
               target="_blank"
@@ -83,35 +98,41 @@ function RegularClassCard({ recurringClass, onEdit }: RegularClassCardProps) {
                       return recurringClass.instructor.classURL;
                     }
                   })()
-                : "No URL provided"}
+                : NO_URL_PROVIDED[language]}
             </a>
           </span>
         </div>
 
         <div className={styles.detailItem}>
           <span className={styles.text}>
-            <strong>Started:</strong>{" "}
+            <strong>{STARTED_LABEL[language]}:</strong>{" "}
             {recurringClass.dateTime
-              ? new Date(recurringClass.dateTime).toLocaleDateString("en-US", {
-                  timeZone,
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
-              : "No date selected"}
+              ? new Date(recurringClass.dateTime).toLocaleDateString(
+                  language === "ja" ? "ja-JP" : "en-US",
+                  {
+                    timeZone,
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  },
+                )
+              : NO_DATE_SELECTED[language]}
           </span>
         </div>
 
         {recurringClass.endAt && (
           <div className={styles.detailItem}>
             <span className={styles.text}>
-              <strong>Ended:</strong>{" "}
-              {new Date(recurringClass.endAt).toLocaleDateString("en-US", {
-                timeZone,
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
+              <strong>{ENDED_LABEL[language]}:</strong>{" "}
+              {new Date(recurringClass.endAt).toLocaleDateString(
+                language === "ja" ? "ja-JP" : "en-US",
+                {
+                  timeZone,
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                },
+              )}
             </span>
           </div>
         )}

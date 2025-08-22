@@ -7,17 +7,24 @@ import styles from "./RegularClassesTable.module.scss";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import RegularClassCard from "./RegularClassCard";
 import EditRegularClassModal from "./EditRegularClassModal";
+import {
+  PREVIOUS_REGULAR_CLASSES,
+  LOADING_TEXT,
+  NO_REGULAR_CLASSES_MESSAGE,
+} from "@/app/helper/messages/customerDashboard";
 
 function RegularClassesTable({
   subscriptionId,
   userSessionType,
   adminId,
   customerId,
+  language,
 }: {
   subscriptionId: number;
   userSessionType?: UserType;
   adminId?: number;
   customerId: number;
+  language: LanguageType;
 }) {
   const [activeRecurringClasses, setActiveRecurringClasses] = useState<
     RecurringClass[]
@@ -132,6 +139,7 @@ function RegularClassesTable({
               key={recurringClass.id}
               recurringClass={recurringClass}
               onEdit={handleEditRegularClass}
+              language={language}
             />
           ))}
         </div>
@@ -149,10 +157,12 @@ function RegularClassesTable({
             }}
             onClick={handleToggleHistory}
           >
-            <h4>Previous Regular Classes ({historyCount})</h4>
+            <h4>
+              {PREVIOUS_REGULAR_CLASSES[language]} ({historyCount})
+            </h4>
             {historyLoading ? (
               <div style={{ fontSize: "0.875rem", color: "#666" }}>
-                Loading...
+                {LOADING_TEXT[language]}
               </div>
             ) : showHistory ? (
               <ChevronUpIcon className={styles.icon} />
@@ -166,6 +176,7 @@ function RegularClassesTable({
                 <RegularClassCard
                   key={recurringClass.id}
                   recurringClass={recurringClass}
+                  language={language}
                 />
               ))}
             </div>
@@ -174,7 +185,7 @@ function RegularClassesTable({
       )}
 
       {activeRecurringClasses.length === 0 && historyCount === 0 && (
-        <p>No regular classes found for this subscription.</p>
+        <p>{NO_REGULAR_CLASSES_MESSAGE[language]}</p>
       )}
 
       {/* Edit Modal */}
