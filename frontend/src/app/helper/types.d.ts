@@ -27,6 +27,7 @@ type Instructor = {
   meetingId: string;
   passcode: string;
   introductionURL: string;
+  inactiveAt: string;
 };
 
 type InstructorProfile = {
@@ -337,6 +338,7 @@ type CustomerProfile = {
   email: string;
   prefecture: string;
   createdAt: string;
+  inactiveAt: string | null;
   hasSeenWelcome: boolean;
 };
 

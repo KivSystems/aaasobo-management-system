@@ -6,11 +6,12 @@ import { useFormState } from "react-dom";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateInstructorAction } from "@/app/actions/updateUser";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import UserStatusSwitcher from "@/app/components/elements/UserStatusSwitcher/UserStatusSwitcher";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
   formatBirthdateToISO,
-  getShortMonth,
+  getLongMonth,
 } from "@/app/helper/utils/dateUtils";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import {
@@ -137,8 +138,16 @@ function InstructorProfile({
               className={styles.pic}
             />
 
+            {/* User Status Switcher */}
+            <UserStatusSwitcher
+              isEditing={isEditing}
+              inactiveDate={latestInstructor.inactiveAt}
+            />
+
             {isEditing && (
               <>
+                {/* Image Uploader */}
+                <p className={styles.profileImage__text}>Profile Image</p>
                 <input
                   type="file"
                   name="icon"
@@ -162,7 +171,7 @@ function InstructorProfile({
               </>
             )}
 
-            {/* Name*/}
+            {/* Name */}
             <div className={styles.instructorName__nameSection}>
               <p className={styles.instructorName__text}>
                 {language === "en" ? "Name" : "名前"}
@@ -219,7 +228,7 @@ function InstructorProfile({
                   />
                 ) : (
                   <h4 className={styles.birthdate__text}>
-                    {getShortMonth(new Date(latestInstructor.birthdate))}{" "}
+                    {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
                     {new Date(latestInstructor.birthdate).getDate()}
                   </h4>
                 )}

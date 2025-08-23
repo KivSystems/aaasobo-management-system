@@ -10,6 +10,7 @@ import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateCustomerProfileAction } from "@/app/actions/updateUser";
 import InputField from "../../elements/inputField/InputField";
 import PrefectureSelect from "../../features/registerForm/prefectureSelect/PrefectureSelect";
+import UserStatusSwitcher from "@/app/components/elements/UserStatusSwitcher/UserStatusSwitcher";
 import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
@@ -78,6 +79,13 @@ function CustomerProfile({
           )}
         </div>
       </label>
+
+      {/* User Status Switcher */}
+      <UserStatusSwitcher
+        isEditing={isEditing}
+        inactiveDate={customerProfile.inactiveAt}
+        className={"customer"}
+      />
 
       {/* Customer email */}
       <label className={styles.email}>
@@ -191,6 +199,11 @@ function CustomerProfile({
         type="hidden"
         name="currentPrefecture"
         value={customerProfile.prefecture ?? ""}
+      />
+      <input
+        type="hidden"
+        name="currentInactiveDate"
+        value={customerProfile.inactiveAt ?? ""}
       />
       <input type="hidden" name="language" value={language ?? "en"} />
     </form>

@@ -75,6 +75,7 @@ export async function updateInstructorAction(
 ): Promise<UpdateFormState> {
   try {
     const name = formData.get("name");
+    const inactiveDate = String(formData.get("inactiveDate"));
     const nickname = formData.get("nickname");
     const birthdate = String(formData.get("birthdate"));
     const workingTime = String(formData.get("workingTime"));
@@ -114,6 +115,7 @@ export async function updateInstructorAction(
 
     const userData = new FormData();
     userData.append("name", parsedForm1.data.name);
+    userData.append("inactiveDate", inactiveDate);
     userData.append("nickname", parsedForm1.data.nickname);
     userData.append("birthdate", birthdate);
     userData.append("workingTime", workingTime);
@@ -163,10 +165,12 @@ export async function updateCustomerProfileAction(
   const updatedName = formData.get("name");
   const updatedEmail = formData.get("email");
   const updatedPrefecture = formData.get("prefecture");
+  const updatedInactiveDate = String(formData.get("inactiveDate"));
   // Hidden input tag fields
   const currentName = formData.get("currentName");
   const currentEmail = formData.get("currentEmail");
   const currentPrefecture = formData.get("currentPrefecture");
+  const currentInactiveDate = String(formData.get("currentInactiveDate"));
   const id = Number(formData.get("id")); // The form includes "id" (customer ID) only when submitted by an admin.
 
   let customerId;
@@ -193,7 +197,8 @@ export async function updateCustomerProfileAction(
   if (
     updatedName === currentName &&
     updatedEmail === currentEmail &&
-    updatedPrefecture === currentPrefecture
+    updatedPrefecture === currentPrefecture &&
+    updatedInactiveDate === currentInactiveDate
   ) {
     return {
       errorMessage: NO_CHANGES_MADE_MESSAGE,
@@ -216,6 +221,7 @@ export async function updateCustomerProfileAction(
     parsedForm.data.name,
     parsedForm.data.email,
     parsedForm.data.prefecture,
+    updatedInactiveDate,
   );
 
   const path = id
