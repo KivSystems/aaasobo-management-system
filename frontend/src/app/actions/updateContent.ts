@@ -194,20 +194,26 @@ export async function generateClassesAction(
     });
 
     if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
-      return extractUpdateValidationErrors(validationErrors);
+      const fieldErrors = parsedForm.error.flatten().fieldErrors;
+      const firstError =
+        fieldErrors.year?.[0] || fieldErrors.month?.[0] || "Validation failed.";
+      return {
+        isSuccess: false,
+        errorMessage: firstError,
+      };
     }
 
     // Get the cookies from the request headers
     const cookie = await getCookie();
 
     // Update the business schedule
-    const response = await generateClasses(year, month, cookie);
+    await generateClasses(year, month, cookie);
 
-    // Refresh cached schedule data for the business calendar page
-    // revalidateBusinessSchedule();
-
-    return response;
+    return {
+      isSuccess: true,
+      successMessage: "Classes generated successfully!",
+      errorMessage: "",
+    };
   } catch (error) {
     console.error("Unexpected error in updateContent server action:", error);
     return {

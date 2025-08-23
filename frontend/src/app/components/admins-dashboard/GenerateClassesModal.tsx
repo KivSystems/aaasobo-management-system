@@ -4,8 +4,14 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "./GenerateClassesModal.module.scss";
 import ActionButton from "../elements/buttons/actionButton/ActionButton";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
+import FormValidationMessage from "../elements/formValidationMessage/FormValidationMessage";
 
-function GenerateClassesModal() {
+type GenerateClassesModalProps = {
+  error?: string;
+  success?: string;
+};
+
+function GenerateClassesModal({ error, success }: GenerateClassesModalProps) {
   const defaultValue = "Select Month";
   const [selectedMonth, setSelectedMonth] = useState(defaultValue);
   const [selectableMonths, setSelectableMonths] = useState<string[]>([]);
@@ -55,6 +61,8 @@ function GenerateClassesModal() {
           ))}
         </select>
       </div>
+      {error && <FormValidationMessage type="error" message={error} />}
+      {success && <FormValidationMessage type="success" message={success} />}
       <div className={styles.actionButton}>
         <ActionButton className="bookBtn" btnText="Generate" type="submit" />
       </div>

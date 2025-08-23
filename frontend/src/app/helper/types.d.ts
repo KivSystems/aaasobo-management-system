@@ -262,6 +262,7 @@ type UpdateFormState = {
   eventId?: string;
   errorMessage?: string;
   successMessage?: string;
+  isSuccess?: boolean;
 };
 
 type DeleteFormState = {
