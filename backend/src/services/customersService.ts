@@ -22,10 +22,11 @@ export const updateCustomerProfile = async (
     email?: string;
     prefecture?: string;
     emailVerified?: Date | null;
+    inactiveAt?: Date | null;
     hasSeenWelcome?: boolean;
   },
 ) => {
-  const customer = await prisma.customer.update({
+  await prisma.customer.update({
     where: {
       id,
     },
@@ -36,7 +37,11 @@ export const updateCustomerProfile = async (
 // Fetch all customers information
 export const getAllCustomers = async () => {
   try {
-    return await prisma.customer.findMany();
+    return await prisma.customer.findMany({
+      orderBy: {
+        id: "asc",
+      },
+    });
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch customers.");

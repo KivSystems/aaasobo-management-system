@@ -371,6 +371,7 @@ export const updateInstructorProfileController = async (
   const icon = req.file;
   const {
     name,
+    inactiveDate,
     email,
     nickname,
     birthdate,
@@ -388,7 +389,9 @@ export const updateInstructorProfileController = async (
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
-  // Normalize birthdate
+  // Normalize inactiveDate and birthdate
+  const normalizedInactiveDate =
+    inactiveDate !== "null" ? new Date(convertToISOString(inactiveDate)) : null;
   const normalizedBirthdate = new Date(convertToISOString(birthdate));
 
   // Set unique checks list
@@ -443,6 +446,7 @@ export const updateInstructorProfileController = async (
       icon,
       name,
       nickname,
+      normalizedInactiveDate,
       normalizedBirthdate,
       workingTime,
       lifeHistory,

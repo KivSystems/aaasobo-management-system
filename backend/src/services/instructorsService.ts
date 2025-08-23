@@ -105,6 +105,7 @@ export const updateInstructor = async (
   icon: Express.Multer.File | undefined,
   name: string,
   nickname: string,
+  inactiveDate: Date | null,
   birthdate: Date,
   workingTime: string,
   lifeHistory: string,
@@ -166,6 +167,7 @@ export const updateInstructor = async (
         passcode,
         introductionURL,
         icon: blob.url,
+        inactiveAt: inactiveDate,
       },
     });
     return instructor;
@@ -491,9 +493,13 @@ export const updateInstructorPassword = async (
 };
 
 export const getInstructorProfiles = async () => {
+  const now = new Date();
   const instructors = await prisma.instructor.findMany({
     where: {
-      inactiveAt: null, // Exclude instructors who have quit
+      OR: [
+        { inactiveAt: null }, // Active
+        { inactiveAt: { gt: now } }, // Active (Future inactive)
+      ],
     },
   });
 

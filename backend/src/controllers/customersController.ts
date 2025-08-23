@@ -167,7 +167,7 @@ export const updateCustomerProfileController = async (
   res: Response,
 ) => {
   const customerId = parseInt(req.params.id);
-  const { name, email, prefecture } = req.body;
+  const { name, email, prefecture, inactiveDate } = req.body;
   const updatedEmail = email.trim().toLowerCase();
 
   try {
@@ -181,6 +181,8 @@ export const updateCustomerProfileController = async (
     const isEmailUpdated = updatedEmail !== currentCustomerProfile.email;
     const isPrefectureUpdated =
       prefecture !== currentCustomerProfile.prefecture;
+    const isInactiveDateUpdated =
+      inactiveDate !== currentCustomerProfile.inactiveAt;
 
     if (isEmailUpdated) {
       const existingCustomer = await getCustomerByEmail(updatedEmail);
@@ -202,11 +204,18 @@ export const updateCustomerProfileController = async (
       }
     }
 
+    // Normalize inactiveDate and birthdate
+    const normalizedInactiveDate =
+      inactiveDate !== "null"
+        ? new Date(convertToISOString(inactiveDate))
+        : null;
+
     await updateCustomerProfile(customerId, {
       ...(isNameUpdated && { name }),
       ...(isEmailUpdated && { email: updatedEmail }),
       ...(isPrefectureUpdated && { prefecture }),
       ...(isEmailUpdated && { emailVerified: null }),
+      ...(isInactiveDateUpdated && { inactiveAt: normalizedInactiveDate }),
     });
 
     res.status(200).json({

@@ -185,6 +185,7 @@ export const getInstructor = async (req: Request, res: Response) => {
         meetingId: instructor.meetingId,
         passcode: instructor.passcode,
         introductionURL: instructor.introductionURL,
+        inactiveAt: instructor.inactiveAt,
       },
     });
   } catch (error) {
