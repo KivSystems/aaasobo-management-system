@@ -9,7 +9,6 @@ import {
   ChatBubbleLeftRightIcon,
   AcademicCapIcon,
   BellIcon,
-  WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 
 export function getLinks(
@@ -51,12 +50,6 @@ export function getLinks(
       name: language === "ja" ? "レギュラークラス" : "Regular Classes",
       href: `/customers/${userId}/regular-classes`,
       icon: ClipboardDocumentListIcon,
-    },
-    {
-      name:
-        language === "ja" ? "レギュラークラス (WIP)" : "Regular Classes (WIP)",
-      href: `/customers/${userId}/regular-classes-wip`,
-      icon: WrenchScrewdriverIcon,
     },
   ];
 

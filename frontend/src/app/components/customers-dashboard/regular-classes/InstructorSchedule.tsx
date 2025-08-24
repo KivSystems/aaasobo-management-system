@@ -6,9 +6,9 @@ import {
   InstructorSlot,
 } from "@/app/helper/api/instructorsApi";
 import { WEEKDAYS } from "@/app/helper/utils/scheduleUtils";
-import styles from "./InstructorScheduleWip.module.scss";
+import styles from "./InstructorSchedule.module.scss";
 
-interface InstructorScheduleWipProps {
+interface InstructorScheduleProps {
   instructorId: number;
   effectiveDate: string;
   onSlotSelect: (weekday: number, startTime: string) => void;
@@ -16,13 +16,13 @@ interface InstructorScheduleWipProps {
   selectedStartTime: string;
 }
 
-export default function InstructorScheduleWip({
+export default function InstructorSchedule({
   instructorId,
   effectiveDate,
   onSlotSelect,
   selectedWeekday,
   selectedStartTime,
-}: InstructorScheduleWipProps) {
+}: InstructorScheduleProps) {
   const [slots, setSlots] = useState<InstructorSlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");

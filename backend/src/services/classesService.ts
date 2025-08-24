@@ -319,21 +319,6 @@ export const checkInstructorConflicts = async (
   return existingBooking !== null;
 };
 
-// Check if the instructor is unavailable or not at the specified date and time
-export const checkInstructorUnavailability = async (
-  instructorId: number,
-  dateTime: string,
-): Promise<boolean> => {
-  const existingUnavailability =
-    await prisma.instructorUnavailability.findFirst({
-      where: {
-        instructorId,
-        dateTime: new Date(dateTime),
-      },
-    });
-  return existingUnavailability !== null;
-};
-
 // Check if the selected children have another class with another instructor at the same dateTime
 // If there are conflicting classes, return the array of the children's names
 export const checkChildConflicts = async (

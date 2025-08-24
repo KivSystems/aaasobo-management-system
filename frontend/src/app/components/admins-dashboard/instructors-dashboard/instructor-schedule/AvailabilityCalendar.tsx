@@ -14,7 +14,7 @@ import Modal from "@/app/components/elements/modal/Modal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import { EventSourceFuncArg, EventClickArg } from "@fullcalendar/core";
 import { toast } from "react-toastify";
-import styles from "./VersionedAvailabilityCalendar.module.scss";
+import styles from "./AvailabilityCalendar.module.scss";
 
 // Define proper event type for FullCalendar events
 interface CalendarEvent {
@@ -31,7 +31,7 @@ interface CalendarEvent {
   };
 }
 
-export default function VersionedAvailabilityCalendar({
+export default function AvailabilityCalendar({
   instructorId,
 }: {
   instructorId: number;
