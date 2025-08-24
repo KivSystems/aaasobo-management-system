@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { getLongMonth, nDaysLater } from "@/app/helper/utils/dateUtils";
 import InputField from "@/app/components/elements/inputField/InputField";
-import { MIN_DAYS_TO_INACTIVE } from "@/app/helper/data/data";
+import { MIN_DAYS_TO_LEAVE } from "@/app/helper/data/data";
 
 const UserStatusSwitcher = ({
   isEditing,
@@ -96,9 +96,7 @@ const UserStatusSwitcher = ({
                     ? new Date(updatedLeavingDate).toISOString().split("T")[0]
                     : ""
                 }
-                min={
-                  nDaysLater(MIN_DAYS_TO_INACTIVE).toISOString().split("T")[0]
-                }
+                min={nDaysLater(MIN_DAYS_TO_LEAVE).toISOString().split("T")[0]}
                 onChange={(e) => setUpdatedLeavingDate(e.target.value || null)}
                 className={styles.leavingDate__inputField}
               />
