@@ -4,24 +4,23 @@ import styles from "./UserStatusSwitcher.module.scss";
 import { useState, useEffect } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { getLongMonth, nDaysLater } from "@/app/helper/utils/dateUtils";
-import { useLanguage } from "@/app/contexts/LanguageContext";
 import InputField from "@/app/components/elements/inputField/InputField";
 import { MIN_DAYS_TO_INACTIVE } from "@/app/helper/data/data";
 
 const UserStatusSwitcher = ({
   isEditing,
-  inactiveDate,
-  className,
+  leavingDate,
+  onStatusChange,
 }: {
   isEditing: boolean;
-  inactiveDate: string | null;
-  className?: string;
+  leavingDate: string | null;
+  onStatusChange: (status: UserStatus, date: string | null) => void;
 }) => {
-  const [userStatus, setUserStatus] = useState<"active" | "inactive">(
-    inactiveDate !== null ? "inactive" : "active",
+  const [userStatus, setUserStatus] = useState<UserStatus>(
+    leavingDate !== null ? "leaving" : "active",
   );
-  const [updatedInactiveDate, setUpdatedInactiveDate] = useState<string | null>(
-    inactiveDate ? inactiveDate : null,
+  const [updatedLeavingDate, setUpdatedLeavingDate] = useState<string | null>(
+    leavingDate ? leavingDate : null,
   );
   const [dateInfo, setDateInfo] = useState<{
     month: number;
@@ -34,50 +33,43 @@ const UserStatusSwitcher = ({
     year: 0,
     isPast: false,
   });
-  const { language } = useLanguage();
 
   useEffect(() => {
-    // Update user status and inactive date
-    setUserStatus(inactiveDate ? "inactive" : "active");
-    setUpdatedInactiveDate(inactiveDate);
+    // Update user status and leaving date
+    const newStatus = leavingDate ? "leaving" : "active";
+    setUserStatus(newStatus);
+    setUpdatedLeavingDate(leavingDate);
 
     // Set date info
-    if (inactiveDate) {
-      const month = new Date(inactiveDate).getMonth();
-      const date = new Date(inactiveDate).getDate();
-      const year = new Date(inactiveDate).getFullYear();
-      const isPast = new Date(inactiveDate) < new Date();
+    if (leavingDate) {
+      const targetDate = new Date(leavingDate);
+      const month = targetDate.getMonth();
+      const date = targetDate.getDate();
+      const year = targetDate.getFullYear();
+      const isPast = targetDate < new Date();
       setDateInfo({ month, date, year, isPast });
     }
-  }, [inactiveDate]);
+  }, [leavingDate]);
+
+  useEffect(() => {
+    onStatusChange(userStatus, updatedLeavingDate);
+  }, [userStatus, updatedLeavingDate, onStatusChange]);
 
   return (
     <>
       {isEditing ? (
         <>
-          <p
-            className={
-              className === "customer"
-                ? styles.customerInactiveDate__text
-                : styles.userStatus__text
-            }
-          >
-            User Status
-          </p>
+          <p className={styles.userStatus__text}>User Status</p>
           <div className={styles.switchContainer}>
             <div
-              className={
-                className === "customer"
-                  ? styles.customerStatusSwitcher
-                  : styles.userStatusSwitcher
-              }
+              className={styles.userStatusSwitcher}
               onClick={() => {
-                setUserStatus(userStatus === "active" ? "inactive" : "active");
+                setUserStatus(userStatus === "active" ? "leaving" : "active");
               }}
             >
               <div
                 className={`${styles.switch} ${
-                  userStatus === "inactive" ? styles.inactive : ""
+                  userStatus === "leaving" ? styles.leaving : ""
                 }`}
               ></div>
               <span
@@ -89,43 +81,39 @@ const UserStatusSwitcher = ({
               </span>
               <span
                 className={`${styles.status} ${
-                  userStatus === "inactive" && styles["status--active"]
+                  userStatus === "leaving" && styles["status--active"]
                 }`}
               >
-                Inactive
+                Leaving
               </span>
             </div>
-            {userStatus === "inactive" && (
+            {userStatus === "leaving" && (
               <InputField
-                name="inactiveDate"
+                name="leavingDate"
                 type="date"
                 value={
-                  updatedInactiveDate
-                    ? new Date(updatedInactiveDate).toISOString().split("T")[0]
+                  updatedLeavingDate
+                    ? new Date(updatedLeavingDate).toISOString().split("T")[0]
                     : ""
                 }
                 min={
                   nDaysLater(MIN_DAYS_TO_INACTIVE).toISOString().split("T")[0]
                 }
-                onChange={(e) => setUpdatedInactiveDate(e.target.value || null)}
-                className={
-                  className === "customer"
-                    ? styles.customerInactiveDate__inputField
-                    : styles.inactiveDate__inputField
-                }
+                onChange={(e) => setUpdatedLeavingDate(e.target.value || null)}
+                className={styles.leavingDate__inputField}
               />
             )}
           </div>
         </>
       ) : (
         <>
-          {inactiveDate && !isNaN(new Date(inactiveDate).getTime()) && (
-            <div className={styles.userInactive}>
-              <ExclamationTriangleIcon className={styles.userInactive__icon} />
-              <p className={styles.userInactive__text}>
-                {language === "en"
-                  ? `Inactive ${dateInfo.isPast ? "since" : "from"} ${getLongMonth(new Date(inactiveDate))} ${dateInfo.date}, ${dateInfo.year}`
-                  : `${dateInfo.year}年${dateInfo.month}月${dateInfo.date}日より活動休止${dateInfo.isPast ? "" : "予定"}`}
+          {leavingDate && !isNaN(new Date(leavingDate).getTime()) && (
+            <div className={styles.userLeaving}>
+              <ExclamationTriangleIcon className={styles.userLeaving__icon} />
+              <p className={styles.userLeaving__text}>
+                {dateInfo.isPast ? "Left" : "Leaving"} on{" "}
+                {getLongMonth(new Date(leavingDate))} {dateInfo.date},{" "}
+                {dateInfo.year}
               </p>
             </div>
           )}

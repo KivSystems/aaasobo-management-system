@@ -4,6 +4,8 @@ type Events = {
   end: string;
 };
 
+type UserStatus = "active" | "leaving";
+
 type Instructors = {
   data: Instructor[];
 };
@@ -27,7 +29,7 @@ type Instructor = {
   meetingId: string;
   passcode: string;
   introductionURL: string;
-  inactiveAt: string;
+  terminationAt: string;
 };
 
 type InstructorProfile = {
@@ -48,7 +50,7 @@ type InstructorProfile = {
   passcode: string;
   introductionURL: string;
   createdAt: string;
-  inactiveAt: string;
+  terminationAt: string;
 };
 
 type InstructorRebookingProfile = {
@@ -289,6 +291,7 @@ type UpdateFormState = {
   eventId?: string;
   errorMessage?: string;
   successMessage?: string;
+  skipProcessing?: string;
 };
 
 type DeleteFormState = {
@@ -338,7 +341,6 @@ type CustomerProfile = {
   email: string;
   prefecture: string;
   createdAt: string;
-  inactiveAt: string | null;
   hasSeenWelcome: boolean;
 };
 

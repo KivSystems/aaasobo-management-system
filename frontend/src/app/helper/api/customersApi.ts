@@ -54,7 +54,6 @@ export const updateCustomerProfile = async (
   name: string,
   email: string,
   prefecture: string,
-  inactiveDate: string,
 ): Promise<LocalizedMessages> => {
   const customerURL = `${BACKEND_ORIGIN}/customers/${id}`;
   const headers = { "Content-Type": "application/json" };
@@ -62,7 +61,6 @@ export const updateCustomerProfile = async (
     name,
     email,
     prefecture,
-    inactiveDate,
   });
 
   try {

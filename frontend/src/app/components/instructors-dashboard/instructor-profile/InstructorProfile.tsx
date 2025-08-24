@@ -57,6 +57,9 @@ function InstructorProfile({
     Instructor | InstructorProfile | null
   >(typeof instructor !== "string" ? instructor : null);
   const [isEditing, setIsEditing] = useState(false);
+  const [confirmResult, setConfirmResult] = useState<boolean>(false);
+  const [status, setStatus] = useState<UserStatus>("active");
+  const [leavingDate, setLeavingDate] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
 
@@ -84,6 +87,19 @@ function InstructorProfile({
     }
   };
 
+  const submissionConfirm = () => {
+    if (leavingDate && !leavingDate.includes("T") && status === "leaving") {
+      const updatedDate = leavingDate.replace(/-/g, "/");
+      setConfirmResult(
+        window.confirm(
+          `Please confirm if the leaving date (${updatedDate}) is correct.`,
+        ),
+      );
+    } else {
+      setConfirmResult(true);
+    }
+  };
+
   useEffect(() => {
     if (updateResultState !== undefined) {
       if ("instructor" in updateResultState) {
@@ -108,6 +124,8 @@ function InstructorProfile({
         }
         setPreviousInstructor(newInstructor);
         setLatestInstructor(newInstructor);
+      } else if ("skipProcessing" in updateResultState) {
+        return;
       } else {
         const result = updateResultState as { errorMessage: string };
         toast.error(result.errorMessage);
@@ -141,7 +159,11 @@ function InstructorProfile({
             {/* User Status Switcher */}
             <UserStatusSwitcher
               isEditing={isEditing}
-              inactiveDate={latestInstructor.inactiveAt}
+              leavingDate={latestInstructor.terminationAt}
+              onStatusChange={(newStatus, newDate) => {
+                setStatus(newStatus);
+                setLeavingDate(newDate);
+              }}
             />
 
             {isEditing && (
@@ -503,6 +525,11 @@ function InstructorProfile({
               name="icon"
               value={latestInstructor.icon.url}
             />
+            <input
+              type="hidden"
+              name="confirmResult"
+              value={confirmResult.toString()}
+            />
 
             {/* Action buttons for only admin */}
             {userSessionType === "admin" ? (
@@ -524,6 +551,7 @@ function InstructorProfile({
                       btnText="Save"
                       type="submit"
                       Icon={CheckIcon}
+                      onClick={submissionConfirm}
                     />
                   </div>
                 ) : (
