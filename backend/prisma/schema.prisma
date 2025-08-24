@@ -39,7 +39,7 @@ model Instructor {
   introductionURL                 String                            @unique
   createdAt                       DateTime                          @default(now())
   updatedAt                       DateTime                          @default(now()) @updatedAt
-  inactiveAt                      DateTime?
+  terminationAt                   DateTime?
   instructorSchedules             InstructorSchedule[]
   instructorAbsences              InstructorAbsence[]
 }
@@ -84,7 +84,6 @@ model Customer {
   hasSeenWelcome Boolean        @default(false)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
-  inactiveAt     DateTime?
 }
 
 model Class {
