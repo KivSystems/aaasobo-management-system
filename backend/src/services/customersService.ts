@@ -22,7 +22,6 @@ export const updateCustomerProfile = async (
     email?: string;
     prefecture?: string;
     emailVerified?: Date | null;
-    inactiveAt?: Date | null;
     hasSeenWelcome?: boolean;
   },
 ) => {
