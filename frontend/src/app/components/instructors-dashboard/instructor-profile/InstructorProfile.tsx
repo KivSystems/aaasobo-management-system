@@ -160,6 +160,7 @@ function InstructorProfile({
             <UserStatusSwitcher
               isEditing={isEditing}
               leavingDate={latestInstructor.terminationAt}
+              error={localMessages.leavingDate ? localMessages.leavingDate : ""}
               onStatusChange={(newStatus, newDate) => {
                 setStatus(newStatus);
                 setLeavingDate(newDate);

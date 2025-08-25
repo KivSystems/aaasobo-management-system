@@ -282,6 +282,7 @@ type RegisterFormState = {
 type UpdateFormState = {
   name?: string;
   nickname?: string;
+  leavingDate?: string;
   email?: string;
   classURL?: string;
   meetingId?: string;
