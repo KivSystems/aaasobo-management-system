@@ -67,7 +67,14 @@ export const registerInstructor = async (data: {
 // Fetch all instructors information
 export const getAllInstructors = async () => {
   try {
+    const now = new Date();
     return await prisma.instructor.findMany({
+      where: {
+        OR: [
+          { terminationAt: null }, // Active
+          { terminationAt: { gt: now } }, // Active (Future termination)
+        ],
+      },
       orderBy: { id: "asc" },
     });
   } catch (error) {
@@ -92,6 +99,7 @@ export const updateInstructor = async (
   icon: Express.Multer.File | undefined,
   name: string,
   nickname: string,
+  leavingDate: Date | null,
   birthdate: Date,
   workingTime: string,
   lifeHistory: string,
@@ -153,6 +161,7 @@ export const updateInstructor = async (
         passcode,
         introductionURL,
         icon: blob.url,
+        terminationAt: leavingDate,
       },
     });
     return instructor;
@@ -240,9 +249,13 @@ export const updateInstructorPassword = async (
 };
 
 export const getInstructorProfiles = async () => {
+  const now = new Date();
   const instructors = await prisma.instructor.findMany({
     where: {
-      inactiveAt: null, // Exclude instructors who have quit
+      OR: [
+        { terminationAt: null }, // Active
+        { terminationAt: { gt: now } }, // Active (Future termination)
+      ],
     },
   });
 

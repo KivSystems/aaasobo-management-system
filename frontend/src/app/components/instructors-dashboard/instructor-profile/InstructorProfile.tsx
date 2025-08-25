@@ -6,11 +6,12 @@ import { useFormState } from "react-dom";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateInstructorAction } from "@/app/actions/updateUser";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import UserStatusSwitcher from "@/app/components/elements/UserStatusSwitcher/UserStatusSwitcher";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
   formatBirthdateToISO,
-  getShortMonth,
+  getLongMonth,
 } from "@/app/helper/utils/dateUtils";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import {
@@ -56,6 +57,9 @@ function InstructorProfile({
     Instructor | InstructorProfile | null
   >(typeof instructor !== "string" ? instructor : null);
   const [isEditing, setIsEditing] = useState(false);
+  const [confirmResult, setConfirmResult] = useState<boolean>(false);
+  const [status, setStatus] = useState<UserStatus>("active");
+  const [leavingDate, setLeavingDate] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
 
@@ -83,6 +87,19 @@ function InstructorProfile({
     }
   };
 
+  const submissionConfirm = () => {
+    if (leavingDate && !leavingDate.includes("T") && status === "leaving") {
+      const updatedDate = leavingDate.replace(/-/g, "/");
+      setConfirmResult(
+        window.confirm(
+          `Please confirm if the leaving date (${updatedDate}) is correct.`,
+        ),
+      );
+    } else {
+      setConfirmResult(true);
+    }
+  };
+
   useEffect(() => {
     if (updateResultState !== undefined) {
       if ("instructor" in updateResultState) {
@@ -107,6 +124,8 @@ function InstructorProfile({
         }
         setPreviousInstructor(newInstructor);
         setLatestInstructor(newInstructor);
+      } else if ("skipProcessing" in updateResultState) {
+        return;
       } else {
         const result = updateResultState as { errorMessage: string };
         toast.error(result.errorMessage);
@@ -137,8 +156,21 @@ function InstructorProfile({
               className={styles.pic}
             />
 
+            {/* User Status Switcher */}
+            <UserStatusSwitcher
+              isEditing={isEditing}
+              leavingDate={latestInstructor.terminationAt}
+              error={localMessages.leavingDate ? localMessages.leavingDate : ""}
+              onStatusChange={(newStatus, newDate) => {
+                setStatus(newStatus);
+                setLeavingDate(newDate);
+              }}
+            />
+
             {isEditing && (
               <>
+                {/* Image Uploader */}
+                <p className={styles.profileImage__text}>Profile Image</p>
                 <input
                   type="file"
                   name="icon"
@@ -162,7 +194,7 @@ function InstructorProfile({
               </>
             )}
 
-            {/* Name*/}
+            {/* Name */}
             <div className={styles.instructorName__nameSection}>
               <p className={styles.instructorName__text}>
                 {language === "en" ? "Name" : "名前"}
@@ -219,7 +251,7 @@ function InstructorProfile({
                   />
                 ) : (
                   <h4 className={styles.birthdate__text}>
-                    {getShortMonth(new Date(latestInstructor.birthdate))}{" "}
+                    {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
                     {new Date(latestInstructor.birthdate).getDate()}
                   </h4>
                 )}
@@ -494,6 +526,11 @@ function InstructorProfile({
               name="icon"
               value={latestInstructor.icon.url}
             />
+            <input
+              type="hidden"
+              name="confirmResult"
+              value={confirmResult.toString()}
+            />
 
             {/* Action buttons for only admin */}
             {userSessionType === "admin" ? (
@@ -515,6 +552,7 @@ function InstructorProfile({
                       btnText="Save"
                       type="submit"
                       Icon={CheckIcon}
+                      onClick={submissionConfirm}
                     />
                   </div>
                 ) : (

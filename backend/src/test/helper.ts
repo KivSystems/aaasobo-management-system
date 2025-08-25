@@ -139,7 +139,7 @@ export const createTestInstructor = () => ({
   introductionURL: "https://example.com/intro/test-instructor",
   createdAt: new Date(),
   updatedAt: new Date(),
-  inactiveAt: null,
+  determinationAt: null,
 });
 
 export const loginAsAdmin = async (

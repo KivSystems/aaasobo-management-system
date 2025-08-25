@@ -11,6 +11,7 @@ function InputField({
   type = "text",
   className,
   placeholder,
+  min,
   display = "block",
 }: {
   name?: string;
@@ -21,6 +22,7 @@ function InputField({
   type?: string;
   className?: string;
   placeholder?: string;
+  min?: string; // Only applies when the input type is "date"
   display?: "block" | "inline-block" | "flex";
 }) {
   return (
@@ -34,6 +36,7 @@ function InputField({
         onChange={onChange}
         required
         placeholder={placeholder}
+        min={min}
       />
       {error && (
         <FormValidationMessage

@@ -75,6 +75,7 @@ export async function updateInstructorAction(
 ): Promise<UpdateFormState> {
   try {
     const name = formData.get("name");
+    const leavingDate = String(formData.get("leavingDate"));
     const nickname = formData.get("nickname");
     const birthdate = String(formData.get("birthdate"));
     const workingTime = String(formData.get("workingTime"));
@@ -91,6 +92,13 @@ export async function updateInstructorAction(
     const icon = formData.get("icon") as File;
     // Hidden input tag fields
     const id = Number(formData.get("id"));
+    const confirmResult = formData.get("confirmResult");
+
+    if (confirmResult === "false") {
+      return {
+        skipProcessing: "Skipping update due to confirmation failure",
+      };
+    }
 
     let validationErrors;
 
@@ -114,6 +122,7 @@ export async function updateInstructorAction(
 
     const userData = new FormData();
     userData.append("name", parsedForm1.data.name);
+    userData.append("leavingDate", leavingDate);
     userData.append("nickname", parsedForm1.data.nickname);
     userData.append("birthdate", birthdate);
     userData.append("workingTime", workingTime);
