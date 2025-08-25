@@ -10,12 +10,10 @@ import { MIN_DAYS_TO_LEAVE } from "@/app/helper/data/data";
 const UserStatusSwitcher = ({
   isEditing,
   leavingDate,
-  error,
   onStatusChange,
 }: {
   isEditing: boolean;
   leavingDate: string | null;
-  error: string;
   onStatusChange: (status: UserStatus, date: string | null) => void;
 }) => {
   const [userStatus, setUserStatus] = useState<UserStatus>(
@@ -99,8 +97,8 @@ const UserStatusSwitcher = ({
                     : ""
                 }
                 min={nDaysLater(MIN_DAYS_TO_LEAVE).toISOString().split("T")[0]}
-                error={typeof error === "string" ? error : ""}
                 onChange={(e) => setUpdatedLeavingDate(e.target.value || null)}
+                onKeyDown={(e) => e.preventDefault()} // Prevent date input from typing
                 className={styles.leavingDate__inputField}
               />
             )}

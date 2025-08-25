@@ -395,15 +395,6 @@ export const updateInstructorProfileController = async (
     leavingDate !== "null" ? new Date(convertToISOString(leavingDate)) : null;
   const normalizedBirthdate = new Date(convertToISOString(birthdate));
 
-  // Check if the leavingDate is 30 days after the current date
-  if (
-    normalizedLeavingDate &&
-    (isNaN(normalizedLeavingDate.getTime()) ||
-      normalizedLeavingDate < nDaysLater(MIN_DAYS_TO_LEAVE))
-  ) {
-    return res.status(400).json({ leavingDate: "Invalid leaving date" });
-  }
-
   // Set unique checks list
   const uniqueChecks = [
     { fn: getInstructorByNickname, value: nickname },

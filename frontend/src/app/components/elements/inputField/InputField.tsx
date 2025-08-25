@@ -7,23 +7,25 @@ function InputField({
   error,
   value,
   defaultValue,
-  onChange,
   type = "text",
   className,
   placeholder,
   min,
   display = "block",
+  onChange,
+  onKeyDown,
 }: {
   name?: string;
   error?: string;
   value?: string;
   defaultValue?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   className?: string;
   placeholder?: string;
   min?: string; // Only applies when the input type is "date"
   display?: "block" | "inline-block" | "flex";
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }) {
   return (
     <div className={styles[`display__${display}`]}>
@@ -34,6 +36,7 @@ function InputField({
         value={value}
         defaultValue={defaultValue}
         onChange={onChange}
+        onKeyDown={onKeyDown}
         required
         placeholder={placeholder}
         min={min}
