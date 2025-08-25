@@ -47,3 +47,21 @@ export const removeInstructorAbsence = async (
     throw new Error("Failed to remove instructor absence.");
   }
 };
+
+export const isInstructorAbsent = async (
+  instructorId: number,
+  dateTime: string,
+): Promise<boolean> => {
+  try {
+    const absence = await prisma.instructorAbsence.findFirst({
+      where: {
+        instructorId,
+        absentAt: new Date(dateTime),
+      },
+    });
+    return absence !== null;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to check instructor absence.");
+  }
+};

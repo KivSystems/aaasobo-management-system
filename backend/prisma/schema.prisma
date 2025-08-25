@@ -15,60 +15,30 @@ datasource db {
 }
 
 model Instructor {
-  id                              Int                               @id @default(autoincrement())
-  name                            String
-  email                           String                            @unique
-  password                        String
-  instructorAvailability          InstructorAvailability[]
-  classes                         Class[]
-  instructorRecurringAvailability InstructorRecurringAvailability[]
-  recurringClasses                RecurringClass[]
-  classURL                        String                            @unique
-  icon                            String                            @unique
-  nickname                        String                            @unique
-  birthdate                       DateTime
-  lifeHistory                     String
-  favoriteFood                    String
-  hobby                           String
-  messageForChildren              String
-  workingTime                     String
-  skill                           String
-  meetingId                       String                            @unique
-  passcode                        String                            @unique
-  instructorUnavailability        InstructorUnavailability[]
-  introductionURL                 String                            @unique
-  createdAt                       DateTime                          @default(now())
-  updatedAt                       DateTime                          @default(now()) @updatedAt
-  terminationAt                   DateTime?
-  instructorSchedules             InstructorSchedule[]
-  instructorAbsences              InstructorAbsence[]
-}
-
-model InstructorRecurringAvailability {
-  id                     Int                      @id @default(autoincrement())
-  instructorId           Int
-  startAt                DateTime
-  endAt                  DateTime?
-  instructor             Instructor               @relation(fields: [instructorId], references: [id])
-  instructorAvailability InstructorAvailability[]
-}
-
-model InstructorAvailability {
-  instructorId                      Int
-  instructorRecurringAvailabilityId Int
-  dateTime                          DateTime
-  instructor                        Instructor                       @relation(fields: [instructorId], references: [id])
-  instructorRecurringAvailability   InstructorRecurringAvailability? @relation(fields: [instructorRecurringAvailabilityId], references: [id])
-
-  @@id([instructorId, dateTime])
-}
-
-model InstructorUnavailability {
-  instructorId Int
-  dateTime     DateTime
-  instructor   Instructor @relation(fields: [instructorId], references: [id])
-
-  @@id([instructorId, dateTime])
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  email               String               @unique
+  password            String
+  classes             Class[]
+  recurringClasses    RecurringClass[]
+  classURL            String               @unique
+  icon                String               @unique
+  nickname            String               @unique
+  birthdate           DateTime
+  lifeHistory         String
+  favoriteFood        String
+  hobby               String
+  messageForChildren  String
+  workingTime         String
+  skill               String
+  meetingId           String               @unique
+  passcode            String               @unique
+  introductionURL     String               @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now()) @updatedAt
+  terminationAt       DateTime?
+  instructorSchedules InstructorSchedule[]
+  instructorAbsences  InstructorAbsence[]
 }
 
 model Customer {

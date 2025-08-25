@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import styles from "./InstructorCalendarForAdmin.module.scss";
 import {
-  getCalendarAvailabilities,
   getCalendarClasses,
   getInstructorProfile,
 } from "@/app/helper/api/instructorsApi";
@@ -44,21 +43,14 @@ function InstructorCalendarForAdmin({
     if (!instructorId) return;
 
     try {
-      const [
-        classes,
-        instructorAvailabilities,
-        instructorProfile,
-        schedule,
-        events,
-      ] = await Promise.all([
+      const [classes, instructorProfile, schedule, events] = await Promise.all([
         getCalendarClasses(instructorId),
-        getCalendarAvailabilities(instructorId),
         getInstructorProfile(instructorId),
         getAllBusinessSchedules(),
         getAllEvents(),
       ]);
 
-      setInstructorCalendarEvents([...classes, ...instructorAvailabilities]);
+      setInstructorCalendarEvents(classes);
       const instructorCreatedAt = instructorProfile.createdAt;
       const calendarValidRange = getValidRange(instructorCreatedAt, 3);
       setCalendarValidRange(calendarValidRange);

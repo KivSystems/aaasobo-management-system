@@ -8,9 +8,7 @@ export const getSystemStatus = async (): Promise<string> => {
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/get-system-status`;
-    const response = await fetch(apiURL, {
-      cache: "no-store",
-    });
+    const response = await fetch(apiURL);
     const data = await response.json();
     if (!response.ok) {
       return data.error;

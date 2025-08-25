@@ -7,10 +7,11 @@ import RebookableInstructorsList from "./rebookableInstructorsList/RebookableIns
 import RebookableTimeSlots from "./rebookableTimeSlots/RebookableTimeSlots";
 import ConfirmRebooking from "./confirmRebooking/ConfirmRebooking";
 import RebookableClassesList from "./rebookableClassesList/RebookableClassesList";
-import { getInstructorAvailabilities } from "@/app/helper/api/classesApi";
+import { getAllInstructorAvailableSlots } from "@/app/helper/api/instructorsApi";
 import Loading from "@/app/components/elements/loading/Loading";
 import RebookingCompleteMessage from "./rebookingCompleteMessage/RebookingCompleteMessage";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { nHoursLater } from "@/app/helper/utils/dateUtils";
 
 export default function RebookingForm({
   customerId,
@@ -20,7 +21,7 @@ export default function RebookingForm({
   userSessionType,
 }: RebookingFormProps) {
   const [instructorAvailabilities, setInstructorAvailabilities] = useState<
-    InstructorAvailability[] | []
+    { dateTime: string; availableInstructors: number[] }[] | []
   >([]);
   const [rebookingStep, setRebookingStep] =
     useState<RebookingSteps>("selectClass");
@@ -41,9 +42,20 @@ export default function RebookingForm({
     if (!classToRebook) return;
 
     const fetchInstructorAvailabilities = async () => {
-      const instructorAvailabilities =
-        await getInstructorAvailabilities(classToRebook);
-      setInstructorAvailabilities(instructorAvailabilities);
+      // Get date range for next 30 days for rebooking
+      const REGULAR_REBOOKING_HOURS = 3;
+      const INSTRUCTOR_AVAILABILITY_WINDOW_HOURS = 30 * 24;
+      const startDate = nHoursLater(REGULAR_REBOOKING_HOURS);
+      const endDate = nHoursLater(INSTRUCTOR_AVAILABILITY_WINDOW_HOURS);
+
+      const result = await getAllInstructorAvailableSlots(
+        startDate.toISOString().split("T")[0],
+        endDate.toISOString().split("T")[0],
+      );
+
+      if ("data" in result) {
+        setInstructorAvailabilities(result.data);
+      }
     };
     setIsLoading(true);
     fetchInstructorAvailabilities();

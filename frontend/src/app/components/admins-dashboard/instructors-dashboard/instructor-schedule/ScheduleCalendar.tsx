@@ -1,4 +1,4 @@
-import styles from "./VersionedScheduleCalendar.module.scss";
+import styles from "./ScheduleCalendar.module.scss";
 import { InstructorSlot } from "@/app/helper/api/instructorsApi";
 import {
   BusinessTime,
@@ -18,13 +18,11 @@ enum CellType {
   DISABLED = "disabled",
 }
 
-interface VersionedScheduleCalendarProps {
+interface ScheduleCalendarProps {
   slots: InstructorSlot[];
 }
 
-export default function VersionedScheduleCalendar({
-  slots,
-}: VersionedScheduleCalendarProps) {
+export default function ScheduleCalendar({ slots }: ScheduleCalendarProps) {
   const slotsByDay = slots.reduce(
     (acc, slot) => {
       const day = weekdayToDay(slot.weekday);

@@ -12,7 +12,7 @@ import { prisma } from "../../prisma/prismaClient";
 
 const mockPrisma = prisma as unknown as ReturnType<typeof createMockPrisma>;
 
-describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
+describe("Recurring Classes API - POST /recurring-classes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPrisma.$transaction.mockImplementation(async (callback) =>
@@ -87,7 +87,7 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
     mockPrisma.instructorAbsence.findMany.mockResolvedValue([]); // No absences
 
     const response = await request(server)
-      .post("/wip-recurring-classes")
+      .post("/recurring-classes")
       .send(validRequestData)
       .expect(201);
 
@@ -103,7 +103,7 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
     mockPrisma.instructorSlot.findFirst.mockResolvedValue(null);
 
     const response = await request(server)
-      .post("/wip-recurring-classes")
+      .post("/recurring-classes")
       .send(validRequestData)
       .expect(400);
 
@@ -132,7 +132,7 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
     mockPrisma.$queryRaw.mockResolvedValue([{ exists: true }]);
 
     const response = await request(server)
-      .post("/wip-recurring-classes")
+      .post("/recurring-classes")
       .send(validRequestData)
       .expect(400);
 
@@ -212,7 +212,7 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
     mockPrisma.class.updateMany.mockResolvedValue({ count: 1 });
 
     const response = await request(server)
-      .post("/wip-recurring-classes")
+      .post("/recurring-classes")
       .send(validRequestData)
       .expect(201);
 
@@ -227,7 +227,7 @@ describe("WIP Recurring Classes API - POST /wip-recurring-classes", () => {
   });
 });
 
-describe("WIP Recurring Classes API - GET /wip-recurring-classes", () => {
+describe("Recurring Classes API - GET /recurring-classes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -253,7 +253,7 @@ describe("WIP Recurring Classes API - GET /wip-recurring-classes", () => {
     ]);
 
     const response = await request(server)
-      .get("/wip-recurring-classes")
+      .get("/recurring-classes")
       .query({ subscriptionId })
       .expect(200);
 
@@ -269,7 +269,7 @@ describe("WIP Recurring Classes API - GET /wip-recurring-classes", () => {
 
   it("should return 400 when subscriptionId is missing", async () => {
     const response = await request(server)
-      .get("/wip-recurring-classes")
+      .get("/recurring-classes")
       .expect(400);
 
     expect(response.body).toHaveProperty(
@@ -279,7 +279,7 @@ describe("WIP Recurring Classes API - GET /wip-recurring-classes", () => {
   });
 });
 
-describe("WIP Recurring Classes API - PUT /wip-recurring-classes/:id", () => {
+describe("Recurring Classes API - PUT /recurring-classes/:id", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPrisma.$transaction.mockImplementation(async (callback) =>
@@ -393,7 +393,7 @@ describe("WIP Recurring Classes API - PUT /wip-recurring-classes/:id", () => {
     mockPrisma.instructorAbsence.findMany.mockResolvedValue([]); // No absences
 
     const response = await request(server)
-      .put(`/wip-recurring-classes/${recurringClassId}`)
+      .put(`/recurring-classes/${recurringClassId}`)
       .send(validUpdateData)
       .expect(200);
 

@@ -1,63 +1,36 @@
 @import "../../../variables.module.scss";
 
-.table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 0.5rem;
-  overflow: hidden;
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
-}
 
-.header {
-  background-color: $blue_primary;
-  color: white;
-  font-size: 0.9rem;
-}
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 
-.headerText {
-  padding: 0.5rem;
-  font-weight: 400;
-  text-align: left;
-}
-
-.body {
-  background-color: white;
-  font-size: 0.8rem;
-}
-
-.bodyText {
-  padding: 0.5rem;
-  border-bottom: 1.5px solid $gray-background;
-}
-
-.icon {
-  width: 1.5rem;
-  margin-right: 0.5rem;
-  color: $green-success;
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
 }
 
 .subheading {
   display: flex;
-}
+  align-items: center;
+  margin-bottom: 1rem;
 
-.buttonWrapper {
-  display: flex;
-  justify-content: center;
-}
-
-.url {
-  max-width: 10rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.link {
-  color: $blue_primary;
-
-  &:hover {
-    text-decoration: none;
+  h4 {
+    margin: 0;
+    color: $text-dark;
+    font-size: 1.125rem;
+    font-weight: 600;
   }
+}
+
+.icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: $blue_primary;
 }

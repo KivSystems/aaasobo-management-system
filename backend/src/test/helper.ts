@@ -24,22 +24,6 @@ export const createMockPrisma = () => {
       create: vi.fn(),
       deleteMany: vi.fn(),
     },
-    instructorRecurringAvailability: {
-      findMany: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      deleteMany: vi.fn(),
-    },
-    instructorAvailability: {
-      findMany: vi.fn(),
-      create: vi.fn(),
-      deleteMany: vi.fn(),
-    },
-    instructorUnavailability: {
-      findMany: vi.fn(),
-      create: vi.fn(),
-      deleteMany: vi.fn(),
-    },
     instructorSchedule: {
       findMany: vi.fn(),
       findFirst: vi.fn(),

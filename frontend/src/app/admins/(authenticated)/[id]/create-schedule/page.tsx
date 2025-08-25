@@ -1,8 +1,6 @@
 "use client";
 
 import { createMonthlyClasses } from "@/app/helper/api/classesApi";
-import { addAvailability } from "@/app/helper/api/instructorsApi";
-import { getInstructors } from "@/app/helper/api/instructorsApi";
 import React, { useState } from "react";
 
 function Page() {
@@ -31,23 +29,6 @@ function Page() {
     e.preventDefault();
 
     try {
-      const from = new Date(year, months.indexOf(month), 1);
-      from.setUTCHours(0, 0, 0, 0);
-      const until = new Date(year, months.indexOf(month) + 1, 1);
-      until.setUTCHours(0, 0, 0, 0);
-
-      const instructors = await getInstructors();
-      instructors.forEach(async (instructor: { id: number }) => {
-        const res = await addAvailability(
-          instructor.id,
-          from.toISOString(),
-          until.toISOString(),
-        );
-        if ("message" in res) {
-          alert(res.message);
-        }
-      });
-
       await createMonthlyClasses({ year, month });
       alert("Classes are successfully created.");
     } catch (error) {

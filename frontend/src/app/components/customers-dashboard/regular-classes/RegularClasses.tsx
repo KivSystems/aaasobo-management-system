@@ -8,6 +8,8 @@ import ActionButton from "@/app/components/elements/buttons/actionButton/ActionB
 import CurrentSubscription from "@/app/components/customers-dashboard/regular-classes/CurrentSubscription";
 import AddSubscription from "@/app/components/customers-dashboard/regular-classes/AddSubscription";
 import Loading from "../../elements/loading/Loading";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import { ADD_NEW_SUBSCRIPTION } from "@/app/helper/messages/customerDashboard";
 
 function RegularClasses({
   adminId,
@@ -18,6 +20,7 @@ function RegularClasses({
   customerId: number;
   userSessionType?: UserType;
 }) {
+  const { language } = useLanguage();
   const [subscriptionsData, setSubscriptionsData] =
     useState<Subscriptions | null>(null);
   const [showAddPlan, setShowAddPlan] = useState(false);
@@ -57,7 +60,7 @@ function RegularClasses({
         <div className={styles.addBtn}>
           <ActionButton
             onClick={handleAddRegularClass}
-            btnText="Add New Subscription"
+            btnText={ADD_NEW_SUBSCRIPTION[language]}
             className="addBtn"
             Icon={PlusIcon}
           />
@@ -76,6 +79,7 @@ function RegularClasses({
         adminId={adminId}
         customerId={customerId}
         userSessionType={userSessionType}
+        language={language}
       />
     </>
   );

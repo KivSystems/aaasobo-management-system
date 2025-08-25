@@ -14,7 +14,7 @@ export type AbsenceChange = {
   originalType: "available" | "absence";
 };
 
-export type BatchAbsenceResult = {
+type BatchAbsenceResult = {
   success: boolean;
   successCount: { add: number; remove: number };
   errors: string[];

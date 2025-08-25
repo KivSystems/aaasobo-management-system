@@ -13,8 +13,6 @@ type Instructors = {
 type Instructor = {
   id: number;
   name: string;
-  availabilities: Availability[];
-  unavailabilities: Availability[];
   email: string;
   nickname: string;
   birthdate: string;
@@ -60,8 +58,6 @@ type InstructorRebookingProfile = {
   icon: string;
   introductionURL: string;
 };
-
-type Availability = { dateTime: string };
 
 type ClassStatus =
   | "booked"
@@ -440,11 +436,6 @@ type ClassDetailProps = {
   handleModalClose: () => void;
   language: LanguageType;
   userSessionType?: UserType;
-};
-
-type InstructorAvailability = {
-  instructorId: number;
-  dateTime: string;
 };
 
 type StringMessages = Record<string, string>;
