@@ -319,11 +319,12 @@ export const maskInstructors = async (instructors: Instructor[]) => {
       prisma.instructor.update({
         where: { id: instructor.id },
         data: {
-          name: "MaskedName_" + randomUUID(),
-          email: "MaskedEmail_" + randomUUID() + "@masked.com",
-          classURL: "MaskedClassURL_" + randomUUID(),
-          meetingId: "MaskedMeetingId_" + randomUUID(),
-          passcode: "MaskedPasscode_" + randomUUID(),
+          name: `MaskedNameId${instructor.id}_` + randomUUID(),
+          email:
+            `MaskedEmailId${instructor.id}_` + randomUUID() + "@masked.com",
+          classURL: `MaskedClassURLId${instructor.id}_` + randomUUID(),
+          meetingId: `MaskedMeetingId${instructor.id}_` + randomUUID(),
+          passcode: `MaskedPasscodeId${instructor.id}_` + randomUUID(),
         },
       }),
     ),
