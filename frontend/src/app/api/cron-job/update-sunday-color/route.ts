@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { updateSundayColor } from "@/app/helper/api/calendarsApi";
-import { maskInstructors } from "@/app/helper/api/instructorsApi";
+import {
+  createInstructorPostTerminationSchedule,
+  maskInstructors,
+} from "@/app/helper/api/instructorsApi";
 import { deleteOldClasses } from "@/app/helper/api/classesApi";
 
 export const runtime = "nodejs";
@@ -16,8 +19,10 @@ export async function GET(req: NextRequest) {
   try {
     console.log("Cron job (updateSundayColor) started");
     await updateSundayColor(); // Update next year's all Sunday's color of business calendar
-    await maskInstructors(); // Mask instructor information who has left the organization // TODO: Move to another cron job after upgrading Vercel plan
-    await deleteOldClasses(); // Delete classes older than 1 year (13 months) // TODO: Move to another cron job after upgrading Vercel plan
+    // TODO: Move the following functions to each cron job after upgrading Vercel plan
+    await maskInstructors(); // Mask instructor information who has left the organization
+    await deleteOldClasses(); // Delete classes older than 1 year (13 months)
+    await createInstructorPostTerminationSchedule(); // Create post-termination schedules for instructors who have left the organization
     console.log("Cron job (updateSundayColor) executed successfully");
     return NextResponse.json(
       { message: "Cron job (updateSundayColor) executed successfully" },

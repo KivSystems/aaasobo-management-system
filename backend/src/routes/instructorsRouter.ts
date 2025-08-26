@@ -17,6 +17,7 @@ import {
   getInstructorSchedulesController,
   getInstructorScheduleController,
   createInstructorScheduleController,
+  createInstructorPostTerminationScheduleController,
   getInstructorAvailableSlotsController,
   getAllAvailableSlotsController,
   getActiveInstructorScheduleController,
@@ -76,6 +77,11 @@ instructorsRouter.post(
   (req, res) => {
     createInstructorScheduleController(req as RequestWithId, res);
   },
+);
+
+instructorsRouter.post(
+  "/schedules/post-termination",
+  createInstructorPostTerminationScheduleController,
 );
 
 instructorsRouter.get("/:id/available-slots", parseId, (req, res) => {

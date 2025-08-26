@@ -390,6 +390,40 @@ export const createInstructorSchedule = async (
   }
 };
 
+// Create instructors post termination Schedule
+export const createInstructorPostTerminationSchedule = async (): Promise<
+  Response<{ schedule: InstructorScheduleWithSlots }>
+> => {
+  try {
+    const response = await fetch(`${BASE_URL}/schedules/post-termination`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { schedule: result.data };
+  } catch (error) {
+    console.error(
+      "Failed to create instructor post termination schedule:",
+      error,
+    );
+    throw error;
+  }
+};
+
 type AvailableSlot = {
   dateTime: string;
   weekday: number;
