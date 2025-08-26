@@ -135,11 +135,7 @@ export const createInstructorPostTerminationScheduleController = async (
       const { id, terminationAt } = instructor;
 
       if (!id || !terminationAt) {
-        console.error("Missing id or terminationAt for instructor:", id);
-        res.status(400).json({
-          message: "Missing id or terminationAt for instructor",
-        });
-        return;
+        return {};
       }
 
       const effectiveFrom = terminationAt;
