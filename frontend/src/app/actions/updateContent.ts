@@ -4,11 +4,23 @@ import { updateEvent } from "@/app/helper/api/eventsApi";
 import { updateBusinessSchedule } from "@/app/helper/api/calendarsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractUpdateValidationErrors } from "../helper/utils/validationErrorUtils";
-import { eventUpdateSchema, scheduleUpdateSchema } from "../schemas/authSchema";
-import { revalidateEventList, revalidateBusinessSchedule } from "./revalidate";
+import {
+  eventUpdateSchema,
+  generateClassesSchema,
+  scheduleUpdateSchema,
+} from "../schemas/authSchema";
+import {
+  revalidateEventList,
+  revalidateBusinessSchedule,
+  revalidateClassList,
+} from "./revalidate";
 import { getCookie } from "../../middleware";
 import { validateSession } from "./validateSession";
-import { updateAttendance, updateClassStatus } from "../helper/api/classesApi";
+import {
+  generateClasses,
+  updateAttendance,
+  updateClassStatus,
+} from "../helper/api/classesApi";
 import { revalidatePath } from "next/cache";
 
 export async function updateEventAction(
@@ -166,4 +178,45 @@ export async function updateClassStatusAction(
         ? "Class status updated successfully."
         : "Class completed successfully.",
   };
+}
+
+export async function generateClassesAction(
+  prevState: UpdateFormState | undefined,
+  formData: FormData,
+): Promise<UpdateFormState> {
+  try {
+    const yearMonth = String(formData.get("yearMonth"));
+    const [month, year] = yearMonth.split(" ");
+
+    const parsedForm = generateClassesSchema.safeParse({
+      year,
+      month,
+    });
+
+    if (!parsedForm.success) {
+      const fieldErrors = parsedForm.error.flatten().fieldErrors;
+      const firstError =
+        fieldErrors.year?.[0] || fieldErrors.month?.[0] || "Validation failed.";
+      return {
+        errorMessage: firstError,
+      };
+    }
+
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
+    // Update the business schedule
+    await generateClasses(year, month, cookie);
+
+    revalidateClassList();
+
+    return {
+      successMessage: "Classes generated successfully!",
+    };
+  } catch (error) {
+    console.error("Unexpected error in updateContent server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
 }

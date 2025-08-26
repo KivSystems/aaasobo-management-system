@@ -12,6 +12,23 @@ import {
   REQUIRED_MESSAGE,
 } from "../helper/messages/authSchemas";
 
+const currentYear = new Date().getFullYear();
+const currentMonthIndex = new Date().getMonth();
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 export const createCustomerRegisterSchema = (language: LanguageType) => {
   return z
     .object({
@@ -313,3 +330,34 @@ export const createChildRegisterSchema = (language: LanguageType) => {
     personalInfo: z.string().min(1, REQUIRED_MESSAGE[language]),
   });
 };
+
+export const generateClassesSchema = z
+  .object({
+    year: z
+      .string()
+      .regex(/^\d{4}$/, "Year must be a 4-digit number (e.g., 2025).")
+      .refine((val) => {
+        const yearNum = Number(val);
+        return yearNum >= currentYear;
+      }, `Year must be ${currentYear} or later.`),
+
+    month: z.string().refine((val) => months.includes(val), {
+      message:
+        "Month must be a valid full name (e.g., January, February, ...).",
+    }),
+  })
+  .refine(
+    (data) => {
+      const yearNum = Number(data.year);
+      const monthIndex = months.indexOf(data.month);
+
+      if (yearNum === currentYear) {
+        return monthIndex >= currentMonthIndex;
+      }
+      return true;
+    },
+    {
+      message: "Selected month must not be in the past.",
+      path: ["month"],
+    },
+  );

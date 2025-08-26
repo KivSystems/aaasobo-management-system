@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   const replaceItems = ["ID"]; // Replace the item with the value(e.g., ID -> 1,2,3...)
   const linkUrls = [`/admins/${adminId}/class-list/[ID]`]; // Set the link URL
   const userType = "admin"; // Set the user type for the registration form (It's not used in this page, but kept for consistency)
-  const isAddButton = false; // Enable the add button
+  const isAddButton = true; // Enable the add button
   const data = await getAllClasses(); // Fetch all classes data
 
   return (

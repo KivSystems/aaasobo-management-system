@@ -15,6 +15,7 @@ import Link from "next/link";
 import Modal from "@/app/components/elements/modal/Modal";
 import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
+import GenerateClassesForm from "./GenerateClassesForm";
 
 type ListTableProps = {
   listType: string;
@@ -225,14 +226,17 @@ function ListTable({
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </div>
-          {isAddButton && (
-            <ActionButton
-              btnText={`Add ${categoryType ? categoryType : userType}`}
-              className="addBtn"
-              onClick={() => setIsModalOpen(true)}
-              Icon={PlusIcon}
-            />
-          )}
+          {isAddButton &&
+            (listType === "Class List" ? (
+              <GenerateClassesForm />
+            ) : (
+              <ActionButton
+                btnText={`Add ${categoryType ? categoryType : userType}`}
+                className="addBtn"
+                onClick={() => setIsModalOpen(true)}
+                Icon={PlusIcon}
+              />
+            ))}
         </div>
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>
