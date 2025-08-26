@@ -24,6 +24,7 @@ async function getDerivedEncryptionKey(secret: string, salt: string) {
   );
 }
 
+// Verify user authentication
 export async function verifyAuthentication(
   req: AuthenticatedRequest,
   res: Response,
@@ -62,4 +63,19 @@ export async function verifyAuthentication(
     console.error("JWT decryption failed:", error);
     return res.status(401).json({ message: "Invalid session token" });
   }
+}
+
+// Verify cron job authorization
+export async function verifyCronJobAuthorization(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const authorization = req.headers.authorization;
+
+  if (!authorization || authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  next();
 }

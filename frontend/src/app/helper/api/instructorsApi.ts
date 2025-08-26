@@ -158,11 +158,12 @@ export const updateInstructor = async (
 };
 
 // Mask instructor information
-export const maskInstructors = async (): Promise<void> => {
+export const maskInstructors = async (authorization: string): Promise<void> => {
   try {
     const apiUrl = `${BACKEND_ORIGIN}/jobs/mask/instructors`;
     const headers = {
       "Content-Type": "application/json",
+      Authorization: authorization,
     };
     await fetch(apiUrl, {
       method: "PATCH",
@@ -391,14 +392,15 @@ export const createInstructorSchedule = async (
 };
 
 // Create instructors post termination Schedule
-export const createInstructorPostTerminationSchedule = async (): Promise<
-  Response<{ schedule: InstructorScheduleWithSlots }>
-> => {
+export const createInstructorPostTerminationSchedule = async (
+  authorization: string,
+): Promise<Response<{ schedule: InstructorScheduleWithSlots }>> => {
   try {
     const response = await fetch(`${BASE_URL}/schedules/post-termination`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: authorization,
       },
     });
 

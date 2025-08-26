@@ -43,11 +43,16 @@ export const updateBusinessSchedule = async (
 };
 
 // Update next year's all Sunday's color
-export const updateSundayColor = async (): Promise<string> => {
+export const updateSundayColor = async (
+  authorization: string,
+): Promise<string> => {
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/business-schedule/update-sunday-color`;
-    const headers = { "Content-Type": "application/json" };
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: authorization,
+    };
     const body = JSON.stringify({
       eventId: holidayEventId,
     });

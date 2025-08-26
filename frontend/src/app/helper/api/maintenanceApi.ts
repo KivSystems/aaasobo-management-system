@@ -21,11 +21,16 @@ export const getSystemStatus = async (): Promise<string> => {
 };
 
 // Update system status
-export const updateSystemStatus = async (): Promise<string> => {
+export const updateSystemStatus = async (
+  authorization: string,
+): Promise<string> => {
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/update-system-status`;
-    const headers = { "Content-Type": "application/json" };
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: authorization,
+    };
     const response = await fetch(apiURL, {
       method: "PATCH",
       headers,
