@@ -40,7 +40,7 @@ export function getLinks(
     {
       name:
         language === "ja"
-          ? "インストラクター　　プロフィール"
+          ? "インストラクター　　　プロフィール" // Full-width characters are needed for alignment
           : "Instructor Profiles",
       href: `/customers/${userId}/instructor-profiles`,
       icon: UsersIcon,
