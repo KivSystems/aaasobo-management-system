@@ -5,6 +5,7 @@ import {
   registerPlanController,
   registerEventController,
   updateAdminProfileController,
+  updateInstructorProfileController,
   updateEventProfileController,
   deleteAdminController,
   deleteEventController,
@@ -23,6 +24,7 @@ import {
 } from "../../src/controllers/schedulesController";
 
 import { verifyAuthentication } from "../middlewares/auth.middleware";
+import upload from "../middlewares/upload.middleware";
 
 export const adminsRouter = express.Router();
 
@@ -42,14 +44,32 @@ adminsRouter.delete(
 adminsRouter.post(
   "/instructor-list/register",
   verifyAuthentication,
+  upload.none(),
   registerInstructorController,
+);
+adminsRouter.post(
+  "/instructor-list/register/withIcon",
+  verifyAuthentication,
+  upload.single("icon"),
+  registerInstructorController,
+);
+adminsRouter.patch(
+  "/instructor-list/update/:id",
+  verifyAuthentication,
+  upload.none(),
+  updateInstructorProfileController,
+);
+adminsRouter.patch(
+  "/instructor-list/update/:id/withIcon",
+  verifyAuthentication,
+  upload.single("icon"),
+  updateInstructorProfileController,
 );
 adminsRouter.post(
   "/plan-list/register",
   verifyAuthentication,
   registerPlanController,
 );
-
 adminsRouter.post(
   "/event-list/register",
   verifyAuthentication,

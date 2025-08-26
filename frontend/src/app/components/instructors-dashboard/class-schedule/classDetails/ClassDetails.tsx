@@ -14,7 +14,8 @@ function ClassDetails({
   classDetails,
   classes,
   adminId,
-  isAdminAuthenticated,
+  userSessionType,
+  previousPage,
 }: ClassDetailsProps) {
   const [isUpdatingData, setIsUpdatingData] = useState<boolean>(false);
 
@@ -25,20 +26,43 @@ function ClassDetails({
     "Asia/Tokyo",
   );
 
-  // Set the active tab to the instructor calendar tab.
-  if (isAdminAuthenticated) localStorage.setItem("activeInstructorTab", "0");
-
-  const breadcrumbHref = isAdminAuthenticated
-    ? `/admins/${adminId}/instructor-list/${instructorId}`
-    : `/instructors/${instructorId}/class-schedule`;
+  // Set the breadcrumb href and labels based on the previous page
+  let breadcrumbHref: string = "";
+  let label1: string = "";
+  let label2: string = "";
+  switch (previousPage) {
+    case "instructor-calendar":
+      breadcrumbHref = `/instructors/${instructorId}/class-schedule`;
+      label1 = "Class Schedule";
+      label2 = "Class Details";
+      break;
+    case "class-list":
+      if (userSessionType === "admin" && adminId) {
+        breadcrumbHref = `/admins/${adminId}/class-list`;
+        label1 = "Class List";
+        label2 = `Class Details (Class ID: ${classId})`;
+      }
+      break;
+    case "instructor-list":
+      if (userSessionType === "admin" && adminId) {
+        breadcrumbHref = `/admins/${adminId}/instructor-list`;
+        label1 = "Instructor List";
+        label2 = `Class Details (Instructor ID: ${instructorId})`;
+        // Set the active tab to the instructor calendar tab.
+        localStorage.setItem("activeInstructorTab", "0");
+      }
+      break;
+    default:
+      breadcrumbHref = "/admins/login"; // Default to login page if no previous page is specified
+      label1 = "Login";
+      label2 = "Unknown";
+      break;
+  }
 
   return (
     <div className={styles.classDetails}>
       <Breadcrumb
-        links={[
-          { href: breadcrumbHref, label: "Class Schedule" },
-          { label: "Class Details" },
-        ]}
+        links={[{ href: breadcrumbHref, label: label1 }, { label: label2 }]}
       />
 
       <main className={styles.classDetails__container}>
@@ -49,7 +73,7 @@ function ClassDetails({
           <ul className={styles.classItems__list}>
             {classes.length > 0 ? (
               classes.map((classItem) =>
-                isAdminAuthenticated && adminId ? (
+                userSessionType === "admin" && adminId ? (
                   <ClassItemForAdmin
                     key={classItem.id}
                     adminId={adminId}
@@ -58,7 +82,7 @@ function ClassDetails({
                     classId={classId}
                     isUpdatingData={isUpdatingData}
                     setIsUpdatingData={setIsUpdatingData}
-                    isAdminAuthenticated={isAdminAuthenticated}
+                    previousPage={previousPage}
                   />
                 ) : (
                   <ClassItem

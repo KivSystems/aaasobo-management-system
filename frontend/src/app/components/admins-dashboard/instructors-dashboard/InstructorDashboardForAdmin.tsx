@@ -5,9 +5,11 @@ import InstructorDashboardClient from "@/app/components/admins-dashboard/instruc
 export default async function InstructorDashboardForAdmin({
   adminId,
   instructorId,
+  userSessionType,
 }: {
   adminId: number;
   instructorId: number;
+  userSessionType: UserType;
 }) {
   // Fetch instructor's data
   // [For InstructorProfile]
@@ -18,6 +20,12 @@ export default async function InstructorDashboardForAdmin({
   } else {
     instructor = data.instructor;
   }
+  const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN;
+  const extractTokenLetters = (token: string) => {
+    const parts = token.split("_");
+    return parts[3] ? parts[3].toLowerCase() : "";
+  };
+  const tokenSpecificLetters = extractTokenLetters(blobReadWriteToken || "");
 
   // TODO: Add fetching functions for the following purposes:
   // InstructorCalendar, AvailabilityCalendar, and InstructorSchedule
@@ -27,11 +35,13 @@ export default async function InstructorDashboardForAdmin({
       adminId={adminId}
       instructorId={instructorId}
       instructor={instructor}
+      token={tokenSpecificLetters}
+      userSessionType={userSessionType}
       classScheduleComponent={
         <InstructorCalendar
           adminId={adminId}
           instructorId={instructorId}
-          isAdminAuthenticated={true}
+          userSessionType={userSessionType}
         />
       }
     />

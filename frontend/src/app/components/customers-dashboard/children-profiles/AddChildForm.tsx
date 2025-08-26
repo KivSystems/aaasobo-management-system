@@ -13,7 +13,7 @@ const AddChildForm = ({
   action,
   customerId,
   localMessages,
-  isAdminAuthenticated,
+  userSessionType,
   isError,
   clearErrorMessage,
 }: AddChildFormProps) => {
@@ -79,7 +79,7 @@ const AddChildForm = ({
         )}
       </div>
 
-      {isAdminAuthenticated && (
+      {userSessionType === "admin" && (
         <input type="hidden" name="customerId" value={customerId ?? ""} />
       )}
 

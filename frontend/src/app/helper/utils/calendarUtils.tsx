@@ -35,11 +35,12 @@ export const createRenderEventContent = (userType: UserType) => {
         (classStatus === "booked" || classStatus === "rebooked") &&
         instructorIcon ? (
           <Image
-            src={`/instructors/${instructorIcon}`}
+            src={`${instructorIcon}?t=${Date.now()}`}
             alt={instructorNickname || "Instructor"}
             width={30}
             height={30}
             priority
+            unoptimized
             className={`${styles.instructorIcon} ${styles[classStatus]}`}
           />
         ) : classStatus === "completed" ? (
@@ -141,7 +142,12 @@ export function getDayCellColorHandler(
   return (arg: DayCellMountArg) => {
     if (arg.isOther) return;
 
-    const dateStr = arg.date.toISOString().split("T")[0];
+    // Get offset in minutes from UTC
+    const offset = new Date().getTimezoneOffset();
+
+    // Adjust the date to the local timezone by subtracting the offset
+    const localDate = new Date(arg.date.getTime() - offset * 60 * 1000);
+    const dateStr = localDate.toISOString().split("T")[0];
     const color = dateToColorMap.get(dateStr);
 
     if (color) {
@@ -149,3 +155,15 @@ export function getDayCellColorHandler(
     }
   };
 }
+
+// Calculate the first day of the previous year (e.g., 20XX-01-01)
+export const firstDayOfPreviousYear = () => {
+  const now = new Date();
+  return new Date(now.getFullYear() - 1, 0, 2).toISOString().split("T")[0];
+};
+
+// Calculate the valid range (from 1 year ago to 1 year later) for the business calendar
+export const businessCalendarValidRange = () => {
+  const firstDay = firstDayOfPreviousYear();
+  return getValidRange(firstDay, 24 - new Date().getMonth());
+};

@@ -27,6 +27,9 @@
     &.freeTrial {
       border: 3px solid $green-success;
     }
+    &.none {
+      border: 3px solid $green-success;
+    }
   }
 
   &__name {
@@ -50,6 +53,24 @@
   margin-bottom: 10px;
   position: absolute;
   top: 0;
+
+  .instructor__name {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+.instructorCursorItem {
+  width: 160px;
+  margin: 20px 0 10px 5px;
+  position: block;
+  top: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+  }
 
   .instructor__name {
     font-size: 18px;

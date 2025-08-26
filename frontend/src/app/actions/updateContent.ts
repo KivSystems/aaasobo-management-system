@@ -110,15 +110,11 @@ export async function updateAttendanceAction(
   classId: number,
   childrenIds: number[],
   instructorId: number,
-  isAdminAuthenticated: boolean,
   adminId?: number,
 ): Promise<{ success: boolean; message: string }> {
-  const userId = isAdminAuthenticated ? adminId : instructorId;
+  const userId = adminId ? adminId : instructorId;
 
-  const { isValid, error } = await validateSession(
-    userId,
-    isAdminAuthenticated,
-  );
+  const { isValid, error, userType } = await validateSession(userId);
 
   if (!isValid) {
     return { success: false, message: error! };
@@ -133,9 +129,10 @@ export async function updateAttendanceAction(
         "Failed to update attendance. Please try again later. If the problem persists, contact the staff.",
     };
 
-  const path = isAdminAuthenticated
-    ? `/admins/${userId}/instructor-list/${instructorId}/class-schedule`
-    : `/instructors/${userId}/class-schedule`;
+  const path =
+    userType === "admin"
+      ? `/admins/${userId}/instructor-list/${instructorId}/class-schedule`
+      : `/instructors/${userId}/class-schedule`;
 
   revalidatePath(path);
 
@@ -146,15 +143,11 @@ export async function updateClassStatusAction(
   classId: number,
   status: ClassStatus,
   instructorId: number,
-  isAdminAuthenticated: boolean,
   adminId?: number,
 ): Promise<{ success: boolean; message: string }> {
-  const userId = isAdminAuthenticated ? adminId : instructorId;
+  const userId = adminId ? adminId : instructorId;
 
-  const { isValid, error } = await validateSession(
-    userId,
-    isAdminAuthenticated,
-  );
+  const { isValid, error, userType } = await validateSession(userId);
 
   if (!isValid) {
     return { success: false, message: error! };
@@ -165,22 +158,25 @@ export async function updateClassStatusAction(
   if (!result.success)
     return {
       success: false,
-      message: isAdminAuthenticated
-        ? "Failed to update class status. Please try again later."
-        : "Failed to complete the class. Please try again later. If the problem persists, contact the staff.",
+      message:
+        userType === "admin"
+          ? "Failed to update class status. Please try again later."
+          : "Failed to complete the class. Please try again later. If the problem persists, contact the staff.",
     };
 
-  const path = isAdminAuthenticated
-    ? `/admins/${userId}/instructor-list/${instructorId}/class-schedule`
-    : `/instructors/${userId}/class-schedule`;
+  const path =
+    userType === "admin"
+      ? `/admins/${userId}/instructor-list/${instructorId}/class-schedule`
+      : `/instructors/${userId}/class-schedule`;
 
   revalidatePath(path);
 
   return {
     success: true,
-    message: isAdminAuthenticated
-      ? "Class status updated successfully."
-      : "Class completed successfully.",
+    message:
+      userType === "admin"
+        ? "Class status updated successfully."
+        : "Class completed successfully.",
   };
 }
 

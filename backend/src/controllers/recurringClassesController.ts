@@ -1,340 +1,187 @@
 import { Request, Response } from "express";
 import {
-  addRecurringClass,
-  deleteRecurringClass,
-  getRecurringClassByRecurringClassId,
-  getRecurringClassesBySubscriptionId,
-  getValidRecurringClasses,
-  getValidRecurringClassesByInstructorId,
-  terminateRecurringClass,
+  createRegularClass,
+  getRegularClassById,
+  getRegularClassesBySubscriptionId,
+  updateRegularClass,
 } from "../services/recurringClassesService";
 import { RequestWithId } from "../middlewares/parseId.middleware";
-import {
-  getFirstDateInMonths,
-  createDatesBetween,
-  calculateFirstDate,
-  getDayNumber,
-  convertDayTimeToUTC,
-  formatUTCTime,
-} from "../helper/dateUtils";
-import { prisma } from "../../prisma/prismaClient";
-import { getValidInstructorUnavailabilities } from "../services/instructorsUnavailabilitiesService";
-import {
-  createCanceledClasses,
-  getValidClassesByInstructorId,
-} from "../services/classesService";
 
-// POST a recurring class
-export const addRecurringClassController = async (
+interface RegularClassParams {
+  instructorId: number;
+  weekday: number;
+  startTime: string;
+  customerId: number;
+  childrenIds: number[];
+  subscriptionId: number;
+  startDate: string;
+  timezone?: string;
+}
+
+function validateRegularClassParams(params: RegularClassParams): string | null {
+  const {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    subscriptionId,
+    startDate,
+  } = params;
+
+  if (
+    !instructorId ||
+    weekday === undefined ||
+    !startTime ||
+    !customerId ||
+    !childrenIds ||
+    !subscriptionId ||
+    !startDate
+  ) {
+    return "Missing required parameters";
+  }
+
+  if (weekday < 0 || weekday > 6) {
+    return "Invalid weekday. Must be 0-6";
+  }
+
+  if (!/^\d{2}:\d{2}$/.test(startTime)) {
+    return "Invalid time format. Use HH:mm";
+  }
+
+  return null;
+}
+
+// Validation for updates - subscriptionId is not required since we get it from existing record
+function validateUpdateRegularClassParams(
+  params: Omit<RegularClassParams, "subscriptionId">,
+): string | null {
+  const {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    startDate,
+  } = params;
+
+  if (
+    !instructorId ||
+    weekday === undefined ||
+    !startTime ||
+    !customerId ||
+    !childrenIds ||
+    !startDate
+  ) {
+    return "Missing required parameters";
+  }
+
+  if (weekday < 0 || weekday > 6) {
+    return "Invalid weekday. Must be 0-6";
+  }
+
+  if (!/^\d{2}:\d{2}$/.test(startTime)) {
+    return "Invalid time format. Use HH:mm";
+  }
+
+  return null;
+}
+
+function handleRegularClassError(error: unknown, res: Response): Response {
+  const err =
+    error instanceof Error ? error : new Error("An unknown error occurred");
+
+  const businessLogicErrors = [
+    "Instructor is not available at the requested time slot",
+    "Instructor schedule not found",
+    "Only Asia/Tokyo timezone is supported",
+    "Regular class already exists at this time slot",
+    "Start date must be at least one week from today",
+  ];
+
+  if (businessLogicErrors.includes(err.message)) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  if (err.message === "Regular class not found") {
+    return res.status(404).json({ message: err.message });
+  }
+
+  return res.status(500).json({ error: err.message });
+}
+
+export const createRegularClassController = async (
   req: Request,
   res: Response,
 ) => {
   const {
     instructorId,
+    weekday,
+    startTime,
     customerId,
     childrenIds,
     subscriptionId,
-    startAt,
-    endAt,
+    startDate,
+    timezone = "Asia/Tokyo",
   } = req.body;
-  if (
-    !instructorId ||
-    !customerId ||
-    !childrenIds ||
-    !subscriptionId ||
-    !startAt ||
-    !endAt
-  ) {
-    return res.status(400).json({ message: "Values are not found" });
+
+  const params = {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    subscriptionId,
+    startDate,
+    timezone,
+  };
+
+  const validationError = validateRegularClassParams(params);
+  if (validationError) {
+    return res.status(400).json({ message: validationError });
   }
 
-  // TODO: Implement when you add a new recurring class
-
   try {
-    // const recurringClass = await addRecurringClass(
-    //   instructorId,
-    //   customerId,
-    //   childrenIds,
-    //   subscriptionId,
-    //   startAt,
-    //   dateTime,
-    // );
+    const recurringClass = await createRegularClass(params);
 
-    res.status(200).json({
-      message: "Recurring class is created successfully",
-      // recurringClass,
+    res.status(201).json({
+      message: "Regular class created successfully",
+      recurringClass,
     });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    return handleRegularClassError(error, res);
   }
 };
 
-// GET recurring classes by subscription id.
-export const getRecurringClassesBySubscriptionIdController = async (
+export const getRegularClassesBySubscriptionIdController = async (
   req: Request,
   res: Response,
 ) => {
   const subscriptionId = parseInt(req.query.subscriptionId as string);
+  const status = req.query.status as string;
+
+  if (!req.query.subscriptionId) {
+    return res.status(400).json({ message: "subscriptionId is required" });
+  }
+
   if (isNaN(subscriptionId)) {
-    res.status(400).json({ error: "Invalid subscription ID" });
-    return;
+    return res.status(400).json({ message: "Invalid subscription ID" });
+  }
+
+  // Validate status parameter
+  if (status && !["active", "history"].includes(status)) {
+    return res
+      .status(400)
+      .json({ message: "status must be 'active' or 'history'" });
   }
 
   try {
-    // Get the local date and the begging of its time.
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    const today = date.toISOString().split("T")[0];
-
-    const data = await getRecurringClassesBySubscriptionId(
+    const recurringClasses = await getRegularClassesBySubscriptionId(
       subscriptionId,
-      new Date(today + "T00:00:00Z"),
+      status as "active" | "history" | undefined,
     );
 
-    const recurringClasses = data.map((recurringClass) => {
-      const {
-        id,
-        startAt,
-        instructorId,
-        instructor,
-        recurringClassAttendance,
-        endAt,
-      } = recurringClass;
-
-      const childrenIds = recurringClassAttendance.map(
-        (children) => children.childrenId,
-      );
-
-      const displayEndAt = endAt && new Date(endAt);
-      displayEndAt?.setDate(displayEndAt.getDate() - 1);
-
-      return {
-        id,
-        dateTime: startAt,
-        instructorId,
-        instructor,
-        childrenIds,
-        recurringClassAttendance,
-        endAt: displayEndAt ? displayEndAt : null,
-      };
-    });
-
     res.json({ recurringClasses });
-  } catch (error) {
-    res.status(500).json({ error: `${error}` });
-  }
-};
-
-// Update recurring classes
-export const updateRecurringClassesController = async (
-  req: RequestWithId,
-  res: Response,
-) => {
-  const {
-    subscriptionId,
-    day,
-    time,
-    instructorId,
-    customerId,
-    childrenIds,
-    classStartDate,
-  } = req.body;
-  if (
-    !subscriptionId ||
-    !day ||
-    !time ||
-    !instructorId ||
-    !customerId ||
-    !childrenIds ||
-    !classStartDate
-  ) {
-    return res.status(400).json({ message: "Invalid parameters provided." });
-  }
-
-  const jstTodayStr = new Date().toLocaleDateString("en-CA", {
-    timeZone: "Asia/Tokyo",
-  });
-  const utcToday = new Date();
-
-  // Compare the local classStart date and Japan today.
-  // If classStartDate is equal to or shorter than today, it shouldn't be executed.
-  if (classStartDate <= jstTodayStr) {
-    return res.status(400).json({ message: "Invalid Start From Date" });
-  }
-
-  try {
-    const updatedRecurringClasses = await prisma.$transaction(async (tx) => {
-      // Convert the local day and time from the request body to UTC time.
-      const { utcDay, utcTime } = convertDayTimeToUTC(day, time);
-
-      // If a recurring class is already taken, it shouldn't be updated.
-      const allValidRecurringClasses = await getValidRecurringClasses(
-        tx,
-        utcToday,
-      );
-
-      const isConflict = allValidRecurringClasses.some((recurringClass) => {
-        const recurringClassDay = recurringClass.startAt?.getDay();
-        const recurringClassTime = formatUTCTime(
-          recurringClass.startAt as Date,
-        );
-        return (
-          recurringClass.instructorId === instructorId &&
-          recurringClassDay === getDayNumber(utcDay) &&
-          recurringClassTime === utcTime
-        );
-      });
-
-      if (isConflict) {
-        throw new Error("Regular class is already taken");
-      }
-
-      // GET the current recurring class by recurring class id
-      const recurringClass = await getRecurringClassByRecurringClassId(
-        tx,
-        req.id,
-      );
-      if (!recurringClass) {
-        throw new Error("Regular class not found");
-      }
-      const { endAt, startAt } = recurringClass;
-
-      const firstClassDate = calculateFirstDate(
-        new Date(classStartDate),
-        utcDay,
-        utcTime,
-      );
-
-      let dateTimes: Date[] = [];
-      const newStartAt = calculateFirstDate(
-        new Date(classStartDate),
-        utcDay,
-        utcTime,
-      );
-      let newEndAt: Date | null = null;
-
-      // Configure conditions for updating recurring classes.
-      // [Condition1]
-      // EndAt is not null and classStartDate is the same or later than endAt.
-      // -> Classes shouldn't be created.
-      // [Condition2]
-      // EndAt is not null and classStartDate is earlier than endAt.
-      // -> All upcoming classes are deleted and recreated new recurring ones until EndAt.
-      // [Condition3]
-      // EndAt is null
-      // -> All upcoming classes are deleted and recreated new recurring ones until the end of the next two months.
-
-      const condition1 =
-        endAt !== null && new Date(endAt) <= new Date(classStartDate);
-      const condition2 =
-        endAt !== null && new Date(classStartDate) < new Date(endAt);
-      const condition3 = endAt === null;
-
-      // Condition1
-      if (condition1) {
-        throw new Error("Regular class cannot be edited");
-      }
-
-      // Terminate the current recurring class.
-      await terminateRecurringClass(tx, req.id, new Date(classStartDate));
-
-      // Delete unnecessary future recurring class.
-      if (
-        startAt === null ||
-        (startAt !== null && new Date(classStartDate) < new Date(startAt))
-      ) {
-        await deleteRecurringClass(tx, req.id);
-      }
-
-      // Condition2
-      if (condition2) {
-        // Store the endAt to newEndAt
-        newEndAt = endAt;
-
-        // Generate recurring dates until EndAt.
-        const until = endAt;
-        dateTimes = createDatesBetween(firstClassDate, until);
-      }
-
-      // Condition3
-      if (condition3) {
-        // Generate recurring dates until the end of the next two months.
-        const until = getFirstDateInMonths(firstClassDate, 3);
-        dateTimes = createDatesBetween(firstClassDate, until);
-      }
-
-      // Exclude instructor unavailability from the dateTimes.
-      const instructorUnavailabilities =
-        await getValidInstructorUnavailabilities(tx, instructorId, utcToday);
-      const instructorUnavailableDates = dateTimes.filter((dateTime) =>
-        instructorUnavailabilities.some(
-          (unavailability) =>
-            unavailability.dateTime.getTime() === dateTime.getTime(),
-        ),
-      );
-      dateTimes = dateTimes.filter(
-        (dateTime) => !instructorUnavailableDates.includes(dateTime),
-      );
-
-      // Exclude duplicated classes.
-      const classes = await getValidClassesByInstructorId(
-        tx,
-        instructorId,
-        utcToday,
-      );
-      const duplicatedClassesDates = dateTimes.filter((dateTimes) =>
-        classes.some(
-          (Class) => Class.dateTime!.getTime() === dateTimes.getTime(), // All "classes" are selected by dateTime, so dateTime is guaranteed to exist.
-        ),
-      );
-      dateTimes = dateTimes.filter(
-        (dateTime) => !duplicatedClassesDates.includes(dateTime),
-      );
-
-      const unbookableDateTimes: Date[] = [
-        ...instructorUnavailableDates,
-        ...duplicatedClassesDates,
-      ];
-
-      // Add a new recurring class
-      const updatedRecurringClass = await addRecurringClass(
-        tx,
-        instructorId,
-        customerId,
-        childrenIds,
-        subscriptionId,
-        newStartAt,
-        dateTimes,
-        newEndAt ?? null,
-      );
-
-      // Create the classes as canceled by instructor.
-      const canceledClasses = await createCanceledClasses({
-        tx,
-        dateTimes: unbookableDateTimes,
-        instructorId,
-        customerId,
-        subscriptionId,
-        recurringClassId: updatedRecurringClass.id,
-        childrenIds,
-      });
-
-      return { updatedRecurringClass, canceledClasses };
-    });
-
-    const messages = ["Regular Class is updated successfully"];
-
-    // Check if there are any unbookable classes
-    if (updatedRecurringClasses.canceledClasses.length > 0) {
-      messages.push(
-        "There are classes that cannot be booked. Please book alternative classes instead.",
-      );
-    }
-
-    res.status(200).json({
-      messages,
-      updatedRecurringClasses,
-    });
   } catch (error) {
     const err =
       error instanceof Error ? error : new Error("An unknown error occurred");
@@ -342,28 +189,92 @@ export const updateRecurringClassesController = async (
   }
 };
 
-// GET recurring classes by instructor id.
+export const updateRegularClassController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  const {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    startDate,
+    timezone = "Asia/Tokyo",
+  } = req.body;
+
+  const updateParams = {
+    instructorId,
+    weekday,
+    startTime,
+    customerId,
+    childrenIds,
+    startDate,
+    timezone,
+  };
+
+  const validationError = validateUpdateRegularClassParams(updateParams);
+  if (validationError) {
+    return res.status(400).json({ message: validationError });
+  }
+
+  try {
+    const result = await updateRegularClass({
+      recurringClassId: req.id,
+      ...updateParams,
+    });
+
+    res.status(200).json({
+      message: "Regular class updated successfully",
+      oldRecurringClass: result.oldRecurringClass,
+      newRecurringClass: result.newRecurringClass,
+    });
+  } catch (error) {
+    return handleRegularClassError(error, res);
+  }
+};
+
+export const getRegularClassByIdController = async (
+  req: RequestWithId,
+  res: Response,
+) => {
+  try {
+    const recurringClass = await getRegularClassById(req.id);
+    res.status(200).json(recurringClass);
+  } catch (error) {
+    const err =
+      error instanceof Error ? error : new Error("An unknown error occurred");
+
+    if (err.message === "Recurring class not found") {
+      return res.status(404).json({ message: err.message });
+    }
+
+    console.error("Error getting recurring class by ID:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+import { getValidRecurringClassesByInstructorId } from "../services/recurringClassesService";
+
+// GET recurring classes by instructor ID
 export const getRecurringClassesByInstructorIdController = async (
   req: Request,
   res: Response,
 ) => {
-  const instructorId = parseInt(req.query.instructorId as string);
-  if (isNaN(instructorId)) {
-    res.status(400).json({ error: "Invalid instructor ID" });
-    return;
-  }
-
   try {
-    // Get the today's UTC date at 00:00.
-    const utcToday = new Date().toISOString().split("T")[0] + "T00:00:00.000Z";
+    const { instructorId } = req.query;
+    if (!instructorId) {
+      return res.status(400).json({ message: "instructorId is required" });
+    }
 
     const recurringClasses = await getValidRecurringClassesByInstructorId(
-      instructorId,
-      new Date(utcToday),
+      Number(instructorId),
+      new Date(),
     );
 
-    res.json({ recurringClasses });
+    res.status(200).json({ recurringClasses });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

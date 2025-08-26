@@ -9,10 +9,12 @@ export default function AdminTabs({
   userId,
   adminId,
   admin,
+  userSessionType,
 }: {
   userId: number;
   adminId: number;
   admin: Admin | string;
+  userSessionType: UserType;
 }) {
   const breadcrumb = [
     "Admin List",
@@ -20,9 +22,6 @@ export default function AdminTabs({
     `ID: ${adminId}`,
   ];
   const activeTabName = "activeAdminTab";
-
-  // Set the authentication status as true.
-  const isAuthenticated = true;
 
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect("activeAdminTab");
@@ -35,7 +34,7 @@ export default function AdminTabs({
         <AdminProfile
           userId={userId}
           admin={admin}
-          isAdminAuthenticated={isAuthenticated}
+          userSessionType={userSessionType}
         />
       ),
     },

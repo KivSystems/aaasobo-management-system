@@ -87,11 +87,12 @@ export default function UpcomingClasses({
 
             <div className={`${styles.item} ${styles["item--instructor"]}`}>
               <Image
-                src={`/instructors/${eachClass.instructor.icon}`}
+                src={`${eachClass.instructor.icon}?t=${Date.now()}`}
                 alt={eachClass.instructor.nickname}
                 width={40}
                 height={40}
                 priority
+                unoptimized
                 className={styles.instructorIcon}
               />
               <p>{eachClass.instructor.nickname}</p>

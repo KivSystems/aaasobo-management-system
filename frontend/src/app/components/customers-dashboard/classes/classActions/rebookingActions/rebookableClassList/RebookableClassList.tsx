@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styles from "./RebookableClassList.module.scss";
 import {
   formatShortDate,
@@ -17,6 +17,7 @@ import {
   FREE_TRIAL_BOOKING_HOURS,
   REGULAR_REBOOKING_HOURS,
 } from "@/app/helper/data/data";
+import BookingModal from "../../bookingActions/BookingModal";
 
 export default function RebookableClassList({
   customerId,
@@ -24,12 +25,14 @@ export default function RebookableClassList({
   setClassToRebook,
   setRebookingStep,
   language,
-  isAdminAuthenticated,
+  userSessionType,
+  childProfiles,
 }: RebookableClassListProps) {
   const handleRebook = (
     id: number,
     rebookableUntil: Date,
     isFreeTrial: boolean,
+    classCode?: string,
   ) => {
     const now = new Date().getTime();
 
@@ -49,9 +52,18 @@ export default function RebookableClassList({
       );
     }
 
-    setClassToRebook(id);
-    setRebookingStep("selectOption");
+    // Use booking modal for the new flow
+    setSelectedClassId(id);
+    setSelectedIsFreeTrial(isFreeTrial);
+    setSelectedClassCode(classCode || "");
+    setModalOpen(true);
   };
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [selectedIsFreeTrial, setSelectedIsFreeTrial] =
+    useState<boolean>(false);
+  const [selectedClassCode, setSelectedClassCode] = useState<string>("");
 
   return (
     <ul className={styles.modal__list}>
@@ -101,7 +113,7 @@ export default function RebookableClassList({
                       onClick={() =>
                         confirmAndDeclineFreeTrialClass({
                           customerId,
-                          isAdminAuthenticated,
+                          userSessionType,
                           language,
                           classCode: classItem.classCode,
                         })
@@ -132,6 +144,7 @@ export default function RebookableClassList({
                     classItem.id,
                     classItem.rebookableUntil,
                     classItem.isFreeTrial,
+                    classItem.classCode,
                   )
                 }
               />
@@ -139,6 +152,19 @@ export default function RebookableClassList({
           </li>
         );
       })}
+
+      {selectedClassId && (
+        <BookingModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          classId={selectedClassId}
+          isFreeTrial={selectedIsFreeTrial}
+          language={language}
+          classCode={selectedClassCode}
+          childProfiles={childProfiles}
+          customerId={customerId}
+        />
+      )}
     </ul>
   );
 }

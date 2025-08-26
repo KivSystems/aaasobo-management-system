@@ -284,3 +284,79 @@ export const CHILD_PROFILE_UPDATE_INSTRUCTION_MESSAGE = {
   ja: "クラスに参加するお子さまを追加する場合は、左サイドメニューの『お子さまプロフィール』から変更できます。",
   en: "To add children who will join the class, please go to 'Children Profiles' in the left-hand side menu.",
 };
+
+// Regular Classes Page Messages
+export const ADD_NEW_SUBSCRIPTION = {
+  ja: "新しいサブスクリプションを追加",
+  en: "Add New Subscription",
+};
+
+export const PLAN_LABEL = {
+  ja: "プラン",
+  en: "Plan",
+};
+
+export const PRESENT_LABEL = {
+  ja: "現在",
+  en: "Present",
+};
+
+export const NO_SUBSCRIPTION_MESSAGE = {
+  ja: "まだサブスクリプションがありません。SelectTypeでお支払いを済ませ、スタッフにお知らせください。",
+  en: "You don't have any subscription yet. Please make a payment on SelectType and let the staff know.",
+};
+
+export const PREVIOUS_REGULAR_CLASSES = {
+  ja: "過去のレギュラークラス",
+  en: "Previous Regular Classes",
+};
+
+export const LOADING_TEXT = {
+  ja: "読み込み中...",
+  en: "Loading...",
+};
+
+export const NO_REGULAR_CLASSES_MESSAGE = {
+  ja: "このサブスクリプションのレギュラークラスが見つかりません。",
+  en: "No regular classes found for this subscription.",
+};
+
+export const CHILDREN_LABEL = {
+  ja: "お子さま",
+  en: "Children",
+};
+
+export const CLASS_URL_LABEL = {
+  ja: "クラスURL",
+  en: "Class URL",
+};
+
+export const STARTED_LABEL = {
+  ja: "開始日",
+  en: "Started",
+};
+
+export const ENDED_LABEL = {
+  ja: "終了日",
+  en: "Ended",
+};
+
+export const NO_CHILDREN_ASSIGNED = {
+  ja: "お子さまが割り当てられていません",
+  en: "No children assigned",
+};
+
+export const NO_URL_PROVIDED = {
+  ja: "URLが提供されていません",
+  en: "No URL provided",
+};
+
+export const NO_DATE_SELECTED = {
+  ja: "日付が選択されていません",
+  en: "No date selected",
+};
+
+export const EDIT_CLASS_ARIA_LABEL = {
+  ja: "クラスを編集",
+  en: "Edit class",
+};

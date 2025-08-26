@@ -32,7 +32,7 @@ import AddChildForm from "./AddChildForm";
 function ChildrenProfiles({
   customerId,
   childProfiles,
-  isAdminAuthenticated,
+  userSessionType,
 }: ChildrenProfilesProps) {
   const [updateResult, updateAction] = useFormState(
     updateChildProfileAction,
@@ -61,7 +61,7 @@ function ChildrenProfiles({
         setEditingChildId(null);
       }
     }
-  }, [updateResult]);
+  }, [updateResult, editingChildId, setLocalMessages]);
 
   useEffect(() => {
     if (addResult !== undefined) {
@@ -72,7 +72,7 @@ function ChildrenProfiles({
         clearErrorMessage("all");
       }
     }
-  }, [addResult]);
+  }, [addResult, clearErrorMessage, language, setLocalMessages]);
 
   const handleDeleteClick = async (childId: number) => {
     clearErrorMessage("all");
@@ -121,7 +121,7 @@ function ChildrenProfiles({
           action={addAction}
           customerId={customerId}
           localMessages={localMessages}
-          isAdminAuthenticated={isAdminAuthenticated}
+          userSessionType={userSessionType}
           isError={isError}
           clearErrorMessage={clearErrorMessage}
         />
@@ -286,7 +286,7 @@ function ChildrenProfiles({
 
             {/* Hidden fields to include in form submission */}
             {/* For security, pass the customer ID through a hidden input only if the admin is authenticated */}
-            {isAdminAuthenticated && (
+            {userSessionType === "admin" && (
               <input type="hidden" name="customerId" value={customerId ?? ""} />
             )}
             <input type="hidden" name="id" value={child.id ?? ""} />

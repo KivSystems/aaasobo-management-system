@@ -7,10 +7,10 @@ import WelcomeModal from "./WelcomeModa";
 
 export default function WelcomeModalController({
   customerId,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   customerId: number;
-  isAdminAuthenticated?: boolean;
+  userSessionType: UserType;
 }) {
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(true);
   const { language } = useLanguage();
@@ -21,7 +21,7 @@ export default function WelcomeModalController({
         customerId={customerId}
         setIsWelcomeModalOpen={setIsWelcomeModalOpen}
         language={language}
-        isAdminAuthenticated={isAdminAuthenticated}
+        userSessionType={userSessionType}
       />
     </Modal>
   );

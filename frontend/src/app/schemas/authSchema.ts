@@ -63,7 +63,6 @@ export const instructorRegisterSchema = z
     password: z.string().min(8, "At least 8 characters long."),
     passConfirmation: z.string(),
     passwordStrength: z.number(),
-    icon: z.string().min(1, "Icon is required."),
     classURL: z
       .string()
       .url("Invalid URL format.")
@@ -100,6 +99,20 @@ export const instructorRegisterSchema = z
     path: ["password"],
   });
 
+export const instructorIconRegisterSchema = z.object({
+  icon: z
+    .instanceof(File)
+    .refine((file) => file.size > 0, {
+      message: "Instructor profile image is required.",
+    })
+    .refine((file) => file.size <= 5 * 1024 * 1024, {
+      message: "Instructor profile image must be less than 5MB.",
+    })
+    .refine((file) => ["image/png", "image/jpeg"].includes(file.type), {
+      message: "Only JPG and PNG files are allowed.",
+    }),
+});
+
 export const adminRegisterSchema = z
   .object({
     name: z.string().min(1, "Name is required."),
@@ -131,12 +144,22 @@ export const planRegisterSchema = z.object({
 });
 
 export const eventRegisterSchema = z.object({
-  name: z.string().min(1, "Event Name is required."),
+  name: z
+    .string()
+    .min(1, "Event Name is required.")
+    .refine((name) => /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name), {
+      message: "Event Name must be in the format: 日本語名 / English Name",
+    }),
   color: z.string().min(1, "Color Code is required."),
 });
 
 export const eventUpdateSchema = z.object({
-  name: z.string().min(1, "Event Name is required."),
+  name: z
+    .string()
+    .min(1, "Event Name is required.")
+    .refine((name) => /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name), {
+      message: "Event Name must be in the format: 日本語名 / English Name",
+    }),
   color: z.string().min(1, "Color Code is required."),
 });
 
@@ -159,21 +182,32 @@ export const instructorUpdateSchema = z.object({
   classURL: z
     .string()
     .url("Invalid URL format.")
-    .min(1, "Class URL is required."),
-  // TODO: Display error message if URL does not start with http:// or https:// (GSS No.97)
-  // .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
-  //   message: "URL must start with http:// or https://",
-  // }),
+    .min(1, "Class URL is required.")
+    .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
+      message: "URL must start with http:// or https://",
+    }),
   meetingId: z.string().min(1, "Meeting ID is required."),
   passcode: z.string().min(1, "Passcode is required."),
-  introductionURL: z.string().url("Invalid URL format."),
-  // TODO: Display error message if URL does not start with http:// or https:// (GSS No.97)
-  // .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
-  //   message: "URL must start with http:// or https://",
-  // }),
-  userType: z.enum(["admin", "customer", "instructor"], {
-    message: "Invalid user type.",
-  }),
+  introductionURL: z
+    .string()
+    .url("Invalid URL format.")
+    .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
+      message: "URL must start with http:// or https://",
+    }),
+});
+
+export const instructorIconUpdateSchema = z.object({
+  icon: z
+    .instanceof(File)
+    .refine((file) => file.size > 0, {
+      message: "Instructor profile image is required.",
+    })
+    .refine((file) => file.size <= 5 * 1024 * 1024, {
+      message: "Instructor profile image must be less than 5MB.",
+    })
+    .refine((file) => ["image/png", "image/jpeg"].includes(file.type), {
+      message: "Only JPG and PNG files are allowed.",
+    }),
 });
 
 export const adminUpdateSchema = z.object({

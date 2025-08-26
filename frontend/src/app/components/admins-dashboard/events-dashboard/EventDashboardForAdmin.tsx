@@ -4,9 +4,11 @@ import { getEventById } from "@/app/helper/api/eventsApi";
 export default async function EventDashboardForAdmin({
   userId,
   eventId,
+  userSessionType,
 }: {
   userId: number;
   eventId: number;
+  userSessionType: UserType;
 }) {
   // Fetch event data
   const data = await getEventById(eventId);
@@ -17,5 +19,12 @@ export default async function EventDashboardForAdmin({
     event = data.event;
   }
 
-  return <EventTabs userId={userId} eventId={eventId} event={event} />;
+  return (
+    <EventTabs
+      userId={userId}
+      eventId={eventId}
+      event={event}
+      userSessionType={userSessionType}
+    />
+  );
 }

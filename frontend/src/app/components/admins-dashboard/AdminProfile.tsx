@@ -21,11 +21,11 @@ import Loading from "@/app/components/elements/loading/Loading";
 function AdminProfile({
   userId,
   admin,
-  isAdminAuthenticated,
+  userSessionType,
 }: {
   userId: number;
   admin: Admin | string;
-  isAdminAuthenticated?: boolean;
+  userSessionType: UserType;
 }) {
   // Use `useFormState` hook for updating an admin profile
   const [updateResultState, formAction] = useFormState(updateAdminAction, {});
@@ -160,7 +160,7 @@ function AdminProfile({
             <input type="hidden" name="id" value={latestAdmin.id} />
 
             {/* Action buttons for only admin */}
-            {isAdminAuthenticated &&
+            {userSessionType === "admin" &&
               (isEditing ? (
                 <div className={styles.buttons}>
                   <ActionButton

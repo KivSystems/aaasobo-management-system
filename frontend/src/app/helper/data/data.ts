@@ -1,5 +1,7 @@
 export const holidayEventId = 2;
 export const defaultEventIds = [1, 2, 3, 4];
+export const defaultUserImageUrl = "/images/default-user-icon.jpg";
+export const defaultColor = "#000000";
 
 export const prefectures = [
   "海外 / Overseas",
@@ -54,3 +56,4 @@ export const prefectures = [
 
 export const FREE_TRIAL_BOOKING_HOURS = 72;
 export const REGULAR_REBOOKING_HOURS = 3;
+export const MIN_DAYS_TO_LEAVE = 30;

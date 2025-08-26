@@ -1,0 +1,53 @@
+@import "@/app/variables.module.scss";
+
+.modeSelection {
+  padding: 1rem;
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  color: $text-dark;
+}
+
+.modeCards {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.modeCard {
+  background: $background-light;
+  border: 2px solid $border-light;
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-width: 240px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: $blue_primary;
+    background: $background-hover;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(65, 66, 152, 0.15);
+  }
+
+  .icon {
+    margin-bottom: 0.8rem;
+  }
+
+  h3 {
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+    color: $text-dark;
+  }
+
+  p {
+    color: $text-medium;
+    line-height: 1.4;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}

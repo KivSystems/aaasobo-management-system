@@ -5,11 +5,11 @@ import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
 export async function revalidateCustomerCalendar(
   customerId: number,
-  isAdminAuthenticated: boolean | undefined,
+  userSessionType?: UserType,
 ) {
   let path = `/customers/${customerId}/classes`;
 
-  if (isAdminAuthenticated) {
+  if (userSessionType === "admin") {
     const session = await getUserSession("admin");
     const adminId = session?.user.id ? parseInt(session.user.id) : undefined;
 

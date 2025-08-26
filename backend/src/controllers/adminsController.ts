@@ -9,9 +9,9 @@ import {
 import {
   getAllInstructors,
   registerInstructor,
+  updateInstructor,
   getInstructorByEmail,
   getInstructorByNickname,
-  getInstructorByIcon,
   getInstructorByClassURL,
   getInstructorByMeetingId,
   getInstructorByPasscode,
@@ -27,6 +27,8 @@ import {
   updateEvent,
   deleteEvent,
 } from "../services/eventsService";
+import { convertToISOString, nDaysLater } from "../helper/dateUtils";
+import { MIN_DAYS_TO_LEAVE } from "../helper/commonUtils";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -254,12 +256,19 @@ export const registerInstructorController = async (
   req: Request,
   res: Response,
 ) => {
+  const icon = req.file;
   const {
     name,
     nickname,
     email,
     password,
-    icon,
+    birthdate,
+    lifeHistory,
+    favoriteFood,
+    hobby,
+    messageForChildren,
+    workingTime,
+    skill,
     classURL,
     meetingId,
     passcode,
@@ -271,7 +280,6 @@ export const registerInstructorController = async (
     !email ||
     !password ||
     !nickname ||
-    !icon ||
     !classURL ||
     !meetingId ||
     !passcode ||
@@ -282,12 +290,13 @@ export const registerInstructorController = async (
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
+  // Normalize birthdate
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
 
   // Set unique checks list
   const uniqueChecks = [
     { fn: getInstructorByNickname, value: nickname },
     { fn: getInstructorByEmail, value: normalizedEmail },
-    { fn: getInstructorByIcon, value: icon },
     { fn: getInstructorByClassURL, value: classURL },
     { fn: getInstructorByMeetingId, value: meetingId },
     { fn: getInstructorByPasscode, value: passcode },
@@ -301,9 +310,8 @@ export const registerInstructorController = async (
     );
 
     const [
-      emailExists,
       nicknameExists,
-      iconExists,
+      emailExists,
       classURLExists,
       meetingIdExists,
       passcodeExists,
@@ -313,7 +321,6 @@ export const registerInstructorController = async (
     // Make list of error items and set the text including each error item
     if (nicknameExists) errorItems = errorItems.concat(", ", "Nickname");
     if (emailExists) errorItems = errorItems.concat(", ", "Email");
-    if (iconExists) errorItems = errorItems.concat(", ", "Icon");
     if (classURLExists) errorItems = errorItems.concat(", ", "Class URL");
     if (meetingIdExists) errorItems = errorItems.concat(", ", "Meeting ID");
     if (passcodeExists) errorItems = errorItems.concat(", ", "Pass Code");
@@ -336,6 +343,13 @@ export const registerInstructorController = async (
       email: normalizedEmail,
       password,
       icon,
+      birthdate: normalizedBirthdate,
+      lifeHistory,
+      favoriteFood,
+      hobby,
+      messageForChildren,
+      workingTime,
+      skill,
       classURL,
       meetingId,
       passcode,
@@ -346,6 +360,123 @@ export const registerInstructorController = async (
   } catch (error) {
     console.error("Error registering instructor", { error });
     res.sendStatus(500);
+  }
+};
+
+// Update the applicable instructor data
+export const updateInstructorProfileController = async (
+  req: Request,
+  res: Response,
+) => {
+  const id = parseInt(req.params.id);
+  const icon = req.file;
+  const {
+    name,
+    leavingDate,
+    email,
+    nickname,
+    birthdate,
+    workingTime,
+    lifeHistory,
+    favoriteFood,
+    hobby,
+    messageForChildren,
+    skill,
+    classURL,
+    meetingId,
+    passcode,
+    introductionURL,
+  } = req.body;
+
+  // Normalize email
+  const normalizedEmail = email.trim().toLowerCase();
+  // Normalize leavingDate and birthdate
+  const normalizedLeavingDate =
+    leavingDate !== "null" ? new Date(convertToISOString(leavingDate)) : null;
+  const normalizedBirthdate = new Date(convertToISOString(birthdate));
+
+  // Check if the leavingDate is 30 days after the current date
+  if (
+    normalizedLeavingDate &&
+    (isNaN(normalizedLeavingDate.getTime()) ||
+      normalizedLeavingDate < nDaysLater(MIN_DAYS_TO_LEAVE))
+  ) {
+    return res.status(400).json({ leavingDate: "Invalid leaving date" });
+  }
+
+  // Set unique checks list
+  const uniqueChecks = [
+    { fn: getInstructorByNickname, value: nickname },
+    { fn: getInstructorByEmail, value: normalizedEmail },
+    { fn: getInstructorByClassURL, value: classURL },
+    { fn: getInstructorByMeetingId, value: meetingId },
+    { fn: getInstructorByPasscode, value: passcode },
+    { fn: getInstructorByIntroductionURL, value: introductionURL },
+  ];
+  let errorItems: { [key: string]: string } = {};
+
+  try {
+    const results = await Promise.all(
+      uniqueChecks.map(({ fn, value }) => fn(value)),
+    );
+
+    const [
+      nicknameExists,
+      emailExists,
+      classURLExists,
+      meetingIdExists,
+      passcodeExists,
+      introductionURLExists,
+    ] = results;
+
+    if (nicknameExists && nicknameExists.id !== id) {
+      errorItems.nickname = "The nickname is already in use.";
+    }
+    if (emailExists && emailExists.id !== id) {
+      errorItems.email = "The email is already in use.";
+    }
+    if (classURLExists && classURLExists.id !== id) {
+      errorItems.classURL = "The class URL is already in use.";
+    }
+    if (meetingIdExists && meetingIdExists.id !== id) {
+      errorItems.meetingId = "The meeting ID is already in use.";
+    }
+    if (passcodeExists && passcodeExists.id !== id) {
+      errorItems.passcode = "The passcode is already in use.";
+    }
+    if (introductionURLExists && introductionURLExists.id !== id) {
+      errorItems.introductionURL = "The introduction URL is already in use.";
+    }
+    if (Object.keys(errorItems).length > 0) {
+      return res.status(400).json(errorItems);
+    }
+
+    const instructor = await updateInstructor(
+      id,
+      icon,
+      name,
+      nickname,
+      normalizedLeavingDate,
+      normalizedBirthdate,
+      workingTime,
+      lifeHistory,
+      favoriteFood,
+      hobby,
+      messageForChildren,
+      skill,
+      email,
+      classURL,
+      meetingId,
+      passcode,
+      introductionURL,
+    );
+
+    res.status(200).json({
+      message: "Instructor is updated successfully",
+      instructor,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
   }
 };
 
@@ -464,8 +595,17 @@ export const getAllEventsController = async (_: Request, res: Response) => {
 export const registerEventController = async (req: Request, res: Response) => {
   const { name, color } = req.body;
 
+  // Validate the input
   if (!name || !color) {
     return res.sendStatus(400);
+  }
+
+  // Check if the event name is in the correct format
+  const nameFormatCheck = /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name);
+  if (nameFormatCheck === false) {
+    return res.status(422).json({
+      items: ["Event Name must be in the format: 日本語名 / English Name"],
+    });
   }
 
   // Normalize the event name and color code
@@ -519,8 +659,17 @@ export const updateEventProfileController = async (
   const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
 
   try {
+    // Validate the input
     if (!name || !color) {
       return res.sendStatus(400);
+    }
+
+    // Check if the event name is in the correct format
+    const nameFormatCheck = /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name);
+    if (nameFormatCheck === false) {
+      return res.status(422).json({
+        items: ["Event Name must be in the format: 日本語名 / English Name"],
+      });
     }
 
     // Check if the event with the same name and color already exists
@@ -656,7 +805,7 @@ export const getClassesWithinPeriodController = async (
         Instructor: instructorName,
         Customer: customerName,
         Date: date,
-        Time: time,
+        "JP Time": time,
         Status: statusText,
         "Class Code": classCode,
       };

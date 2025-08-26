@@ -89,14 +89,32 @@ export const getDayOfWeek = (date: Date, locale: string = "en-US"): string => {
   return formatter.format(date);
 };
 
-// e.g., "en-US": MAY, JAN ..., "ja-JP": 5, 6 ...
+// e.g., "en-US": Jan, Feb ..., "ja-JP": 1, 2 ...
 export const getShortMonth = (date: Date, locale: string = "en-US"): string => {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return "";
+  }
+
   if (locale === "ja-JP") {
     return String(date.getMonth() + 1);
   }
 
   const formatter = new Intl.DateTimeFormat(locale, { month: "short" });
   return formatter.format(date).toUpperCase();
+};
+
+// e.g., "en-US": January, February ..., "ja-JP": 1, 2 ...
+export const getLongMonth = (date: Date, locale: string = "en-US"): string => {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return "";
+  }
+
+  if (locale === "ja-JP") {
+    return String(date.getMonth() + 1);
+  }
+
+  const formatter = new Intl.DateTimeFormat(locale, { month: "long" });
+  return formatter.format(date);
 };
 
 // Formats a Date object into a short string according to the selected language(e.g., "Jun 29, 2024" "2024年6月29日") for the "en-US" locale.
@@ -133,6 +151,9 @@ export const nHoursLater = (n: number, dateTime: Date = new Date()): Date => {
 export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
   return new Date(dateTime.getTime() - n * 60 * 60 * 1000);
 };
+
+export const nDaysLater = (days: number, dateTime: Date = new Date()) =>
+  new Date(dateTime.getTime() + days * 24 * 60 * 60 * 1000);
 
 export const hasTimePassed = (targetTime: Date | string): boolean =>
   Date.now() > new Date(targetTime).getTime();

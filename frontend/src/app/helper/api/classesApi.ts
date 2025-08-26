@@ -219,31 +219,6 @@ export const cancelClasses = async (classIds: number[]) => {
   }
 };
 
-export const getInstructorAvailabilities = async (
-  classId: number,
-): Promise<InstructorAvailability[] | []> => {
-  const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/instructor-availabilities`;
-
-  try {
-    const response = await fetch(apiUrl, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(
-      "API error while fetching rebookable instructor availabilities:",
-      error,
-    );
-    throw new Error(FAILED_TO_FETCH_REBOOKABLE_INSTRUCTORS);
-  }
-};
-
 export const updateAttendance = async (
   classId: number,
   childrenIds: number[],

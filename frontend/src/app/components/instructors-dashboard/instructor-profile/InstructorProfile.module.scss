@@ -8,9 +8,8 @@
   width: 100%;
 
   .pic {
+    border-radius: 180px;
     padding: 1rem;
-    width: 150px;
-    height: 150px;
   }
 
   h3 {
@@ -28,15 +27,21 @@
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
 }
 
+.userInfo {
+  display: block;
+  flex: 1;
+}
+
 .icon {
-  width: 2rem;
-  height: 2rem;
+  width: 30px;
+  height: 30px;
   margin-right: 1rem;
 }
 
 .urlInfo {
   display: flex;
   font-size: 0.8rem;
+  margin: 5px 0px 0px 0px;
 }
 
 .url {
@@ -66,7 +71,7 @@
   }
   &__text {
     font-size: 16px;
-    font-weight: 300;
+    font-weight: 400;
     width: 100%;
   }
   &__inputField {
@@ -84,10 +89,69 @@
   }
 }
 
+// Profile Image
+.profileImage {
+  &__text {
+    font-size: 16px;
+    font-weight: 400;
+    width: 100%;
+  }
+}
+
+// Nickname, Birthdate
+.nickname,
+.birthdate {
+  &__inputField {
+    padding: 3px 6px;
+    font-size: 20px;
+    font-weight: 400;
+    border-radius: 6px;
+    width: 200px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+
+  &__text {
+    font-size: 18px;
+    font-weight: 400;
+  }
+}
+
+// Working Time, Life History, Favorite Food, Hobby, Message For Children, Skill
+.workingTime,
+.lifeHistory,
+.favoriteFood,
+.hobby,
+.messageForChildren,
+.skill {
+  &__inputField {
+    margin: 0px 50px 0px 0px;
+    padding: 3px 6px;
+    font-size: 20px;
+    font-weight: 400;
+    border: 2px solid #000;
+    border-radius: 6px;
+    width: 100%;
+    min-height: 100px;
+    resize: none;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-line;
+  }
+
+  &__text {
+    font-size: 18px;
+    font-weight: 400;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-line;
+  }
+}
+
 // email
 .email {
   &__inputField {
-    margin: 0px 50px 0px 0px;
     padding: 3px 6px;
     font-size: 20px;
     font-weight: 400;
@@ -96,6 +160,12 @@
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;
+  }
+
+  &__text {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    font-weight: 400;
   }
 }
 
@@ -118,12 +188,12 @@
 .meetingId,
 .passcode {
   &__inputField {
-    margin: 1px 0px 5px 6px;
+    margin: 0px 10px 0px 0px;
     padding: 1px 1px;
     font-size: 14px;
     font-weight: 400;
     border-radius: 6px;
-    width: 60%;
+    min-width: 200px;
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;

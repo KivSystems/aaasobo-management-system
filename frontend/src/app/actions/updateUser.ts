@@ -10,6 +10,7 @@ import {
 import {
   adminUpdateSchema,
   instructorUpdateSchema,
+  instructorIconUpdateSchema,
 } from "../schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
 import { getCookie } from "../../middleware";
@@ -74,18 +75,34 @@ export async function updateInstructorAction(
 ): Promise<UpdateFormState> {
   try {
     const name = formData.get("name");
+    const leavingDate = String(formData.get("leavingDate"));
     const nickname = formData.get("nickname");
+    const birthdate = String(formData.get("birthdate"));
+    const workingTime = String(formData.get("workingTime"));
+    const lifeHistory = String(formData.get("lifeHistory"));
+    const favoriteFood = String(formData.get("favoriteFood"));
+    const hobby = String(formData.get("hobby"));
+    const messageForChildren = String(formData.get("messageForChildren"));
+    const skill = String(formData.get("skill"));
     const email = formData.get("email");
     const classURL = formData.get("classURL");
     const meetingId = formData.get("meetingId");
     const passcode = formData.get("passcode");
     const introductionURL = formData.get("introductionURL");
+    const icon = formData.get("icon") as File;
     // Hidden input tag fields
-    const userType = formData.get("userType");
     const id = Number(formData.get("id"));
-    const icon = String(formData.get("icon"));
+    const confirmResult = formData.get("confirmResult");
 
-    const parsedForm = instructorUpdateSchema.safeParse({
+    if (confirmResult === "false") {
+      return {
+        skipProcessing: "Skipping update due to confirmation failure",
+      };
+    }
+
+    let validationErrors;
+
+    const parsedForm1 = instructorUpdateSchema.safeParse({
       name,
       nickname,
       email,
@@ -93,30 +110,48 @@ export async function updateInstructorAction(
       meetingId,
       passcode,
       introductionURL,
-      userType,
     });
 
-    if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
+    if (!parsedForm1.success) {
+      validationErrors = parsedForm1.error.errors;
       return extractUpdateValidationErrors(validationErrors);
     }
 
     // Get the cookies from the request headers
     const cookie = await getCookie();
 
-    // Call the API to update the instructor data
-    const response = await updateInstructor(
-      id,
-      parsedForm.data.name,
-      parsedForm.data.email,
-      parsedForm.data.classURL,
-      icon,
-      parsedForm.data.nickname,
-      parsedForm.data.meetingId,
-      parsedForm.data.passcode,
-      parsedForm.data.introductionURL,
-      cookie,
-    );
+    const userData = new FormData();
+    userData.append("name", parsedForm1.data.name);
+    userData.append("leavingDate", leavingDate);
+    userData.append("nickname", parsedForm1.data.nickname);
+    userData.append("birthdate", birthdate);
+    userData.append("workingTime", workingTime);
+    userData.append("lifeHistory", lifeHistory);
+    userData.append("favoriteFood", favoriteFood);
+    userData.append("hobby", hobby);
+    userData.append("messageForChildren", messageForChildren);
+    userData.append("skill", skill);
+    userData.append("email", parsedForm1.data.email);
+    userData.append("classURL", parsedForm1.data.classURL);
+    userData.append("meetingId", parsedForm1.data.meetingId);
+    userData.append("passcode", parsedForm1.data.passcode);
+    userData.append("introductionURL", parsedForm1.data.introductionURL);
+
+    // Append the icon file if it exists
+    if (icon.name && icon.size > 0) {
+      const parsedForm2 = instructorIconUpdateSchema.safeParse({
+        icon,
+      });
+
+      if (!parsedForm2.success) {
+        validationErrors = parsedForm2.error.errors;
+        return extractUpdateValidationErrors(validationErrors);
+      }
+
+      userData.append("icon", parsedForm2.data.icon);
+    }
+
+    const response = await updateInstructor(id, userData, cookie);
 
     // Refresh cached instructor data for the instructor list page
     revalidateInstructorList();

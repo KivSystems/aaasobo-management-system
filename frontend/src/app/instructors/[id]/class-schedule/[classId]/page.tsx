@@ -26,6 +26,7 @@ const ClassDetailsPage = async ({
       classId={classId}
       classDetails={selectedClassDetails}
       classes={sameDateClasses}
+      previousPage="instructor-calendar"
     />
   );
 };

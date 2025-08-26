@@ -3,7 +3,7 @@
 import FullCalendar from "@fullcalendar/react";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
-import { DateSelectArg, DayCellMountArg } from "@fullcalendar/core";
+import { DateSelectArg } from "@fullcalendar/core";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,15 +11,18 @@ import { useFormState } from "react-dom";
 import Modal from "@/app/components/elements/modal/Modal";
 import BusinessCalendarModal from "@/app/components/admins-dashboard/BusinessCalendarModal";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 import { updateScheduleAction } from "@/app/actions/updateContent";
 import { CONTENT_UPDATE_SUCCESS_MESSAGE } from "@/app/helper/messages/formValidation";
 import { getAllBusinessSchedules } from "@/app/helper/api/adminsApi";
+import { getDayCellColorHandler } from "@/app/helper/utils/calendarUtils";
+import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLegend";
 
 const BusinessCalendarClient = ({
   businessSchedule: initialSchedule,
   events,
   validRange,
-  isAdminAuthenticated,
+  userSessionType,
 }: BusinessCalendarClientProps) => {
   const calendarRef = useRef<FullCalendar | null>(null);
   const [updateResultState, formAction] = useFormState(
@@ -34,25 +37,10 @@ const BusinessCalendarClient = ({
   const [selectedDates, setSelectedDates] = useState<string[] | []>([]);
   const { localMessages, clearErrorMessage } =
     useFormMessages(updateResultState);
-
-  // Map to store date to color mapping
-  const dateToColorMap = new Map<string, string>(
-    businessSchedule.map((item) => [item.date, item.color]),
-  );
+  const { language } = useLanguage();
 
   // Set color for each date in the calendar
-  const dayCellColors = (arg: DayCellMountArg) => {
-    // Skip if the cell is not in the valid range (in previous or next month)
-    if (arg.isOther) {
-      return;
-    }
-    const dateStr = arg.date.toISOString().split("T")[0];
-    const color = dateToColorMap.get(dateStr);
-    // Set background color for the cell
-    if (color) {
-      arg.el.style.backgroundColor = color;
-    }
-  };
+  const dayCellColors = getDayCellColorHandler(businessSchedule);
 
   // Convert date to string in the format "MM/DD/YYYY"
   const dateToString = (date: Date) => {
@@ -66,7 +54,7 @@ const BusinessCalendarClient = ({
   // Register or delete event on selected date
   const handleDateSelect = (arg: DateSelectArg) => {
     // Check if the user is authenticated as an admin
-    if (!isAdminAuthenticated) {
+    if (userSessionType !== "admin") {
       return;
     }
 
@@ -151,6 +139,14 @@ const BusinessCalendarClient = ({
     return <div>Failed to load AaasoBo! schedule.</div>;
   }
 
+  // Map events to the format required for the calendar legend
+  const colorsForEvents: { event: string; color: string }[] = events.map(
+    (e: BusinessEventType) => ({
+      event: e.name,
+      color: e.color!,
+    }),
+  );
+
   return (
     <>
       <FullCalendar
@@ -161,7 +157,10 @@ const BusinessCalendarClient = ({
         initialDate={getInitialDate()}
         headerToolbar={{ left: "prev,next today", center: "title", right: "" }}
         timeZone="Asia/Tokyo"
-        locale="en"
+        locale={language === "ja" ? "ja" : "en"}
+        dayCellContent={(arg) => {
+          return { html: String(arg.date.getDate()) };
+        }}
         contentHeight="auto"
         selectable
         multiMonthMinWidth={300}
@@ -170,20 +169,25 @@ const BusinessCalendarClient = ({
         dayCellDidMount={dayCellColors}
         select={handleDateSelect}
       />
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        className="businessCalendarModal"
-      >
-        <form action={formAction}>
-          <BusinessCalendarModal
-            selectedDates={selectedDates}
-            events={events}
-            localMessages={localMessages}
-            clearErrorMessage={clearErrorMessage}
-          />
-        </form>
-      </Modal>
+      {events.length > 0 && (
+        <CalendarLegend colorsForEvents={colorsForEvents} language={language} />
+      )}
+      {userSessionType === "admin" && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          className="businessCalendarModal"
+        >
+          <form action={formAction}>
+            <BusinessCalendarModal
+              selectedDates={selectedDates}
+              events={events}
+              localMessages={localMessages}
+              clearErrorMessage={clearErrorMessage}
+            />
+          </form>
+        </Modal>
+      )}
     </>
   );
 };

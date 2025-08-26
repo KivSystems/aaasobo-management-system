@@ -42,7 +42,7 @@ export const getAllAdmins = async () => {
   }
 };
 
-// GET all instructors data
+// GET all instructors data for instructor list
 export const getAllInstructors = async () => {
   try {
     const apiUrl = `${BASE_URL}/instructor-list`;

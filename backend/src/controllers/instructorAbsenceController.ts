@@ -81,10 +81,14 @@ export const removeInstructorAbsenceController = async (
       });
     }
 
-    await removeInstructorAbsence(instructorId, absentAtDate);
+    const deletedAbsence = await removeInstructorAbsence(
+      instructorId,
+      absentAtDate,
+    );
 
     res.status(200).json({
       message: "Instructor absence removed successfully",
+      data: deletedAbsence,
     });
   } catch (error) {
     console.error("Error removing instructor absence:", error);

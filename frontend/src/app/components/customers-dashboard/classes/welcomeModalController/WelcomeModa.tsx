@@ -16,13 +16,10 @@ export default function WelcomeModal({
   customerId,
   language,
   setIsWelcomeModalOpen,
-  isAdminAuthenticated,
+  userSessionType,
 }: WelcomeModalProps) {
   const handleClick = async () => {
-    const { isValid, error } = await validateSession(
-      customerId,
-      isAdminAuthenticated,
-    );
+    const { isValid, error } = await validateSession(customerId);
 
     if (!isValid) {
       return alert(
@@ -53,7 +50,7 @@ export default function WelcomeModal({
           onClick={() =>
             confirmAndDeclineFreeTrialClass({
               customerId,
-              isAdminAuthenticated,
+              userSessionType,
               language,
             })
           }

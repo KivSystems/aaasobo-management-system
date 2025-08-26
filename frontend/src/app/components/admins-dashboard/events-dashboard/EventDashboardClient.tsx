@@ -9,10 +9,12 @@ export default function EventTabs({
   userId,
   eventId,
   event,
+  userSessionType,
 }: {
   userId: number;
   eventId: number;
   event: BusinessEventType | string;
+  userSessionType: UserType;
 }) {
   const breadcrumb = [
     "Event List",
@@ -21,9 +23,6 @@ export default function EventTabs({
   ];
   const activeTabName = "activeEventTab";
 
-  // Set the authentication status as true.
-  const isAuthenticated = true;
-
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect("activeEventTab");
 
@@ -31,9 +30,7 @@ export default function EventTabs({
   const tabs = [
     {
       label: "Event's Profile",
-      content: (
-        <EventProfile event={event} isAdminAuthenticated={isAuthenticated} />
-      ),
+      content: <EventProfile event={event} userSessionType={userSessionType} />,
     },
   ];
 

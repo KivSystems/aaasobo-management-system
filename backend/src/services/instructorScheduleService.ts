@@ -1,10 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
-import {
-  createJSTMidnight,
-  assertIsJSTMidnight,
-  toJSTDateString,
-  JAPAN_TIME_DIFF,
-} from "../helper/dateUtils";
+import { Prisma } from "@prisma/client";
+import { nDaysLater } from "../helper/dateUtils";
 
 export const getInstructorSchedules = async (instructorId: number) => {
   try {
@@ -20,31 +16,73 @@ export const getInstructorSchedules = async (instructorId: number) => {
 
 export const getScheduleWithSlots = async (scheduleId: number) => {
   try {
-    return await prisma.instructorSchedule.findUnique({
+    const schedule = await prisma.instructorSchedule.findUnique({
       where: { id: scheduleId },
       include: {
         slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
       },
     });
+
+    if (!schedule) {
+      return null;
+    }
+
+    return {
+      ...schedule,
+      slots: schedule.slots.map((slot) => ({
+        ...slot,
+        startTime: extractTime(slot.startTime),
+      })),
+    };
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch schedule with slots.");
   }
 };
 
+export const getActiveInstructorSchedule = async (
+  instructorId: number,
+  effectiveDate: string,
+) => {
+  try {
+    const activeSchedule = await prisma.instructorSchedule.findFirst({
+      where: {
+        instructorId,
+        effectiveFrom: { lte: new Date(effectiveDate) },
+        effectiveTo: null,
+      },
+      include: {
+        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+      },
+    });
+
+    if (!activeSchedule) {
+      return null;
+    }
+
+    return {
+      ...activeSchedule,
+      slots: activeSchedule.slots.map((slot) => ({
+        ...slot,
+        startTime: extractTime(slot.startTime),
+      })),
+    };
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch active instructor schedule.");
+  }
+};
+
 export const createInstructorSchedule = async (data: {
   instructorId: number;
-  effectiveFrom: Date; // Date object representing JST date
+  effectiveFrom: Date;
+  timezone: string;
   slots: Array<{
     weekday: number;
-    startTime: Date;
+    startTime: string; // HH:MM format
   }>;
 }) => {
   try {
-    // Convert Date object to JST date string, then to JST midnight DateTime
-    const effectiveFromDateString = toJSTDateString(data.effectiveFrom);
-    const effectiveFromDateTime = createJSTMidnight(effectiveFromDateString);
-
     return await prisma.$transaction(async (tx) => {
       // Find the currently active schedule (effectiveTo: null)
       // Note: This should be findUnique since we have @@unique([instructorId, effectiveTo]),
@@ -61,15 +99,16 @@ export const createInstructorSchedule = async (data: {
       if (currentActiveSchedule) {
         await tx.instructorSchedule.update({
           where: { id: currentActiveSchedule.id },
-          data: { effectiveTo: effectiveFromDateTime },
+          data: { effectiveTo: data.effectiveFrom },
         });
       }
 
       const schedule = await tx.instructorSchedule.create({
         data: {
           instructorId: data.instructorId,
-          effectiveFrom: effectiveFromDateTime,
+          effectiveFrom: data.effectiveFrom,
           effectiveTo: null,
+          timezone: data.timezone,
         },
       });
 
@@ -77,14 +116,26 @@ export const createInstructorSchedule = async (data: {
         data: data.slots.map((slot) => ({
           scheduleId: schedule.id,
           weekday: slot.weekday,
-          startTime: slot.startTime,
+          startTime: new Date(`1970-01-01T${slot.startTime}:00.000Z`),
         })),
       });
 
-      return await tx.instructorSchedule.findUnique({
+      const createdSchedule = await tx.instructorSchedule.findUnique({
         where: { id: schedule.id },
         include: { slots: true },
       });
+
+      if (!createdSchedule) {
+        throw new Error("Failed to retrieve created schedule");
+      }
+
+      return {
+        ...createdSchedule,
+        slots: createdSchedule.slots.map((slot) => ({
+          ...slot,
+          startTime: extractTime(slot.startTime),
+        })),
+      };
     });
   } catch (error) {
     console.error("Database Error:", error);
@@ -94,102 +145,308 @@ export const createInstructorSchedule = async (data: {
 
 export const getInstructorAvailableSlots = async (
   instructorId: number,
-  startDate: Date,
-  endDate: Date,
+  startDate: string, // YYYY-MM-DD format
+  endDate: string, // YYYY-MM-DD format
+  timezone: string,
+  excludeBookedSlots: boolean,
 ) => {
   try {
-    // Convert Date objects to JST date strings
-    const startDateString = toJSTDateString(startDate);
-    const endDateString = toJSTDateString(endDate);
-
-    const schedules = await prisma.instructorSchedule.findMany({
-      where: {
-        instructorId,
-        // Interval overlap detection: max(startDate, effectiveFrom) < min(endDate, effectiveTo)
-        // This formula is mathematically equivalent to:
-        // startDate < effectiveTo AND effectiveFrom < endDate
-        //
-        // Since we can't use max/min functions in Prisma where clause, we decompose:
-        // 1. effectiveFrom < endDate (schedule starts before range ends)
-        effectiveFrom: { lt: createJSTMidnight(endDateString) },
-        // 2. startDate < effectiveTo OR effectiveTo is null (schedule ends after range starts, or is infinite)
-        OR: [
-          { effectiveTo: null },
-          { effectiveTo: { gt: createJSTMidnight(startDateString) } },
-        ],
-      },
-      include: {
-        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
-      },
-      orderBy: { effectiveFrom: "asc" },
-    });
-
-    // Generate available slots for each day in the requested period
-    const availableSlots = [];
-    // Treat input dates as JST (create JST midnight DateTime objects)
-    const startDateObj = createJSTMidnight(startDateString);
-    const endDateObj = createJSTMidnight(endDateString);
-    const currentDate = new Date(startDateObj);
-
-    while (currentDate < endDateObj) {
-      // Find the schedule that is effective for this specific date
-      const effectiveSchedule = schedules.find((s) => {
-        // Validate that effectiveFrom and effectiveTo are JST midnight
-        assertIsJSTMidnight(s.effectiveFrom);
-        if (s.effectiveTo) {
-          assertIsJSTMidnight(s.effectiveTo);
-        }
-
-        // Check if current date is within the schedule's effective period
-        return (
-          s.effectiveFrom <= currentDate &&
-          (s.effectiveTo === null || currentDate < s.effectiveTo)
-        );
-      });
-
-      if (effectiveSchedule) {
-        // Calculate the day of the week in JST timezone
-        // Since currentDate represents JST midnight (09:00 UTC), we need to adjust for JST
-        const jstDate = new Date(
-          currentDate.getTime() - JAPAN_TIME_DIFF * 60 * 60 * 1000,
-        );
-        const dayOfWeek = jstDate.getUTCDay(); // 0 = Sunday, 6 = Saturday
-        const jstDateString = jstDate.toISOString().split("T")[0];
-
-        // Find slots for this day of the week
-        const slotsForDay = effectiveSchedule.slots.filter(
-          (slot) => slot.weekday === dayOfWeek,
-        );
-
-        for (const slot of slotsForDay) {
-          const utcTime = slot.startTime;
-          const utcTimeString = utcTime.toISOString().substring(11, 19); // Extract HH:MM:SS
-
-          const slotDateTimeJST = `${jstDateString}T${utcTimeString}Z`;
-          const slotDateTime = new Date(slotDateTimeJST);
-
-          // Assert that the weekday matches the actual day of week from the dateTime
-          if (slotDateTime.getUTCDay() !== dayOfWeek) {
-            throw new Error(
-              `Weekday assertion failed: dateTime weekday (${slotDateTime.getUTCDay()}) does not match expected weekday (${dayOfWeek})`,
-            );
-          }
-
-          availableSlots.push({
-            dateTime: slotDateTime.toISOString(),
-            weekday: dayOfWeek,
-            startTime: slot.startTime.toISOString(),
-          });
-        }
-      }
-
-      // Move to next day (add 24 hours to maintain JST midnight)
-      currentDate.setTime(currentDate.getTime() + 24 * 60 * 60 * 1000);
+    if (timezone !== "Asia/Tokyo") {
+      throw new Error("Only Asia/Tokyo timezone is supported");
     }
+
+    const { schedules, excludeSlots } = await getSlotConstraints(
+      instructorId,
+      startDate,
+      endDate,
+      excludeBookedSlots,
+    );
+
+    const availableSlots = generateInstructorSlots(
+      instructorId,
+      schedules,
+      new Date(startDate),
+      new Date(endDate),
+      excludeSlots,
+    );
 
     return availableSlots;
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch instructor available slots.");
   }
+};
+
+interface AvailableSlotWithInstructors {
+  dateTime: string;
+  availableInstructors: number[];
+}
+
+export const getAllAvailableSlots = async (
+  startDate: string, // YYYY-MM-DD format
+  endDate: string, // YYYY-MM-DD format
+  timezone: string,
+): Promise<AvailableSlotWithInstructors[]> => {
+  try {
+    if (timezone !== "Asia/Tokyo") {
+      throw new Error("Only Asia/Tokyo timezone is supported");
+    }
+
+    const { schedulesByInstructor, excludeSlots } =
+      await getAllInstructorsConstraints(startDate, endDate);
+
+    const slotToInstructorIds = new Map<string, Set<number>>();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    for (const [instructorId, instructorSchedules] of schedulesByInstructor) {
+      const instructorSlots = generateInstructorSlots(
+        instructorId,
+        instructorSchedules,
+        start,
+        end,
+        excludeSlots,
+      );
+
+      for (const slot of instructorSlots) {
+        if (!slotToInstructorIds.has(slot.dateTime)) {
+          slotToInstructorIds.set(slot.dateTime, new Set());
+        }
+        slotToInstructorIds.get(slot.dateTime)!.add(instructorId);
+      }
+    }
+
+    const result: AvailableSlotWithInstructors[] = Array.from(
+      slotToInstructorIds.entries(),
+    )
+      .map(([dateTime, instructorSet]) => ({
+        dateTime,
+        availableInstructors: Array.from(instructorSet).sort((a, b) => a - b),
+      }))
+      .sort((a, b) => a.dateTime.localeCompare(b.dateTime));
+
+    return result;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch all available slots.");
+  }
+};
+
+type InstructorSchedule = Prisma.InstructorScheduleGetPayload<{
+  include: { slots: true };
+}>;
+
+interface AvailableSlot {
+  dateTime: string;
+}
+
+// Extract time string (HH:MM) from DateTime
+const extractTime = (dateTime: Date): string => {
+  return dateTime.toISOString().substring(11, 16);
+};
+
+// Extract date string (YYYY-MM-DD) from DateTime
+const extractDate = (dateTime: Date): string => {
+  return dateTime.toISOString().split("T")[0];
+};
+
+// Create a Date object in JST (Japan Standard Time) from a date string
+const jst = (dateStr: string): Date => {
+  return new Date(dateStr + "T00:00:00+09:00");
+};
+
+interface SlotConstraints {
+  schedules: InstructorSchedule[];
+  excludeSlots: Set<string>;
+}
+
+const getSlotConstraints = async (
+  instructorId: number,
+  startDate: string,
+  endDate: string,
+  excludeBookedSlots: boolean,
+): Promise<SlotConstraints> => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const [schedules, absences] = await Promise.all([
+    prisma.instructorSchedule.findMany({
+      where: {
+        instructorId,
+        timezone: "Asia/Tokyo",
+        // Interval overlap: Two intervals [effectiveFrom, effectiveTo) and [start, end) overlap when:
+        // max(effectiveFrom, start) < min(effectiveTo, end)
+        // This simplifies to: effectiveFrom < end AND effectiveTo > start
+        // Since effectiveTo can be NULL (infinite), we use OR condition:
+        effectiveFrom: { lt: end },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gt: start } }],
+      },
+      include: {
+        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+      },
+      orderBy: { effectiveFrom: "asc" },
+    }),
+    prisma.instructorAbsence.findMany({
+      where: {
+        instructorId,
+        absentAt: { gte: jst(startDate), lt: jst(endDate) },
+      },
+    }),
+  ]);
+
+  const bookings = excludeBookedSlots
+    ? await prisma.class.findMany({
+        where: {
+          instructorId,
+          dateTime: {
+            gte: jst(startDate),
+            lt: jst(endDate),
+          },
+          status: { in: ["booked", "rebooked"] },
+        },
+        select: { instructorId: true, dateTime: true },
+      })
+    : [];
+
+  const absenceSet = new Set(
+    absences.map(
+      (absence) => `${instructorId}-${absence.absentAt.toISOString()}`,
+    ),
+  );
+
+  const bookingSet = new Set(
+    bookings
+      .filter((booking) => booking.dateTime !== null)
+      .map((booking) => `${instructorId}-${booking.dateTime!.toISOString()}`),
+  );
+
+  const excludeSlots = new Set([...absenceSet, ...bookingSet]);
+  return { schedules, excludeSlots };
+};
+
+interface AllInstructorsConstraints {
+  schedulesByInstructor: Map<number, InstructorSchedule[]>;
+  excludeSlots: Set<string>;
+}
+
+const getAllInstructorsConstraints = async (
+  startDate: string,
+  endDate: string,
+): Promise<AllInstructorsConstraints> => {
+  const [schedules, absences, bookings] = await Promise.all([
+    prisma.instructorSchedule.findMany({
+      where: {
+        timezone: "Asia/Tokyo",
+        // Interval overlap: schedule overlaps with [start, end)
+        effectiveFrom: { lt: new Date(endDate) },
+        OR: [
+          { effectiveTo: null },
+          { effectiveTo: { gt: new Date(startDate) } },
+        ],
+      },
+      include: {
+        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+      },
+      orderBy: { effectiveFrom: "asc" },
+    }),
+    prisma.instructorAbsence.findMany({
+      where: {
+        absentAt: {
+          gte: jst(startDate),
+          lt: jst(endDate),
+        },
+      },
+    }),
+    prisma.class.findMany({
+      where: {
+        dateTime: {
+          gte: jst(startDate),
+          lt: jst(endDate),
+        },
+        status: { in: ["booked", "rebooked"] },
+      },
+      select: {
+        instructorId: true,
+        dateTime: true,
+      },
+    }),
+  ]);
+
+  const absentDateTimes = new Set(
+    absences.map(
+      (absence) => `${absence.instructorId}-${absence.absentAt.toISOString()}`,
+    ),
+  );
+  const bookedDateTimes = new Set(
+    bookings.map(
+      (booking) => `${booking.instructorId}-${booking.dateTime?.toISOString()}`,
+    ),
+  );
+
+  const excludeSlots = new Set([...absentDateTimes, ...bookedDateTimes]);
+
+  // Group schedules by instructor ID
+  const schedulesByInstructor = new Map<number, InstructorSchedule[]>();
+  for (const schedule of schedules) {
+    if (!schedulesByInstructor.has(schedule.instructorId)) {
+      schedulesByInstructor.set(schedule.instructorId, []);
+    }
+    schedulesByInstructor.get(schedule.instructorId)!.push(schedule);
+  }
+
+  return { schedulesByInstructor, excludeSlots };
+};
+
+// Find the schedule that is effective for a given date
+const findEffectiveSchedule = (
+  schedules: InstructorSchedule[],
+  dateStr: string, // YYYY-MM-DD
+): InstructorSchedule | undefined => {
+  return schedules.find((s) => {
+    const scheduleStart = extractDate(s.effectiveFrom);
+    const scheduleEnd = s.effectiveTo ? extractDate(s.effectiveTo) : null;
+
+    return (
+      scheduleStart <= dateStr &&
+      (scheduleEnd === null || dateStr < scheduleEnd)
+    );
+  });
+};
+
+// Generate available slots for all schedules of an instructor
+const generateInstructorSlots = (
+  instructorId: number,
+  schedules: InstructorSchedule[],
+  start: Date,
+  end: Date,
+  excludeSlots: Set<string>,
+): AvailableSlot[] => {
+  const slots: AvailableSlot[] = [];
+
+  for (let current = start; current < end; current = nDaysLater(1, current)) {
+    const currentDateStr = extractDate(current);
+
+    const effectiveSchedule = findEffectiveSchedule(schedules, currentDateStr);
+    if (!effectiveSchedule) {
+      continue;
+    }
+
+    const daySlots = effectiveSchedule.slots.filter(
+      (slot) => slot.weekday === current.getUTCDay(),
+    );
+
+    for (const slot of daySlots) {
+      const timeStr = extractTime(slot.startTime);
+      const tokyoDateTime = new Date(`${currentDateStr}T${timeStr}:00+09:00`);
+      const utcDateTime = tokyoDateTime.toISOString();
+
+      if (excludeSlots.has(`${instructorId}-${utcDateTime}`)) {
+        continue;
+      }
+
+      slots.push({ dateTime: utcDateTime });
+    }
+  }
+
+  return slots;
 };

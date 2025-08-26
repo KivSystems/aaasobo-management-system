@@ -73,6 +73,25 @@ export const getClassesByCustomerId = async (customerId: number) => {
   }
 };
 
+// Fetch class information by class id
+export const getClassByClassId = async (classId: number) => {
+  try {
+    const classInfo = await prisma.class.findUnique({
+      where: { id: classId },
+      include: {
+        instructor: true,
+        customer: true,
+        classAttendance: { include: { children: true } },
+      },
+    });
+
+    return classInfo;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch class information.");
+  }
+};
+
 // Create a new class in the DB
 export const createClass = async (
   classData: {
@@ -298,21 +317,6 @@ export const checkInstructorConflicts = async (
     },
   });
   return existingBooking !== null;
-};
-
-// Check if the instructor is unavailable or not at the specified date and time
-export const checkInstructorUnavailability = async (
-  instructorId: number,
-  dateTime: string,
-): Promise<boolean> => {
-  const existingUnavailability =
-    await prisma.instructorUnavailability.findFirst({
-      where: {
-        instructorId,
-        dateTime: new Date(dateTime),
-      },
-    });
-  return existingUnavailability !== null;
 };
 
 // Check if the selected children have another class with another instructor at the same dateTime

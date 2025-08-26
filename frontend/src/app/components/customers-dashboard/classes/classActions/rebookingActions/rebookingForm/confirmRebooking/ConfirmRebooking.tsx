@@ -34,7 +34,7 @@ export default function ConfirmRebooking({
   classId,
   rebookableClasses,
   setRebookableClassesNumber,
-  isAdminAuthenticated,
+  userSessionType,
   language,
 }: ConfirmRebookingProps) {
   const [selectedChildrenIds, setSelectedChildrenIds] = useState<number[] | []>(
@@ -121,7 +121,7 @@ export default function ConfirmRebooking({
       dateTime: dateTimeToRebook,
       instructorId: instructorToRebook.id,
       childrenIds: selectedChildrenIds,
-      isAdminAuthenticated,
+      userSessionType,
       language,
     });
 

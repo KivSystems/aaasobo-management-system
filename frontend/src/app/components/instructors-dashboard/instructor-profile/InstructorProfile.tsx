@@ -1,14 +1,27 @@
 "use client";
 
-import Image from "next/image";
 import styles from "./InstructorProfile.module.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
+import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateInstructorAction } from "@/app/actions/updateUser";
+import { useLanguage } from "@/app/contexts/LanguageContext";
+import UserStatusSwitcher from "@/app/components/elements/UserStatusSwitcher/UserStatusSwitcher";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
+import {
+  formatBirthdateToISO,
+  getLongMonth,
+} from "@/app/helper/utils/dateUtils";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import {
+  CakeIcon,
+  CalendarDaysIcon,
+  NewspaperIcon,
+  PencilSquareIcon,
+  LightBulbIcon,
+  FaceSmileIcon,
+  HandThumbUpIcon,
   EnvelopeIcon,
   InformationCircleIcon,
   LinkIcon,
@@ -18,37 +31,51 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
+import Uploader from "../../features/registerForm/uploadImages/Uploader";
+import { defaultUserImageUrl } from "@/app/helper/data/data";
+import Image from "next/image";
 
 function InstructorProfile({
   instructor,
-  isAdminAuthenticated,
+  token,
+  userSessionType,
 }: {
-  instructor: Instructor | string;
-  isAdminAuthenticated?: boolean;
+  instructor: Instructor | InstructorProfile | string;
+  token?: string;
+  userSessionType?: UserType;
 }) {
   const [updateResultState, formAction] = useFormState(
     updateInstructorAction,
     {},
   );
-  const [previousInstructor, setPreviousInstructor] =
-    useState<Instructor | null>(
-      typeof instructor !== "string" ? instructor : null,
-    );
-  const [latestInstructor, setLatestInstructor] = useState<Instructor | null>(
-    typeof instructor !== "string" ? instructor : null,
-  );
+  const { localMessages, clearErrorMessage } =
+    useFormMessages(updateResultState);
+  const [previousInstructor, setPreviousInstructor] = useState<
+    Instructor | InstructorProfile | null
+  >(typeof instructor !== "string" ? instructor : null);
+  const [latestInstructor, setLatestInstructor] = useState<
+    Instructor | InstructorProfile | null
+  >(typeof instructor !== "string" ? instructor : null);
   const [isEditing, setIsEditing] = useState(false);
+  const [confirmResult, setConfirmResult] = useState<boolean>(false);
+  const [status, setStatus] = useState<UserStatus>("active");
+  const [leavingDate, setLeavingDate] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { language } = useLanguage();
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
     field: keyof Instructor,
   ) => {
     if (latestInstructor) {
       setLatestInstructor({ ...latestInstructor, [field]: e.target.value });
+      clearErrorMessage(field);
     }
   };
 
@@ -56,6 +83,20 @@ function InstructorProfile({
     if (latestInstructor) {
       setLatestInstructor(previousInstructor);
       setIsEditing(false);
+      clearErrorMessage("all");
+    }
+  };
+
+  const submissionConfirm = () => {
+    if (leavingDate && !leavingDate.includes("T") && status === "leaving") {
+      const updatedDate = leavingDate.replace(/-/g, "/");
+      setConfirmResult(
+        window.confirm(
+          `Please confirm if the leaving date (${updatedDate}) is correct.`,
+        ),
+      );
+    } else {
+      setConfirmResult(true);
     }
   };
 
@@ -65,14 +106,32 @@ function InstructorProfile({
         const result = updateResultState as { instructor: Instructor };
         toast.success("Profile updated successfully!");
         setIsEditing(false);
-        setPreviousInstructor(result.instructor);
-        setLatestInstructor(result.instructor);
+
+        const newInstructor = result.instructor;
+        if (
+          typeof newInstructor.icon === "string" &&
+          token &&
+          token !== "" &&
+          (newInstructor.icon as string).includes(token)
+        ) {
+          newInstructor.icon = {
+            url: `${newInstructor.icon}?t=${Date.now()}`,
+          };
+        } else {
+          newInstructor.icon = {
+            url: defaultUserImageUrl,
+          };
+        }
+        setPreviousInstructor(newInstructor);
+        setLatestInstructor(newInstructor);
+      } else if ("skipProcessing" in updateResultState) {
+        return;
       } else {
         const result = updateResultState as { errorMessage: string };
         toast.error(result.errorMessage);
       }
     }
-  }, [updateResultState]);
+  }, [updateResultState, token]);
 
   if (typeof instructor === "string") {
     return <p>{instructor}</p>;
@@ -80,22 +139,66 @@ function InstructorProfile({
 
   return (
     <>
-      <h2>Profile Page</h2>
       <div className={styles.container}>
         {latestInstructor ? (
           <form action={formAction} className={styles.profileCard}>
             <Image
-              src={`/instructors/${latestInstructor.icon}`}
+              src={
+                latestInstructor.icon.url === defaultUserImageUrl
+                  ? defaultUserImageUrl
+                  : latestInstructor.icon.url
+              }
               alt={latestInstructor.name}
-              width={100}
-              height={100}
+              width={150}
+              height={150}
               priority
+              unoptimized
               className={styles.pic}
             />
 
-            {/* Instructor name */}
+            {/* User Status Switcher */}
+            <UserStatusSwitcher
+              isEditing={isEditing}
+              leavingDate={latestInstructor.terminationAt}
+              error={localMessages.leavingDate ? localMessages.leavingDate : ""}
+              onStatusChange={(newStatus, newDate) => {
+                setStatus(newStatus);
+                setLeavingDate(newDate);
+              }}
+            />
+
+            {isEditing && (
+              <>
+                {/* Image Uploader */}
+                <p className={styles.profileImage__text}>Profile Image</p>
+                <input
+                  type="file"
+                  name="icon"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                />
+                <Uploader
+                  onFileSelect={(file) => {
+                    if (fileInputRef.current && file) {
+                      const dataTransfer = new DataTransfer();
+                      dataTransfer.items.add(file);
+                      fileInputRef.current.files = dataTransfer.files;
+                    }
+                  }}
+                  clearFileInputRef={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = "";
+                    }
+                  }}
+                />
+              </>
+            )}
+
+            {/* Name */}
             <div className={styles.instructorName__nameSection}>
-              <p className={styles.instructorName__text}>Name</p>
+              <p className={styles.instructorName__text}>
+                {language === "en" ? "Name" : "名前"}
+              </p>
               {isEditing ? (
                 <InputField
                   name="name"
@@ -104,146 +207,333 @@ function InstructorProfile({
                   className={`${styles.instructorName__inputField} ${isEditing ? styles.editable : ""}`}
                 />
               ) : (
-                <h3 className={styles.instructorName__name}>
-                  {latestInstructor.name}
-                </h3>
+                <>
+                  <h3 className={styles.instructorName__name}>
+                    {latestInstructor.name}
+                  </h3>
+                </>
               )}
             </div>
 
-            {/* Instructor nickname */}
+            {/* Nickname Hobby, Message For Children, Skill */}
             <div className={styles.insideContainer}>
               <UserCircleIcon className={styles.icon} />
-              <div>
-                <p>Nickname</p>
+              <div className={styles.userInfo}>
+                <p>{language === "en" ? "Nickname" : "ニックネーム"}</p>
                 {isEditing ? (
                   <InputField
                     name="nickname"
                     value={latestInstructor.nickname}
                     onChange={(e) => handleInputChange(e, "nickname")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
+                    error={localMessages.nickname}
+                    className={`${styles.nickname__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
-                  <h4>{latestInstructor.nickname}</h4>
-                )}
-              </div>
-            </div>
-
-            {/* Instructor email */}
-            <div className={styles.insideContainer}>
-              <EnvelopeIcon className={styles.icon} />
-              <div>
-                <p>Email</p>
-                {isEditing ? (
-                  <InputField
-                    name="email"
-                    type="email"
-                    value={latestInstructor.email}
-                    onChange={(e) => handleInputChange(e, "email")}
-                    className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>{latestInstructor.email}</h4>
-                )}
-              </div>
-            </div>
-
-            {/* Instructor Class URL, Meeting ID, and Passcode */}
-            <div className={styles.insideContainer}>
-              <VideoCameraIcon className={styles.icon} />
-              <div>
-                <p>Class URL</p>
-                {isEditing ? (
-                  <InputField
-                    name="classURL"
-                    type="url"
-                    value={latestInstructor.classURL}
-                    onChange={(e) => handleInputChange(e, "classURL")}
-                    className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>
-                    <a
-                      href={latestInstructor.classURL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.url}
-                    >
-                      {latestInstructor.classURL}
-                    </a>
+                  <h4 className={styles.nickname__text}>
+                    {latestInstructor.nickname}
                   </h4>
                 )}
+              </div>
+            </div>
 
-                <div className={styles.urlInfo}>
-                  <p>Meeting ID&nbsp;:&nbsp;</p>
+            {/* Date of Birth */}
+            <div className={styles.insideContainer}>
+              <CakeIcon className={styles.icon} />
+              <div className={styles.userInfo}>
+                <p>{language === "en" ? "Birthday" : "お誕生日"}</p>
+                {isEditing ? (
+                  <InputField
+                    name="birthdate"
+                    type="date"
+                    value={formatBirthdateToISO(latestInstructor.birthdate)}
+                    onChange={(e) => handleInputChange(e, "birthdate")}
+                    className={`${styles.birthdate__inputField} ${isEditing ? styles.editable : ""}`}
+                  />
+                ) : (
+                  <h4 className={styles.birthdate__text}>
+                    {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
+                    {new Date(latestInstructor.birthdate).getDate()}
+                  </h4>
+                )}
+              </div>
+            </div>
+
+            {/* Working Time */}
+            <div className={styles.insideContainer}>
+              <CalendarDaysIcon className={styles.icon} />
+              <div className={styles.userInfo}>
+                <p>{language === "en" ? "Available Class" : "開講クラス"}</p>
+                {isEditing ? (
+                  <textarea
+                    id="workingTime"
+                    name="workingTime"
+                    defaultValue={latestInstructor.workingTime}
+                    onChange={(e) => handleInputChange(e, "workingTime")}
+                    className={`${styles.workingTime__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
+                  />
+                ) : (
+                  <h4 className={styles.workingTime__text}>
+                    {latestInstructor.workingTime}
+                  </h4>
+                )}
+              </div>
+            </div>
+
+            {/* Life History */}
+            <div className={styles.insideContainer}>
+              <NewspaperIcon className={styles.icon} />
+              <div className={styles.userInfo}>
+                <p>{language === "en" ? "Life History" : "経歴"}</p>
+                {isEditing ? (
+                  <textarea
+                    id="lifeHistory"
+                    name="lifeHistory"
+                    defaultValue={latestInstructor.lifeHistory}
+                    onChange={(e) => handleInputChange(e, "lifeHistory")}
+                    className={`${styles.lifeHistory__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
+                  />
+                ) : (
+                  <h4 className={styles.lifeHistory__text}>
+                    {latestInstructor.lifeHistory}
+                  </h4>
+                )}
+              </div>
+            </div>
+
+            {/* Favorite Food */}
+            <div className={styles.insideContainer}>
+              <FaceSmileIcon className={styles.icon} />
+              <div className={styles.userInfo}>
+                <p>{language === "en" ? "Favorite Food" : "好きな食べ物"}</p>
+                {isEditing ? (
+                  <textarea
+                    name="favoriteFood"
+                    defaultValue={latestInstructor.favoriteFood}
+                    onChange={(e) => handleInputChange(e, "favoriteFood")}
+                    className={`${styles.favoriteFood__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
+                  />
+                ) : (
+                  <h4 className={styles.favoriteFood__text}>
+                    {latestInstructor.favoriteFood}
+                  </h4>
+                )}
+              </div>
+            </div>
+
+            {/* Hobby */}
+            <div className={styles.insideContainer}>
+              <LightBulbIcon className={styles.icon} />
+              <div className={styles.userInfo}>
+                <p>{language === "en" ? "Hobby" : "趣味"}</p>
+                {isEditing ? (
+                  <textarea
+                    name="hobby"
+                    defaultValue={latestInstructor.hobby}
+                    onChange={(e) => handleInputChange(e, "hobby")}
+                    className={`${styles.hobby__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
+                  />
+                ) : (
+                  <h4 className={styles.hobby__text}>
+                    {latestInstructor.hobby}
+                  </h4>
+                )}
+              </div>
+            </div>
+
+            {/* Message For Children */}
+            <div className={styles.insideContainer}>
+              <PencilSquareIcon className={styles.icon} />
+              <div className={styles.userInfo}>
+                <p>
+                  {language === "en"
+                    ? "Message For Children"
+                    : "子どもたちへメッセージ"}
+                </p>
+                {isEditing ? (
+                  <textarea
+                    name="messageForChildren"
+                    defaultValue={latestInstructor.messageForChildren}
+                    onChange={(e) => handleInputChange(e, "messageForChildren")}
+                    className={`${styles.messageForChildren__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
+                  />
+                ) : (
+                  <h4 className={styles.messageForChildren__text}>
+                    {latestInstructor.messageForChildren}
+                  </h4>
+                )}
+              </div>
+            </div>
+
+            {/* Skill */}
+            <div className={styles.insideContainer}>
+              <HandThumbUpIcon className={styles.icon} />
+              <div className={styles.userInfo}>
+                <p>{language === "en" ? "Skill" : "スキル"}</p>
+                {isEditing ? (
+                  <textarea
+                    name="skill"
+                    defaultValue={latestInstructor.skill}
+                    onChange={(e) => handleInputChange(e, "skill")}
+                    className={`${styles.skill__inputField} ${isEditing ? styles.editable : ""}`}
+                    maxLength={500}
+                  />
+                ) : (
+                  <h4 className={styles.skill__text}>
+                    {latestInstructor.skill}
+                  </h4>
+                )}
+              </div>
+            </div>
+
+            {/* Email */}
+            {userSessionType !== "customer" && (
+              <div className={styles.insideContainer}>
+                <EnvelopeIcon className={styles.icon} />
+                <div className={styles.userInfo}>
+                  <p>Email</p>
                   {isEditing ? (
                     <InputField
-                      name="meetingId"
-                      value={latestInstructor.meetingId}
-                      onChange={(e) => handleInputChange(e, "meetingId")}
-                      className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
+                      name="email"
+                      type="email"
+                      value={latestInstructor.email}
+                      onChange={(e) => handleInputChange(e, "email")}
+                      error={localMessages.email}
+                      className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
-                    <p>{latestInstructor.meetingId}</p>
-                  )}
-                </div>
-                <div className={styles.urlInfo}>
-                  <p>Passcode&nbsp;&nbsp;:&nbsp;</p>
-                  {isEditing ? (
-                    <InputField
-                      name="passcode"
-                      value={latestInstructor.passcode}
-                      onChange={(e) => handleInputChange(e, "passcode")}
-                      className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
-                    />
-                  ) : (
-                    <p>{latestInstructor.passcode}</p>
+                    <h4 className={styles.email__text}>
+                      {latestInstructor.email}
+                    </h4>
                   )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Class URL, Meeting ID, and Passcode */}
+            {userSessionType !== "customer" && (
+              <div className={styles.insideContainer}>
+                <VideoCameraIcon className={styles.icon} />
+                <div className={styles.userInfo}>
+                  <p>Class URL</p>
+                  {isEditing ? (
+                    <InputField
+                      name="classURL"
+                      type="url"
+                      value={latestInstructor.classURL}
+                      onChange={(e) => handleInputChange(e, "classURL")}
+                      error={localMessages.classURL}
+                      className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4>
+                      <a
+                        href={latestInstructor.classURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.url}
+                      >
+                        {latestInstructor.classURL}
+                      </a>
+                    </h4>
+                  )}
+
+                  <div className={styles.urlInfo}>
+                    <p>Meeting ID&nbsp;:&nbsp;</p>
+                    {isEditing ? (
+                      <InputField
+                        name="meetingId"
+                        value={latestInstructor.meetingId}
+                        onChange={(e) => handleInputChange(e, "meetingId")}
+                        error={localMessages.meetingId}
+                        className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
+                        display="flex"
+                      />
+                    ) : (
+                      <p>{latestInstructor.meetingId}</p>
+                    )}
+                  </div>
+                  <div className={styles.urlInfo}>
+                    <p>Passcode&nbsp;&nbsp;:&nbsp;</p>
+                    {isEditing ? (
+                      <InputField
+                        name="passcode"
+                        value={latestInstructor.passcode}
+                        onChange={(e) => handleInputChange(e, "passcode")}
+                        error={localMessages.passcode}
+                        className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
+                        display="flex"
+                      />
+                    ) : (
+                      <p>{latestInstructor.passcode}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Instructor introduction URL */}
-            <div className={styles.insideContainer}>
-              <LinkIcon className={styles.icon} />
-              <div>
-                <p>Self Introduction URL</p>
-                {isEditing ? (
-                  <InputField
-                    name="introductionURL"
-                    type="url"
-                    value={latestInstructor.introductionURL}
-                    onChange={(e) => handleInputChange(e, "introductionURL")}
-                    className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
-                ) : (
-                  <h4>
-                    <a
-                      href={latestInstructor.introductionURL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.url}
-                    >
-                      {latestInstructor.introductionURL}
-                    </a>
-                  </h4>
-                )}
+            {/* TODO: Remove this section in a future version */}
+            {userSessionType === "admin" && (
+              <div className={styles.insideContainer}>
+                <LinkIcon className={styles.icon} />
+                <div className={styles.userInfo}>
+                  <p>Self Introduction URL</p>
+                  {isEditing ? (
+                    <InputField
+                      name="introductionURL"
+                      type="url"
+                      value={latestInstructor.introductionURL}
+                      onChange={(e) => handleInputChange(e, "introductionURL")}
+                      error={localMessages.introductionURL}
+                      className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  ) : (
+                    <h4>
+                      <a
+                        href={latestInstructor.introductionURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.url}
+                      >
+                        {latestInstructor.introductionURL}
+                      </a>
+                    </h4>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className={styles.insideContainer}>
-              <InformationCircleIcon className={styles.icon} />
-              <p className={styles.info}>
-                If you wish to update the profile information above, please
-                contact the staff via Facebook.
-              </p>
-            </div>
+            )}
+
+            {/* Instructor introduction URL */}
+            {userSessionType !== "customer" && (
+              <div className={styles.insideContainer}>
+                <InformationCircleIcon className={styles.icon} />
+                <p className={styles.info}>
+                  If you wish to update the profile information above, please
+                  contact the staff via Facebook.
+                </p>
+              </div>
+            )}
 
             {/* Hidden input fields */}
-            <input type="hidden" name="userType" value="instructor" />
             <input type="hidden" name="id" value={latestInstructor.id} />
-            <input type="hidden" name="icon" value={latestInstructor.icon} />
+            <input
+              type="hidden"
+              name="icon"
+              value={latestInstructor.icon.url}
+            />
+            <input
+              type="hidden"
+              name="confirmResult"
+              value={confirmResult.toString()}
+            />
 
             {/* Action buttons for only admin */}
-            {isAdminAuthenticated ? (
+            {userSessionType === "admin" ? (
               <>
                 {isEditing ? (
                   <div className={styles.buttons}>
@@ -262,6 +552,7 @@ function InstructorProfile({
                       btnText="Save"
                       type="submit"
                       Icon={CheckIcon}
+                      onClick={submissionConfirm}
                     />
                   </div>
                 ) : (

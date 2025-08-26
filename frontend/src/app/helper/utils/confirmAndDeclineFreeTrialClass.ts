@@ -8,19 +8,16 @@ import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
 
 export const confirmAndDeclineFreeTrialClass = async ({
   customerId,
-  isAdminAuthenticated,
+  userSessionType,
   language,
   classCode,
 }: {
   customerId: number;
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
   language: LanguageType;
   classCode?: string;
 }) => {
-  const { isValid, error } = await validateSession(
-    customerId,
-    isAdminAuthenticated,
-  );
+  const { isValid, error } = await validateSession(customerId);
 
   if (!isValid) {
     return alert(
@@ -39,7 +36,7 @@ export const confirmAndDeclineFreeTrialClass = async ({
   );
 
   if (success) {
-    revalidateCustomerCalendar(customerId, isAdminAuthenticated);
+    revalidateCustomerCalendar(customerId, userSessionType);
   }
 
   return alert(message[language]);

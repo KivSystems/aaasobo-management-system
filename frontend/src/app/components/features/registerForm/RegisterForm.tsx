@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useInput } from "@/app/hooks/useInput";
 import styles from "./RegisterForm.module.scss";
 import {
@@ -11,9 +11,15 @@ import {
   IdentificationIcon,
   KeyIcon,
   LinkIcon,
-  PhotoIcon,
   AcademicCapIcon,
   CalendarIcon,
+  CakeIcon,
+  CalendarDaysIcon,
+  NewspaperIcon,
+  PencilSquareIcon,
+  LightBulbIcon,
+  FaceSmileIcon,
+  HandThumbUpIcon,
 } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import TextInput from "../../elements/textInput/TextInput";
@@ -23,7 +29,9 @@ import { registerUser } from "@/app/actions/registerUser";
 import { registerContent } from "@/app/actions/registerContent";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
+import { defaultColor } from "@/app/helper/data/data";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
+import Uploader from "./uploadImages/Uploader";
 
 const RegisterForm = ({
   categoryType,
@@ -44,10 +52,11 @@ const RegisterForm = ({
 
   const [password, onPasswordChange] = useInput();
   const [showPassword, setShowPassword] = useState(false);
-  const [colorValue, setColorValue] = useState("#000000"); // Default color value
+  const [colorValue, setColorValue] = useState(defaultColor);
   const { localMessages, clearErrorMessage } =
     useFormMessages(registerResultState);
   const { passwordStrength } = usePasswordStrength(password);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <form action={formAction} className={styles.form}>
@@ -64,6 +73,8 @@ const RegisterForm = ({
         userType === "instructor") && (
         <>
           <p className={styles.required}>*Required</p>
+
+          {/* Name */}
           <TextInput
             id="name"
             label="Name"
@@ -77,19 +88,35 @@ const RegisterForm = ({
           />
 
           {userType === "instructor" && (
-            <TextInput
-              id="nickname"
-              label="Nickname"
-              type="text"
-              name="nickname"
-              placeholder="e.g., John"
-              icon={<UserCircleIcon className={styles.icon} />}
-              inputRequired
-              error={localMessages.name}
-              onChange={() => clearErrorMessage("nickname")}
-            />
+            <>
+              {/* Nickname */}
+              <TextInput
+                id="nickname"
+                label="Nickname"
+                type="text"
+                name="nickname"
+                placeholder="e.g., John"
+                icon={<UserCircleIcon className={styles.icon} />}
+                inputRequired
+                error={localMessages.name}
+                onChange={() => clearErrorMessage("nickname")}
+              />
+
+              {/* Birthday */}
+              <TextInput
+                id="birthdate"
+                label="Birthday"
+                type="date"
+                name="birthdate"
+                placeholder="e.g., 2000-01-01"
+                icon={<CakeIcon className={styles.icon} />}
+                inputRequired
+                onChange={() => clearErrorMessage("birthdate")}
+              />
+            </>
           )}
 
+          {/* Email */}
           <TextInput
             id="email"
             label="Email"
@@ -101,6 +128,8 @@ const RegisterForm = ({
             error={localMessages.email}
             onChange={() => clearErrorMessage("email")}
           />
+
+          {/* Password */}
           <TextInput
             id="password"
             label="Password"
@@ -119,10 +148,14 @@ const RegisterForm = ({
             showPassword={showPassword}
             onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
           />
+
+          {/* Password strength meter */}
           <PasswordStrengthMeter
             password={password}
             passwordStrength={passwordStrength}
           />
+
+          {/* Password Confirmation */}
           <TextInput
             id="passConfirmation"
             label="Password Confirmation"
@@ -139,16 +172,7 @@ const RegisterForm = ({
 
           {userType === "instructor" && (
             <>
-              <TextInput
-                id="icon"
-                label="Icon"
-                type="text"
-                name="icon"
-                placeholder="e.g., john-1.jpg"
-                icon={<PhotoIcon className={styles.icon} />}
-                inputRequired
-                onChange={() => clearErrorMessage("icon")}
-              />
+              {/* Class URL */}
               <TextInput
                 id="classURL"
                 label="Class URL"
@@ -159,6 +183,8 @@ const RegisterForm = ({
                 inputRequired
                 onChange={() => clearErrorMessage("classURL")}
               />
+
+              {/* Meeting ID */}
               <TextInput
                 id="meetingId"
                 label="Meeting ID"
@@ -169,6 +195,8 @@ const RegisterForm = ({
                 inputRequired
                 onChange={() => clearErrorMessage("meetingId")}
               />
+
+              {/* Pass Code */}
               <TextInput
                 id="passcode"
                 label="Pass Code"
@@ -179,6 +207,8 @@ const RegisterForm = ({
                 inputRequired
                 onChange={() => clearErrorMessage("passcode")}
               />
+
+              {/* Introduction URL */}
               <TextInput
                 id="introductionURL"
                 label="Introduction URL"
@@ -188,6 +218,123 @@ const RegisterForm = ({
                 icon={<DocumentTextIcon className={styles.icon} />}
                 inputRequired
                 onChange={() => clearErrorMessage("introductionURL")}
+              />
+
+              {/* Available Class */}
+              <label className={styles.label}>Available Class</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <CalendarDaysIcon
+                    className={styles.textareaContainer__icon}
+                  />
+                </div>
+                <textarea
+                  id="workingTime"
+                  name="workingTime"
+                  placeholder="e.g., 9 AM - 5 PM (Philippines) on weekdays"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Life History */}
+              <label className={styles.label}>Life History</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <NewspaperIcon className={styles.textareaContainer__icon} />
+                </div>
+                <textarea
+                  id="lifeHistory"
+                  name="lifeHistory"
+                  placeholder="e.g., I am a dedicated instructor with a passion for teaching."
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Favorite Food */}
+              <label className={styles.label}>Favorite Food</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <FaceSmileIcon className={styles.textareaContainer__icon} />
+                </div>
+                <textarea
+                  id="favoriteFood"
+                  name="favoriteFood"
+                  placeholder="e.g., Sushi"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Hobby */}
+              <label className={styles.label}>Hobby</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <LightBulbIcon className={styles.textareaContainer__icon} />
+                </div>
+                <textarea
+                  id="hobby"
+                  name="hobby"
+                  placeholder="e.g., Reading"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Message For Children */}
+              <label className={styles.label}>Message For Children</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <PencilSquareIcon
+                    className={styles.textareaContainer__icon}
+                  />
+                </div>
+                <textarea
+                  id="messageForChildren"
+                  name="messageForChildren"
+                  placeholder="e.g., Always do your best!"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Skill */}
+              <label className={styles.label}>Skill</label>
+              <div className={styles.textareaContainer}>
+                <div>
+                  <HandThumbUpIcon className={styles.textareaContainer__icon} />
+                </div>
+                <textarea
+                  id="skill"
+                  name="skill"
+                  placeholder="e.g., Japanese Language"
+                  className={styles.textarea}
+                  maxLength={500}
+                />
+              </div>
+
+              {/* Image File */}
+              <input
+                type="file"
+                name="icon"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+              />
+              <Uploader
+                onFileSelect={(file) => {
+                  if (fileInputRef.current && file) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInputRef.current.files = dataTransfer.files;
+                  }
+                }}
+                clearFileInputRef={() => {
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                  }
+                }}
+                label={"Instructor profile image"}
               />
             </>
           )}
@@ -202,7 +349,7 @@ const RegisterForm = ({
             id="name"
             label="Plan Name"
             type="text"
-            name="name"
+            name="planName"
             placeholder="e.g., 3,180 yen/month"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
@@ -243,7 +390,7 @@ const RegisterForm = ({
             label="Event Name"
             type="text"
             name="eventName"
-            placeholder="e.g., AaasoBo! Event"
+            placeholder="e.g., アーソボイベント / AaasoBo! Event"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
             error={localMessages.name}

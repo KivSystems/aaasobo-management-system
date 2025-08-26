@@ -47,6 +47,25 @@
   }
 }
 
+.booking {
+  .modalContent {
+    width: 800px;
+    height: 600px;
+    max-height: 80vh;
+    max-width: 80vw;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .closeButton {
+    top: 12px;
+    right: 15px;
+    z-index: 10001;
+  }
+}
+
 .classDetail {
   .closeButton {
     top: 10px;

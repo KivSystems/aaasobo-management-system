@@ -2,40 +2,20 @@ const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/recurring-classes`;
 
-export const addRecurringClass = async (recurringClassData: {
-  instructorId: number;
-  customerId: number;
-  childrenIds: Array<number>;
-  subscriptionId: number;
-  dateTime: string;
-}) => {
-  try {
-    const response = await fetch(`${BASE_URL}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(recurringClassData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error. status ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.error("Failed to add recurring class:", error);
-    throw error;
-  }
-};
-
 // GET recurring classes by subscription id
 export const getRecurringClassesBySubscriptionId = async (
   subscriptionId: number,
+  status?: "active" | "history",
 ) => {
   try {
-    const response = await fetch(
-      `${BASE_URL}?subscriptionId=${subscriptionId}`,
-    );
+    const params = new URLSearchParams({
+      subscriptionId: subscriptionId.toString(),
+    });
+    if (status) {
+      params.append("status", status);
+    }
+
+    const response = await fetch(`${BASE_URL}?${params.toString()}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -47,62 +27,40 @@ export const getRecurringClassesBySubscriptionId = async (
   }
 };
 
-// PUT a recurring class
 export const editRecurringClass = async (
   recurringClassId: number,
-  subscriptionId: number,
-  customerId: number,
-  state: RecurringClassState,
-  classStartDate: string,
+  recurringClassData: {
+    instructorId: number;
+    customerId: number;
+    childrenIds: Array<number>;
+    weekday: number;
+    startTime: string;
+    startDate: string;
+    timezone?: string;
+  },
 ) => {
-  // Define the data to be sent to the server side.
   const URL = `${BASE_URL}/${recurringClassId}`;
-  const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({
-    subscriptionId,
-    day: state.day,
-    time: state.time,
-    instructorId: state.instructorId,
-    customerId,
-    childrenIds: Array.from(state.childrenIds),
-    classStartDate,
-  });
 
   try {
     const response = await fetch(URL, {
       method: "PUT",
-      headers,
-      body,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(recurringClassData),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to an edit regular class");
+      throw new Error(
+        errorData.message ||
+          errorData.error ||
+          "Failed to edit recurring class",
+      );
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Failed to an edit regular class:", error);
-    throw error;
-  }
-};
-
-// GET recurring classes by instructor id
-export const getRecurringClassesByInstructorId = async (
-  instructorId: number,
-) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/by-instructorId?instructorId=${instructorId}`,
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data.recurringClasses;
-  } catch (error) {
-    console.error("Failed to fetch recurring classes:", error);
+    console.error("Failed to edit recurring class:", error);
     throw error;
   }
 };

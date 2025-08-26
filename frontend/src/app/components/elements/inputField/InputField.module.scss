@@ -1,0 +1,12 @@
+.display {
+  &__block {
+    display: block;
+  }
+  &__inline-block {
+    display: inline-block;
+  }
+  &__flex {
+    display: flex;
+    align-items: flex-start;
+  }
+}

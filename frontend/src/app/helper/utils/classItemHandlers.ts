@@ -30,11 +30,10 @@ export const handleAttendanceUpdate = async ({
   classEndTime,
   initialAttendedChildrenIds,
   attendedChildrenIdsToUpdate,
-  isAdminAuthenticated,
   setIsUpdatingData,
   setIsEditingAttendance,
 }: HandleAttendanceUpdateParams) => {
-  if (!isAdminAuthenticated && !hasTimePassed(classEndTime)) {
+  if (!hasTimePassed(classEndTime)) {
     return alert("You can only edit attendance after the class has ended.");
   }
 
@@ -55,8 +54,7 @@ export const handleAttendanceUpdate = async ({
     classId,
     attendedChildrenIdsToUpdate,
     instructorId,
-    isAdminAuthenticated,
-    isAdminAuthenticated ? adminId : undefined,
+    adminId,
   );
 
   if (!result.success) {
@@ -74,7 +72,6 @@ export const handleClassStatusUpdate = async ({
   classId,
   selectedStatus,
   classEndTime,
-  isAdminAuthenticated,
   instructorId,
   adminId,
   setIsUpdatingData,
@@ -88,9 +85,9 @@ export const handleClassStatusUpdate = async ({
     return alert("You can only complete a class after the class has ended.");
   }
 
-  if (isAdminAuthenticated && selectedStatus) {
+  if (adminId && selectedStatus) {
     const confirmed = window.confirm(
-      "Are you sure you want to change the class status? This change cannot be undone.",
+      "Are you sure you want to change the class status?",
     );
     if (!confirmed) return;
   }
@@ -101,8 +98,7 @@ export const handleClassStatusUpdate = async ({
     classId,
     selectedStatus,
     instructorId,
-    isAdminAuthenticated,
-    isAdminAuthenticated ? adminId : undefined,
+    adminId,
   );
 
   setIsUpdatingData(false);

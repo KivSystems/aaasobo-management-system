@@ -19,7 +19,7 @@ import SameDayCancellationNotice from "@/app/components/features/classDetail/sam
 export default function CancelClassesModal({
   upcomingClasses,
   customerId,
-  isAdminAuthenticated,
+  userSessionType,
   isCancelingModalOpen,
   setIsCancelingModalOpen,
 }: CancelClassesModalProps) {
@@ -46,8 +46,8 @@ export default function CancelClassesModal({
 
     const cancelationResult = await cancelSelectedClasses(
       classesToCancel,
-      isAdminAuthenticated,
       customerId,
+      userSessionType,
     );
 
     if (!cancelationResult.success)

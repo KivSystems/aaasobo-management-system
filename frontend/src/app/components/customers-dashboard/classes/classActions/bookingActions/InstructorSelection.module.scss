@@ -1,0 +1,99 @@
+@import "@/app/variables.module.scss";
+
+.instructorSelection {
+  padding: 2rem;
+  max-width: 80vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  color: $text-dark;
+}
+
+.searchContainer {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.searchInput {
+  padding: 0.75rem;
+  border: 2px solid $border-light;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 400px;
+
+  &:focus {
+    outline: none;
+    border-color: $blue_primary;
+  }
+}
+
+.instructorGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: $text-medium;
+}
+
+.error {
+  text-align: center;
+  padding: 3rem;
+
+  p {
+    color: $red-alert;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.retryButton {
+  background: $blue_primary;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background: $blue_primary_hover;
+  }
+}
+
+.noResults {
+  text-align: center;
+  padding: 2rem;
+  color: $text-medium;
+  font-size: 1.1rem;
+  grid-column: 1 / -1;
+}
+
+.backButton {
+  background: $text-medium;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background: $text-dark;
+  }
+}

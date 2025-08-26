@@ -10,7 +10,7 @@ export async function rebookClassWithValidation({
   dateTime,
   instructorId,
   childrenIds,
-  isAdminAuthenticated,
+  userSessionType,
   language,
 }: {
   customerId: number;
@@ -18,13 +18,10 @@ export async function rebookClassWithValidation({
   dateTime: string;
   instructorId: number;
   childrenIds: number[];
-  isAdminAuthenticated?: boolean;
+  userSessionType?: UserType;
   language: LanguageType;
 }) {
-  const { isValid, error } = await validateSession(
-    customerId,
-    isAdminAuthenticated,
-  );
+  const { isValid, error } = await validateSession(customerId);
 
   if (!isValid) {
     return { error };
@@ -40,8 +37,9 @@ export async function rebookClassWithValidation({
   if (!result.success) {
     return { error: result.errorMessage[language] };
   }
+  ``;
 
-  await revalidateCustomerCalendar(customerId, isAdminAuthenticated);
+  await revalidateCustomerCalendar(customerId, userSessionType);
 
   return { success: true };
 }

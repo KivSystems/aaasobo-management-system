@@ -46,12 +46,11 @@ export const updateBusinessSchedule = async (
 export const updateSundayColor = async (): Promise<string> => {
   try {
     // Define the item to be sent to the server side.
-    const apiURL = `${BACKEND_ORIGIN}/jobs/business-schedule/update/sunday-color`;
+    const apiURL = `${BACKEND_ORIGIN}/jobs/business-schedule/update-sunday-color`;
     const headers = { "Content-Type": "application/json" };
     const body = JSON.stringify({
       eventId: holidayEventId,
     });
-
     const response = await fetch(apiURL, {
       method: "POST",
       headers,

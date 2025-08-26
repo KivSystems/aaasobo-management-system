@@ -16,28 +16,7 @@ const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/instructors`;
 
-export type Day = "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
-
-export type SlotsOfDays = {
-  // time must be in 24 format: "HH:MM"
-  [day in Day]: string[];
-};
-
-export type Response<T> = T | { message: string };
-
-export type Availability = {
-  dateTime: string;
-};
-
-export type RecurringInstructorAvailability = {
-  rrule: string;
-};
-
-export type InstructorWithRecurringAvailability = {
-  id: number;
-  name: string;
-  recurringAvailabilities: SlotsOfDays;
-};
+type Response<T> = T | { message: string };
 
 export type InstructorSchedule = {
   id: number;
@@ -61,12 +40,18 @@ export type InstructorScheduleWithSlots = InstructorSchedule & {
 // GET instructors data
 export const getInstructors = async () => {
   try {
-    const response = await fetch(BASE_URL);
+    // Use the admin endpoint that returns simple instructor list
+    const response = await fetch(`${BACKEND_ORIGIN}/admins/instructor-list`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result = await response.json();
+    return result.data.map(
+      (instructor: { ID: number; Instructor: string }) => ({
+        id: instructor.ID,
+        name: instructor.Instructor,
+      }),
+    );
   } catch (error) {
     console.error("Failed to fetch instructors:", error);
     throw error;
@@ -81,34 +66,38 @@ export const getInstructor = async (
     cache: "no-store",
   }).then((res) => res.json());
 
-  if ("instructor" in data) {
-    data.instructor.availabilities = data.instructor.availabilities.sort(
-      (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
-    );
-  }
+  return data;
+};
+
+// GET instructor id by class id
+export const getInstructorIdByClassId = async (
+  classId: number,
+): Promise<Response<{ instructorId: number }>> => {
+  const apiUrl = `${BASE_URL}/class/${classId}`;
+  const data: Response<{ instructorId: number }> = await fetch(apiUrl, {
+    cache: "no-store",
+  }).then((res) => res.json());
 
   return data;
 };
 
 // Register instructor data
-export const registerInstructor = async (userData: {
-  name: string;
-  nickname: string;
-  email: string;
-  password: string;
-  icon: string;
-  classURL: string;
-  meetingId: string;
-  passcode: string;
-  introductionURL: string;
-  cookie: string;
-}): Promise<RegisterFormState> => {
+export const registerInstructor = async (
+  userData: FormData,
+  cookie: string,
+): Promise<RegisterFormState> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
-    const response = await fetch(registerURL, {
+    // Handle api based on whether an icon is included
+    let apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
+    if (userData.has("icon")) {
+      apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/register/withIcon`;
+    }
+    const response = await fetch(apiUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: userData.cookie },
-      body: JSON.stringify(userData),
+      body: userData,
+      headers: {
+        Cookie: cookie,
+      },
     });
 
     if (response.status === 409) {
@@ -140,196 +129,32 @@ export const registerInstructor = async (userData: {
 
 // PATCH instructor data
 export const updateInstructor = async (
-  instructorId: number,
-  instructorName: string,
-  instructorEmail: string,
-  instructorClassURL: string,
-  instructorIcon: string,
-  instructorNickname: string,
-  instructorMeetingId: string,
-  instructorPasscode: string,
-  instructorIntroductionURL: string,
+  id: number,
+  userData: FormData,
   cookie: string,
 ) => {
-  // Define the data to be sent to the server side.
-  const instructorURL = `${BACKEND_ORIGIN}/instructors/${instructorId}`;
-  const headers = { "Content-Type": "application/json", Cookie: cookie };
-  const body = JSON.stringify({
-    name: instructorName,
-    email: instructorEmail,
-    classURL: instructorClassURL,
-    icon: instructorIcon,
-    nickname: instructorNickname,
-    meetingId: instructorMeetingId,
-    passcode: instructorPasscode,
-    introductionURL: instructorIntroductionURL,
-  });
+  // Handle api based on whether an icon is included
+  let apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}`;
+  if (userData.has("icon")) {
+    apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}/withIcon`;
+  }
 
-  const response = await fetch(instructorURL, {
+  // Define the data to be sent to the server side.
+  const response = await fetch(apiUrl, {
     method: "PATCH",
-    headers,
-    body,
+    body: userData,
+    headers: {
+      Cookie: cookie,
+    },
   });
 
   const data = await response.json();
 
-  if (response.status !== 200) {
+  if (response.status === 500) {
     return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
   }
 
   return data;
-};
-
-export const getInstructorRecurringAvailability = async (
-  id: number,
-  date: string,
-): Promise<Response<InstructorWithRecurringAvailability>> => {
-  const data: Response<InstructorWithRecurringAvailability> = await fetch(
-    `${BASE_URL}/${id}/recurringAvailability?date=${date}`,
-  ).then((res) => res.json());
-  return data;
-};
-
-export const addAvailability = async (
-  id: number,
-  from: string,
-  until: string,
-): Promise<Response<{}>> => {
-  return await fetch(`${BASE_URL}/${id}/availability`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ from, until }),
-  }).then((res) => res.json());
-};
-
-export const addRecurringAvailability = async (
-  id: number,
-  day: number,
-  time: string,
-  startDate: string,
-): Promise<
-  Response<{ recurringInstructorAvailability: RecurringInstructorAvailability }>
-> => {
-  return await fetch(`${BASE_URL}/${id}/recurringAvailability`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ day, time, startDate }),
-  }).then((res) => res.json());
-};
-
-export const deleteAvailability = async (
-  id: number,
-  dateTime: string,
-): Promise<Response<{ availability: Availability }>> => {
-  return await fetch(`${BASE_URL}/${id}/availability`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type: "slot", dateTime }),
-  }).then((res) => res.json());
-};
-
-export const deleteRecurringAvailability = async (
-  id: number,
-  dateTime: string,
-): Promise<
-  Response<{ recurringAvailability: RecurringInstructorAvailability }>
-> => {
-  return await fetch(`${BASE_URL}/${id}/availability`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type: "recurring", dateTime }),
-  }).then((res) => res.json());
-};
-
-export const extendRecurringAvailability = async (
-  id: number,
-  until: string,
-): Promise<
-  Response<{ recurringAvailabilities: RecurringInstructorAvailability[] }>
-> => {
-  return await fetch(`${BASE_URL}/${id}/availability/extend`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ until }),
-  }).then((res) => res.json());
-};
-
-export const addRecurringAvailabilities = async (
-  instructorId: number,
-  slotsOfDays: SlotsOfDays,
-  startDate: string,
-) => {
-  return await fetch(`${BASE_URL}/${instructorId}/recurringAvailability`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ slotsOfDays, startDate }),
-  });
-};
-
-export const registerUnavailability = async (
-  id: number,
-  dateTime: string,
-): Promise<Response<{ unavailability: Availability }>> => {
-  return await fetch(`${BASE_URL}/${id}/unavailability`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ dateTime }),
-  }).then((res) => res.json());
-};
-
-export const getCalendarAvailabilities = async (
-  instructorId: number,
-): Promise<EventType[] | []> => {
-  try {
-    const calendarAvailabilitiesURL = `${BASE_URL}/${instructorId}/calendar-availabilities`;
-    const response = await fetch(calendarAvailabilitiesURL, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
-    }
-
-    const calendarAvailabilities = await response.json();
-    return calendarAvailabilities;
-  } catch (error) {
-    console.error(
-      "API error while fetching instructor calendar availabilities:",
-      error,
-    );
-    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_AVAILABILITIES);
-  }
-};
-
-export const fetchInstructorRecurringAvailabilities = async (
-  instructorId: number,
-) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/${instructorId}/recurringAvailabilityById`,
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data.recurringAvailabilities;
-  } catch (error) {
-    console.error(
-      "Failed to fetch instructor recurring availabilities.",
-      error,
-    );
-    throw error;
-  }
 };
 
 export const getInstructorProfile = async (
@@ -374,6 +199,27 @@ export const getInstructorProfiles = async (): Promise<
       error,
     );
     throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILES);
+  }
+};
+
+// GET all instructors profiles for customer dashboard
+export const getAllInstructorProfiles = async (cookie: string) => {
+  try {
+    const apiUrl = `${BASE_URL}/all-profiles`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["instructor-list"] },
+      headers: {
+        Cookie: cookie,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.instructorProfiles;
+  } catch (error) {
+    console.error("Failed to fetch all instructor profiles:", error);
+    throw error;
   }
 };
 
@@ -504,6 +350,7 @@ export const createInstructorSchedule = async (
       body: JSON.stringify({
         effectiveFrom,
         slots,
+        timezone: "Asia/Tokyo",
       }),
     });
 
@@ -526,7 +373,7 @@ export const createInstructorSchedule = async (
   }
 };
 
-export type AvailableSlot = {
+type AvailableSlot = {
   dateTime: string;
   weekday: number;
   startTime: string;
@@ -536,11 +383,13 @@ export const getInstructorAvailableSlots = async (
   instructorId: number,
   startDate: string,
   endDate: string,
-): Promise<Response<{ availableSlots: AvailableSlot[] }>> => {
+  excludeBookedSlots: boolean,
+): Promise<Response<{ data: AvailableSlot[] }>> => {
   try {
     const params = new URLSearchParams({
-      startDate,
-      endDate,
+      start: startDate,
+      end: endDate,
+      excludeBookedSlots: excludeBookedSlots.toString(),
     });
 
     const response = await fetch(
@@ -562,9 +411,177 @@ export const getInstructorAvailableSlots = async (
     }
 
     // Return in the expected format
-    return { availableSlots: result.data };
+    return { data: result.data };
   } catch (error) {
     console.error("Failed to fetch instructor available slots:", error);
+    throw error;
+  }
+};
+
+export type AvailableSlotWithInstructors = {
+  dateTime: string;
+  availableInstructors: number[];
+};
+
+export const getAllInstructorAvailableSlots = async (
+  startDate: string,
+  endDate: string,
+): Promise<Response<{ data: AvailableSlotWithInstructors[]; meta: any }>> => {
+  try {
+    const params = new URLSearchParams({
+      start: startDate,
+      end: endDate,
+    });
+
+    const response = await fetch(`${BASE_URL}/available-slots?${params}`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch all instructor available slots:", error);
+    return { message: "Failed to fetch available slots" };
+  }
+};
+
+// Instructor Absence APIs
+type InstructorAbsence = {
+  instructorId: number;
+  absentAt: string;
+};
+
+export const getInstructorAbsences = async (
+  instructorId: number,
+): Promise<Response<{ absences: InstructorAbsence[] }>> => {
+  try {
+    const response = await fetch(`${BASE_URL}/${instructorId}/absences`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { absences: result.data };
+  } catch (error) {
+    console.error("Failed to fetch instructor absences:", error);
+    throw error;
+  }
+};
+
+export const addInstructorAbsence = async (
+  instructorId: number,
+  absentAt: string,
+  cookie: string,
+): Promise<Response<{ absence: InstructorAbsence }>> => {
+  try {
+    const response = await fetch(`${BASE_URL}/${instructorId}/absences`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookie,
+      },
+      credentials: "include",
+      body: JSON.stringify({ absentAt }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { absence: result.data };
+  } catch (error) {
+    console.error("Failed to add instructor absence:", error);
+    throw error;
+  }
+};
+
+export const deleteInstructorAbsence = async (
+  instructorId: number,
+  absentAt: string,
+  cookie: string,
+): Promise<Response<{ absence: InstructorAbsence }>> => {
+  try {
+    const encodedAbsentAt = encodeURIComponent(absentAt);
+    const response = await fetch(
+      `${BASE_URL}/${instructorId}/absences/${encodedAbsentAt}`,
+      {
+        method: "DELETE",
+        headers: {
+          Cookie: cookie,
+        },
+        credentials: "include",
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { absence: result.data };
+  } catch (error) {
+    console.error("Failed to delete instructor absence:", error);
+    throw error;
+  }
+};
+
+// Get active schedule for an instructor
+export const getActiveInstructorSchedule = async (
+  instructorId: number,
+  effectiveDate: string,
+): Promise<Response<InstructorScheduleWithSlots>> => {
+  try {
+    const url = new URL(`${BASE_URL}/${instructorId}/schedules/active`);
+    url.searchParams.append("effectiveDate", effectiveDate);
+
+    const response = await fetch(url.toString(), {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return the schedule directly (not wrapped in additional object)
+    return result.data;
+  } catch (error) {
+    console.error("Failed to fetch active instructor schedule:", error);
     throw error;
   }
 };

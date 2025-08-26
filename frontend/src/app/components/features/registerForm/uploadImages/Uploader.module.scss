@@ -1,0 +1,62 @@
+@import "../../../../variables.module.scss";
+
+.dragDrop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+
+  .label {
+    font-size: 15px;
+  }
+
+  .documentUploader {
+    border: 2px dashed #ccc;
+    background-color: #fff;
+    margin-top: 0.25rem;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 8px;
+
+    &.dragging {
+      border: 3px dashed $blue_primary;
+      background-color: $light-purple;
+    }
+
+    .uploadInfo {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+
+      .uploadBtn {
+        color: #0000ee;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .successFile {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+
+    .successFileInfo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fileActions {
+      cursor: pointer;
+      font-size: 24px;
+    }
+  }
+}

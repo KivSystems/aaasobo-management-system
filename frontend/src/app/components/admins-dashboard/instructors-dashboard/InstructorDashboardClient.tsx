@@ -3,21 +3,23 @@
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import InstructorProfile from "@/app/components/instructors-dashboard/instructor-profile/InstructorProfile";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
-import AvailabilityCalendar from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/AvailabilityCalendar";
-import InstructorSchedule from "../../../admins/(authenticated)/[id]/instructor-list/[instructorId]/InstructorSchedule";
-import VersionedInstructorSchedule from "./instructor-schedule/VersionedInstructorSchedule";
-import VersionedAvailabilityCalendar from "./instructor-schedule/VersionedAvailabilityCalendar";
+import InstructorSchedule from "./instructor-schedule/InstructorSchedule";
+import AvailabilityCalendar from "./instructor-schedule/AvailabilityCalendar";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function InstructorTabs({
   adminId,
   instructorId,
   instructor,
+  token,
+  userSessionType,
   classScheduleComponent,
 }: {
   adminId: number;
   instructorId: number;
   instructor: Instructor | string;
+  token: string;
+  userSessionType: UserType;
   classScheduleComponent: React.ReactNode;
 }) {
   const breadcrumb = [
@@ -26,9 +28,6 @@ export default function InstructorTabs({
     `ID: ${instructorId}`,
   ];
   const activeTabName = "activeInstructorTab";
-
-  // Set the authentication status as true.
-  const isAuthenticated = true;
 
   // Get the active tab from the local storage.
   const { initialActiveTab, isTabInitialized } = useTabSelect(
@@ -46,7 +45,8 @@ export default function InstructorTabs({
       content: (
         <InstructorProfile
           instructor={instructor}
-          isAdminAuthenticated={isAuthenticated}
+          token={token}
+          userSessionType={userSessionType}
         />
       ),
     },
@@ -57,14 +57,6 @@ export default function InstructorTabs({
     {
       label: "Instructor's Schedule",
       content: <InstructorSchedule instructorId={instructorId} />,
-    },
-    {
-      label: "Versioned Schedule (WIP)",
-      content: <VersionedInstructorSchedule instructorId={instructorId} />,
-    },
-    {
-      label: "Versioned Availability (WIP)",
-      content: <VersionedAvailabilityCalendar instructorId={instructorId} />,
     },
   ];
 
