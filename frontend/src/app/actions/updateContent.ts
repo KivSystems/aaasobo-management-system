@@ -9,7 +9,11 @@ import {
   generateClassesSchema,
   scheduleUpdateSchema,
 } from "../schemas/authSchema";
-import { revalidateEventList, revalidateBusinessSchedule } from "./revalidate";
+import {
+  revalidateEventList,
+  revalidateBusinessSchedule,
+  revalidateClassList,
+} from "./revalidate";
 import { getCookie } from "../../middleware";
 import { validateSession } from "./validateSession";
 import {
@@ -207,6 +211,8 @@ export async function generateClassesAction(
 
     // Update the business schedule
     await generateClasses(year, month, cookie);
+
+    revalidateClassList();
 
     return {
       successMessage: "Classes generated successfully!",
