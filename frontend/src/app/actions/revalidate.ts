@@ -18,6 +18,10 @@ export async function revalidateCustomerCalendar(
   revalidatePath(path);
 }
 
+export async function revalidateSystemStatus() {
+  revalidateTag("system-status");
+}
+
 export async function revalidateAdminList() {
   revalidateTag("admin-list");
 }

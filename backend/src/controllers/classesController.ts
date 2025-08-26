@@ -6,6 +6,7 @@ import {
   checkChildConflicts,
   createClassesUsingRecurringClassId,
   deleteClass,
+  deleteOldClasses,
   getAllClasses,
   getClassesByCustomerId,
   getClassToRebook,
@@ -666,5 +667,20 @@ export const updateClassStatusController = async (
       },
     });
     return res.sendStatus(500);
+  }
+};
+
+// Delete classes older than 1 year (13 months)
+export const deleteOldClassesController = async (_: Request, res: Response) => {
+  try {
+    const deletedClasses = await deleteOldClasses();
+    res.status(200).json({ deletedClasses });
+  } catch (error) {
+    console.error("Error deleting old classes", {
+      error,
+      context: {
+        time: new Date().toISOString(),
+      },
+    });
   }
 };

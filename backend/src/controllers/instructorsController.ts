@@ -1,24 +1,12 @@
 import { Request, Response } from "express";
-import { Prisma } from "@prisma/client";
-import { prisma } from "../../prisma/prismaClient";
-import {
-  pickProperties,
-  defaultUserImageUrl,
-  validateUserImageUrl,
-} from "../helper/commonUtils";
-import { convertToISOString } from "../helper/dateUtils";
+import { validateUserImageUrl } from "../helper/commonUtils";
 import {
   getInstructorById,
   getAllInstructors,
   getInstructorProfile,
   getInstructorProfiles,
-  getInstructorByNickname,
-  getInstructorByEmail,
-  getInstructorByClassURL,
-  getInstructorByMeetingId,
-  getInstructorByPasscode,
-  getInstructorByIntroductionURL,
-  updateInstructor,
+  getInstructorsToMask,
+  maskInstructors,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import {
@@ -236,5 +224,22 @@ export const getSameDateClassesController = async (
       },
     });
     res.sendStatus(500);
+  }
+};
+
+export const maskInstructorsController = async (_: Request, res: Response) => {
+  try {
+    // Fetch instructors who have left the organization and has not been masked
+    const instructorsToMask = await getInstructorsToMask();
+    const maskedInstructors = await maskInstructors(instructorsToMask);
+    res.status(200).json(maskedInstructors);
+  } catch (error) {
+    console.error("Error masking instructors", {
+      error,
+      context: {
+        time: new Date().toISOString(),
+      },
+    });
+    return setErrorResponse(res, error);
   }
 };

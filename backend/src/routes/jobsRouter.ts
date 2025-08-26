@@ -4,6 +4,8 @@ import {
   getSystemStatusController,
   updateSystemStatusController,
 } from "../controllers/maintenanceController";
+import { maskInstructorsController } from "../controllers/instructorsController";
+import { deleteOldClassesController } from "../controllers/classesController";
 
 export const jobsRouter = express.Router();
 
@@ -14,4 +16,6 @@ jobsRouter.post(
   "/business-schedule/update-sunday-color",
   updateSundayColorController,
 );
-jobsRouter.post("/update-system-status", updateSystemStatusController);
+jobsRouter.patch("/update-system-status", updateSystemStatusController);
+jobsRouter.patch("/mask/instructors", maskInstructorsController);
+jobsRouter.delete("/delete/old-classes", deleteOldClassesController);

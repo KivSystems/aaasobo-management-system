@@ -930,3 +930,17 @@ export const getSameDateClasses = async (
     sameDateClasses: formattedSameDayClasses,
   };
 };
+
+// Delete classes older than 1 year (13 months)
+export const deleteOldClasses = async () => {
+  const thresholdDate = new Date();
+  thresholdDate.setMonth(thresholdDate.getMonth() - 13);
+
+  return await prisma.class.deleteMany({
+    where: {
+      dateTime: {
+        lt: thresholdDate,
+      },
+    },
+  });
+};

@@ -1,11 +1,14 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
+import { randomUUID } from "crypto";
 import {
   hashPassword,
   defaultUserImageUrl,
   validateUserImageUrl,
 } from "../helper/commonUtils";
 import { put, del } from "@vercel/blob";
+
+const now = new Date();
 
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {
@@ -249,7 +252,6 @@ export const updateInstructorPassword = async (
 };
 
 export const getInstructorProfiles = async () => {
-  const now = new Date();
   const instructors = await prisma.instructor.findMany({
     where: {
       OR: [
@@ -278,4 +280,39 @@ export const getInstructorContactById = async (id: number) => {
       email: true,
     },
   });
+};
+
+// Fetch instructors who have left the organization and has not been masked
+export const getInstructorsToMask = async () => {
+  return await prisma.instructor.findMany({
+    where: {
+      AND: [
+        { terminationAt: { not: null } },
+        { terminationAt: { lt: now } }, // Past termination
+      ],
+      name: {
+        not: {
+          contains: "MaskedName", // Not include the word "MaskedName"
+        },
+      },
+    },
+  });
+};
+
+// Mask instructors who have left the organization
+export const maskInstructors = async (instructors: Instructor[]) => {
+  return await prisma.$transaction(
+    instructors.map((instructor) =>
+      prisma.instructor.update({
+        where: { id: instructor.id },
+        data: {
+          name: "MaskedName_" + randomUUID(),
+          email: "MaskedEmail_" + randomUUID() + "@masked.com",
+          classURL: "MaskedClassURL_" + randomUUID(),
+          meetingId: "MaskedMeetingId_" + randomUUID(),
+          passcode: "MaskedPasscode_" + randomUUID(),
+        },
+      }),
+    ),
+  );
 };

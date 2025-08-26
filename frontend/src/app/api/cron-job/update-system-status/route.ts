@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { updateSundayColor } from "@/app/helper/api/calendarsApi";
+import { updateSystemStatus } from "@/app/helper/api/maintenanceApi";
 
 export const runtime = "nodejs";
 
@@ -12,20 +12,24 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log("Cron job (data processing) started");
-    // === Add cron job ===
-    await updateSundayColor(); // Update next year's all Sunday's color of business calendar
-    // === End of cron job ===
-    console.log("All cron jobs (data processing) executed successfully");
+    console.log("Cron job (system status update) started");
+    const status = await updateSystemStatus(); // Update system status
+    console.log("System status updated to:", status);
     return NextResponse.json(
-      { message: "All cron jobs (data processing) executed successfully" },
+      {
+        message: "Cron job (system status update) executed successfully",
+        status,
+      },
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error during cron job (data processing) execution:", error);
+    console.error(
+      "Error during cron job (system status update) execution:",
+      error,
+    );
     return NextResponse.json(
       {
-        error: "Cron job (data processing) failed",
+        error: "Cron job (system status update) failed",
         details: (error as Error).message,
       },
       { status: 500 },

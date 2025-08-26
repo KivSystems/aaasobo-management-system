@@ -1,5 +1,5 @@
 import { GENERAL_ERROR_MESSAGE } from "../messages/formValidation";
-
+import { revalidateSystemStatus } from "@/app/actions/revalidate";
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
@@ -8,7 +8,7 @@ export const getSystemStatus = async (): Promise<string> => {
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/get-system-status`;
-    const response = await fetch(apiURL);
+    const response = await fetch(apiURL, { next: { tags: ["system-status"] } });
     const data = await response.json();
     if (!response.ok) {
       return data.error;
@@ -27,7 +27,7 @@ export const updateSystemStatus = async (): Promise<string> => {
     const apiURL = `${BACKEND_ORIGIN}/jobs/update-system-status`;
     const headers = { "Content-Type": "application/json" };
     const response = await fetch(apiURL, {
-      method: "POST",
+      method: "PATCH",
       headers,
     });
 
@@ -37,7 +37,11 @@ export const updateSystemStatus = async (): Promise<string> => {
       return data.error;
     }
 
+    // Revalidate the system status
+    revalidateSystemStatus();
+
     const status = data.status;
+
     return status;
   } catch (error) {
     console.error("API error while updating system status:", error);

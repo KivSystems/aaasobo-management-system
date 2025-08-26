@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { getLongMonth, nDaysLater } from "@/app/helper/utils/dateUtils";
 import InputField from "@/app/components/elements/inputField/InputField";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 import { MIN_DAYS_TO_LEAVE } from "@/app/helper/data/data";
 
 const UserStatusSwitcher = ({
@@ -33,6 +34,7 @@ const UserStatusSwitcher = ({
     year: 0,
     isPast: false,
   });
+  const { language } = useLanguage();
 
   useEffect(() => {
     // Update user status and leaving date
@@ -110,9 +112,9 @@ const UserStatusSwitcher = ({
             <div className={styles.userLeaving}>
               <ExclamationTriangleIcon className={styles.userLeaving__icon} />
               <p className={styles.userLeaving__text}>
-                {dateInfo.isPast ? "Left" : "Leaving"} on{" "}
-                {getLongMonth(new Date(leavingDate))} {dateInfo.date},{" "}
-                {dateInfo.year}
+                {language === "en"
+                  ? `${dateInfo.isPast ? "Left" : "Leaving"} on ${getLongMonth(new Date(leavingDate))} ${dateInfo.date}, ${dateInfo.year}`
+                  : `${dateInfo.year}年${dateInfo.month + 1}月${dateInfo.date}日${dateInfo.isPast ? "退会済み" : "退会予定"} `}
               </p>
             </div>
           )}

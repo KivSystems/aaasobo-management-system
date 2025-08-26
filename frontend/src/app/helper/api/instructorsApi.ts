@@ -127,7 +127,7 @@ export const registerInstructor = async (
   }
 };
 
-// PATCH instructor data
+// Update instructor data
 export const updateInstructor = async (
   id: number,
   userData: FormData,
@@ -155,6 +155,23 @@ export const updateInstructor = async (
   }
 
   return data;
+};
+
+// Mask instructor information
+export const maskInstructors = async (): Promise<void> => {
+  try {
+    const apiUrl = `${BACKEND_ORIGIN}/jobs/mask/instructors`;
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    await fetch(apiUrl, {
+      method: "PATCH",
+      headers,
+    });
+  } catch (error) {
+    console.error("Failed to mask instructor information:", error);
+    throw error;
+  }
 };
 
 export const getInstructorProfile = async (
