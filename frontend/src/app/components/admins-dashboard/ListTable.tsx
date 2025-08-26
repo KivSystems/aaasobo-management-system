@@ -226,15 +226,17 @@ function ListTable({
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </div>
-          {/* <GenerateClassesForm /> */}
-          {isAddButton && (
-            <ActionButton
-              btnText={`Add ${categoryType ? categoryType : userType}`}
-              className="addBtn"
-              onClick={() => setIsModalOpen(true)}
-              Icon={PlusIcon}
-            />
-          )}
+          {isAddButton &&
+            (listType === "Class List" ? (
+              <GenerateClassesForm />
+            ) : (
+              <ActionButton
+                btnText={`Add ${categoryType ? categoryType : userType}`}
+                className="addBtn"
+                onClick={() => setIsModalOpen(true)}
+                Icon={PlusIcon}
+              />
+            ))}
         </div>
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>
