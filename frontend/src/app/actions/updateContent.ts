@@ -198,7 +198,6 @@ export async function generateClassesAction(
       const firstError =
         fieldErrors.year?.[0] || fieldErrors.month?.[0] || "Validation failed.";
       return {
-        isSuccess: false,
         errorMessage: firstError,
       };
     }
@@ -210,9 +209,7 @@ export async function generateClassesAction(
     await generateClasses(year, month, cookie);
 
     return {
-      isSuccess: true,
       successMessage: "Classes generated successfully!",
-      errorMessage: "",
     };
   } catch (error) {
     console.error("Unexpected error in updateContent server action:", error);

@@ -9,7 +9,6 @@ import { generateClassesAction } from "@/app/actions/updateContent";
 
 function GenerateClassesForm() {
   const initialFormState = {
-    isSuccess: false,
     errorMessage: "",
     successMessage: "",
   };
@@ -19,14 +18,12 @@ function GenerateClassesForm() {
     initialFormState,
   );
   const [localState, setLocalState] = useState<{
-    isSuccess: boolean;
     errorMessage: string;
     successMessage: string;
   }>(initialFormState);
 
   useEffect(() => {
     setLocalState({
-      isSuccess: generateClassesResultState.isSuccess ?? false,
       errorMessage: generateClassesResultState.errorMessage ?? "",
       successMessage: generateClassesResultState.successMessage ?? "",
     });
