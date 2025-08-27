@@ -5,6 +5,7 @@ import { NewClassToRebookType } from "../controllers/classesController";
 import {
   FREE_TRIAL_BOOKING_HOURS,
   REGULAR_REBOOKING_HOURS,
+  MONTHS_TO_DELETE_CLASSES,
 } from "../helper/commonUtils";
 import {
   CANCELED_CLASS_COLOR,
@@ -934,7 +935,7 @@ export const getSameDateClasses = async (
 // Delete classes older than 1 year (13 months)
 export const deleteOldClasses = async () => {
   const thresholdDate = new Date();
-  thresholdDate.setMonth(thresholdDate.getMonth() - 13);
+  thresholdDate.setMonth(thresholdDate.getMonth() - MONTHS_TO_DELETE_CLASSES);
 
   return await prisma.class.deleteMany({
     where: {

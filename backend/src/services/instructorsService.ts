@@ -303,9 +303,9 @@ export const getInstructorsToMask = async () => {
         { terminationAt: { not: null } },
         { terminationAt: { lt: now } }, // Past termination
       ],
-      name: {
+      classURL: {
         not: {
-          contains: "MaskedName", // Not include the word "MaskedName"
+          contains: "Masked", // Not include the word "Masked"
         },
       },
     },
@@ -314,25 +314,27 @@ export const getInstructorsToMask = async () => {
 
 // Mask instructors who have left the organization
 export const maskInstructors = async (instructors: Instructor[]) => {
+  const headLetters = "Masked";
+  const maskedSuffix = randomUUID().split("-")[0]; // Generate a short random string
   return await prisma.$transaction(
     instructors.map((instructor) =>
       prisma.instructor.update({
         where: { id: instructor.id },
         data: {
-          name: `MaskedNameId${instructor.id}`,
-          email: `MaskedEmailId${instructor.id}`,
-          password: `MaskedPasswordId${instructor.id}`,
+          name: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          email: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          password: `${headLetters}${instructor.id}_${maskedSuffix}`,
           birthdate: new Date("1900-01-01"),
-          workingTime: `MaskedWorkingTimeId${instructor.id}`,
-          lifeHistory: `MaskedLifeHistoryId${instructor.id}`,
-          favoriteFood: `MaskedFavoriteFoodId${instructor.id}`,
-          hobby: `MaskedHobbyId${instructor.id}`,
-          messageForChildren: `MaskedMessageForChildrenId${instructor.id}`,
-          skill: `MaskedSkillId${instructor.id}`,
-          classURL: `MaskedClassURLId${instructor.id}`,
-          meetingId: `MaskedMeetingId${instructor.id}`,
-          passcode: `MaskedPasscodeId${instructor.id}`,
-          introductionURL: `MaskedIntroductionURLId${instructor.id}`,
+          workingTime: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          lifeHistory: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          favoriteFood: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          hobby: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          messageForChildren: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          skill: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          classURL: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          meetingId: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          passcode: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          introductionURL: `${headLetters}${instructor.id}_${maskedSuffix}`,
         },
       }),
     ),
