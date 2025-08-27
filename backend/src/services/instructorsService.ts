@@ -284,59 +284,75 @@ export const getInstructorContactById = async (id: number) => {
 
 // Fetch instructors who will be leaving
 export const getInstructorsToLeave = async () => {
-  return await prisma.instructor.findMany({
-    where: {
-      AND: [
-        { terminationAt: { not: null } },
-        { terminationAt: { gt: now } }, // Future termination
-      ],
-    },
-    select: { id: true, terminationAt: true },
-  });
+  try {
+    return await prisma.instructor.findMany({
+      where: {
+        AND: [
+          { terminationAt: { not: null } },
+          { terminationAt: { gt: now } }, // Future termination
+        ],
+      },
+      select: { id: true, terminationAt: true },
+    });
+  } catch (error) {
+    console.error("Error fetching instructors to leave:", error);
+    throw new Error("Failed to fetch instructors to leave");
+  }
 };
 
 // Fetch instructors who have left the organization and has not been masked
 export const getInstructorsToMask = async () => {
-  return await prisma.instructor.findMany({
-    where: {
-      AND: [
-        { terminationAt: { not: null } },
-        { terminationAt: { lt: now } }, // Past termination
-      ],
-      classURL: {
-        not: {
-          contains: "Masked", // Not include the word "Masked"
+  try {
+    return await prisma.instructor.findMany({
+      where: {
+        AND: [
+          { terminationAt: { not: null } },
+          { terminationAt: { lt: now } }, // Past termination
+        ],
+        classURL: {
+          not: {
+            contains: "Masked", // Not include the word "Masked"
+          },
         },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Error fetching instructors to mask:", error);
+    throw new Error("Failed to fetch instructors to mask");
+  }
 };
 
 // Mask instructors who have left the organization
 export const maskInstructors = async (instructors: Instructor[]) => {
   const headLetters = "Masked";
   const maskedSuffix = randomUUID().split("-")[0]; // Generate a short random string
-  return await prisma.$transaction(
-    instructors.map((instructor) =>
-      prisma.instructor.update({
-        where: { id: instructor.id },
-        data: {
-          name: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          email: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          password: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          birthdate: new Date("1900-01-01"),
-          workingTime: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          lifeHistory: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          favoriteFood: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          hobby: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          messageForChildren: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          skill: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          classURL: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          meetingId: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          passcode: `${headLetters}${instructor.id}_${maskedSuffix}`,
-          introductionURL: `${headLetters}${instructor.id}_${maskedSuffix}`,
-        },
-      }),
-    ),
-  );
+
+  try {
+    return await prisma.$transaction(
+      instructors.map((instructor) =>
+        prisma.instructor.update({
+          where: { id: instructor.id },
+          data: {
+            name: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            email: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            password: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            birthdate: new Date("1900-01-01"),
+            workingTime: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            lifeHistory: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            favoriteFood: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            hobby: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            messageForChildren: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            skill: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            classURL: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            meetingId: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            passcode: `${headLetters}${instructor.id}_${maskedSuffix}`,
+            introductionURL: `${headLetters}${instructor.id}_${maskedSuffix}`,
+          },
+        }),
+      ),
+    );
+  } catch (error) {
+    console.error("Error masking instructors:", error);
+    throw new Error("Failed to mask instructors");
+  }
 };
