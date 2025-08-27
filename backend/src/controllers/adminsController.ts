@@ -27,8 +27,7 @@ import {
   updateEvent,
   deleteEvent,
 } from "../services/eventsService";
-import { convertToISOString, nDaysLater } from "../helper/dateUtils";
-import { MIN_DAYS_TO_LEAVE } from "../helper/commonUtils";
+import { convertToISOString } from "../helper/dateUtils";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
