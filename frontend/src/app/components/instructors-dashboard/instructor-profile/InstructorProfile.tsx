@@ -92,7 +92,7 @@ function InstructorProfile({
       const updatedDate = leavingDate.replace(/-/g, "/");
       setConfirmResult(
         window.confirm(
-          `Please confirm if the leaving date (${updatedDate}) is correct.`,
+          `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
         ),
       );
     } else {

@@ -126,9 +126,13 @@ export function convertDayTimeToUTC(day: Day, time: string) {
   };
 }
 
-// Convert a date string to ISO format with UTC time zone.
-// e.g., "01/05/2025" "2025-01-05" => "2025-01-05T00:00:00.000Z"
-export function convertToISOString(dateStr: string): string {
+// Convert a date string to ISO format in UTC time zone.
+// Example 1: "01/05/2025" or "2025-01-05" (UTC) => "2025-01-05T00:00:00.000Z" (UTC)
+// Example 2: "01/05/2025" or "2025-01-05" (JST) => "2025-01-04T16:00:00.000Z" (UTC)
+export function convertToISOString(
+  dateStr: string,
+  timezone: string = "UTC",
+): string {
   let year: number, month: number, day: number;
 
   // 1. YYYY-MM-DD
@@ -144,7 +148,13 @@ export function convertToISOString(dateStr: string): string {
     throw new Error(`Unsupported date format: ${dateStr}`);
   }
 
-  return new Date(Date.UTC(year, month - 1, day)).toISOString();
+  switch (timezone) {
+    case "Asia/Tokyo":
+      const jstDate = new Date(Date.UTC(year, month - 1, day, -9, 0, 0));
+      return jstDate.toISOString();
+    default:
+      return new Date(Date.UTC(year, month - 1, day)).toISOString();
+  }
 }
 
 export const nHoursLater = (n: number, dateTime: Date = new Date()) => {
@@ -235,4 +245,26 @@ export function getJstDayRange(dateTime: string | Date): {
   endOfDay.setUTCHours(endOfDay.getUTCHours() - 9);
 
   return { startOfDay, endOfDay };
+}
+
+// Converts a date from UTC to the specified timezone.
+export function convertToTimezoneDate(date: Date, timezoneTo: string): Date {
+  switch (timezoneTo) {
+    case "Asia/Tokyo":
+      const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+      return jstDate;
+    default:
+      return date;
+  }
+}
+
+// Converts a date from the specified timezone to UTC.
+export function convertToUTCDate(date: Date, timezoneFrom: string): Date {
+  switch (timezoneFrom) {
+    case "Asia/Tokyo":
+      const jstDate = new Date(date.getTime() - 9 * 60 * 60 * 1000);
+      return jstDate;
+    default:
+      return date;
+  }
 }

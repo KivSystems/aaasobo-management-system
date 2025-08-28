@@ -61,7 +61,7 @@ const UserStatusSwitcher = ({
     <>
       {isEditing ? (
         <>
-          <p className={styles.userStatus__text}>User Status</p>
+          <p className={styles.userStatus__text}>Status</p>
           <div className={styles.switchContainer}>
             <div
               className={styles.userStatusSwitcher}
@@ -90,19 +90,26 @@ const UserStatusSwitcher = ({
               </span>
             </div>
             {userStatus === "leaving" && (
-              <InputField
-                name="leavingDate"
-                type="date"
-                value={
-                  updatedLeavingDate
-                    ? new Date(updatedLeavingDate).toISOString().split("T")[0]
-                    : ""
-                }
-                min={nDaysLater(MIN_DAYS_TO_LEAVE).toISOString().split("T")[0]}
-                onChange={(e) => setUpdatedLeavingDate(e.target.value || null)}
-                onKeyDown={(e) => e.preventDefault()} // Prevent date input from typing
-                className={styles.leavingDate__inputField}
-              />
+              <>
+                <InputField
+                  name="leavingDate"
+                  type="date"
+                  value={
+                    updatedLeavingDate
+                      ? new Date(updatedLeavingDate).toISOString().split("T")[0]
+                      : ""
+                  }
+                  min={
+                    nDaysLater(MIN_DAYS_TO_LEAVE).toISOString().split("T")[0]
+                  }
+                  onChange={(e) =>
+                    setUpdatedLeavingDate(e.target.value || null)
+                  }
+                  onKeyDown={(e) => e.preventDefault()} // Prevent date input from typing
+                  className={styles.leavingDate__inputField}
+                />
+                <span>(Japan Time)</span>
+              </>
             )}
           </div>
         </>
@@ -113,8 +120,8 @@ const UserStatusSwitcher = ({
               <ExclamationTriangleIcon className={styles.userLeaving__icon} />
               <p className={styles.userLeaving__text}>
                 {language === "en"
-                  ? `${dateInfo.isPast ? "Left" : "Leaving"} on ${getLongMonth(new Date(leavingDate))} ${dateInfo.date}, ${dateInfo.year}`
-                  : `${dateInfo.year}年${dateInfo.month + 1}月${dateInfo.date}日${dateInfo.isPast ? "退会済み" : "退会予定"} `}
+                  ? `${dateInfo.isPast ? "Left" : "Leaving"} on ${getLongMonth(new Date(leavingDate))} ${dateInfo.date}, ${dateInfo.year} (Japan Time)`
+                  : `${dateInfo.year}年${dateInfo.month + 1}月${dateInfo.date}日${dateInfo.isPast ? "退会済み" : "退会予定"} (日本時間)`}
               </p>
             </div>
           )}

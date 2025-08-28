@@ -1,11 +1,12 @@
 import { prisma } from "../../prisma/prismaClient";
-import { Instructor, Prisma } from "@prisma/client";
+import { Instructor } from "@prisma/client";
 import { randomUUID } from "crypto";
 import {
   hashPassword,
   defaultUserImageUrl,
   validateUserImageUrl,
 } from "../helper/commonUtils";
+import { convertToUTCDate } from "../helper/dateUtils";
 import { put, del } from "@vercel/blob";
 
 const now = new Date();
@@ -164,7 +165,9 @@ export const updateInstructor = async (
         passcode,
         introductionURL,
         icon: blob.url,
-        terminationAt: leavingDate,
+        terminationAt: leavingDate
+          ? convertToUTCDate(leavingDate, "Asia/Tokyo")
+          : null,
       },
     });
     return instructor;

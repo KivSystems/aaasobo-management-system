@@ -461,9 +461,17 @@ export const updateInstructorProfileController = async (
       introductionURL,
     );
 
+    // Create a new instructor object with the updated termination date (JST).
+    // This is because the termination date needs to be in UTC format on the database.
+    // The calculation will convert the date from JST to UTC in updateInstructor().
+    const updatedInstructor = {
+      ...instructor,
+      terminationAt: normalizedLeavingDate,
+    };
+
     res.status(200).json({
       message: "Instructor is updated successfully",
-      instructor,
+      instructor: updatedInstructor,
     });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
