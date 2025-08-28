@@ -14,6 +14,7 @@ import {
   getSameDateClasses,
   getClassByClassId,
 } from "../services/classesService";
+import { convertToTimezoneDate } from "../helper/dateUtils";
 
 function setErrorResponse(res: Response, error: unknown) {
   return res
@@ -62,6 +63,10 @@ export const getInstructor = async (req: Request, res: Response) => {
     const instructorId = instructor.id;
     const instructorIcon = instructor.icon;
     const blob = await validateUserImageUrl(instructorIcon, instructorId);
+    // Convert from UTC to JST
+    const terminationAt = instructor.terminationAt
+      ? convertToTimezoneDate(instructor.terminationAt, "Asia/Tokyo")
+      : null;
 
     return res.status(200).json({
       instructor: {
@@ -81,7 +86,7 @@ export const getInstructor = async (req: Request, res: Response) => {
         meetingId: instructor.meetingId,
         passcode: instructor.passcode,
         introductionURL: instructor.introductionURL,
-        terminationAt: instructor.terminationAt,
+        terminationAt: terminationAt,
       },
     });
   } catch (error) {
@@ -107,6 +112,10 @@ export const getAllInstructorProfilesController = async (
         const instructorId = instructor.id;
         const instructorIcon = instructor.icon;
         const blob = await validateUserImageUrl(instructorIcon, instructorId);
+        // Convert from UTC to JST
+        const terminationAt = instructor.terminationAt
+          ? convertToTimezoneDate(instructor.terminationAt, "Asia/Tokyo")
+          : null;
 
         return {
           id: instructorId,
@@ -121,7 +130,7 @@ export const getAllInstructorProfilesController = async (
           workingTime: instructor.workingTime,
           skill: instructor.skill,
           createdAt: instructor.createdAt,
-          terminationAt: instructor.terminationAt,
+          terminationAt: terminationAt,
         };
       }),
     );
