@@ -1,11 +1,11 @@
 {
   "crons": [
     {
-      "path": "/api/cron-job/data-processing",
+      "path": "/api/cron-job/update-sunday-color",
       "schedule": "0 22 * * *"
     },
     {
-      "path": "/api/cron-job/system-status-update",
+      "path": "/api/cron-job/update-system-status",
       "schedule": "0 0 1 1 *"
     }
   ]

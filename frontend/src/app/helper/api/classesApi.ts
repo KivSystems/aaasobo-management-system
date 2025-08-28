@@ -270,3 +270,27 @@ export const updateClassStatus = async (
     return { success: false };
   }
 };
+
+// Delete classes older than 1 year (13 months)
+export const deleteOldClasses = async (authorization: string) => {
+  const apiUrl = `${BACKEND_ORIGIN}/jobs/delete/old-classes`;
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: authorization,
+  };
+  try {
+    const response = await fetch(apiUrl, {
+      method: "DELETE",
+      headers,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return data.error;
+    }
+  } catch (error) {
+    console.error("API error while deleting old classes:", error);
+    throw error;
+  }
+};

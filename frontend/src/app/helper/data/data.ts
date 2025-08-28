@@ -56,4 +56,5 @@ export const prefectures = [
 
 export const FREE_TRIAL_BOOKING_HOURS = 72;
 export const REGULAR_REBOOKING_HOURS = 3;
-export const MIN_DAYS_TO_LEAVE = 30;
+export const MIN_DAYS_TO_LEAVE = 90;
+export const POLLING_INTERVAL = 60 * 60 * 1000; // 60 minutes

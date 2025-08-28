@@ -1,11 +1,14 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor, Prisma } from "@prisma/client";
+import { randomUUID } from "crypto";
 import {
   hashPassword,
   defaultUserImageUrl,
   validateUserImageUrl,
 } from "../helper/commonUtils";
 import { put, del } from "@vercel/blob";
+
+const now = new Date();
 
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {
@@ -249,7 +252,6 @@ export const updateInstructorPassword = async (
 };
 
 export const getInstructorProfiles = async () => {
-  const now = new Date();
   const instructors = await prisma.instructor.findMany({
     where: {
       OR: [
@@ -278,4 +280,79 @@ export const getInstructorContactById = async (id: number) => {
       email: true,
     },
   });
+};
+
+// Fetch instructors who will be leaving
+export const getInstructorsToLeave = async () => {
+  try {
+    return await prisma.instructor.findMany({
+      where: {
+        AND: [
+          { terminationAt: { not: null } },
+          { terminationAt: { gt: now } }, // Future termination
+        ],
+      },
+      select: { id: true, terminationAt: true },
+    });
+  } catch (error) {
+    console.error("Error fetching instructors to leave:", error);
+    throw new Error("Failed to fetch instructors to leave");
+  }
+};
+
+// Fetch instructors who have left the organization and has not been masked
+export const getInstructorsToMask = async () => {
+  try {
+    return await prisma.instructor.findMany({
+      where: {
+        AND: [
+          { terminationAt: { not: null } },
+          { terminationAt: { lt: now } }, // Past termination
+        ],
+        classURL: {
+          not: {
+            contains: "Masked", // Not include the word "Masked"
+          },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching instructors to mask:", error);
+    throw new Error("Failed to fetch instructors to mask");
+  }
+};
+
+// Mask instructors who have left the organization
+export const maskInstructors = async (instructors: Instructor[]) => {
+  const headLetters = "Masked";
+  const maskedSuffix = randomUUID().split("-")[0]; // Generate a short random string
+
+  try {
+    return await prisma.$transaction(
+      instructors.map((instructor) =>
+        prisma.instructor.update({
+          where: { id: instructor.id },
+          data: {
+            name: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            email: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            password: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            birthdate: new Date("1900-01-01"),
+            workingTime: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            lifeHistory: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            favoriteFood: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            hobby: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            messageForChildren: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            skill: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            classURL: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            meetingId: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            passcode: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            introductionURL: `${headLetters}_${maskedSuffix}${instructor.id}`,
+          },
+        }),
+      ),
+    );
+  } catch (error) {
+    console.error("Error masking instructors:", error);
+    throw new Error("Failed to mask instructors");
+  }
 };

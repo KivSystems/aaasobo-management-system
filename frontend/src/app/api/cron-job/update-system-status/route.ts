@@ -5,7 +5,11 @@ import { updateSystemStatus } from "@/app/helper/api/maintenanceApi";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
+  // Get the authorization header
+  const authorization = req.headers.get("Authorization");
+
   if (
+    !authorization ||
     req.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`
   ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -13,8 +17,7 @@ export async function GET(req: NextRequest) {
 
   try {
     console.log("Cron job (system status update) started");
-    const status = await updateSystemStatus(); // Update system status
-    console.log("Cron job (system status update) executed successfully");
+    const status = await updateSystemStatus(authorization); // Update system status
     console.log("System status updated to:", status);
     return NextResponse.json(
       {

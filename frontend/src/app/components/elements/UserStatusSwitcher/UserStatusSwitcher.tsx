@@ -5,17 +5,16 @@ import { useState, useEffect } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { getLongMonth, nDaysLater } from "@/app/helper/utils/dateUtils";
 import InputField from "@/app/components/elements/inputField/InputField";
+import { useLanguage } from "@/app/contexts/LanguageContext";
 import { MIN_DAYS_TO_LEAVE } from "@/app/helper/data/data";
 
 const UserStatusSwitcher = ({
   isEditing,
   leavingDate,
-  error,
   onStatusChange,
 }: {
   isEditing: boolean;
   leavingDate: string | null;
-  error: string;
   onStatusChange: (status: UserStatus, date: string | null) => void;
 }) => {
   const [userStatus, setUserStatus] = useState<UserStatus>(
@@ -35,6 +34,7 @@ const UserStatusSwitcher = ({
     year: 0,
     isPast: false,
   });
+  const { language } = useLanguage();
 
   useEffect(() => {
     // Update user status and leaving date
@@ -99,8 +99,8 @@ const UserStatusSwitcher = ({
                     : ""
                 }
                 min={nDaysLater(MIN_DAYS_TO_LEAVE).toISOString().split("T")[0]}
-                error={typeof error === "string" ? error : ""}
                 onChange={(e) => setUpdatedLeavingDate(e.target.value || null)}
+                onKeyDown={(e) => e.preventDefault()} // Prevent date input from typing
                 className={styles.leavingDate__inputField}
               />
             )}
@@ -112,9 +112,9 @@ const UserStatusSwitcher = ({
             <div className={styles.userLeaving}>
               <ExclamationTriangleIcon className={styles.userLeaving__icon} />
               <p className={styles.userLeaving__text}>
-                {dateInfo.isPast ? "Left" : "Leaving"} on{" "}
-                {getLongMonth(new Date(leavingDate))} {dateInfo.date},{" "}
-                {dateInfo.year}
+                {language === "en"
+                  ? `${dateInfo.isPast ? "Left" : "Leaving"} on ${getLongMonth(new Date(leavingDate))} ${dateInfo.date}, ${dateInfo.year}`
+                  : `${dateInfo.year}年${dateInfo.month + 1}月${dateInfo.date}日${dateInfo.isPast ? "退会済み" : "退会予定"} `}
               </p>
             </div>
           )}

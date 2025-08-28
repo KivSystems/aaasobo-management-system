@@ -127,7 +127,7 @@ export const registerInstructor = async (
   }
 };
 
-// PATCH instructor data
+// Update instructor data
 export const updateInstructor = async (
   id: number,
   userData: FormData,
@@ -155,6 +155,24 @@ export const updateInstructor = async (
   }
 
   return data;
+};
+
+// Mask instructor information
+export const maskInstructors = async (authorization: string): Promise<void> => {
+  try {
+    const apiUrl = `${BACKEND_ORIGIN}/jobs/mask/instructors`;
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: authorization,
+    };
+    await fetch(apiUrl, {
+      method: "PATCH",
+      headers,
+    });
+  } catch (error) {
+    console.error("Failed to mask instructor information:", error);
+    throw error;
+  }
 };
 
 export const getInstructorProfile = async (
@@ -369,6 +387,41 @@ export const createInstructorSchedule = async (
     return { schedule: result.data };
   } catch (error) {
     console.error("Failed to create instructor schedule:", error);
+    throw error;
+  }
+};
+
+// Create instructors post termination Schedule
+export const createInstructorPostTerminationSchedule = async (
+  authorization: string,
+): Promise<Response<{ schedule: InstructorScheduleWithSlots }>> => {
+  try {
+    const response = await fetch(`${BASE_URL}/schedules/post-termination`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authorization,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Handle the backend response format { message, data }
+    if ("message" in result && !result.data) {
+      return { message: result.message };
+    }
+
+    // Return in the expected format
+    return { schedule: result.data };
+  } catch (error) {
+    console.error(
+      "Failed to create instructor post termination schedule:",
+      error,
+    );
     throw error;
   }
 };

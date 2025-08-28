@@ -7,6 +7,7 @@ import {
   getAllAvailableSlots,
   getActiveInstructorSchedule,
 } from "../services/instructorScheduleService";
+import { getInstructorsToLeave } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import { Request } from "express";
 
@@ -110,6 +111,49 @@ export const createInstructorScheduleController = async (
     res.status(201).json({
       message: "Schedule version created successfully",
       data: schedule,
+    });
+  } catch (error) {
+    console.error("Error creating schedule version:", error);
+    res.status(500).json({
+      message: "Failed to create schedule version",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+// Create instructor post-termination schedule
+export const createInstructorPostTerminationScheduleController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    // Fetch instructors' id who will be leaving
+    const leavingInstructors = await getInstructorsToLeave();
+
+    // Create post termination schedule for each instructor
+    const schedules = leavingInstructors.map(async (instructor) => {
+      const { id, terminationAt } = instructor;
+
+      if (!id || !terminationAt) {
+        return {};
+      }
+
+      const effectiveFrom = terminationAt;
+
+      // Create a schedule for the instructor
+      const schedule = await createInstructorSchedule({
+        instructorId: id,
+        effectiveFrom,
+        timezone: "Asia/Tokyo",
+        slots: [], // No class schedules
+      });
+
+      return schedule;
+    });
+
+    res.status(201).json({
+      message: "Schedule version created successfully",
+      data: schedules,
     });
   } catch (error) {
     console.error("Error creating schedule version:", error);

@@ -27,8 +27,7 @@ import {
   updateEvent,
   deleteEvent,
 } from "../services/eventsService";
-import { convertToISOString, nDaysLater } from "../helper/dateUtils";
-import { MIN_DAYS_TO_LEAVE } from "../helper/commonUtils";
+import { convertToISOString } from "../helper/dateUtils";
 
 // Register Admin
 export const registerAdminController = async (req: Request, res: Response) => {
@@ -394,15 +393,6 @@ export const updateInstructorProfileController = async (
   const normalizedLeavingDate =
     leavingDate !== "null" ? new Date(convertToISOString(leavingDate)) : null;
   const normalizedBirthdate = new Date(convertToISOString(birthdate));
-
-  // Check if the leavingDate is 30 days after the current date
-  if (
-    normalizedLeavingDate &&
-    (isNaN(normalizedLeavingDate.getTime()) ||
-      normalizedLeavingDate < nDaysLater(MIN_DAYS_TO_LEAVE))
-  ) {
-    return res.status(400).json({ leavingDate: "Invalid leaving date" });
-  }
 
   // Set unique checks list
   const uniqueChecks = [

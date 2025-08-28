@@ -74,6 +74,8 @@ model Class {
   updatedAt        DateTime
   classCode        String
   isFreeTrial      Boolean           @default(false)
+
+  @@index([dateTime])
 }
 
 enum Status {

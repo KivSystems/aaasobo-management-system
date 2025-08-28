@@ -160,7 +160,6 @@ function InstructorProfile({
             <UserStatusSwitcher
               isEditing={isEditing}
               leavingDate={latestInstructor.terminationAt}
-              error={localMessages.leavingDate ? localMessages.leavingDate : ""}
               onStatusChange={(newStatus, newDate) => {
                 setStatus(newStatus);
                 setLeavingDate(newDate);
@@ -247,6 +246,7 @@ function InstructorProfile({
                     type="date"
                     value={formatBirthdateToISO(latestInstructor.birthdate)}
                     onChange={(e) => handleInputChange(e, "birthdate")}
+                    onKeyDown={(e) => e.preventDefault()} // Prevent date input from typing
                     className={`${styles.birthdate__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
