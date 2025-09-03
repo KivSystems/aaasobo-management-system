@@ -12,7 +12,7 @@ function InputField({
   placeholder,
   min,
   display = "block",
-  readonly,
+  readOnly,
   onChange,
   onKeyDown,
 }: {
@@ -25,7 +25,7 @@ function InputField({
   placeholder?: string;
   min?: string; // Only applies when the input type is "date"
   display?: "block" | "inline-block" | "flex";
-  readonly?: boolean;
+  readOnly?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }) {
@@ -42,7 +42,7 @@ function InputField({
         required
         placeholder={placeholder}
         min={min}
-        readOnly={readonly}
+        readOnly={readOnly}
       />
       {error && (
         <FormValidationMessage
