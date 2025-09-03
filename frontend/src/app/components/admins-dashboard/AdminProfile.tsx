@@ -164,7 +164,7 @@ function AdminProfile({
               (isEditing ? (
                 <div className={styles.buttons}>
                   <ActionButton
-                    className="cancelEditingInstructor"
+                    className="cancelEditingAdmin"
                     btnText="Cancel"
                     type="button"
                     onClick={(e) => {
@@ -173,7 +173,7 @@ function AdminProfile({
                     }}
                   />
                   <ActionButton
-                    className="saveInstructor"
+                    className="saveAdmin"
                     btnText="Save"
                     type="submit"
                     Icon={CheckIcon}
