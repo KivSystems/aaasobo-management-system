@@ -151,7 +151,7 @@ function AdminProfile({
                     className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
-                  <h4>{latestAdmin.email}</h4>
+                  <h4 className={styles.email__text}>{latestAdmin.email}</h4>
                 )}
               </div>
             </div>

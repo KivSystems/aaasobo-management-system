@@ -124,7 +124,6 @@ function PlanProfile({
               <div className={styles.insideContainer}>
                 <CalendarIcon className={styles.icon} />
                 <div>
-                  {/* Temporary comment out here */}
                   <p>Weekly class times</p>
                   {isEditing ? (
                     <InputField
@@ -136,7 +135,9 @@ function PlanProfile({
                       readonly
                     />
                   ) : (
-                    <h4>{latestPlan.weeklyClassTimes}</h4>
+                    <h4 className={styles.weeklyClassTimes__text}>
+                      {latestPlan.weeklyClassTimes}
+                    </h4>
                   )}
                 </div>
               </div>
@@ -154,7 +155,9 @@ function PlanProfile({
                       className={`${styles.planDescription__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
-                    <h4>{latestPlan.description}</h4>
+                    <h4 className={styles.planDescription__text}>
+                      {latestPlan.description}
+                    </h4>
                   )}
                 </div>
               </div>

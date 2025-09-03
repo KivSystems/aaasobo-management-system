@@ -79,6 +79,11 @@
     overflow-wrap: break-word;
     white-space: normal;
   }
+
+  &__text {
+    font-size: 18px;
+    font-weight: 400;
+  }
 }
 
 // buttons
