@@ -163,6 +163,11 @@ export const eventUpdateSchema = z.object({
   color: z.string().min(1, "Color Code is required."),
 });
 
+export const planUpdateSchema = z.object({
+  name: z.string().min(1, "Plan Name is required."),
+  description: z.string().min(1, "Description is required."),
+});
+
 export const scheduleUpdateSchema = z.object({
   eventId: z
     .number({
