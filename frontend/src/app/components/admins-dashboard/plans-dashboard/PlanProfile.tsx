@@ -124,20 +124,32 @@ function PlanProfile({
               <div className={styles.insideContainer}>
                 <CalendarIcon className={styles.icon} />
                 <div>
-                  <p>Weekly class times</p>
                   {isEditing ? (
-                    <InputField
-                      name="weeklyClassTimes"
-                      type="number"
-                      value={String(latestPlan.weeklyClassTimes)}
-                      onChange={(e) => handleInputChange(e, "weeklyClassTimes")}
-                      className={`${styles.planName__inputField} ${isEditing ? styles.editable : ""}`}
-                      readonly
-                    />
+                    <>
+                      <p>
+                        Weekly class times{" "}
+                        <span className={styles.weeklyClassTimes__redText}>
+                          (Uneditable)
+                        </span>
+                      </p>
+                      <InputField
+                        name="weeklyClassTimes"
+                        type="number"
+                        value={String(latestPlan.weeklyClassTimes)}
+                        onChange={(e) =>
+                          handleInputChange(e, "weeklyClassTimes")
+                        }
+                        className={`${styles.weeklyClassTimes__inputField} ${isEditing ? styles.editable : ""}`}
+                        readOnly
+                      />
+                    </>
                   ) : (
-                    <h4 className={styles.weeklyClassTimes__text}>
-                      {latestPlan.weeklyClassTimes}
-                    </h4>
+                    <>
+                      <p>Weekly class times</p>
+                      <h4 className={styles.weeklyClassTimes__text}>
+                        {latestPlan.weeklyClassTimes}
+                      </h4>
+                    </>
                   )}
                 </div>
               </div>
