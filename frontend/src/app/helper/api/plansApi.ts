@@ -54,10 +54,6 @@ export const registerPlan = async (userData: {
       body: JSON.stringify(userData),
     });
 
-    if (response.status === 409) {
-      return { name: ITEM_ALREADY_REGISTERED_ERROR("Plan Name") };
-    }
-
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }

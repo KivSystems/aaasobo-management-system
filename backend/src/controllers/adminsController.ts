@@ -598,20 +598,7 @@ export const registerPlanController = async (req: Request, res: Response) => {
     return res.sendStatus(400);
   }
 
-  // Normalize the plan name
-  const normalizedPlanName = name.toLowerCase().replace(/\s/g, "");
-
   try {
-    // Check if the plan with the same name already exists
-    const existingPlans = await getAllPlans();
-    const planExists = existingPlans.some(
-      (plan) =>
-        plan.name.toLowerCase().replace(/\s/g, "") === normalizedPlanName,
-    );
-    if (planExists) {
-      return res.sendStatus(409);
-    }
-
     await registerPlan({
       name,
       weeklyClassTimes,
