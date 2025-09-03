@@ -20,7 +20,12 @@ import {
 import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
-import { getAllPlans, registerPlan } from "../services/plansService";
+import {
+  getAllPlans,
+  registerPlan,
+  updatePlan,
+  deletePlan,
+} from "../services/plansService";
 import {
   getAllEvents,
   registerEvent,
@@ -562,6 +567,36 @@ export const registerPlanController = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error registering a new plan", { error });
     res.sendStatus(500);
+  }
+};
+
+// Update the applicable plan data
+export const updatePlanController = async (req: Request, res: Response) => {
+  const planId = parseInt(req.params.id);
+  const { name, description, isDelete } = req.body;
+
+  try {
+    // If the plan is marked for deletion, proceed with deletion process
+    if (isDelete) {
+      const deletedPlan = await deletePlan(planId);
+      return res
+        .status(200)
+        .json({ message: "Plan deleted successfully", plan: deletedPlan });
+    }
+
+    // Validate the input
+    if (!name) {
+      return res.sendStatus(400);
+    }
+
+    const updatedPlan = await updatePlan(planId, name, description);
+
+    res.status(200).json({
+      message: "Plan is updated successfully",
+      plan: updatedPlan,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
   }
 };
 

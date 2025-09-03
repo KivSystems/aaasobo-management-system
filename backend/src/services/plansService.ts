@@ -14,7 +14,11 @@ export const registerPlan = async (data: {
 // Fetch all plan data.
 export const getAllPlans = async () => {
   try {
-    return await prisma.plan.findMany();
+    return await prisma.plan.findMany({
+      where: {
+        terminationAt: null,
+      },
+    });
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch plans.");
@@ -25,7 +29,10 @@ export const getAllPlans = async () => {
 export const getWeeklyClassTimes = async (id: number) => {
   try {
     return await prisma.plan.findUnique({
-      where: { id },
+      where: {
+        id,
+        terminationAt: null,
+      },
       select: { weeklyClassTimes: true },
     });
   } catch (error) {
@@ -38,10 +45,58 @@ export const getWeeklyClassTimes = async (id: number) => {
 export async function getPlanById(id: number) {
   try {
     return prisma.plan.findUnique({
-      where: { id },
+      where: {
+        id,
+        terminationAt: null,
+      },
     });
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch plan.");
   }
 }
+
+// Update the selected plan
+export const updatePlan = async (
+  id: number,
+  name: string,
+  description: string,
+) => {
+  try {
+    // Update the plan data.
+    const plan = await prisma.plan.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        description,
+      },
+    });
+    return plan;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to update the plan data.");
+  }
+};
+
+// Delete the selected plan
+// Technically, the record is not deleted at this time. Only terminationAt datetime is set.
+export const deletePlan = async (id: number) => {
+  const now = new Date();
+  try {
+    // Delete the plan data.
+    const plan = await prisma.plan.update({
+      where: {
+        id,
+      },
+      data: {
+        terminationAt: now,
+      },
+    });
+    return plan;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to delete the plan data.");
+  }
+};

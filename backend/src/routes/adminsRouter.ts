@@ -7,6 +7,7 @@ import {
   updateAdminProfileController,
   updateInstructorProfileController,
   updateEventProfileController,
+  updatePlanController,
   deleteAdminController,
   deleteEventController,
   getAdminController,
@@ -69,6 +70,11 @@ adminsRouter.post(
   "/plan-list/register",
   verifyAuthentication,
   registerPlanController,
+);
+adminsRouter.patch(
+  "/plan-list/update/:id",
+  verifyAuthentication,
+  updatePlanController,
 );
 adminsRouter.post(
   "/event-list/register",
