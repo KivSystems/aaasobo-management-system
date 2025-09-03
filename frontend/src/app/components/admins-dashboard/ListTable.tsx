@@ -80,6 +80,12 @@ function ListTable({
             // Set the width of the modal registration form.
             setWidth("500px");
             break;
+          case "Subscription List":
+            // Set the active tab to the customer regular class tab.
+            localStorage.setItem("activeCustomerTab", "3");
+            // Set the previous list page to subscription list.
+            localStorage.setItem("previousListPage", "subscription-list");
+            break;
           default:
             break;
         }

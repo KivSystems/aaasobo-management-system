@@ -122,6 +122,26 @@ export const getAllPlans = async () => {
   }
 };
 
+// GET all subscriptions data
+export const getAllSubscriptions = async () => {
+  try {
+    const apiUrl = `${BASE_URL}/subscription-list`;
+    const response = await fetch(apiUrl, {
+      // TODO: Add cache control after completing further implementations
+      // next: { tags: ["subscription-list"] },
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const { data } = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch plans:", error);
+    throw error;
+  }
+};
+
 // GET all events data
 export const getAllEvents = async () => {
   try {

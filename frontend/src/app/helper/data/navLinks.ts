@@ -6,9 +6,9 @@ import {
   UserGroupIcon,
   CalendarIcon,
   ClockIcon,
-  ChatBubbleLeftRightIcon,
   AcademicCapIcon,
   BellIcon,
+  ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 
 export function getLinks(
@@ -93,6 +93,11 @@ export function getLinks(
       name: "Plan List",
       href: `/admins/${userId}/plan-list`,
       icon: AcademicCapIcon,
+    },
+    {
+      name: "Subscription List",
+      href: `/admins/${userId}/subscription-list`,
+      icon: ClipboardDocumentCheckIcon,
     },
     {
       name: "Event List",
