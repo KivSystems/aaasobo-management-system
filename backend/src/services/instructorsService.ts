@@ -1,10 +1,11 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Instructor } from "@prisma/client";
-import { randomUUID } from "crypto";
 import {
   hashPassword,
   defaultUserImageUrl,
   validateUserImageUrl,
+  maskedHeadLetters,
+  maskedSuffix,
 } from "../helper/commonUtils";
 import { convertToUTCDate } from "../helper/dateUtils";
 import { put, del } from "@vercel/blob";
@@ -327,29 +328,28 @@ export const getInstructorsToMask = async () => {
 
 // Mask instructors who have left the organization
 export const maskInstructors = async (instructors: Instructor[]) => {
-  const headLetters = "Masked";
-  const maskedSuffix = randomUUID().split("-")[0]; // Generate a short random string
-
+  const headLetters = maskedHeadLetters;
+  const suffix = maskedSuffix;
   try {
     return await prisma.$transaction(
       instructors.map((instructor) =>
         prisma.instructor.update({
           where: { id: instructor.id },
           data: {
-            name: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            email: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            password: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            name: `${headLetters}_${suffix}${instructor.id}`,
+            email: `${headLetters}_${suffix}${instructor.id}`,
+            password: `${headLetters}_${suffix}${instructor.id}`,
             birthdate: new Date("1900-01-01"),
-            workingTime: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            lifeHistory: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            favoriteFood: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            hobby: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            messageForChildren: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            skill: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            classURL: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            meetingId: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            passcode: `${headLetters}_${maskedSuffix}${instructor.id}`,
-            introductionURL: `${headLetters}_${maskedSuffix}${instructor.id}`,
+            workingTime: `${headLetters}_${suffix}${instructor.id}`,
+            lifeHistory: `${headLetters}_${suffix}${instructor.id}`,
+            favoriteFood: `${headLetters}_${suffix}${instructor.id}`,
+            hobby: `${headLetters}_${suffix}${instructor.id}`,
+            messageForChildren: `${headLetters}_${suffix}${instructor.id}`,
+            skill: `${headLetters}_${suffix}${instructor.id}`,
+            classURL: `${headLetters}_${suffix}${instructor.id}`,
+            meetingId: `${headLetters}_${suffix}${instructor.id}`,
+            passcode: `${headLetters}_${suffix}${instructor.id}`,
+            introductionURL: `${headLetters}_${suffix}${instructor.id}`,
           },
         }),
       ),
