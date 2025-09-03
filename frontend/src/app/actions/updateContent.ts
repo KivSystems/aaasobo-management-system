@@ -1,11 +1,13 @@
 "use server";
 
 import { updateEvent } from "@/app/helper/api/eventsApi";
+import { updatePlan } from "@/app/helper/api/plansApi";
 import { updateBusinessSchedule } from "@/app/helper/api/calendarsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
 import { extractUpdateValidationErrors } from "../helper/utils/validationErrorUtils";
 import {
   eventUpdateSchema,
+  planUpdateSchema,
   generateClassesSchema,
   scheduleUpdateSchema,
 } from "../schemas/authSchema";
@@ -13,6 +15,7 @@ import {
   revalidateEventList,
   revalidateBusinessSchedule,
   revalidateClassList,
+  revalidatePlanList,
 } from "./revalidate";
 import { getCookie } from "../../middleware";
 import { validateSession } from "./validateSession";
@@ -55,6 +58,70 @@ export async function updateEventAction(
 
     // Refresh cached event data for the event list page
     revalidateEventList();
+
+    return response;
+  } catch (error) {
+    console.error("Unexpected error in updateContent server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+}
+
+export async function updatePlanAction(
+  prevState: UpdateFormState | undefined,
+  formData: FormData,
+): Promise<UpdateFormState> {
+  try {
+    const name = formData.get("planName");
+    const description = formData.get("description");
+    // Hidden input tag fields
+    const id = Number(formData.get("id"));
+    const confirmDelete = formData.get("confirmDelete") as string | null;
+
+    let isDelete = false;
+    switch (confirmDelete) {
+      case "true":
+        isDelete = true;
+        break;
+      case "false":
+        return {
+          skipProcessing: "Skipping update due to confirmation failure",
+        };
+      default:
+    }
+
+    let requestName = null;
+    let requestDescription = null;
+
+    if (!isDelete) {
+      const parsedForm = planUpdateSchema.safeParse({
+        name,
+        description,
+      });
+
+      if (!parsedForm.success) {
+        const validationErrors = parsedForm.error.errors;
+        return extractUpdateValidationErrors(validationErrors);
+      }
+
+      requestName = parsedForm.data.name;
+      requestDescription = parsedForm.data.description;
+    }
+
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
+    const response = await updatePlan(
+      id,
+      requestName!,
+      requestDescription!,
+      isDelete,
+      cookie,
+    );
+
+    // Refresh cached plan data for the plan list page
+    revalidatePlanList();
 
     return response;
   } catch (error) {

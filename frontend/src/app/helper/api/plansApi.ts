@@ -1,4 +1,5 @@
 import {
+  ITEM_REQUIRED_ERROR,
   ITEM_ALREADY_REGISTERED_ERROR,
   GENERAL_ERROR_MESSAGE,
   CONTENT_REGISTRATION_SUCCESS_MESSAGE,
@@ -66,6 +67,50 @@ export const registerPlan = async (userData: {
     };
   } catch (error) {
     console.error("API error while registering plan:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+// Update plan information
+export const updatePlan = async (
+  planId: number,
+  planName: string | null,
+  planDescription: string | null,
+  isDelete: boolean,
+  cookie: string,
+): Promise<UpdateFormState> => {
+  try {
+    // Define the item to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/update/${planId}`;
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const body = JSON.stringify({
+      name: planName,
+      description: planDescription,
+      isDelete,
+    });
+
+    const response = await fetch(apiURL, {
+      method: "PATCH",
+      headers,
+      body,
+    });
+
+    const data = await response.json();
+
+    // Display the required error if the response status is 400
+    if (response.status === 400) {
+      return { name: ITEM_REQUIRED_ERROR("plan name") };
+    }
+
+    if (response.status !== 200) {
+      return { errorMessage: data.message };
+    }
+
+    return data;
+  } catch (error) {
+    console.error("API error while updating plan:", error);
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
