@@ -16,6 +16,7 @@ import {
   getAllCustomersController,
   getAllChildrenController,
   getAllPlansController,
+  getAllSubscriptionsController,
   getAllEventsController,
   getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
@@ -102,6 +103,7 @@ adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
+adminsRouter.get("/subscription-list", getAllSubscriptionsController);
 adminsRouter.get("/event-list", getAllEventsController);
 adminsRouter.get("/class-list", getClassesWithinPeriodController);
 adminsRouter.get("/business-schedule", getAllSchedulesController);
