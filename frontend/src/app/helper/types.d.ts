@@ -143,6 +143,7 @@ type Plan = {
   name: string;
   description: string;
   weeklyClassTimes?: number;
+  terminationAt?: string | null;
 };
 
 type BusinessEventType = {
@@ -253,7 +254,7 @@ type LinkType = {
 
 type UserType = "admin" | "customer" | "instructor";
 
-type CategoryType = "event" | "plan" | "schedule";
+type CategoryType = "event" | "plan" | "schedule" | "subscription";
 
 type ForgotPasswordFormState = {
   errorMessage?: string;

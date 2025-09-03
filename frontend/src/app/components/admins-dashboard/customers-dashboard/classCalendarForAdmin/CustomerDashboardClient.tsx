@@ -40,6 +40,13 @@ function CustomerDashboardClient({
         `Customer ID: ${customerId}`,
       ];
       break;
+    case "subscription-list":
+      breadcrumb = [
+        "Subscription List",
+        `/admins/${adminId}/subscription-list`,
+        `Customer ID: ${customerId}`,
+      ];
+      break;
   }
 
   // Get the active tab name to set the active tab in the TabFunction component.

@@ -17,6 +17,10 @@ export const EMAIL_AVAILABILITY_ERROR = {
   en: "This email is already registered. Please go back and try a different one.",
 };
 
+export const ITEM_REQUIRED_ERROR = (item: string) => {
+  return `This ${item} is required.`;
+};
+
 export const ITEM_ALREADY_REGISTERED_ERROR = (item: string) => {
   return `This ${item} is already registered. Try a different one.`;
 };

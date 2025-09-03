@@ -2,6 +2,7 @@
 
 import bcrypt from "bcrypt";
 import { head } from "@vercel/blob";
+import { randomUUID } from "crypto";
 
 // Create a new object that contains only the properties specified in the array.
 export const pickProperties = (
@@ -26,6 +27,9 @@ export const pickProperties = (
 export const FREE_TRIAL_BOOKING_HOURS = 72;
 export const REGULAR_REBOOKING_HOURS = 3;
 export const MONTHS_TO_DELETE_CLASSES = 13;
+
+export const maskedHeadLetters = "Masked";
+export const maskedSuffix = randomUUID().split("-")[0]; // Generate a short random string
 
 // Standardize salt rounds for hashing passwords
 const saltRounds = 12;

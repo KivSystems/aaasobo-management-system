@@ -258,10 +258,13 @@
 .deleteAdmin,
 .deleteChild,
 .deleteEvent,
+.deletePlan,
+.cancelEditingAdmin,
 .cancelEditingChild,
 .cancelEditingInstructor,
 .cancelEditingCustomer,
-.cancelEditingEvent {
+.cancelEditingEven,
+.cancelEditingPlan {
   background-color: #d9d9d9;
   transition:
     background-color 0.3s ease,
@@ -292,10 +295,13 @@
 .editInstructor,
 .editCustomer,
 .editEvent,
+.editPlan,
+.saveAdmin,
 .saveChild,
 .saveInstructor,
 .saveCustomer,
-.saveEvent {
+.saveEvent,
+.savePlan {
   background-color: $green-success;
   transition:
     background-color 0.3s ease,

@@ -7,6 +7,7 @@ import {
   updateAdminProfileController,
   updateInstructorProfileController,
   updateEventProfileController,
+  updatePlanController,
   deleteAdminController,
   deleteEventController,
   getAdminController,
@@ -15,6 +16,7 @@ import {
   getAllCustomersController,
   getAllChildrenController,
   getAllPlansController,
+  getAllSubscriptionsController,
   getAllEventsController,
   getClassesWithinPeriodController,
 } from "../../src/controllers/adminsController";
@@ -70,6 +72,11 @@ adminsRouter.post(
   verifyAuthentication,
   registerPlanController,
 );
+adminsRouter.patch(
+  "/plan-list/update/:id",
+  verifyAuthentication,
+  updatePlanController,
+);
 adminsRouter.post(
   "/event-list/register",
   verifyAuthentication,
@@ -96,6 +103,7 @@ adminsRouter.get("/instructor-list", getAllInstructorsController);
 adminsRouter.get("/customer-list", getAllCustomersController);
 adminsRouter.get("/child-list", getAllChildrenController);
 adminsRouter.get("/plan-list", getAllPlansController);
+adminsRouter.get("/subscription-list", getAllSubscriptionsController);
 adminsRouter.get("/event-list", getAllEventsController);
 adminsRouter.get("/class-list", getClassesWithinPeriodController);
 adminsRouter.get("/business-schedule", getAllSchedulesController);

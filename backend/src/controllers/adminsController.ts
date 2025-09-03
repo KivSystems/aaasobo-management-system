@@ -20,13 +20,19 @@ import {
 import { getClassesWithinPeriod } from "../services/classesService";
 import { getAllCustomers } from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
-import { getAllPlans, registerPlan } from "../services/plansService";
+import {
+  getAllPlans,
+  registerPlan,
+  updatePlan,
+  deletePlan,
+} from "../services/plansService";
 import {
   getAllEvents,
   registerEvent,
   updateEvent,
   deleteEvent,
 } from "../services/eventsService";
+import { getAllSubscriptions } from "../services/subscriptionsService";
 import { convertToISOString } from "../helper/dateUtils";
 
 // Register Admin
@@ -173,7 +179,7 @@ export const getAdminController = async (req: Request, res: Response) => {
   }
 };
 
-// Admin dashboard for displaying admins' information
+// Displaying admins' information for admin dashboard
 export const getAllAdminsController = async (_: Request, res: Response) => {
   try {
     // Fetch the admin data using the email.
@@ -197,7 +203,7 @@ export const getAllAdminsController = async (_: Request, res: Response) => {
   }
 };
 
-// Admin dashboard for displaying customers' information
+// Displaying customers' information for admin dashboard
 export const getAllCustomersController = async (_: Request, res: Response) => {
   try {
     // Fetch all customers data using the email.
@@ -222,7 +228,7 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
   }
 };
 
-// Admin dashboard for displaying instructors' information
+// Displaying instructors' information for admin dashboard
 export const getAllInstructorsController = async (
   _: Request,
   res: Response,
@@ -478,7 +484,7 @@ export const updateInstructorProfileController = async (
   }
 };
 
-// Admin dashboard for displaying children's information
+// Displaying children's information for admin dashboard
 export const getAllChildrenController = async (_: Request, res: Response) => {
   try {
     // Fetch all children data using the email.
@@ -505,7 +511,61 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
   }
 };
 
-// Admin dashboard for displaying all plans' information
+// Displaying all plans' information for admin dashboard
+export const getAllSubscriptionsController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    // Fetch all subscriptions data
+    const subscriptions = await getAllSubscriptions();
+
+    // Transform the data structure
+    const data = subscriptions.reduce((acc, subscription) => {
+      const { plan, customer, endAt } = subscription;
+      const { id: customerId, name: customerName } = customer;
+      const { name: planName, terminationAt: planTerminationAt } = plan;
+
+      let comment = "";
+      const now = new Date();
+
+      // Skip if the plan has been deleted
+      if (!plan) {
+        return acc;
+      }
+
+      // Skip if the subscription has ended
+      if (endAt && endAt < now) {
+        return acc;
+      }
+
+      // Skip if the plan has ended before the subscription
+      if (planTerminationAt) {
+        if (endAt && endAt < planTerminationAt) {
+          return acc;
+        } else {
+          comment = "Delete this subscription (plan no longer exists)";
+        }
+      }
+
+      acc.push({
+        No: acc.length + 1,
+        ID: customerId,
+        Customer: customerName,
+        "Subscription Plan": planName,
+        Note: comment,
+      });
+
+      return acc;
+    }, [] as any[]);
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Displaying all plans' information for admin dashboard
 export const getAllPlansController = async (_: Request, res: Response) => {
   try {
     // Fetch all plans data.
@@ -538,20 +598,7 @@ export const registerPlanController = async (req: Request, res: Response) => {
     return res.sendStatus(400);
   }
 
-  // Normalize the plan name
-  const normalizedPlanName = name.toLowerCase().replace(/\s/g, "");
-
   try {
-    // Check if the plan with the same name already exists
-    const existingPlans = await getAllPlans();
-    const planExists = existingPlans.some(
-      (plan) =>
-        plan.name.toLowerCase().replace(/\s/g, "") === normalizedPlanName,
-    );
-    if (planExists) {
-      return res.sendStatus(409);
-    }
-
     await registerPlan({
       name,
       weeklyClassTimes,
@@ -565,7 +612,37 @@ export const registerPlanController = async (req: Request, res: Response) => {
   }
 };
 
-// Admin dashboard for displaying all events' information
+// Update the applicable plan data
+export const updatePlanController = async (req: Request, res: Response) => {
+  const planId = parseInt(req.params.id);
+  const { name, description, isDelete } = req.body;
+
+  try {
+    // If the plan is marked for deletion, proceed with deletion process
+    if (isDelete) {
+      const deletedPlan = await deletePlan(planId);
+      return res
+        .status(200)
+        .json({ message: "Plan deleted successfully", plan: deletedPlan });
+    }
+
+    // Validate the input
+    if (!name) {
+      return res.sendStatus(400);
+    }
+
+    const updatedPlan = await updatePlan(planId, name, description);
+
+    res.status(200).json({
+      message: "Plan is updated successfully",
+      plan: updatedPlan,
+    });
+  } catch (error) {
+    res.status(500).json({ error: `${error}` });
+  }
+};
+
+// Displaying all events' information for admin dashboard
 export const getAllEventsController = async (_: Request, res: Response) => {
   try {
     // Fetch all events data.
