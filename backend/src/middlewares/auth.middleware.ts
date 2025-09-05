@@ -7,19 +7,31 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-// Verify user authentication using JWT (signed only, no encryption)
+// Verify user authentication using JWT
 export async function verifyAuthentication(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction,
 ) {
-  const secret = process.env.AUTH_SECRET!;
-  const salt = process.env.AUTH_SALT!;
+  // Load secret and salt from environment variables
+  const secret = process.env.AUTH_SECRET;
+  const salt = process.env.AUTH_SALT;
+
+  // Check if the required environment variables are set
+  if (!secret || !salt) {
+    console.error(
+      "Missing required environment variables: AUTH_SECRET or AUTH_SALT",
+    );
+    return res.status(500).json({ message: "Server configuration error" });
+  }
+
+  // Extract the JWT token from cookies
   const token = req.headers.cookie
     ?.split("; ")
     .find((cookie) => cookie.startsWith(`${salt}=`))
     ?.split("=")[1];
 
+  // If no token is found, return 401 Unauthorized
   if (!token) {
     return res.status(401).json({ message: "No session token found" });
   }
@@ -32,6 +44,16 @@ export async function verifyAuthentication(
       new TextEncoder().encode(secret),
     );
 
+    // Check if the payload contains the required fields
+    if (
+      !payload.id ||
+      !payload.userType ||
+      typeof payload.id !== "string" ||
+      typeof payload.userType !== "string"
+    ) {
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
+
     // Attach user info to the request
     req.user = {
       id: payload.id as string,
@@ -39,6 +61,7 @@ export async function verifyAuthentication(
     };
 
     // TODO: Add validation check if the operation is allowed for the applicable userType and id
+    // The following console log is for debugging purposes only and should be removed in production
     console.log(
       `Authenticated user ID: ${req.user.id}, Type: ${req.user.userType}`,
     );
