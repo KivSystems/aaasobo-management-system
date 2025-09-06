@@ -1,5 +1,6 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import bcrypt from "bcrypt";
+import { ValidatedRequest } from "../middlewares/validationMiddleware";
 import {
   getAdminByEmail,
   updateAdminPassword,
@@ -28,6 +29,12 @@ import {
 } from "../services/passwordResetTokensService";
 import { hashPassword } from "../helper/commonUtils";
 import { Customer } from "@prisma/client";
+import {
+  AuthenticateRequest,
+  SendPasswordResetRequest,
+  VerifyResetTokenRequest,
+  UpdatePasswordRequest,
+} from "../schemas/usersSchema";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   switch (userType) {
@@ -41,14 +48,10 @@ const getUserByEmail = async (userType: UserType, email: string) => {
 };
 
 export const authenticateUserController = async (
-  req: Request,
+  req: ValidatedRequest<AuthenticateRequest>,
   res: Response,
 ) => {
   const { email, password, userType } = req.body;
-
-  if (!email || !password || !userType) {
-    return res.sendStatus(400);
-  }
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
@@ -103,14 +106,10 @@ export const authenticateUserController = async (
 };
 
 export const sendUserResetEmailController = async (
-  req: Request,
+  req: ValidatedRequest<SendPasswordResetRequest>,
   res: Response,
 ) => {
   const { email, userType } = req.body;
-
-  if (!email || !userType) {
-    return res.sendStatus(400);
-  }
 
   const normalizedEmail = email.trim().toLowerCase();
 
@@ -149,12 +148,11 @@ export const sendUserResetEmailController = async (
   }
 };
 
-export const updatePasswordController = async (req: Request, res: Response) => {
+export const updatePasswordController = async (
+  req: ValidatedRequest<UpdatePasswordRequest>,
+  res: Response,
+) => {
   const { token, userType, password } = req.body;
-
-  if (!token || !userType || !password) {
-    return res.sendStatus(400);
-  }
 
   try {
     const existingToken = await getPasswordResetTokenByToken(token);
@@ -202,14 +200,10 @@ export const updatePasswordController = async (req: Request, res: Response) => {
 };
 
 export const verifyResetTokenController = async (
-  req: Request,
+  req: ValidatedRequest<VerifyResetTokenRequest>,
   res: Response,
 ) => {
   const { token, userType } = req.body;
-
-  if (!token || !userType) {
-    return res.sendStatus(400);
-  }
 
   try {
     const existingToken = await getPasswordResetTokenByToken(token);

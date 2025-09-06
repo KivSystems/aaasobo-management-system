@@ -1,0 +1,118 @@
+import {
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler,
+  Router,
+} from "express";
+import { z } from "zod";
+import { RouteConfig } from "../openapi/routerRegistry";
+
+// Type for validated request with properly typed body
+export interface ValidatedRequest<T> extends Request {
+  body: T;
+}
+
+const validateRequest = (schema: z.ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const validatedData = schema.parse(req.body);
+      req.body = validatedData;
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          error: "Validation failed",
+          details: error.issues,
+        });
+      }
+      return res.status(500).json({
+        error: "Internal server error during validation",
+      });
+    }
+  };
+};
+
+/**
+ * Response validation middleware that validates outgoing JSON responses
+ * Only runs in development environments to avoid production overhead
+ */
+const validateResponse = (
+  responseSchemas: Record<
+    string,
+    { description: string; schema?: z.ZodSchema }
+  >,
+) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (process.env.NODE_ENV !== "development") {
+      return next();
+    }
+
+    const originalJson = res.json;
+
+    // Override json method to validate response
+    res.json = function (body: any) {
+      const statusCode = res.statusCode.toString();
+      const responseConfig = responseSchemas[statusCode];
+
+      // If we have a schema for this status code, validate the response
+      if (responseConfig?.schema) {
+        try {
+          responseConfig.schema.parse(body);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              `Response validation failed for ${req.method} ${req.path} (${statusCode}):`,
+              {
+                body,
+                errors: error.issues,
+                expectedSchema: responseConfig.description,
+              },
+            );
+
+            // Return a 500 error instead of the invalid response
+            res.status(500);
+            return originalJson.call(this, {
+              error: "Internal server error - response validation failed",
+              details: {
+                message: `Response does not match schema for status ${statusCode}`,
+                validationErrors: error.issues,
+                expectedSchema: responseConfig.description,
+              },
+            });
+          }
+        }
+      }
+
+      // Call original json method
+      return originalJson.call(this, body);
+    };
+
+    next();
+  };
+};
+
+/**
+ * Register route configs to an Express router with validation middleware
+ */
+export const registerRoutes = (
+  router: Router,
+  routeConfigs: Record<string, RouteConfig>,
+) => {
+  Object.entries(routeConfigs).forEach(([path, config]) => {
+    const middlewares = [];
+
+    // Add request validation middleware if schema exists
+    if (config.requestSchema) {
+      middlewares.push(validateRequest(config.requestSchema));
+    }
+
+    // Add response validation middleware
+    middlewares.push(validateResponse(config.openapi.responses));
+
+    // Add the handler
+    middlewares.push(config.handler);
+
+    router[config.method](path, ...middlewares);
+  });
+};

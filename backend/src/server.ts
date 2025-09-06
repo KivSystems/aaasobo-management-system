@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
 import "dotenv/config";
 import { instructorsRouter } from "./routes/instructorsRouter";
 import { classesRouter } from "./routes/classesRouter";
@@ -12,8 +13,10 @@ import { plansRouter } from "./routes/plansRouter";
 import { eventsRouter } from "./routes/eventsRouter";
 import { subscriptionsRouter } from "./routes/subscriptionsRouter";
 import { indexRouter } from "./routes/indexRouter";
-import { usersRouter } from "./routes/usersRouter";
+import { usersRouter, usersRouterConfig } from "./routes/usersRouter";
 import { jobsRouter } from "./routes/jobsRouter";
+import { globalRegistry, createOpenApiSpec } from "./openapi/spec";
+import { registerRoutesFromConfig } from "./openapi/routerRegistry";
 
 export const server = express();
 
@@ -48,3 +51,15 @@ server.use("/events", eventsRouter);
 server.use("/subscriptions", subscriptionsRouter);
 server.use("/users", usersRouter);
 server.use("/jobs", jobsRouter);
+
+// OpenAPI Documentation (only in development)
+if (process.env.NODE_ENV === "development") {
+  registerRoutesFromConfig(globalRegistry, "/users", usersRouterConfig);
+
+  const openApiSpec = createOpenApiSpec();
+  server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
+  server.get("/api-docs.json", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.send(openApiSpec);
+  });
+}
