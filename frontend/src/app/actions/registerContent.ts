@@ -36,7 +36,7 @@ export async function registerContent(
           description,
         });
         if (!parsedForm.success) {
-          const validationErrors = parsedForm.error.errors;
+          const validationErrors = parsedForm.error.issues;
           return extractRegisterValidationErrors(validationErrors);
         }
 
@@ -59,7 +59,7 @@ export async function registerContent(
           color,
         });
         if (!parsedForm.success) {
-          const validationErrors = parsedForm.error.errors;
+          const validationErrors = parsedForm.error.issues;
           return extractRegisterValidationErrors(validationErrors);
         }
 

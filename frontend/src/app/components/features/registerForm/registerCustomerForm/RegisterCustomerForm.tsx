@@ -51,7 +51,7 @@ const RegisterCustomerForm = ({
     });
 
     if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
+      const validationErrors = parsedForm.error.issues;
       const errors = extractRegisterValidationErrors(
         validationErrors,
         language,

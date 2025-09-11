@@ -41,9 +41,7 @@ export const createCustomerRegisterSchema = (language: LanguageType) => {
       passwordStrength: z.number(),
       prefecture: z.string().min(1, PREFECTURE_REQUIRED_MESSAGE[language]),
       isAgreed: z.literal(true, {
-        errorMap: () => ({
-          message: PRIVACY_POLICY_AGREEMENT_MESSAGE[language],
-        }),
+        message: PRIVACY_POLICY_AGREEMENT_MESSAGE[language],
       }),
     })
     .refine((data) => data.passwordStrength >= 3, {
@@ -171,8 +169,7 @@ export const planUpdateSchema = z.object({
 export const scheduleUpdateSchema = z.object({
   eventId: z
     .number({
-      required_error: "Event ID must be a number.",
-      invalid_type_error: "Please select one event.",
+      message: "Please select one event.",
     })
     .min(0, "Event ID is required."),
 });

@@ -252,7 +252,8 @@ type LinkType = {
   icon: FC<SVGProps<SVGSVGElement>>;
 };
 
-type UserType = "admin" | "customer" | "instructor";
+// UserType imported directly from shared schemas
+type UserType = import("@shared/schemas/common").UserType;
 
 type CategoryType = "event" | "plan" | "schedule" | "subscription";
 

@@ -24,7 +24,7 @@ export async function authenticate(
     });
 
     if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
+      const validationErrors = parsedForm.error.issues;
       return extractLoginValidationErrors(validationErrors, language);
     }
 

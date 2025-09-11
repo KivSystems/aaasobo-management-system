@@ -6,7 +6,7 @@
     "format": "npx prettier --write . && npx prisma format",
     "format-check": "npx prettier --check .",
     "db:start": "docker run --name summer-postgres -p 5432:5432 -e POSTGRES_PASSWORD=summer -d postgres",
-    "dev": "nodemon --exec ts-node ./api/app.ts",
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register ./api/app.ts",
     "prisma:init": "npx prisma migrate reset && npx ts-node ./src/seed/dummy.ts",
     "test": "vitest run",
     "build": "prisma generate && prisma migrate reset --force && echo 'Start executing dummy.ts' && ts-node ./src/seed/dummy.ts && echo 'Finish executing dummy.ts'"
@@ -35,7 +35,10 @@
     "prisma": "^5.19.1",
     "supertest": "^7.1.3",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.5",
+    "vite": "^7.1.5",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4",
     "vitest-mock-extended": "^3.1.0"
   },

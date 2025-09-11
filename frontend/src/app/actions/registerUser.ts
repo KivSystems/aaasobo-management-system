@@ -66,7 +66,7 @@ export async function registerUser(
           userType,
         });
         if (!parsedForm1.success) {
-          const validationErrors = parsedForm1.error.errors;
+          const validationErrors = parsedForm1.error.issues;
           return extractRegisterValidationErrors(validationErrors);
         }
 
@@ -93,7 +93,7 @@ export async function registerUser(
             icon,
           });
           if (!parsedForm2.success) {
-            validationErrors = parsedForm2.error.errors;
+            validationErrors = parsedForm2.error.issues;
             return extractRegisterValidationErrors(validationErrors);
           }
 
@@ -117,7 +117,7 @@ export async function registerUser(
           userType,
         });
         if (!parsedForm.success) {
-          const validationErrors = parsedForm.error.errors;
+          const validationErrors = parsedForm.error.issues;
           return extractRegisterValidationErrors(validationErrors);
         }
 
