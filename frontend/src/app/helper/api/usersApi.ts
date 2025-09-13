@@ -12,6 +12,13 @@ import {
   TOKEN_OR_USER_NOT_FOUND_ERROR,
   UNEXPECTED_ERROR_MESSAGE,
 } from "../messages/formValidation";
+import type {
+  AuthenticateRequest,
+  AuthenticateResponse,
+  SendPasswordResetRequest,
+  VerifyResetTokenRequest,
+  UpdatePasswordRequest,
+} from "@shared/schemas/users";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -24,7 +31,11 @@ export const authenticateUser = async (
 ): Promise<{ userId: number } | { errorMessage: string }> => {
   const apiUrl = `${BACKEND_ORIGIN}/users/authenticate`;
   const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({ email, password, userType });
+  const body = JSON.stringify({
+    email,
+    password,
+    userType,
+  } as AuthenticateRequest);
 
   const statusErrorMessages: Record<number, string> = {
     401: LOGIN_FAILED_MESSAGE[language],
@@ -48,7 +59,7 @@ export const authenticateUser = async (
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data: AuthenticateResponse = await response.json();
     return { userId: data.id };
   } catch (error) {
     console.error("API error while authenticating[logging in] user:", error);
@@ -68,7 +79,7 @@ export const sendUserResetEmail = async (
     const response = await fetch(apiURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, userType }),
+      body: JSON.stringify({ email, userType } as SendPasswordResetRequest),
     });
     const statusErrorMessages: Record<number, string> = {
       404: EMAIL_NOT_REGISTERED_MESSAGE[language],
@@ -107,7 +118,11 @@ export const updateUserPassword = async (
     const response = await fetch(apiURL, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Cookie: cookie },
-      body: JSON.stringify({ token, userType, password }),
+      body: JSON.stringify({
+        token,
+        userType,
+        password,
+      } as UpdatePasswordRequest),
     });
 
     if (response.status === 410) {
@@ -144,7 +159,7 @@ export const verifyResetToken = async (
     const response = await fetch(apiURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, userType }),
+      body: JSON.stringify({ token, userType } as VerifyResetTokenRequest),
     });
 
     if (response.status === 404) {

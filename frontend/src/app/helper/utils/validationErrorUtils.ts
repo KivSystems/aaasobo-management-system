@@ -26,7 +26,7 @@ export function extractRegisterValidationErrors(
   const errors: Record<string, string> = {};
   validationErrors.forEach((err) => {
     if (err.path[0]) {
-      errors[err.path[0]] = err.message;
+      errors[String(err.path[0])] = err.message;
     }
   });
   return errors;
@@ -46,7 +46,7 @@ export function extractUpdateValidationErrors(
   const errors: Record<string, string> = {};
   validationErrors.forEach((err) => {
     if (err.path[0]) {
-      errors[err.path[0]] = err.message;
+      errors[String(err.path[0])] = err.message;
     }
   });
   return errors;
@@ -134,7 +134,7 @@ export function extractProfileUpdateErrors(
     if (err.path[0]) {
       const [messageJa, messageEn] = err.message.split(" / ");
       const errorMessage = { ja: messageJa, en: messageEn };
-      errors[err.path[0]] = errorMessage;
+      errors[String(err.path[0])] = errorMessage;
     }
   });
   return errors;

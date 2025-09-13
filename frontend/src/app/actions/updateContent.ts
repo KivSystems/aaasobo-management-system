@@ -42,7 +42,7 @@ export async function updateEventAction(
     });
 
     if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
+      const validationErrors = parsedForm.error.issues;
       return extractUpdateValidationErrors(validationErrors);
     }
 
@@ -101,7 +101,7 @@ export async function updatePlanAction(
       });
 
       if (!parsedForm.success) {
-        const validationErrors = parsedForm.error.errors;
+        const validationErrors = parsedForm.error.issues;
         return extractUpdateValidationErrors(validationErrors);
       }
 
@@ -146,7 +146,7 @@ export async function updateScheduleAction(
     });
 
     if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
+      const validationErrors = parsedForm.error.issues;
       return extractUpdateValidationErrors(validationErrors);
     }
 

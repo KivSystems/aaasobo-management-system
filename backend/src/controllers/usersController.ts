@@ -34,7 +34,7 @@ import {
   SendPasswordResetRequest,
   VerifyResetTokenRequest,
   UpdatePasswordRequest,
-} from "../schemas/usersSchema";
+} from "@shared/schemas/users";
 
 const getUserByEmail = async (userType: UserType, email: string) => {
   switch (userType) {

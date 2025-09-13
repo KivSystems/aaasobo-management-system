@@ -43,7 +43,7 @@ export async function updateAdminAction(
     });
 
     if (!parsedForm.success) {
-      const validationErrors = parsedForm.error.errors;
+      const validationErrors = parsedForm.error.issues;
       return extractUpdateValidationErrors(validationErrors);
     }
 
@@ -113,7 +113,7 @@ export async function updateInstructorAction(
     });
 
     if (!parsedForm1.success) {
-      validationErrors = parsedForm1.error.errors;
+      validationErrors = parsedForm1.error.issues;
       return extractUpdateValidationErrors(validationErrors);
     }
 
@@ -144,7 +144,7 @@ export async function updateInstructorAction(
       });
 
       if (!parsedForm2.success) {
-        validationErrors = parsedForm2.error.errors;
+        validationErrors = parsedForm2.error.issues;
         return extractUpdateValidationErrors(validationErrors);
       }
 
@@ -216,7 +216,7 @@ export async function updateCustomerProfileAction(
   });
 
   if (!parsedForm.success) {
-    const validationErrors = parsedForm.error.errors;
+    const validationErrors = parsedForm.error.issues;
     return extractProfileUpdateErrors(validationErrors);
   }
 
@@ -266,7 +266,7 @@ export async function updateChildProfileAction(
   });
 
   if (!parsedForm.success) {
-    const validationErrors = parsedForm.error.errors;
+    const validationErrors = parsedForm.error.issues;
     return extractProfileUpdateErrors(validationErrors);
   }
 
@@ -317,7 +317,7 @@ export async function addChildProfileAction(
   });
 
   if (!parsedForm.success) {
-    const validationErrors = parsedForm.error.errors;
+    const validationErrors = parsedForm.error.issues;
     return extractProfileUpdateErrors(validationErrors);
   }
 
