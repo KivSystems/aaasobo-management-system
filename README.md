@@ -2,6 +2,17 @@
 
 ## Setup
 
+### shared
+
+The `/shared` directory contains Zod schemas used between frontend and backend.
+
+#### Install Packages
+
+```sh
+cd shared
+npm install
+```
+
 ### backend
 
 #### Install Packages
