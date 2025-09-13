@@ -84,7 +84,7 @@ function RegularClassCard({
           <span className={styles.text}>
             <strong>{CLASS_URL_LABEL[language]}:</strong>{" "}
             <a
-              href={recurringClass.instructor?.classURL}
+              href={recurringClass.instructor?.classURL || undefined}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.link}

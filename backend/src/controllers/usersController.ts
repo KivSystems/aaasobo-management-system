@@ -1,6 +1,6 @@
 import { Response } from "express";
 import bcrypt from "bcrypt";
-import { ValidatedRequest } from "../middlewares/validationMiddleware";
+import { RequestWithBody } from "../middlewares/validationMiddleware";
 import {
   getAdminByEmail,
   updateAdminPassword,
@@ -48,7 +48,7 @@ const getUserByEmail = async (userType: UserType, email: string) => {
 };
 
 export const authenticateUserController = async (
-  req: ValidatedRequest<AuthenticateRequest>,
+  req: RequestWithBody<AuthenticateRequest>,
   res: Response,
 ) => {
   const { email, password, userType } = req.body;
@@ -106,7 +106,7 @@ export const authenticateUserController = async (
 };
 
 export const sendUserResetEmailController = async (
-  req: ValidatedRequest<SendPasswordResetRequest>,
+  req: RequestWithBody<SendPasswordResetRequest>,
   res: Response,
 ) => {
   const { email, userType } = req.body;
@@ -149,7 +149,7 @@ export const sendUserResetEmailController = async (
 };
 
 export const updatePasswordController = async (
-  req: ValidatedRequest<UpdatePasswordRequest>,
+  req: RequestWithBody<UpdatePasswordRequest>,
   res: Response,
 ) => {
   const { token, userType, password } = req.body;
@@ -200,7 +200,7 @@ export const updatePasswordController = async (
 };
 
 export const verifyResetTokenController = async (
-  req: ValidatedRequest<VerifyResetTokenRequest>,
+  req: RequestWithBody<VerifyResetTokenRequest>,
   res: Response,
 ) => {
   const { token, userType } = req.body;

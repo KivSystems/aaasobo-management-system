@@ -5,10 +5,10 @@ import {
   getInstructorSchedules,
   getInstructorScheduleById,
   createInstructorSchedule,
-  InstructorSchedule as Schedule,
   InstructorScheduleWithSlots,
   InstructorSlot,
 } from "@/app/helper/api/instructorsApi";
+import type { InstructorSchedule as Schedule } from "@shared/schemas/instructors";
 import ScheduleCalendar from "./ScheduleCalendar";
 import AddScheduleModal from "./AddScheduleModal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";

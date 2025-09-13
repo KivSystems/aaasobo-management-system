@@ -3,12 +3,21 @@ import {
   ResponseConfig,
 } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
-import { RequestHandler } from "express";
+import { RequestHandler, Request, Response, NextFunction } from "express";
+
+export type RouteHandler = (
+  req: any,
+  res: Response,
+  next?: NextFunction,
+) => any;
 
 export type RouteConfig = {
   method: "get" | "post" | "put" | "patch" | "delete";
   requestSchema?: z.ZodSchema;
-  handler: RequestHandler;
+  paramsSchema?: z.ZodSchema;
+  querySchema?: z.ZodSchema;
+  handler: RouteHandler;
+  middleware?: RequestHandler[];
   openapi: {
     summary: string;
     description: string;

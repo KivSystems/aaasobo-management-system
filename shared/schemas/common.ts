@@ -12,3 +12,8 @@ export type UserType = z.infer<typeof UserType>;
 export const ErrorResponse = z.object({
   error: z.string().describe("Error message"),
 });
+
+// Error response with message field (used in instructors and other newer endpoints)
+export const MessageErrorResponse = z.object({
+  message: z.string().describe("Error message"),
+});

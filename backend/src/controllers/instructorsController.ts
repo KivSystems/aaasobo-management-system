@@ -1,4 +1,10 @@
 import { Request, Response } from "express";
+import { RequestWithParams } from "../middlewares/validationMiddleware";
+import {
+  InstructorIdParams,
+  ClassIdParams,
+  InstructorClassParams,
+} from "@shared/schemas/instructors";
 import { validateUserImageUrl } from "../helper/commonUtils";
 import {
   getInstructorById,
@@ -24,16 +30,11 @@ function setErrorResponse(res: Response, error: unknown) {
 
 // Fetch instructor id by class id
 export const getInstructorIdByClassIdController = async (
-  req: Request,
+  req: RequestWithParams<ClassIdParams>,
   res: Response,
 ) => {
-  const id = Number(req.params.id);
-  if (isNaN(id)) {
-    return res.status(400).json({ error: "Invalid class ID." });
-  }
-
   try {
-    const classInfo = await getClassByClassId(id);
+    const classInfo = await getClassByClassId(req.params.id);
 
     if (!classInfo) {
       return res.status(404).json({ error: "Applicable class not found." });
@@ -48,13 +49,12 @@ export const getInstructorIdByClassIdController = async (
   }
 };
 
-export const getInstructor = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    return res.status(400).json({ message: "Invalid ID provided." });
-  }
+export const getInstructor = async (
+  req: RequestWithParams<InstructorIdParams>,
+  res: Response,
+) => {
   try {
-    const instructor = await getInstructorById(id);
+    const instructor = await getInstructorById(req.params.id);
     if (!instructor) {
       return res.status(404).json({ message: "Instructor not found." });
     }
@@ -75,7 +75,7 @@ export const getInstructor = async (req: Request, res: Response) => {
         nickname: instructor.nickname,
         email: instructor.email,
         icon: blob,
-        birthdate: instructor.birthdate,
+        birthdate: instructor.birthdate?.toISOString() || null,
         lifeHistory: instructor.lifeHistory,
         favoriteFood: instructor.favoriteFood,
         hobby: instructor.hobby,
@@ -86,7 +86,7 @@ export const getInstructor = async (req: Request, res: Response) => {
         meetingId: instructor.meetingId,
         passcode: instructor.passcode,
         introductionURL: instructor.introductionURL,
-        terminationAt: terminationAt,
+        terminationAt: terminationAt?.toISOString() || null,
       },
     });
   } catch (error) {
@@ -122,15 +122,15 @@ export const getAllInstructorProfilesController = async (
           name: instructor.name,
           icon: blob,
           nickname: instructor.nickname,
-          birthdate: instructor.birthdate,
+          birthdate: instructor.birthdate?.toISOString() || null,
           lifeHistory: instructor.lifeHistory,
           favoriteFood: instructor.favoriteFood,
           hobby: instructor.hobby,
           messageForChildren: instructor.messageForChildren,
           workingTime: instructor.workingTime,
           skill: instructor.skill,
-          createdAt: instructor.createdAt,
-          terminationAt: terminationAt,
+          createdAt: instructor.createdAt.toISOString(),
+          terminationAt: terminationAt?.toISOString() || null,
         };
       }),
     );
@@ -142,10 +142,10 @@ export const getAllInstructorProfilesController = async (
 };
 
 export const getInstructorProfileController = async (
-  req: RequestWithId,
+  req: RequestWithParams<InstructorIdParams>,
   res: Response,
 ) => {
-  const instructorId = req.id;
+  const instructorId = req.params.id;
 
   try {
     const profile = await getInstructorProfile(instructorId);
@@ -168,19 +168,17 @@ export const getInstructorProfileController = async (
 };
 
 export const getCalendarClassesController = async (
-  req: RequestWithId,
+  req: RequestWithParams<InstructorIdParams>,
   res: Response,
 ) => {
-  const instructorId = req.id;
-
   try {
-    const classes = await getCalendarClasses(instructorId);
+    const classes = await getCalendarClasses(req.params.id);
     res.status(200).json(classes);
   } catch (error) {
     console.error("Error getting instructor calendar classes", {
       error,
       context: {
-        ID: instructorId,
+        instructorId: req.params.id,
         time: new Date().toISOString(),
       },
     });
@@ -211,24 +209,18 @@ export const getInstructorProfilesController = async (
 };
 
 export const getSameDateClassesController = async (
-  req: RequestWithId,
+  req: RequestWithParams<InstructorClassParams>,
   res: Response,
 ) => {
-  const instructorId = req.id;
-  const classId = req.classId;
-
-  if (classId === undefined) {
-    return res.sendStatus(400);
-  }
-
   try {
-    const classes = await getSameDateClasses(instructorId, classId);
+    const classes = await getSameDateClasses(req.params.id, req.params.classId);
     res.status(200).json(classes);
   } catch (error) {
     console.error("Error getting same-date classes for instructor", {
       error,
       context: {
-        ID: instructorId,
+        instructorId: req.params.id,
+        classId: req.params.classId,
         time: new Date().toISOString(),
       },
     });

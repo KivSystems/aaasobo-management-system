@@ -14,6 +14,7 @@ import { eventsRouter } from "./routes/eventsRouter";
 import { subscriptionsRouter } from "./routes/subscriptionsRouter";
 import { indexRouter } from "./routes/indexRouter";
 import { usersRouter, usersRouterConfig } from "./routes/usersRouter";
+import { instructorsRouterConfig } from "./routes/instructorsRouter";
 import { jobsRouter } from "./routes/jobsRouter";
 import { globalRegistry, createOpenApiSpec } from "./openapi/spec";
 import { registerRoutesFromConfig } from "./openapi/routerRegistry";
@@ -55,6 +56,11 @@ server.use("/jobs", jobsRouter);
 // OpenAPI Documentation (only in development)
 if (process.env.NODE_ENV === "development") {
   registerRoutesFromConfig(globalRegistry, "/users", usersRouterConfig);
+  registerRoutesFromConfig(
+    globalRegistry,
+    "/instructors",
+    instructorsRouterConfig,
+  );
 
   const openApiSpec = createOpenApiSpec();
   server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
