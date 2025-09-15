@@ -1,11 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { webcrypto } from "node:crypto";
-import hkdf from "@panva/hkdf";
-
-if (!globalThis.crypto) {
-  // @ts-ignore
-  globalThis.crypto = webcrypto;
-}
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -14,53 +7,68 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-async function getDerivedEncryptionKey(secret: string, salt: string) {
-  return await hkdf(
-    "sha256",
-    secret,
-    salt,
-    `NextAuth.js Generated Encryption Key (${salt})`,
-    64,
-  );
-}
-
-// Verify user authentication
+// Verify user authentication using JWT
 export async function verifyAuthentication(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction,
 ) {
-  const { compactDecrypt } = await import("jose");
+  // Load secret and salt from environment variables
+  const secret = process.env.AUTH_SECRET;
+  const salt = process.env.AUTH_SALT;
 
-  // TODO: Use the AUTH_SECRET from environment variables
-  // const secret = process.env.AUTH_SECRET!;
-  const salt = process.env.AUTH_SALT!;
+  // Check if the required environment variables are set
+  if (!secret || !salt) {
+    console.error(
+      "Missing required environment variables: AUTH_SECRET or AUTH_SALT",
+    );
+    return res.status(500).json({ message: "Server configuration error" });
+  }
 
+  // Extract the JWT token from cookies
   const token = req.headers.cookie
     ?.split("; ")
     .find((cookie) => cookie.startsWith(`${salt}=`))
     ?.split("=")[1];
 
+  // If no token is found, return 401 Unauthorized
   if (!token) {
     return res.status(401).json({ message: "No session token found" });
   }
 
   try {
-    // TODO: Decrypt the token using the secret and salt.
-    // REFERENCE: https://medium.com/@g-mayer/fixing-jwt-decryption-issues-with-auth-js-v5-in-a-fastify-api-9b5ad4869be0
-    // const encryptionKey = await getDerivedEncryptionKey(secret, salt);
-    // const { plaintext } = await compactDecrypt(token, encryptionKey);
-    // const decodedPayload = JSON.parse(new TextDecoder().decode(plaintext));
-    // req.user = {
-    //   id: decodedPayload.id as string,
-    //   userType: decodedPayload.userType as string,
-    // };
+    // Verify the JWT signature
+    const { jwtVerify } = await import("jose");
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(secret),
+    );
 
-    // NOTE: Until the above is implemented, authentication will be based on whether the specific token exists.
+    // Check if the payload contains the required fields
+    if (
+      !payload.id ||
+      !payload.userType ||
+      typeof payload.id !== "string" ||
+      typeof payload.userType !== "string"
+    ) {
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
+
+    // Attach user info to the request
+    req.user = {
+      id: payload.id as string,
+      userType: payload.userType as string,
+    };
+
+    // TODO: Add validation check if the operation is allowed for the applicable userType and id
+    // The following console log is for debugging purposes only and should be removed in production
+    console.log(
+      `Authenticated user ID: ${req.user.id}, Type: ${req.user.userType}`,
+    );
 
     next();
   } catch (error) {
-    console.error("JWT decryption failed:", error);
+    console.error("JWT verification failed:", error);
     return res.status(401).json({ message: "Invalid session token" });
   }
 }

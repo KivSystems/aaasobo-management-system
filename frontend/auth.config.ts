@@ -1,11 +1,37 @@
 import type { NextAuthConfig } from "next-auth";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { SignJWT, jwtVerify } from "jose";
 import { convertToSingular } from "./src/app/helper/utils/stringUtils";
 
 export const authConfig: NextAuthConfig = {
   pages: {
     signIn: "/",
+  },
+
+  secret: process.env.AUTH_SECRET,
+
+  session: {
+    strategy: "jwt",
+  },
+
+  jwt: {
+    encode: async ({ token, secret }) => {
+      if (!secret) throw new Error("Missing secret for JWT encoding");
+      const secretString = Array.isArray(secret) ? secret[0] : secret;
+      return new SignJWT(token)
+        .setProtectedHeader({ alg: "HS256" })
+        .setIssuedAt()
+        .setExpirationTime("24hrs")
+        .sign(new TextEncoder().encode(secretString));
+    },
+    decode: async ({ token, secret }) => {
+      if (!secret) throw new Error("Missing secret for JWT decoding");
+      const secretString = Array.isArray(secret) ? secret[0] : secret;
+      return jwtVerify(token!, new TextEncoder().encode(secretString)).then(
+        (res) => res.payload,
+      );
+    },
   },
 
   callbacks: {
