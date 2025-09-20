@@ -140,7 +140,6 @@ export const createTestInstructor = () => ({
   determinationAt: null,
 });
 
-
 /**
  * Convert JST datetime to UTC
  * @returns UTC ISO string

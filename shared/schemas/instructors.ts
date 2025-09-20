@@ -30,15 +30,15 @@ export const DetailedInstructorProfile = z.object({
   icon: z.object({
     url: z.string().describe("Validated instructor icon URL")
   }).describe("Instructor profile icon object"),
-  birthdate: z.string().datetime().nullable().describe("Instructor birthdate"),
+  birthdate: z.iso.datetime().nullable().describe("Instructor birthdate"),
   lifeHistory: z.string().nullable().describe("Instructor life history"),
   favoriteFood: z.string().nullable().describe("Instructor favorite food"),
   hobby: z.string().nullable().describe("Instructor hobby"),
   messageForChildren: z.string().nullable().describe("Message for children"),
   workingTime: z.string().nullable().describe("Working time information"),
   skill: z.string().nullable().describe("Instructor skills"),
-  createdAt: z.string().datetime().describe("Created timestamp"),
-  terminationAt: z.string().datetime().nullable().describe("Termination timestamp (ISO string)"),
+  createdAt: z.iso.datetime().describe("Created timestamp"),
+  terminationAt: z.iso.datetime().nullable().describe("Termination timestamp (ISO string)"),
 });
 
 export const AllInstructorProfilesResponse = z.object({
@@ -50,11 +50,11 @@ export const CompleteInstructor = z.object({
   id: z.number().int().positive().describe("Instructor ID"),
   name: z.string().min(1).describe("Instructor full name"),
   nickname: z.string().min(1).describe("Instructor nickname"),
-  email: z.string().email().describe("Instructor email address"),
+  email: z.email().describe("Instructor email address"),
   icon: z.object({
     url: z.string().describe("Validated instructor icon URL")
   }).describe("Instructor profile icon object"),
-  birthdate: z.string().datetime().nullable().describe("Instructor birthdate"),
+  birthdate: z.iso.datetime().nullable().describe("Instructor birthdate"),
   lifeHistory: z.string().nullable().describe("Instructor life history"),
   favoriteFood: z.string().nullable().describe("Instructor favorite food"),
   hobby: z.string().nullable().describe("Instructor hobby"),
@@ -77,15 +77,15 @@ export const SimpleInstructorProfile = z.object({
   id: z.number().int().positive().describe("Instructor ID"),
   name: z.string().min(1).describe("Instructor full name"),
   nickname: z.string().min(1).describe("Instructor nickname"),
-  createdAt: z.string().datetime().describe("Created timestamp"),
+  createdAt: z.iso.datetime().describe("Created timestamp"),
 }).describe("Simple instructor profile information");
 
 // Instructor schedule schema
 export const InstructorSchedule = z.object({
   id: z.number().int().positive().describe("Schedule ID"),
   instructorId: z.number().int().positive().describe("Instructor ID"),
-  effectiveFrom: z.string().datetime().describe("Effective from date"),
-  effectiveTo: z.string().datetime().nullable().describe("Effective to date"),
+  effectiveFrom: z.iso.datetime().describe("Effective from date"),
+  effectiveTo: z.iso.datetime().nullable().describe("Effective to date"),
   timezone: z.string().describe("Timezone"),
 }).describe("Instructor schedule information");
 
@@ -110,7 +110,7 @@ export const AvailableSlotsQuery = z.object({
 );
 
 export const AvailableSlot = z.object({
-  dateTime: z.string().datetime().describe("ISO datetime string for the available slot"),
+  dateTime: z.iso.datetime().describe("ISO datetime string for the available slot"),
   availableInstructors: z.array(z.number().int().positive()).describe("Array of instructor IDs available for this slot"),
 });
 

@@ -75,7 +75,7 @@ export const getInstructor = async (
         nickname: instructor.nickname,
         email: instructor.email,
         icon: blob,
-        birthdate: instructor.birthdate?.toISOString() || null,
+        birthdate: instructor.birthdate,
         lifeHistory: instructor.lifeHistory,
         favoriteFood: instructor.favoriteFood,
         hobby: instructor.hobby,
@@ -86,7 +86,7 @@ export const getInstructor = async (
         meetingId: instructor.meetingId,
         passcode: instructor.passcode,
         introductionURL: instructor.introductionURL,
-        terminationAt: terminationAt?.toISOString() || null,
+        terminationAt: terminationAt,
       },
     });
   } catch (error) {
@@ -122,15 +122,15 @@ export const getAllInstructorProfilesController = async (
           name: instructor.name,
           icon: blob,
           nickname: instructor.nickname,
-          birthdate: instructor.birthdate?.toISOString() || null,
+          birthdate: instructor.birthdate,
           lifeHistory: instructor.lifeHistory,
           favoriteFood: instructor.favoriteFood,
           hobby: instructor.hobby,
           messageForChildren: instructor.messageForChildren,
           workingTime: instructor.workingTime,
           skill: instructor.skill,
-          createdAt: instructor.createdAt.toISOString(),
-          terminationAt: terminationAt?.toISOString() || null,
+          createdAt: instructor.createdAt,
+          terminationAt: terminationAt,
         };
       }),
     );

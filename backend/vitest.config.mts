@@ -16,7 +16,7 @@ export default defineConfig({
     // Suppress console output during tests for cleaner output
     onConsoleLog: (log, type) => {
       // Suppress error logs during tests but keep other logs
-      if (type === 'stderr' && log.includes('Error')) {
+      if (type === "stderr" && log.includes("Error")) {
         return false;
       }
       return true;

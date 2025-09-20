@@ -1,4 +1,12 @@
-import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  beforeAll,
+  afterAll,
+} from "vitest";
 import { createMockPrisma, createTestInstructor } from "./helper";
 import request from "supertest";
 import { server } from "../server";
@@ -76,7 +84,6 @@ describe("GET /instructors/all-profiles", () => {
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body.instructorProfiles)).toBe(true);
     expect(response.body.instructorProfiles).toHaveLength(2);
-
   });
 
   it("should handle server errors", async () => {
@@ -225,7 +232,9 @@ describe("GET /instructors/:id/schedules", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe("Instructor schedule versions retrieved successfully");
+    expect(response.body.message).toBe(
+      "Instructor schedule versions retrieved successfully",
+    );
     expect(Array.isArray(response.body.data)).toBe(true);
     expect(response.body.data).toHaveLength(2);
 

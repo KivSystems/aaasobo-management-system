@@ -255,9 +255,7 @@ function InstructorProfile({
                   <h4 className={styles.birthdate__text}>
                     {latestInstructor.birthdate ? (
                       <>
-                        {getLongMonth(
-                          new Date(latestInstructor.birthdate),
-                        )}{" "}
+                        {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
                         {new Date(latestInstructor.birthdate).getDate()}
                       </>
                     ) : (

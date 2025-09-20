@@ -112,7 +112,9 @@ const validateResponse = (
       // If we have a schema for this status code, validate the response
       if (responseConfig?.schema) {
         try {
-          responseConfig.schema.parse(body);
+          // Simulate JSON round-trip to match actual HTTP response behavior
+          const simulatedHttpResponse = JSON.parse(JSON.stringify(body));
+          responseConfig.schema.parse(simulatedHttpResponse);
         } catch (error) {
           if (error instanceof z.ZodError) {
             console.error(

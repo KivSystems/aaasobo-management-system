@@ -26,15 +26,9 @@ export const getInstructorSchedulesController = async (
   try {
     const schedules = await getInstructorSchedules(req.params.id);
 
-    const schedulesWithISODates = schedules.map(schedule => ({
-      ...schedule,
-      effectiveFrom: schedule.effectiveFrom.toISOString(),
-      effectiveTo: schedule.effectiveTo?.toISOString() || null,
-    }));
-
     res.status(200).json({
       message: "Instructor schedule versions retrieved successfully",
-      data: schedulesWithISODates,
+      data: schedules,
     });
   } catch (error) {
     console.error("Error fetching instructor schedule versions:", error);
