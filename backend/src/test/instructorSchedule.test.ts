@@ -1,8 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createMockPrisma, createTestInstructor, loginAsAdmin } from "./helper";
+import { createMockPrisma, createTestInstructor } from "./helper";
 
 vi.mock("../../prisma/prismaClient", () => ({
   prisma: createMockPrisma(),
+}));
+
+vi.mock("../middlewares/auth.middleware", () => ({
+  verifyAuthentication: (req: any, res: any, next: any) => {
+    req.user = { id: "1", userType: "admin" };
+    next();
+  },
+  verifyCronJobAuthorization: (req: any, res: any, next: any) => {
+    next();
+  },
 }));
 
 import { prisma } from "../../prisma/prismaClient";
@@ -103,7 +113,6 @@ describe("Instructor Schedule", () => {
 
   it("should create a new schedule for instructor with no existing schedules", async () => {
     // Mock instructor without schedule
-    const sessionCookie = await loginAsAdmin(server, mockPrisma);
     const instructor = createTestInstructor();
     mockPrisma.instructor.findUnique.mockResolvedValue(instructor);
     mockPrisma.instructorSchedule.findUnique.mockResolvedValue(null);
@@ -162,7 +171,6 @@ describe("Instructor Schedule", () => {
 
     const response = await request(server)
       .post(`/instructors/${instructor.id}/schedules`)
-      .set("Cookie", sessionCookie)
       .send(requestBody)
       .expect(201);
 
@@ -192,7 +200,6 @@ describe("Instructor Schedule", () => {
 
   it("should add a new schedule to instructor with existing schedules", async () => {
     // Mock instructor with an existing active schedule
-    const sessionCookie = await loginAsAdmin(server, mockPrisma);
     const instructor = createTestInstructor();
     mockPrisma.instructor.findUnique.mockResolvedValue(instructor);
 
@@ -255,7 +262,6 @@ describe("Instructor Schedule", () => {
 
     const response = await request(server)
       .post(`/instructors/${instructor.id}/schedules`)
-      .set("Cookie", sessionCookie)
       .send(requestBody)
       .expect(201);
 
@@ -915,6 +921,7 @@ describe("All Available Slots API", () => {
       .query({
         start: "2025-08-04",
         end: "2025-08-05",
+        timezone: "Asia/Tokyo",
       })
       .expect(200);
 
@@ -946,6 +953,7 @@ describe("All Available Slots API", () => {
       .query({
         start: "2025-08-04",
         end: "2025-08-05",
+        timezone: "Asia/Tokyo",
       })
       .expect(200);
 

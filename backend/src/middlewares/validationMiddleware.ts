@@ -8,9 +8,23 @@ import {
 import { z } from "zod";
 import { RouteConfig } from "../openapi/routerRegistry";
 
-// Type for validated request with properly typed body
-export interface ValidatedRequest<T> extends Request {
-  body: T;
+// Type-safe request interfaces for validated requests
+export interface RequestWithBody<BodyT> extends Omit<Request, "body"> {
+  body: BodyT;
+}
+
+export interface RequestWithParams<ParamsT> extends Omit<Request, "params"> {
+  params: ParamsT;
+}
+
+export interface RequestWith<ParamsT, BodyT>
+  extends Omit<Request, "params" | "body"> {
+  params: ParamsT;
+  body: BodyT;
+}
+
+export interface RequestWithQuery<QueryT> extends Omit<Request, "query"> {
+  query: QueryT;
 }
 
 const validateRequest = (schema: z.ZodSchema) => {
@@ -22,12 +36,52 @@ const validateRequest = (schema: z.ZodSchema) => {
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-          error: "Validation failed",
+          message: "Validation failed",
           details: error.issues,
         });
       }
       return res.status(500).json({
-        error: "Internal server error during validation",
+        message: "Internal server error during validation",
+      });
+    }
+  };
+};
+
+const validateParams = (schema: z.ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const validatedParams = schema.parse(req.params);
+      req.params = validatedParams as any;
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          message: "Invalid parameters",
+          details: error.issues,
+        });
+      }
+      return res.status(500).json({
+        message: "Internal server error during parameter validation",
+      });
+    }
+  };
+};
+
+const validateQuery = (schema: z.ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const validatedQuery = schema.parse(req.query);
+      req.query = validatedQuery as any;
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          message: "Invalid query parameters",
+          details: error.issues,
+        });
+      }
+      return res.status(500).json({
+        message: "Internal server error during query validation",
       });
     }
   };
@@ -58,7 +112,9 @@ const validateResponse = (
       // If we have a schema for this status code, validate the response
       if (responseConfig?.schema) {
         try {
-          responseConfig.schema.parse(body);
+          // Simulate JSON round-trip to match actual HTTP response behavior
+          const simulatedHttpResponse = JSON.parse(JSON.stringify(body));
+          responseConfig.schema.parse(simulatedHttpResponse);
         } catch (error) {
           if (error instanceof z.ZodError) {
             console.error(
@@ -102,6 +158,21 @@ export const registerRoutes = (
   Object.entries(routeConfigs).forEach(([path, config]) => {
     const middlewares = [];
 
+    // Add custom middleware if specified
+    if (config.middleware) {
+      middlewares.push(...config.middleware);
+    }
+
+    // Add parameter validation middleware if schema exists
+    if (config.paramsSchema) {
+      middlewares.push(validateParams(config.paramsSchema));
+    }
+
+    // Add query validation middleware if schema exists
+    if (config.querySchema) {
+      middlewares.push(validateQuery(config.querySchema));
+    }
+
     // Add request validation middleware if schema exists
     if (config.requestSchema) {
       middlewares.push(validateRequest(config.requestSchema));
@@ -110,8 +181,8 @@ export const registerRoutes = (
     // Add response validation middleware
     middlewares.push(validateResponse(config.openapi.responses));
 
-    // Add the handler
-    middlewares.push(config.handler);
+    // Add the handler (cast to RequestHandler for Express compatibility)
+    middlewares.push(config.handler as RequestHandler);
 
     router[config.method](path, ...middlewares);
   });

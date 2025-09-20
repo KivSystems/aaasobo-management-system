@@ -12,20 +12,20 @@ import {
   FAILED_TO_FETCH_INSTRUCTOR_PROFILE,
 } from "../messages/instructorDashboard";
 
+import type {
+  InstructorProfile,
+  CompleteInstructor,
+  DetailedInstructorProfile,
+  InstructorSchedule,
+  AvailableSlot,
+  SimpleInstructorProfile,
+} from "@shared/schemas/instructors";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/instructors`;
 
 type Response<T> = T | { message: string };
-
-export type InstructorSchedule = {
-  id: number;
-  instructorId: number;
-  effectiveFrom: string;
-  effectiveTo: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
 
 export type InstructorSlot = {
   scheduleId: number;
@@ -58,21 +58,20 @@ export const getInstructors = async () => {
   }
 };
 
-export const getInstructor = async (
-  id: number,
-): Promise<Response<{ instructor: Instructor }>> => {
+export const getInstructor = async (id: number) => {
   const apiUrl = `${BASE_URL}/${id}`;
-  const data: Response<{ instructor: Instructor }> = await fetch(apiUrl, {
-    cache: "no-store",
-  }).then((res) => res.json());
+  const data: Response<{ instructor: CompleteInstructor }> = await fetch(
+    apiUrl,
+    {
+      cache: "no-store",
+    },
+  ).then((res) => res.json());
 
   return data;
 };
 
 // GET instructor id by class id
-export const getInstructorIdByClassId = async (
-  classId: number,
-): Promise<Response<{ instructorId: number }>> => {
+export const getInstructorIdByClassId = async (classId: number) => {
   const apiUrl = `${BASE_URL}/class/${classId}`;
   const data: Response<{ instructorId: number }> = await fetch(apiUrl, {
     cache: "no-store",
@@ -175,9 +174,7 @@ export const maskInstructors = async (authorization: string): Promise<void> => {
   }
 };
 
-export const getInstructorProfile = async (
-  instructorId: number,
-): Promise<InstructorProfile> => {
+export const getInstructorProfile = async (instructorId: number) => {
   try {
     const instructorProfileURL = `${BASE_URL}/${instructorId}/profile`;
     const response = await fetch(instructorProfileURL, {
@@ -188,7 +185,7 @@ export const getInstructorProfile = async (
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    const instructorProfile = await response.json();
+    const instructorProfile: SimpleInstructorProfile = await response.json();
     return instructorProfile;
   } catch (error) {
     console.error("API error while fetching instructor profile:", error);
@@ -196,9 +193,7 @@ export const getInstructorProfile = async (
   }
 };
 
-export const getInstructorProfiles = async (): Promise<
-  InstructorRebookingProfile[]
-> => {
+export const getInstructorProfiles = async () => {
   try {
     const apiUrl = `${BASE_URL}/profiles`;
     const response = await fetch(apiUrl, {
@@ -209,7 +204,7 @@ export const getInstructorProfiles = async (): Promise<
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    const instructorProfiles = await response.json();
+    const instructorProfiles: InstructorProfile[] = await response.json();
     return instructorProfiles;
   } catch (error) {
     console.error(
@@ -233,7 +228,8 @@ export const getAllInstructorProfiles = async (cookie: string) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const data: { instructorProfiles: DetailedInstructorProfile[] } =
+      await response.json();
     return data.instructorProfiles;
   } catch (error) {
     console.error("Failed to fetch all instructor profiles:", error);
@@ -426,12 +422,6 @@ export const createInstructorPostTerminationSchedule = async (
   }
 };
 
-type AvailableSlot = {
-  dateTime: string;
-  weekday: number;
-  startTime: string;
-};
-
 export const getInstructorAvailableSlots = async (
   instructorId: number,
   startDate: string,
@@ -442,6 +432,7 @@ export const getInstructorAvailableSlots = async (
     const params = new URLSearchParams({
       start: startDate,
       end: endDate,
+      timezone: "Asia/Tokyo",
       excludeBookedSlots: excludeBookedSlots.toString(),
     });
 
@@ -471,19 +462,15 @@ export const getInstructorAvailableSlots = async (
   }
 };
 
-export type AvailableSlotWithInstructors = {
-  dateTime: string;
-  availableInstructors: number[];
-};
-
 export const getAllInstructorAvailableSlots = async (
   startDate: string,
   endDate: string,
-): Promise<Response<{ data: AvailableSlotWithInstructors[]; meta: any }>> => {
+) => {
   try {
     const params = new URLSearchParams({
       start: startDate,
       end: endDate,
+      timezone: "Asia/Tokyo",
     });
 
     const response = await fetch(`${BASE_URL}/available-slots?${params}`, {

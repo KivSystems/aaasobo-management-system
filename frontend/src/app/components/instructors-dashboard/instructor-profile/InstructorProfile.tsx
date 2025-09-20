@@ -244,15 +244,23 @@ function InstructorProfile({
                   <InputField
                     name="birthdate"
                     type="date"
-                    value={formatBirthdateToISO(latestInstructor.birthdate)}
+                    value={formatBirthdateToISO(
+                      latestInstructor.birthdate || undefined,
+                    )}
                     onChange={(e) => handleInputChange(e, "birthdate")}
                     onKeyDown={(e) => e.preventDefault()} // Prevent date input from typing
                     className={`${styles.birthdate__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
                   <h4 className={styles.birthdate__text}>
-                    {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
-                    {new Date(latestInstructor.birthdate).getDate()}
+                    {latestInstructor.birthdate ? (
+                      <>
+                        {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
+                        {new Date(latestInstructor.birthdate).getDate()}
+                      </>
+                    ) : (
+                      "Not specified"
+                    )}
                   </h4>
                 )}
               </div>
@@ -267,7 +275,7 @@ function InstructorProfile({
                   <textarea
                     id="workingTime"
                     name="workingTime"
-                    defaultValue={latestInstructor.workingTime}
+                    defaultValue={latestInstructor.workingTime || undefined}
                     onChange={(e) => handleInputChange(e, "workingTime")}
                     className={`${styles.workingTime__inputField} ${isEditing ? styles.editable : ""}`}
                     maxLength={500}
@@ -289,7 +297,7 @@ function InstructorProfile({
                   <textarea
                     id="lifeHistory"
                     name="lifeHistory"
-                    defaultValue={latestInstructor.lifeHistory}
+                    defaultValue={latestInstructor.lifeHistory || undefined}
                     onChange={(e) => handleInputChange(e, "lifeHistory")}
                     className={`${styles.lifeHistory__inputField} ${isEditing ? styles.editable : ""}`}
                     maxLength={500}
@@ -310,7 +318,7 @@ function InstructorProfile({
                 {isEditing ? (
                   <textarea
                     name="favoriteFood"
-                    defaultValue={latestInstructor.favoriteFood}
+                    defaultValue={latestInstructor.favoriteFood || undefined}
                     onChange={(e) => handleInputChange(e, "favoriteFood")}
                     className={`${styles.favoriteFood__inputField} ${isEditing ? styles.editable : ""}`}
                     maxLength={500}
@@ -331,7 +339,7 @@ function InstructorProfile({
                 {isEditing ? (
                   <textarea
                     name="hobby"
-                    defaultValue={latestInstructor.hobby}
+                    defaultValue={latestInstructor.hobby || undefined}
                     onChange={(e) => handleInputChange(e, "hobby")}
                     className={`${styles.hobby__inputField} ${isEditing ? styles.editable : ""}`}
                     maxLength={500}
@@ -356,7 +364,9 @@ function InstructorProfile({
                 {isEditing ? (
                   <textarea
                     name="messageForChildren"
-                    defaultValue={latestInstructor.messageForChildren}
+                    defaultValue={
+                      latestInstructor.messageForChildren || undefined
+                    }
                     onChange={(e) => handleInputChange(e, "messageForChildren")}
                     className={`${styles.messageForChildren__inputField} ${isEditing ? styles.editable : ""}`}
                     maxLength={500}
@@ -377,7 +387,7 @@ function InstructorProfile({
                 {isEditing ? (
                   <textarea
                     name="skill"
-                    defaultValue={latestInstructor.skill}
+                    defaultValue={latestInstructor.skill || undefined}
                     onChange={(e) => handleInputChange(e, "skill")}
                     className={`${styles.skill__inputField} ${isEditing ? styles.editable : ""}`}
                     maxLength={500}
@@ -400,14 +410,20 @@ function InstructorProfile({
                     <InputField
                       name="email"
                       type="email"
-                      value={latestInstructor.email}
+                      value={
+                        "email" in latestInstructor
+                          ? latestInstructor.email
+                          : ""
+                      }
                       onChange={(e) => handleInputChange(e, "email")}
                       error={localMessages.email}
                       className={`${styles.email__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
                     <h4 className={styles.email__text}>
-                      {latestInstructor.email}
+                      {"email" in latestInstructor
+                        ? latestInstructor.email
+                        : "Not available"}
                     </h4>
                   )}
                 </div>
@@ -424,7 +440,11 @@ function InstructorProfile({
                     <InputField
                       name="classURL"
                       type="url"
-                      value={latestInstructor.classURL}
+                      value={
+                        "classURL" in latestInstructor
+                          ? latestInstructor.classURL || ""
+                          : ""
+                      }
                       onChange={(e) => handleInputChange(e, "classURL")}
                       error={localMessages.classURL}
                       className={`${styles.classUrl__inputField} ${isEditing ? styles.editable : ""}`}
@@ -432,12 +452,18 @@ function InstructorProfile({
                   ) : (
                     <h4>
                       <a
-                        href={latestInstructor.classURL}
+                        href={
+                          "classURL" in latestInstructor
+                            ? latestInstructor.classURL || undefined
+                            : undefined
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.url}
                       >
-                        {latestInstructor.classURL}
+                        {"classURL" in latestInstructor
+                          ? latestInstructor.classURL || "Not set"
+                          : "Not available"}
                       </a>
                     </h4>
                   )}
@@ -447,14 +473,22 @@ function InstructorProfile({
                     {isEditing ? (
                       <InputField
                         name="meetingId"
-                        value={latestInstructor.meetingId}
+                        value={
+                          "meetingId" in latestInstructor
+                            ? latestInstructor.meetingId || ""
+                            : ""
+                        }
                         onChange={(e) => handleInputChange(e, "meetingId")}
                         error={localMessages.meetingId}
                         className={`${styles.meetingId__inputField} ${isEditing ? styles.editable : ""}`}
                         display="flex"
                       />
                     ) : (
-                      <p>{latestInstructor.meetingId}</p>
+                      <p>
+                        {"meetingId" in latestInstructor
+                          ? latestInstructor.meetingId || "Not set"
+                          : "Not available"}
+                      </p>
                     )}
                   </div>
                   <div className={styles.urlInfo}>
@@ -462,14 +496,22 @@ function InstructorProfile({
                     {isEditing ? (
                       <InputField
                         name="passcode"
-                        value={latestInstructor.passcode}
+                        value={
+                          "passcode" in latestInstructor
+                            ? latestInstructor.passcode || ""
+                            : ""
+                        }
                         onChange={(e) => handleInputChange(e, "passcode")}
                         error={localMessages.passcode}
                         className={`${styles.passcode__inputField} ${isEditing ? styles.editable : ""}`}
                         display="flex"
                       />
                     ) : (
-                      <p>{latestInstructor.passcode}</p>
+                      <p>
+                        {"passcode" in latestInstructor
+                          ? latestInstructor.passcode || "Not set"
+                          : "Not available"}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -487,7 +529,11 @@ function InstructorProfile({
                     <InputField
                       name="introductionURL"
                       type="url"
-                      value={latestInstructor.introductionURL}
+                      value={
+                        "introductionURL" in latestInstructor
+                          ? latestInstructor.introductionURL || ""
+                          : ""
+                      }
                       onChange={(e) => handleInputChange(e, "introductionURL")}
                       error={localMessages.introductionURL}
                       className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
@@ -495,12 +541,18 @@ function InstructorProfile({
                   ) : (
                     <h4>
                       <a
-                        href={latestInstructor.introductionURL}
+                        href={
+                          "introductionURL" in latestInstructor
+                            ? latestInstructor.introductionURL || undefined
+                            : undefined
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.url}
                       >
-                        {latestInstructor.introductionURL}
+                        {"introductionURL" in latestInstructor
+                          ? latestInstructor.introductionURL || "Not set"
+                          : "Not available"}
                       </a>
                     </h4>
                   )}

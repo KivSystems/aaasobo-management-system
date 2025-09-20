@@ -10,13 +10,21 @@ import {
 import { getInstructorsToLeave } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import { Request } from "express";
+import {
+  RequestWithParams,
+  RequestWithQuery,
+} from "../middlewares/validationMiddleware";
+import {
+  InstructorIdParams,
+  AvailableSlotsQuery,
+} from "@shared/schemas/instructors";
 
 export const getInstructorSchedulesController = async (
-  req: RequestWithId,
+  req: RequestWithParams<InstructorIdParams>,
   res: Response,
 ) => {
   try {
-    const schedules = await getInstructorSchedules(req.id);
+    const schedules = await getInstructorSchedules(req.params.id);
 
     res.status(200).json({
       message: "Instructor schedule versions retrieved successfully",
@@ -240,57 +248,13 @@ export const getInstructorAvailableSlotsController = async (
 };
 
 export const getAllAvailableSlotsController = async (
-  req: Request,
+  req: RequestWithQuery<AvailableSlotsQuery>,
   res: Response,
 ) => {
   try {
     const { start, end, timezone } = req.query;
 
-    if (!start || !end) {
-      return res.status(400).json({
-        message:
-          "start and end query parameters are required (YYYY-MM-DD format)",
-      });
-    }
-
-    if (typeof start !== "string" || typeof end !== "string") {
-      return res.status(400).json({
-        message: "start and end must be date strings in YYYY-MM-DD format",
-      });
-    }
-
-    // Validate timezone is Asia/Tokyo
-    if (timezone && timezone !== "Asia/Tokyo") {
-      return res.status(400).json({
-        message: "Only Asia/Tokyo timezone is supported",
-      });
-    }
-
-    // Validate date format (YYYY-MM-DD)
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(start) || !dateRegex.test(end)) {
-      return res.status(400).json({
-        message:
-          "Invalid date format. Use YYYY-MM-DD format (e.g., 2025-06-01)",
-      });
-    }
-
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-      return res.status(400).json({
-        message: "Invalid start or end date",
-      });
-    }
-
-    if (startDate >= endDate) {
-      return res.status(400).json({
-        message: "start must be before end",
-      });
-    }
-
-    const availableSlots = await getAllAvailableSlots(start, end, "Asia/Tokyo");
+    const availableSlots = await getAllAvailableSlots(start, end, timezone);
 
     res.status(200).json({
       message: "Available slots retrieved successfully",

@@ -1,7 +1,4 @@
-import { Express } from "express";
 import { vi } from "vitest";
-import { hashPasswordSync } from "../helper/commonUtils";
-import request from "supertest";
 
 export const createMockPrisma = () => {
   const mock = {
@@ -48,6 +45,7 @@ export const createMockPrisma = () => {
     class: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
       create: vi.fn(),
       createManyAndReturn: vi.fn(),
       update: vi.fn(),
@@ -141,30 +139,6 @@ export const createTestInstructor = () => ({
   updatedAt: new Date(),
   determinationAt: null,
 });
-
-export const loginAsAdmin = async (
-  server: Express,
-  mockPrisma: ReturnType<typeof createMockPrisma>,
-  admin = createTestAdmin(),
-) => {
-  mockPrisma.admins.findUnique.mockResolvedValue({
-    id: admin.id,
-    email: admin.email,
-    password: hashPasswordSync(admin.password),
-    name: admin.name,
-  });
-
-  await request(server)
-    .post("/users/authenticate")
-    .send({
-      email: admin.email,
-      password: admin.password,
-      userType: "admin",
-    })
-    .expect(200);
-
-  return `${process.env.AUTH_SALT}=mock-token`;
-};
 
 /**
  * Convert JST datetime to UTC

@@ -1,8 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createMockPrisma, createTestInstructor, loginAsAdmin } from "./helper";
+import { createMockPrisma, createTestInstructor } from "./helper";
 
 vi.mock("../../prisma/prismaClient", () => ({
   prisma: createMockPrisma(),
+}));
+
+vi.mock("../middlewares/auth.middleware", () => ({
+  verifyAuthentication: (req: any, res: any, next: any) => {
+    req.user = { id: "1", userType: "admin" };
+    next();
+  },
+  verifyCronJobAuthorization: (req: any, res: any, next: any) => {
+    next();
+  },
 }));
 
 import { prisma } from "../../prisma/prismaClient";
@@ -52,7 +62,6 @@ describe("Instructor Absence", () => {
   });
 
   it("should add instructor absence", async () => {
-    const sessionCookie = await loginAsAdmin(server, mockPrisma);
     const instructor = createTestInstructor();
     const absenceData = {
       absentAt: "2025-01-15T10:00:00Z",
@@ -67,7 +76,6 @@ describe("Instructor Absence", () => {
 
     const response = await request(server)
       .post(`/instructors/${instructor.id}/absences`)
-      .set("Cookie", sessionCookie)
       .send(absenceData)
       .expect(201);
 
@@ -79,7 +87,6 @@ describe("Instructor Absence", () => {
   });
 
   it("should remove instructor absence", async () => {
-    const sessionCookie = await loginAsAdmin(server, mockPrisma);
     const instructor = createTestInstructor();
     const absentAt = "2025-01-15T10:00:00.000Z";
 
@@ -90,7 +97,6 @@ describe("Instructor Absence", () => {
 
     const response = await request(server)
       .delete(`/instructors/${instructor.id}/absences/${absentAt}`)
-      .set("Cookie", sessionCookie)
       .expect(200);
 
     expect(response.body.message).toBe(
@@ -107,28 +113,23 @@ describe("Instructor Absence", () => {
   });
 
   it("should return 400 for invalid absentAt format", async () => {
-    const sessionCookie = await loginAsAdmin(server, mockPrisma);
     const instructor = createTestInstructor();
 
     await request(server)
       .post(`/instructors/${instructor.id}/absences`)
-      .set("Cookie", sessionCookie)
       .send({ absentAt: "invalid-date" })
       .expect(400);
 
     await request(server)
       .delete(`/instructors/${instructor.id}/absences/invalid-date`)
-      .set("Cookie", sessionCookie)
       .expect(400);
   });
 
   it("should return 400 for missing absentAt", async () => {
-    const sessionCookie = await loginAsAdmin(server, mockPrisma);
     const instructor = createTestInstructor();
 
     await request(server)
       .post(`/instructors/${instructor.id}/absences`)
-      .set("Cookie", sessionCookie)
       .send({})
       .expect(400);
   });

@@ -4,8 +4,8 @@ import { useState, useCallback } from "react";
 import {
   getAllInstructorAvailableSlots,
   getInstructorProfiles,
-  type AvailableSlotWithInstructors,
 } from "@/app/helper/api/instructorsApi";
+import type { AvailableSlot } from "@shared/schemas/instructors";
 import Calendar from "@/app/components/features/calendar/Calendar";
 import { EventSourceFuncArg, EventClickArg } from "@fullcalendar/core";
 import styles from "./AllInstructorAvailabilityCalendar.module.scss";
@@ -40,7 +40,7 @@ const formatJSTDate = (date: Date): string => {
 
 // Helper function to create calendar event from slot data
 const createCalendarEvent = (
-  slot: AvailableSlotWithInstructors,
+  slot: AvailableSlot,
   language: "ja" | "en",
 ): CalendarEvent => {
   const start = slot.dateTime;
@@ -93,7 +93,7 @@ export default function AllInstructorAvailabilityCalendar({
         const response = await getAllInstructorAvailableSlots(startStr, endStr);
 
         if ("data" in response) {
-          return response.data.map((slot: AvailableSlotWithInstructors) =>
+          return response.data.map((slot: AvailableSlot) =>
             createCalendarEvent(slot, language),
           );
         }

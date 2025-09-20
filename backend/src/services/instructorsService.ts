@@ -242,7 +242,10 @@ export async function getInstructorProfile(instructorId: number) {
     return null;
   }
 
-  return instructorProfile;
+  return {
+    ...instructorProfile,
+    createdAt: instructorProfile.createdAt.toISOString(),
+  };
 }
 
 export const updateInstructorPassword = async (

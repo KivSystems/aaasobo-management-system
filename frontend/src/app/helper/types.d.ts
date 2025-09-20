@@ -10,54 +10,14 @@ type Instructors = {
   data: Instructor[];
 };
 
-type Instructor = {
-  id: number;
-  name: string;
-  email: string;
-  nickname: string;
-  birthdate: string;
-  lifeHistory: string;
-  favoriteFood: string;
-  hobby: string;
-  messageForChildren: string;
-  workingTime: string;
-  skill: string;
-  classURL: string;
-  icon: { url: string };
-  meetingId: string;
-  passcode: string;
-  introductionURL: string;
-  terminationAt: string;
-};
+// Use shared types instead of local definitions
+type Instructor = import("@shared/schemas/instructors").CompleteInstructor;
+type InstructorProfile =
+  import("@shared/schemas/instructors").DetailedInstructorProfile;
 
-type InstructorProfile = {
-  id: number;
-  name: string;
-  nickname: string;
-  email: string;
-  icon: { url: string };
-  birthdate: string;
-  lifeHistory: string;
-  favoriteFood: string;
-  hobby: string;
-  messageForChildren: string;
-  workingTime: string;
-  skill: string;
-  classURL: string;
-  meetingId: string;
-  passcode: string;
-  introductionURL: string;
-  createdAt: string;
-  terminationAt: string;
-};
-
-type InstructorRebookingProfile = {
-  id: number;
-  name: string;
-  nickname: string;
-  icon: string;
-  introductionURL: string;
-};
+// For rebooking profiles, use the basic InstructorProfile from shared schemas
+type InstructorRebookingProfile =
+  import("@shared/schemas/instructors").InstructorProfile;
 
 type ClassStatus =
   | "booked"
