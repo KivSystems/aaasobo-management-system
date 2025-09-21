@@ -953,3 +953,87 @@ describe("All Available Slots API", () => {
     expect(response.body.data).toEqual([]);
   });
 });
+
+describe("POST /instructors/schedules/post-termination", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("creates post-termination schedules", async () => {
+    const leaving = [
+      { id: 10, terminationAt: new Date("2025-09-01T00:00:00.000Z") },
+      { id: 20, terminationAt: new Date("2025-10-15T00:00:00.000Z") },
+    ];
+    mockPrisma.instructor.findMany.mockResolvedValue(leaving);
+
+    const returnedSchedule1 = {
+      id: 101,
+      instructorId: 10,
+      effectiveFrom: new Date("2025-09-01T00:00:00.000Z"),
+      effectiveTo: null,
+      timezone: "Asia/Tokyo",
+      slots: [] as any[],
+    };
+    const returnedSchedule2 = {
+      id: 102,
+      instructorId: 20,
+      effectiveFrom: new Date("2025-10-15T00:00:00.000Z"),
+      effectiveTo: null,
+      timezone: "Asia/Tokyo",
+      slots: [] as any[],
+    };
+
+    mockPrisma.$transaction
+      .mockImplementationOnce(async (callback: any) => {
+        const tx = {
+          instructorSchedule: {
+            findFirst: vi.fn().mockResolvedValue(null),
+            update: vi.fn(),
+            create: vi.fn().mockResolvedValue({ id: returnedSchedule1.id }),
+            findUnique: vi.fn().mockResolvedValue(returnedSchedule1),
+          },
+          instructorSlot: {
+            createMany: vi.fn().mockResolvedValue({ count: 0 }),
+          },
+        };
+        return await callback(tx);
+      })
+      .mockImplementationOnce(async (callback: any) => {
+        const tx = {
+          instructorSchedule: {
+            findFirst: vi.fn().mockResolvedValue(null),
+            update: vi.fn(),
+            create: vi.fn().mockResolvedValue({ id: returnedSchedule2.id }),
+            findUnique: vi.fn().mockResolvedValue(returnedSchedule2),
+          },
+          instructorSlot: {
+            createMany: vi.fn().mockResolvedValue({ count: 0 }),
+          },
+        };
+        return await callback(tx);
+      });
+
+    const response = await request(server)
+      .post("/instructors/schedules/post-termination")
+      .expect(201);
+
+    expect(response.body.data).toEqual([
+      {
+        id: 101,
+        instructorId: 10,
+        effectiveFrom: returnedSchedule1.effectiveFrom.toISOString(),
+        effectiveTo: null,
+        timezone: "Asia/Tokyo",
+        slots: [],
+      },
+      {
+        id: 102,
+        instructorId: 20,
+        effectiveFrom: returnedSchedule2.effectiveFrom.toISOString(),
+        effectiveTo: null,
+        timezone: "Asia/Tokyo",
+        slots: [],
+      },
+    ]);
+  });
+});

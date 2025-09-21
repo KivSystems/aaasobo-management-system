@@ -195,6 +195,42 @@ export const CreateScheduleResponse = z.object({
   data: ActiveInstructorSchedule.describe("Created instructor schedule with slots"),
 });
 
+// Instructor absence schemas
+export const InstructorAbsenceParams = z.object({
+  id: z.string().regex(/^\d+$/, "Instructor ID must be a valid number").transform(Number),
+  absentAt: z.iso.datetime().describe("Absence date in ISO format"),
+});
+
+export const CreateAbsenceRequest = z.object({
+  absentAt: z.iso.datetime().describe("Absence date in ISO format"),
+});
+
+export const InstructorAbsence = z.object({
+  instructorId: z.number().int().positive().describe("Instructor ID"),
+  absentAt: z.string().describe("Absence date in ISO format"),
+});
+
+export const InstructorAbsencesResponse = z.object({
+  message: z.string().describe("Success message"),
+  data: z.array(InstructorAbsence).describe("Array of instructor absences"),
+});
+
+export const CreateAbsenceResponse = z.object({
+  message: z.string().describe("Success message"),
+  data: InstructorAbsence.describe("Created instructor absence"),
+});
+
+export const DeleteAbsenceResponse = z.object({
+  message: z.string().describe("Success message"),
+  data: InstructorAbsence.describe("Deleted instructor absence"),
+});
+
+// Post-termination schedule response
+export const PostTerminationScheduleResponse = z.object({
+  message: z.string().describe("Success message"),
+  data: z.array(ActiveInstructorSchedule).describe("Array of created post-termination schedules"),
+});
+
 // Type exports
 export type InstructorIdParams = z.infer<typeof InstructorIdParams>;
 export type ClassIdParams = z.infer<typeof ClassIdParams>;
@@ -223,3 +259,10 @@ export type InstructorScheduleParams = z.infer<typeof InstructorScheduleParams>;
 export type CreateSlotRequest = z.infer<typeof CreateSlotRequest>;
 export type CreateScheduleRequest = z.infer<typeof CreateScheduleRequest>;
 export type CreateScheduleResponse = z.infer<typeof CreateScheduleResponse>;
+export type InstructorAbsenceParams = z.infer<typeof InstructorAbsenceParams>;
+export type CreateAbsenceRequest = z.infer<typeof CreateAbsenceRequest>;
+export type InstructorAbsence = z.infer<typeof InstructorAbsence>;
+export type InstructorAbsencesResponse = z.infer<typeof InstructorAbsencesResponse>;
+export type CreateAbsenceResponse = z.infer<typeof CreateAbsenceResponse>;
+export type DeleteAbsenceResponse = z.infer<typeof DeleteAbsenceResponse>;
+export type PostTerminationScheduleResponse = z.infer<typeof PostTerminationScheduleResponse>;

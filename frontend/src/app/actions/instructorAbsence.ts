@@ -35,35 +35,17 @@ export async function batchUpdateInstructorAbsences(
       try {
         switch (change.action) {
           case "add": {
-            const result = await addInstructorAbsence(
-              instructorId,
-              change.dateTime,
-              cookie,
-            );
-
-            if ("absence" in result) {
-              successCount.add++;
-            } else {
-              errors.push(
-                `Failed to add absence for ${formatYearDateTime(new Date(change.dateTime))}: ${result.message}`,
-              );
-            }
+            await addInstructorAbsence(instructorId, change.dateTime, cookie);
+            successCount.add++;
             break;
           }
           case "remove": {
-            const result = await deleteInstructorAbsence(
+            await deleteInstructorAbsence(
               instructorId,
               change.dateTime,
               cookie,
             );
-
-            if ("absence" in result) {
-              successCount.remove++;
-            } else {
-              errors.push(
-                `Failed to remove absence for ${formatYearDateTime(new Date(change.dateTime))}: ${result.message}`,
-              );
-            }
+            successCount.remove++;
             break;
           }
           default:
@@ -72,9 +54,11 @@ export async function batchUpdateInstructorAbsences(
             );
         }
       } catch (error) {
-        console.error("Error processing change:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        const action = change.action === "add" ? "add" : "remove";
         errors.push(
-          `Error processing ${formatYearDateTime(new Date(change.dateTime))}: ${error instanceof Error ? error.message : String(error)}`,
+          `Failed to ${action} absence for ${formatYearDateTime(new Date(change.dateTime))}: ${errorMessage}`,
         );
       }
     }
