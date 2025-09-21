@@ -19,6 +19,7 @@ import {
   AvailableSlotsQuery,
   InstructorAvailableSlotsQuery,
   CreateScheduleRequest,
+  CreateSlotRequest,
   InstructorScheduleParams,
   ActiveScheduleQuery,
 } from "@shared/schemas/instructors";
@@ -79,7 +80,7 @@ export const createInstructorScheduleController = async (
       instructorId: req.params.id,
       effectiveFrom: new Date(effectiveFrom),
       timezone,
-      slots: slots.map((slot: any) => ({
+      slots: slots.map((slot: CreateSlotRequest) => ({
         weekday: slot.weekday,
         startTime: slot.startTime,
       })),
