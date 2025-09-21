@@ -13,7 +13,10 @@ export const createMockPrisma = () => {
     },
     admins: {
       findUnique: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
     passwordResetToken: {
       findFirst: vi.fn(),
@@ -69,6 +72,9 @@ export const createMockPrisma = () => {
     },
     plan: {
       findFirst: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
     },
     recurringClass: {
       findMany: vi.fn(),

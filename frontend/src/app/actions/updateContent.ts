@@ -91,8 +91,8 @@ export async function updatePlanAction(
       default:
     }
 
-    let requestName = null;
-    let requestDescription = null;
+    let requestName: string | null = null;
+    let requestDescription: string | null = null;
 
     if (!isDelete) {
       const parsedForm = planUpdateSchema.safeParse({
@@ -114,8 +114,8 @@ export async function updatePlanAction(
 
     const response = await updatePlan(
       id,
-      requestName!,
-      requestDescription!,
+      requestName,
+      requestDescription,
       isDelete,
       cookie,
     );

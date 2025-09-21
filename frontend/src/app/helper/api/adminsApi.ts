@@ -4,6 +4,22 @@ import {
   ADMIN_REGISTRATION_SUCCESS_MESSAGE,
 } from "../messages/formValidation";
 import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
+import {
+  type AdminResponse,
+  type AdminsListResponse,
+  type InstructorsListResponse,
+  type CustomersListResponse,
+  type ChildrenListResponse,
+  type PlansListResponse,
+  type SubscriptionsListResponse,
+  type EventsListResponse,
+  type ClassesListResponse,
+  type SchedulesListResponse,
+  type UpdateAdminResponse,
+  type DeleteResponse,
+  type RegisterAdminRequest,
+  type UpdateAdminRequest,
+} from "@shared/schemas/admins";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -13,9 +29,9 @@ export type Response<T> = T | { message: string };
 
 export const getAdminById = async (
   id: number,
-): Promise<Response<{ admin: Admin }>> => {
+): Promise<Response<AdminResponse>> => {
   const apiUrl = `${BASE_URL}/admin-list/${id}`;
-  const data: Response<{ admin: Admin }> = await fetch(apiUrl, {
+  const data: Response<AdminResponse> = await fetch(apiUrl, {
     cache: "no-store",
   }).then((res) => res.json());
 
@@ -23,7 +39,7 @@ export const getAdminById = async (
 };
 
 // GET all admins data
-export const getAllAdmins = async () => {
+export const getAllAdmins = async (): Promise<AdminsListResponse["data"]> => {
   try {
     const apiUrl = `${BASE_URL}/admin-list`;
     const response = await fetch(apiUrl, {
@@ -34,8 +50,8 @@ export const getAllAdmins = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result: AdminsListResponse = await response.json();
+    return result.data;
   } catch (error) {
     console.error("Failed to fetch admins:", error);
     throw error;
@@ -43,7 +59,9 @@ export const getAllAdmins = async () => {
 };
 
 // GET all instructors data for instructor list
-export const getAllInstructors = async () => {
+export const getAllInstructors = async (): Promise<
+  InstructorsListResponse["data"]
+> => {
   try {
     const apiUrl = `${BASE_URL}/instructor-list`;
     const response = await fetch(apiUrl, {
@@ -54,8 +72,8 @@ export const getAllInstructors = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result: InstructorsListResponse = await response.json();
+    return result.data;
   } catch (error) {
     console.error("Failed to fetch instructors:", error);
     throw error;
@@ -63,7 +81,9 @@ export const getAllInstructors = async () => {
 };
 
 // GET all customers data
-export const getAllCustomers = async () => {
+export const getAllCustomers = async (): Promise<
+  CustomersListResponse["data"]
+> => {
   try {
     const apiUrl = `${BASE_URL}/customer-list`;
     const response = await fetch(apiUrl, {
@@ -74,8 +94,8 @@ export const getAllCustomers = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result: CustomersListResponse = await response.json();
+    return result.data;
   } catch (error) {
     console.error("Failed to fetch customers:", error);
     throw error;
@@ -83,7 +103,9 @@ export const getAllCustomers = async () => {
 };
 
 // GET all children data
-export const getAllChildren = async () => {
+export const getAllChildren = async (): Promise<
+  ChildrenListResponse["data"]
+> => {
   try {
     const apiUrl = `${BASE_URL}/child-list`;
     const response = await fetch(apiUrl, {
@@ -94,8 +116,8 @@ export const getAllChildren = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result: ChildrenListResponse = await response.json();
+    return result.data;
   } catch (error) {
     console.error("Failed to fetch children:", error);
     throw error;
@@ -103,7 +125,7 @@ export const getAllChildren = async () => {
 };
 
 // GET all plans data
-export const getAllPlans = async () => {
+export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {
   try {
     const apiUrl = `${BASE_URL}/plan-list`;
     const response = await fetch(apiUrl, {
@@ -114,8 +136,8 @@ export const getAllPlans = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result: PlansListResponse = await response.json();
+    return result.data;
   } catch (error) {
     console.error("Failed to fetch plans:", error);
     throw error;
@@ -123,7 +145,9 @@ export const getAllPlans = async () => {
 };
 
 // GET all subscriptions data
-export const getAllSubscriptions = async () => {
+export const getAllSubscriptions = async (): Promise<
+  SubscriptionsListResponse["data"]
+> => {
   try {
     const apiUrl = `${BASE_URL}/subscription-list`;
     const response = await fetch(apiUrl, {
@@ -134,16 +158,16 @@ export const getAllSubscriptions = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result: SubscriptionsListResponse = await response.json();
+    return result.data;
   } catch (error) {
-    console.error("Failed to fetch plans:", error);
+    console.error("Failed to fetch subscriptions:", error);
     throw error;
   }
 };
 
 // GET all events data
-export const getAllEvents = async () => {
+export const getAllEvents = async (): Promise<EventsListResponse["data"]> => {
   try {
     const apiUrl = `${BASE_URL}/event-list`;
     const response = await fetch(apiUrl, {
@@ -154,8 +178,8 @@ export const getAllEvents = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result: EventsListResponse = await response.json();
+    return result.data;
   } catch (error) {
     console.error("Failed to fetch events:", error);
     throw error;
@@ -163,7 +187,7 @@ export const getAllEvents = async () => {
 };
 
 // GET all class data
-export const getAllClasses = async () => {
+export const getAllClasses = async (): Promise<ClassesListResponse["data"]> => {
   try {
     const apiUrl = `${BASE_URL}/class-list`;
     const response = await fetch(apiUrl, {
@@ -172,8 +196,8 @@ export const getAllClasses = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { data } = await response.json();
-    return data;
+    const result: ClassesListResponse = await response.json();
+    return result.data;
   } catch (error) {
     console.error("Failed to fetch classes:", error);
     throw error;
@@ -181,32 +205,32 @@ export const getAllClasses = async () => {
 };
 
 // GET all schedule data
-export const getAllBusinessSchedules = async () => {
-  try {
-    const apiUrl = `${BASE_URL}/business-schedule`;
-    const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["business-schedule"] },
-      cache: "no-store",
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+export const getAllBusinessSchedules =
+  async (): Promise<SchedulesListResponse> => {
+    try {
+      const apiUrl = `${BASE_URL}/business-schedule`;
+      const response = await fetch(apiUrl, {
+        // TODO: Add cache control after completing further implementations
+        // next: { tags: ["business-schedule"] },
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: SchedulesListResponse = await response.json();
+
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch schedules:", error);
+      throw error;
     }
-    const data = await response.json();
+  };
 
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch schedules:", error);
-    throw error;
-  }
-};
-
-export const registerAdmin = async (userData: {
-  name: string;
-  email: string;
-  password: string;
-  cookie: string;
-}): Promise<RegisterFormState> => {
+export const registerAdmin = async (
+  userData: RegisterAdminRequest & {
+    cookie: string;
+  },
+): Promise<RegisterFormState> => {
   try {
     const registerURL = `${BACKEND_ORIGIN}/admins/admin-list/register`;
     const response = await fetch(registerURL, {
@@ -237,18 +261,14 @@ export const registerAdmin = async (userData: {
 // PATCH admin data
 export const updateAdmin = async (
   adminId: number,
-  adminName: string,
-  adminEmail: string,
+  adminData: UpdateAdminRequest,
   cookie: string,
 ): Promise<UpdateFormState> => {
   try {
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/${adminId}`;
     const headers = { "Content-Type": "application/json", Cookie: cookie };
-    const body = JSON.stringify({
-      name: adminName,
-      email: adminEmail,
-    });
+    const body = JSON.stringify(adminData);
 
     const response = await fetch(apiURL, {
       method: "PATCH",
@@ -260,7 +280,7 @@ export const updateAdmin = async (
       return { email: EMAIL_ALREADY_REGISTERED_ERROR.en };
     }
 
-    const data = await response.json();
+    const data: UpdateAdminResponse = await response.json();
 
     if (response.status !== 200) {
       return { errorMessage: data.message || ERROR_PAGE_MESSAGE_EN };
@@ -276,7 +296,10 @@ export const updateAdmin = async (
 };
 
 // DELETE admin data
-export const deleteAdmin = async (adminId: number, cookie: string) => {
+export const deleteAdmin = async (
+  adminId: number,
+  cookie: string,
+): Promise<DeleteResponse | { errorMessage: string }> => {
   try {
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/admin-list/${adminId}`;
@@ -289,7 +312,7 @@ export const deleteAdmin = async (adminId: number, cookie: string) => {
     if (response.status !== 200) {
       return { errorMessage: ERROR_PAGE_MESSAGE_EN };
     }
-    const result = await response.json();
+    const result: DeleteResponse = await response.json();
 
     return result;
   } catch (error) {

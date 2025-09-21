@@ -4,13 +4,12 @@ import FullCalendar from "@fullcalendar/react";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateSelectArg } from "@fullcalendar/core";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFormState } from "react-dom";
 import Modal from "@/app/components/elements/modal/Modal";
 import BusinessCalendarModal from "@/app/components/admins-dashboard/BusinessCalendarModal";
-import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { updateScheduleAction } from "@/app/actions/updateContent";
 import { CONTENT_UPDATE_SUCCESS_MESSAGE } from "@/app/helper/messages/formValidation";
@@ -35,8 +34,33 @@ const BusinessCalendarClient = ({
   const [scheduleVersion, setScheduleVersion] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState<string[] | []>([]);
-  const { localMessages, clearErrorMessage } =
-    useFormMessages(updateResultState);
+  // Handle form messages manually for UpdateFormState
+  const [localMessages, setLocalMessages] = useState<Record<string, string>>(
+    {},
+  );
+
+  useEffect(() => {
+    if (updateResultState) {
+      const newMessages: Record<string, string> = {};
+      if (updateResultState.name) newMessages.name = updateResultState.name;
+      if (updateResultState.color) newMessages.color = updateResultState.color;
+      if (updateResultState.errorMessage)
+        newMessages.errorMessage = updateResultState.errorMessage;
+      setLocalMessages(newMessages);
+    }
+  }, [updateResultState]);
+
+  const clearErrorMessage = useCallback((field: string) => {
+    setLocalMessages((prev) => {
+      if (field === "all") {
+        return {};
+      }
+      const updatedMessages = { ...prev };
+      delete updatedMessages[field];
+      delete updatedMessages.errorMessage;
+      return updatedMessages;
+    });
+  }, []);
   const { language } = useLanguage();
 
   // Set color for each date in the calendar
