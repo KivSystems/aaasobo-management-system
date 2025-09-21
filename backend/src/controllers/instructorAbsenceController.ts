@@ -1,17 +1,25 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import {
   getInstructorAbsences,
   addInstructorAbsence,
   removeInstructorAbsence,
 } from "../services/instructorAbsenceService";
-import { type RequestWithId } from "../middlewares/parseId.middleware";
+import {
+  RequestWithParams,
+  RequestWith,
+} from "../middlewares/validationMiddleware";
+import {
+  InstructorIdParams,
+  CreateAbsenceRequest,
+  InstructorAbsenceParams,
+} from "@shared/schemas/instructors";
 
 export const getInstructorAbsencesController = async (
-  req: RequestWithId,
+  req: RequestWithParams<InstructorIdParams>,
   res: Response,
 ) => {
   try {
-    const instructorId = req.id;
+    const instructorId = req.params.id;
     const absences = await getInstructorAbsences(instructorId);
 
     res.status(200).json({
@@ -28,26 +36,14 @@ export const getInstructorAbsencesController = async (
 };
 
 export const addInstructorAbsenceController = async (
-  req: RequestWithId,
+  req: RequestWith<InstructorIdParams, CreateAbsenceRequest>,
   res: Response,
 ) => {
   try {
-    const instructorId = req.id;
+    const instructorId = req.params.id;
     const { absentAt } = req.body;
 
-    if (!absentAt) {
-      return res.status(400).json({
-        message: "absentAt is required",
-      });
-    }
-
     const absentAtDate = new Date(absentAt);
-    if (isNaN(absentAtDate.getTime())) {
-      return res.status(400).json({
-        message: "Invalid absentAt date format",
-      });
-    }
-
     const absence = await addInstructorAbsence({
       instructorId,
       absentAt: absentAtDate,
@@ -67,20 +63,14 @@ export const addInstructorAbsenceController = async (
 };
 
 export const removeInstructorAbsenceController = async (
-  req: RequestWithId,
+  req: RequestWithParams<InstructorAbsenceParams>,
   res: Response,
 ) => {
   try {
-    const instructorId = req.id;
+    const instructorId = req.params.id;
     const { absentAt } = req.params;
 
     const absentAtDate = new Date(absentAt);
-    if (isNaN(absentAtDate.getTime())) {
-      return res.status(400).json({
-        message: "Invalid absentAt date format",
-      });
-    }
-
     const deletedAbsence = await removeInstructorAbsence(
       instructorId,
       absentAtDate,

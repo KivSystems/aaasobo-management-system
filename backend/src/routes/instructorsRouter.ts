@@ -30,6 +30,12 @@ import {
   InstructorScheduleParams,
   CreateScheduleRequest,
   CreateScheduleResponse,
+  InstructorAbsenceParams,
+  CreateAbsenceRequest,
+  InstructorAbsencesResponse,
+  CreateAbsenceResponse,
+  DeleteAbsenceResponse,
+  PostTerminationScheduleResponse,
 } from "@shared/schemas/instructors";
 import {
   type RequestWithId,
@@ -394,6 +400,109 @@ const instructorAvailableSlotsConfig = {
   },
 } as const;
 
+const instructorAbsencesConfig = {
+  method: "get" as const,
+  paramsSchema: InstructorIdParams,
+  handler: getInstructorAbsencesController,
+  openapi: {
+    summary: "Get instructor absences",
+    description: "Get all absences for a specific instructor",
+    responses: {
+      200: {
+        description: "Successfully retrieved instructor absences",
+        schema: InstructorAbsencesResponse,
+      },
+      400: {
+        description: "Invalid instructor ID parameter",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const createAbsenceConfig = {
+  method: "post" as const,
+  paramsSchema: InstructorIdParams,
+  bodySchema: CreateAbsenceRequest,
+  middleware: [verifyAuthentication] as RequestHandler[],
+  handler: addInstructorAbsenceController,
+  openapi: {
+    summary: "Add instructor absence",
+    description: "Add a new absence date for an instructor",
+    responses: {
+      201: {
+        description: "Instructor absence added successfully",
+        schema: CreateAbsenceResponse,
+      },
+      400: {
+        description: "Invalid request parameters or body",
+        schema: MessageErrorResponse,
+      },
+      401: {
+        description: "Unauthorized - authentication required",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const deleteAbsenceConfig = {
+  method: "delete" as const,
+  paramsSchema: InstructorAbsenceParams,
+  middleware: [verifyAuthentication] as RequestHandler[],
+  handler: removeInstructorAbsenceController,
+  openapi: {
+    summary: "Remove instructor absence",
+    description: "Remove an absence date for an instructor",
+    responses: {
+      200: {
+        description: "Instructor absence removed successfully",
+        schema: DeleteAbsenceResponse,
+      },
+      400: {
+        description: "Invalid request parameters",
+        schema: MessageErrorResponse,
+      },
+      401: {
+        description: "Unauthorized - authentication required",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const postTerminationScheduleConfig = {
+  method: "post" as const,
+  handler: createInstructorPostTerminationScheduleController,
+  openapi: {
+    summary: "Create post-termination schedules",
+    description:
+      "Create post-termination schedules for all instructors scheduled to leave",
+    responses: {
+      201: {
+        description: "Post-termination schedules created successfully",
+        schema: PostTerminationScheduleResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const validatedRouteConfigs = {
   "/profiles": [profilesConfig],
   "/all-profiles": [allProfilesConfig],
@@ -406,6 +515,9 @@ const validatedRouteConfigs = {
   "/:id/schedules/active": [activeScheduleConfig],
   "/:id/schedules/:scheduleId": [scheduleByIdConfig],
   "/:id/available-slots": [instructorAvailableSlotsConfig],
+  "/:id/absences": [instructorAbsencesConfig, createAbsenceConfig],
+  "/:id/absences/:absentAt": [deleteAbsenceConfig],
+  "/schedules/post-termination": [postTerminationScheduleConfig],
   "/class/:id": [classInstructorConfig],
 } as const;
 
@@ -417,31 +529,3 @@ export const instructorsRouter = express.Router();
 registerRoutes(instructorsRouter, validatedRouteConfigs);
 
 export { validatedRouteConfigs as instructorsRouterConfig };
-
-instructorsRouter.post(
-  "/schedules/post-termination",
-  createInstructorPostTerminationScheduleController,
-);
-
-// Instructor absence routes
-instructorsRouter.get("/:id/absences", parseId, (req, res) => {
-  getInstructorAbsencesController(req as RequestWithId, res);
-});
-
-instructorsRouter.post(
-  "/:id/absences",
-  parseId,
-  verifyAuthentication,
-  (req, res) => {
-    addInstructorAbsenceController(req as RequestWithId, res);
-  },
-);
-
-instructorsRouter.delete(
-  "/:id/absences/:absentAt",
-  parseId,
-  verifyAuthentication,
-  (req, res) => {
-    removeInstructorAbsenceController(req as RequestWithId, res);
-  },
-);

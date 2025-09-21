@@ -23,6 +23,10 @@ import type {
   ActiveInstructorSchedule,
   AvailableSlotsQuery,
   AvailableSlotsResponse,
+  InstructorAbsence,
+  InstructorAbsencesResponse,
+  CreateAbsenceResponse,
+  DeleteAbsenceResponse,
 } from "@shared/schemas/instructors";
 
 const BACKEND_ORIGIN =
@@ -468,14 +472,7 @@ export const getAllInstructorAvailableSlots = async (
 };
 
 // Instructor Absence APIs
-type InstructorAbsence = {
-  instructorId: number;
-  absentAt: string;
-};
-
-export const getInstructorAbsences = async (
-  instructorId: number,
-): Promise<Response<{ absences: InstructorAbsence[] }>> => {
+export const getInstructorAbsences = async (instructorId: number) => {
   try {
     const response = await fetch(`${BASE_URL}/${instructorId}/absences`, {
       cache: "no-store",
@@ -485,7 +482,7 @@ export const getInstructorAbsences = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result: InstructorAbsencesResponse = await response.json();
 
     return { absences: result.data };
   } catch (error) {
@@ -498,7 +495,7 @@ export const addInstructorAbsence = async (
   instructorId: number,
   absentAt: string,
   cookie: string,
-): Promise<Response<{ absence: InstructorAbsence }>> => {
+) => {
   try {
     const response = await fetch(`${BASE_URL}/${instructorId}/absences`, {
       method: "POST",
@@ -514,7 +511,7 @@ export const addInstructorAbsence = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result: CreateAbsenceResponse = await response.json();
 
     return { absence: result.data };
   } catch (error) {
@@ -527,7 +524,7 @@ export const deleteInstructorAbsence = async (
   instructorId: number,
   absentAt: string,
   cookie: string,
-): Promise<Response<{ absence: InstructorAbsence }>> => {
+) => {
   try {
     const encodedAbsentAt = encodeURIComponent(absentAt);
     const response = await fetch(
@@ -545,7 +542,7 @@ export const deleteInstructorAbsence = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result: DeleteAbsenceResponse = await response.json();
 
     return { absence: result.data };
   } catch (error) {

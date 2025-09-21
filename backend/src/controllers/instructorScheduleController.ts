@@ -109,25 +109,27 @@ export const createInstructorPostTerminationScheduleController = async (
     const leavingInstructors = await getInstructorsToLeave();
 
     // Create post termination schedule for each instructor
-    const schedules = leavingInstructors.map(async (instructor) => {
-      const { id, terminationAt } = instructor;
+    const schedules = await Promise.all(
+      leavingInstructors.map(async (instructor) => {
+        const { id, terminationAt } = instructor;
 
-      if (!id || !terminationAt) {
-        return {};
-      }
+        if (!id || !terminationAt) {
+          return {};
+        }
 
-      const effectiveFrom = terminationAt;
+        const effectiveFrom = terminationAt;
 
-      // Create a schedule for the instructor
-      const schedule = await createInstructorSchedule({
-        instructorId: id,
-        effectiveFrom,
-        timezone: "Asia/Tokyo",
-        slots: [], // No class schedules
-      });
+        // Create a schedule for the instructor
+        const schedule = await createInstructorSchedule({
+          instructorId: id,
+          effectiveFrom,
+          timezone: "Asia/Tokyo",
+          slots: [], // No class schedules
+        });
 
-      return schedule;
-    });
+        return schedule;
+      }),
+    );
 
     res.status(201).json({
       message: "Schedule version created successfully",
