@@ -1,4 +1,5 @@
 import express, { RequestHandler } from "express";
+import { z } from "zod";
 import {
   getInstructor,
   getInstructorIdByClassIdController,
@@ -20,8 +21,15 @@ import {
   ClassIdParams,
   ClassInstructorResponse,
   AvailableSlotsQuery,
+  InstructorAvailableSlotsQuery,
   AvailableSlotsResponse,
+  InstructorAvailableSlotsResponse,
   InstructorClassParams,
+  ActiveScheduleQuery,
+  ActiveScheduleResponse,
+  InstructorScheduleParams,
+  CreateScheduleRequest,
+  CreateScheduleResponse,
 } from "@shared/schemas/instructors";
 import {
   type RequestWithId,
@@ -269,16 +277,136 @@ const calendarClassesConfig = {
   },
 } as const;
 
+const activeScheduleConfig = {
+  method: "get" as const,
+  paramsSchema: InstructorIdParams,
+  querySchema: ActiveScheduleQuery,
+  handler: getActiveInstructorScheduleController,
+  openapi: {
+    summary: "Get active instructor schedule",
+    description: "Get the active schedule for an instructor on a specific date",
+    responses: {
+      200: {
+        description: "Successfully retrieved active schedule",
+        schema: ActiveScheduleResponse,
+      },
+      400: {
+        description: "Invalid instructor ID or effective date parameter",
+        schema: MessageErrorResponse,
+      },
+      404: {
+        description: "No active schedule found for this instructor",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const scheduleByIdConfig = {
+  method: "get" as const,
+  paramsSchema: InstructorScheduleParams,
+  handler: getInstructorScheduleController,
+  openapi: {
+    summary: "Get instructor schedule by ID",
+    description:
+      "Get a specific schedule version for an instructor by schedule ID",
+    responses: {
+      200: {
+        description: "Successfully retrieved schedule",
+        schema: ActiveScheduleResponse,
+      },
+      400: {
+        description: "Invalid instructor ID or schedule ID parameter",
+        schema: MessageErrorResponse,
+      },
+      404: {
+        description: "Schedule not found",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const createScheduleConfig = {
+  method: "post" as const,
+  paramsSchema: InstructorIdParams,
+  bodySchema: CreateScheduleRequest,
+  middleware: [verifyAuthentication] as RequestHandler[],
+  handler: createInstructorScheduleController,
+  openapi: {
+    summary: "Create instructor schedule",
+    description: "Create a new schedule version for an instructor",
+    responses: {
+      201: {
+        description: "Schedule version created successfully",
+        schema: CreateScheduleResponse,
+      },
+      400: {
+        description: "Invalid request parameters or body",
+        schema: MessageErrorResponse,
+      },
+      401: {
+        description: "Unauthorized - authentication required",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const instructorAvailableSlotsConfig = {
+  method: "get" as const,
+  paramsSchema: InstructorIdParams,
+  querySchema: InstructorAvailableSlotsQuery,
+  handler: getInstructorAvailableSlotsController,
+  openapi: {
+    summary: "Get instructor available slots",
+    description: "Get available time slots for a specific instructor",
+    responses: {
+      200: {
+        description: "Successfully retrieved available slots",
+        schema: InstructorAvailableSlotsResponse,
+      },
+      400: {
+        description: "Invalid parameters",
+        schema: MessageErrorResponse,
+      },
+      404: {
+        description: "Instructor not found",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const validatedRouteConfigs = {
-  "/profiles": profilesConfig,
-  "/all-profiles": allProfilesConfig,
-  "/available-slots": availableSlotsConfig,
-  "/:id/classes/:classId/same-date": sameDateClassesConfig,
-  "/:id/calendar-classes": calendarClassesConfig,
-  "/:id": instructorByIdConfig,
-  "/:id/profile": instructorProfileConfig,
-  "/:id/schedules": instructorSchedulesConfig,
-  "/class/:id": classInstructorConfig,
+  "/profiles": [profilesConfig],
+  "/all-profiles": [allProfilesConfig],
+  "/available-slots": [availableSlotsConfig],
+  "/:id/classes/:classId/same-date": [sameDateClassesConfig],
+  "/:id/calendar-classes": [calendarClassesConfig],
+  "/:id": [instructorByIdConfig],
+  "/:id/profile": [instructorProfileConfig],
+  "/:id/schedules": [instructorSchedulesConfig, createScheduleConfig],
+  "/:id/schedules/active": [activeScheduleConfig],
+  "/:id/schedules/:scheduleId": [scheduleByIdConfig],
+  "/:id/available-slots": [instructorAvailableSlotsConfig],
+  "/class/:id": [classInstructorConfig],
 } as const;
 
 export const instructorsRouter = express.Router();
@@ -290,31 +418,10 @@ registerRoutes(instructorsRouter, validatedRouteConfigs);
 
 export { validatedRouteConfigs as instructorsRouterConfig };
 
-instructorsRouter.get("/:id/schedules/active", parseId, (req, res) => {
-  getActiveInstructorScheduleController(req as RequestWithId, res);
-});
-
-instructorsRouter.get("/:id/schedules/:scheduleId", parseId, (req, res) => {
-  getInstructorScheduleController(req as RequestWithId, res);
-});
-
-instructorsRouter.post(
-  "/:id/schedules",
-  parseId,
-  verifyAuthentication,
-  (req, res) => {
-    createInstructorScheduleController(req as RequestWithId, res);
-  },
-);
-
 instructorsRouter.post(
   "/schedules/post-termination",
   createInstructorPostTerminationScheduleController,
 );
-
-instructorsRouter.get("/:id/available-slots", parseId, (req, res) => {
-  getInstructorAvailableSlotsController(req as RequestWithId, res);
-});
 
 // Instructor absence routes
 instructorsRouter.get("/:id/absences", parseId, (req, res) => {

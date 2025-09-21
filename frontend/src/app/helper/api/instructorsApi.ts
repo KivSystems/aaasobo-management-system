@@ -19,6 +19,10 @@ import type {
   InstructorSchedule,
   AvailableSlot,
   SimpleInstructorProfile,
+  CreateScheduleRequest,
+  ActiveInstructorSchedule,
+  AvailableSlotsQuery,
+  AvailableSlotsResponse,
 } from "@shared/schemas/instructors";
 
 const BACKEND_ORIGIN =
@@ -289,9 +293,7 @@ export const getSameDateClasses = async (
 };
 
 // Versioned Schedule System APIs
-export const getInstructorSchedules = async (
-  instructorId: number,
-): Promise<Response<{ schedules: InstructorSchedule[] }>> => {
+export const getInstructorSchedules = async (instructorId: number) => {
   try {
     const response = await fetch(`${BASE_URL}/${instructorId}/schedules`, {
       cache: "no-store",
@@ -301,14 +303,8 @@ export const getInstructorSchedules = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result = (await response.json()) as { data: InstructorSchedule[] };
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return in the expected format
     return { schedules: result.data };
   } catch (error) {
     console.error("Failed to fetch instructor schedules:", error);
@@ -319,7 +315,7 @@ export const getInstructorSchedules = async (
 export const getInstructorScheduleById = async (
   instructorId: number,
   scheduleId: number,
-): Promise<Response<{ schedule: InstructorScheduleWithSlots }>> => {
+) => {
   try {
     const response = await fetch(
       `${BASE_URL}/${instructorId}/schedules/${scheduleId}`,
@@ -332,14 +328,10 @@ export const getInstructorScheduleById = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result = (await response.json()) as {
+      data: InstructorScheduleWithSlots;
+    };
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return in the expected format
     return { schedule: result.data };
   } catch (error) {
     console.error("Failed to fetch instructor schedule details:", error);
@@ -352,7 +344,7 @@ export const createInstructorSchedule = async (
   effectiveFrom: string,
   slots: Omit<InstructorSlot, "scheduleId">[],
   cookie: string,
-): Promise<Response<{ schedule: InstructorScheduleWithSlots }>> => {
+) => {
   try {
     const response = await fetch(`${BASE_URL}/${instructorId}/schedules`, {
       method: "POST",
@@ -365,21 +357,17 @@ export const createInstructorSchedule = async (
         effectiveFrom,
         slots,
         timezone: "Asia/Tokyo",
-      }),
+      } as CreateScheduleRequest),
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result = (await response.json()) as {
+      data: ActiveInstructorSchedule;
+    };
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return in the expected format
     return { schedule: result.data };
   } catch (error) {
     console.error("Failed to create instructor schedule:", error);
@@ -390,7 +378,7 @@ export const createInstructorSchedule = async (
 // Create instructors post termination Schedule
 export const createInstructorPostTerminationSchedule = async (
   authorization: string,
-): Promise<Response<{ schedule: InstructorScheduleWithSlots }>> => {
+) => {
   try {
     const response = await fetch(`${BASE_URL}/schedules/post-termination`, {
       method: "POST",
@@ -404,14 +392,10 @@ export const createInstructorPostTerminationSchedule = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result = (await response.json()) as {
+      data: InstructorScheduleWithSlots;
+    };
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return in the expected format
     return { schedule: result.data };
   } catch (error) {
     console.error(
@@ -427,14 +411,14 @@ export const getInstructorAvailableSlots = async (
   startDate: string,
   endDate: string,
   excludeBookedSlots: boolean,
-): Promise<Response<{ data: AvailableSlot[] }>> => {
+) => {
   try {
     const params = new URLSearchParams({
       start: startDate,
       end: endDate,
       timezone: "Asia/Tokyo",
       excludeBookedSlots: excludeBookedSlots.toString(),
-    });
+    } as AvailableSlotsQuery & { excludeBookedSlots: string });
 
     const response = await fetch(
       `${BASE_URL}/${instructorId}/available-slots?${params}`,
@@ -447,14 +431,8 @@ export const getInstructorAvailableSlots = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result = (await response.json()) as { data: AvailableSlot[] };
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return in the expected format
     return { data: result.data };
   } catch (error) {
     console.error("Failed to fetch instructor available slots:", error);
@@ -481,7 +459,7 @@ export const getAllInstructorAvailableSlots = async (
       throw new Error(`Failed to fetch: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as AvailableSlotsResponse;
     return data;
   } catch (error) {
     console.error("Failed to fetch all instructor available slots:", error);
@@ -509,12 +487,6 @@ export const getInstructorAbsences = async (
 
     const result = await response.json();
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return in the expected format
     return { absences: result.data };
   } catch (error) {
     console.error("Failed to fetch instructor absences:", error);
@@ -544,12 +516,6 @@ export const addInstructorAbsence = async (
 
     const result = await response.json();
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return in the expected format
     return { absence: result.data };
   } catch (error) {
     console.error("Failed to add instructor absence:", error);
@@ -581,12 +547,6 @@ export const deleteInstructorAbsence = async (
 
     const result = await response.json();
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return in the expected format
     return { absence: result.data };
   } catch (error) {
     console.error("Failed to delete instructor absence:", error);
@@ -598,7 +558,7 @@ export const deleteInstructorAbsence = async (
 export const getActiveInstructorSchedule = async (
   instructorId: number,
   effectiveDate: string,
-): Promise<Response<InstructorScheduleWithSlots>> => {
+) => {
   try {
     const url = new URL(`${BASE_URL}/${instructorId}/schedules/active`);
     url.searchParams.append("effectiveDate", effectiveDate);
@@ -611,15 +571,11 @@ export const getActiveInstructorSchedule = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    const result = (await response.json()) as {
+      data: InstructorScheduleWithSlots;
+    };
 
-    // Handle the backend response format { message, data }
-    if ("message" in result && !result.data) {
-      return { message: result.message };
-    }
-
-    // Return the schedule directly (not wrapped in additional object)
-    return result.data;
+    return { schedule: result.data };
   } catch (error) {
     console.error("Failed to fetch active instructor schedule:", error);
     throw error;

@@ -13,7 +13,7 @@ export type RouteHandler = (
 
 export type RouteConfig = {
   method: "get" | "post" | "put" | "patch" | "delete";
-  requestSchema?: z.ZodSchema;
+  bodySchema?: z.ZodSchema;
   paramsSchema?: z.ZodSchema;
   querySchema?: z.ZodSchema;
   handler: RouteHandler;
@@ -31,47 +31,49 @@ export type RouteConfig = {
 export const registerRoutesFromConfig = (
   registry: OpenAPIRegistry,
   basePath: string,
-  routeConfigs: Record<string, RouteConfig>,
+  routeConfigs: Record<string, readonly RouteConfig[]>,
 ) => {
-  Object.entries(routeConfigs).forEach(([path, config]) => {
-    const fullPath = basePath + path;
+  Object.entries(routeConfigs).forEach(([path, configs]) => {
+    configs.forEach((config) => {
+      const fullPath = basePath + path;
 
-    // Build responses
-    const responses: Record<string, ResponseConfig> = {};
-    Object.entries(config.openapi.responses).forEach(
-      ([status, responseConfig]) => {
-        responses[status] = {
-          description: responseConfig.description,
-        };
-
-        if (responseConfig.schema) {
-          responses[status].content = {
-            "application/json": {
-              schema: responseConfig.schema,
-            },
+      // Build responses
+      const responses: Record<string, ResponseConfig> = {};
+      Object.entries(config.openapi.responses).forEach(
+        ([status, responseConfig]) => {
+          responses[status] = {
+            description: responseConfig.description,
           };
-        }
-      },
-    );
 
-    // Register path
-    registry.registerPath({
-      method: config.method,
-      path: fullPath,
-      summary: config.openapi.summary,
-      description: config.openapi.description,
-      request: config.requestSchema
-        ? {
-            body: {
-              content: {
-                "application/json": {
-                  schema: config.requestSchema,
+          if (responseConfig.schema) {
+            responses[status].content = {
+              "application/json": {
+                schema: responseConfig.schema,
+              },
+            };
+          }
+        },
+      );
+
+      // Register path
+      registry.registerPath({
+        method: config.method,
+        path: fullPath,
+        summary: config.openapi.summary,
+        description: config.openapi.description,
+        request: config.bodySchema
+          ? {
+              body: {
+                content: {
+                  "application/json": {
+                    schema: config.bodySchema,
+                  },
                 },
               },
-            },
-          }
-        : undefined,
-      responses,
+            }
+          : undefined,
+        responses,
+      });
     });
   });
 };
