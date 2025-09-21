@@ -38,13 +38,8 @@ export default function InstructorSchedule({
           instructorId,
           effectiveDate,
         );
-        if ("message" in response) {
-          setError(response.message);
-          return;
-        }
-
         // Set the slots from the active schedule
-        setSlots(response.slots || []);
+        setSlots(response.schedule?.slots || []);
       } catch (error) {
         console.error("Failed to fetch instructor schedule:", error);
         setError("Failed to load instructor schedule");

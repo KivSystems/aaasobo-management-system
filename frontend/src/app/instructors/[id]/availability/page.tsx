@@ -25,11 +25,8 @@ const Page = () => {
           instructorId,
           today,
         );
-
-        if ("slots" in scheduleData && scheduleData.slots) {
-          setSlots(scheduleData.slots);
-        } else if ("message" in scheduleData) {
-          setError(scheduleData.message);
+        if (scheduleData.schedule?.slots) {
+          setSlots(scheduleData.schedule.slots);
         }
       } catch (err) {
         console.error("Failed to fetch instructor schedule:", err);

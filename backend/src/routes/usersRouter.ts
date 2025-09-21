@@ -17,7 +17,7 @@ import {
 
 const authenticateConfig = {
   method: "post" as const,
-  requestSchema: authenticateSchema,
+  bodySchema: authenticateSchema,
   handler: authenticateUserController,
   openapi: {
     summary: "Authenticate user",
@@ -44,7 +44,7 @@ const authenticateConfig = {
 
 const sendPasswordResetConfig = {
   method: "post" as const,
-  requestSchema: sendPasswordResetSchema,
+  bodySchema: sendPasswordResetSchema,
   handler: sendUserResetEmailController,
   openapi: {
     summary: "Send password reset email",
@@ -63,7 +63,7 @@ const sendPasswordResetConfig = {
 
 const verifyResetTokenConfig = {
   method: "post" as const,
-  requestSchema: verifyResetTokenSchema,
+  bodySchema: verifyResetTokenSchema,
   handler: verifyResetTokenController,
   openapi: {
     summary: "Verify password reset token",
@@ -82,7 +82,7 @@ const verifyResetTokenConfig = {
 
 const updatePasswordConfig = {
   method: "patch" as const,
-  requestSchema: updatePasswordSchema,
+  bodySchema: updatePasswordSchema,
   handler: updatePasswordController,
   openapi: {
     summary: "Update password",
@@ -101,10 +101,10 @@ const updatePasswordConfig = {
 
 // http://localhost:4000/users
 const routeConfigs = {
-  "/authenticate": authenticateConfig,
-  "/send-password-reset": sendPasswordResetConfig,
-  "/verify-reset-token": verifyResetTokenConfig,
-  "/update-password": updatePasswordConfig,
+  "/authenticate": [authenticateConfig],
+  "/send-password-reset": [sendPasswordResetConfig],
+  "/verify-reset-token": [verifyResetTokenConfig],
+  "/update-password": [updatePasswordConfig],
 } as const;
 
 export const usersRouter = express.Router();

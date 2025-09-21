@@ -99,6 +99,33 @@ export const ClassInstructorResponse = z.object({
   instructorId: z.number().int().positive().describe("Instructor ID for the class"),
 }).describe("Class to instructor mapping");
 
+// Active schedule query schema
+export const ActiveScheduleQuery = z.object({
+  effectiveDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Effective date must be in YYYY-MM-DD format").describe("Date to check for active schedule"),
+});
+
+// Instructor slot schema
+export const InstructorSlot = z.object({
+  scheduleId: z.number().int().positive().describe("Schedule ID"),
+  weekday: z.number().int().min(0).max(6).describe("Day of week (0=Sunday, 6=Saturday)"),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/, "Start time must be in HH:MM format").describe("Start time in HH:MM format"),
+});
+
+// Active schedule with slots
+export const ActiveInstructorSchedule = z.object({
+  id: z.number().int().positive().describe("Schedule ID"),
+  instructorId: z.number().int().positive().describe("Instructor ID"),
+  effectiveFrom: z.iso.datetime().describe("Effective from date"),
+  effectiveTo: z.iso.datetime().nullable().describe("Effective to date"),
+  timezone: z.string().describe("Timezone"),
+  slots: z.array(InstructorSlot).describe("Array of instructor time slots"),
+});
+
+export const ActiveScheduleResponse = z.object({
+  message: z.string().describe("Success message"),
+  data: ActiveInstructorSchedule.describe("Active instructor schedule with slots"),
+});
+
 // Available slots schemas
 export const AvailableSlotsQuery = z.object({
   start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Start date must be in YYYY-MM-DD format").describe("Start date for slot search"),
@@ -109,9 +136,30 @@ export const AvailableSlotsQuery = z.object({
   "Start date must be before end date"
 );
 
+export const InstructorAvailableSlotsQuery = z.object({
+  start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Start date must be in YYYY-MM-DD format").describe("Start date for slot search"),
+  end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "End date must be in YYYY-MM-DD format").describe("End date for slot search"),
+  timezone: z.literal("Asia/Tokyo").describe("Timezone (currently only Asia/Tokyo is supported)"),
+  excludeBookedSlots: z.string().optional().describe("Optional flag to exclude booked slots ('true' to exclude, any other value to include)"),
+}).refine(
+  (data) => new Date(data.start) < new Date(data.end),
+  "Start date must be before end date"
+);
+
+// Simple slot for individual instructor queries  
+export const InstructorSlotTime = z.object({
+  dateTime: z.string().describe("ISO datetime string for the available slot"),
+});
+
+// Slot with instructor list for multi-instructor queries
 export const AvailableSlot = z.object({
-  dateTime: z.iso.datetime().describe("ISO datetime string for the available slot"),
+  dateTime: z.string().describe("ISO datetime string for the available slot"),
   availableInstructors: z.array(z.number().int().positive()).describe("Array of instructor IDs available for this slot"),
+});
+
+export const InstructorAvailableSlotsResponse = z.object({
+  message: z.string().describe("Success message"),
+  data: z.array(InstructorSlotTime).describe("Array of available time slots for the instructor"),
 });
 
 export const AvailableSlotsResponse = z.object({
@@ -123,6 +171,28 @@ export const AvailableSlotsResponse = z.object({
 export const InstructorClassParams = z.object({
   id: z.string().regex(/^\d+$/, "Instructor ID must be a valid number").transform(Number),
   classId: z.string().regex(/^\d+$/, "Class ID must be a valid number").transform(Number),
+});
+
+export const InstructorScheduleParams = z.object({
+  id: z.string().regex(/^\d+$/, "Instructor ID must be a valid number").transform(Number),
+  scheduleId: z.string().regex(/^\d+$/, "Schedule ID must be a valid number").transform(Number),
+});
+
+// Create schedule request schemas
+export const CreateSlotRequest = z.object({
+  weekday: z.number().int().min(0).max(6).describe("Day of week (0=Sunday, 6=Saturday)"),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/, "Start time must be in HH:MM format").describe("Start time in HH:MM format"),
+});
+
+export const CreateScheduleRequest = z.object({
+  effectiveFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Effective from date must be in YYYY-MM-DD format").describe("Effective from date in YYYY-MM-DD format"),
+  timezone: z.string().min(1).describe("Timezone (e.g., Asia/Tokyo)"),
+  slots: z.array(CreateSlotRequest).min(1).describe("Array of time slots"),
+});
+
+export const CreateScheduleResponse = z.object({
+  message: z.string().describe("Success message"),
+  data: ActiveInstructorSchedule.describe("Created instructor schedule with slots"),
 });
 
 // Type exports
@@ -138,7 +208,18 @@ export type SimpleInstructorProfile = z.infer<typeof SimpleInstructorProfile>;
 export type InstructorSchedule = z.infer<typeof InstructorSchedule>;
 export type InstructorSchedulesResponse = z.infer<typeof InstructorSchedulesResponse>;
 export type ClassInstructorResponse = z.infer<typeof ClassInstructorResponse>;
+export type ActiveScheduleQuery = z.infer<typeof ActiveScheduleQuery>;
+export type InstructorSlot = z.infer<typeof InstructorSlot>;
+export type ActiveInstructorSchedule = z.infer<typeof ActiveInstructorSchedule>;
+export type ActiveScheduleResponse = z.infer<typeof ActiveScheduleResponse>;
 export type AvailableSlotsQuery = z.infer<typeof AvailableSlotsQuery>;
+export type InstructorAvailableSlotsQuery = z.infer<typeof InstructorAvailableSlotsQuery>;
+export type InstructorSlotTime = z.infer<typeof InstructorSlotTime>;
 export type AvailableSlot = z.infer<typeof AvailableSlot>;
+export type InstructorAvailableSlotsResponse = z.infer<typeof InstructorAvailableSlotsResponse>;
 export type AvailableSlotsResponse = z.infer<typeof AvailableSlotsResponse>;
 export type InstructorClassParams = z.infer<typeof InstructorClassParams>;
+export type InstructorScheduleParams = z.infer<typeof InstructorScheduleParams>;
+export type CreateSlotRequest = z.infer<typeof CreateSlotRequest>;
+export type CreateScheduleRequest = z.infer<typeof CreateScheduleRequest>;
+export type CreateScheduleResponse = z.infer<typeof CreateScheduleResponse>;

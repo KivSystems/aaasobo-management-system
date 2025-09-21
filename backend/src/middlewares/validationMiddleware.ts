@@ -17,17 +17,19 @@ export interface RequestWithParams<ParamsT> extends Omit<Request, "params"> {
   params: ParamsT;
 }
 
-export interface RequestWith<ParamsT, BodyT>
-  extends Omit<Request, "params" | "body"> {
-  params: ParamsT;
-  body: BodyT;
-}
-
 export interface RequestWithQuery<QueryT> extends Omit<Request, "query"> {
   query: QueryT;
 }
 
-const validateRequest = (schema: z.ZodSchema) => {
+// Flexible RequestWith interface supporting any combination of params, body, and query
+export interface RequestWith<ParamsT = any, BodyT = any, QueryT = any>
+  extends Omit<Request, "params" | "body" | "query"> {
+  params: ParamsT;
+  body: BodyT;
+  query: QueryT;
+}
+
+const validateBody = (schema: z.ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const validatedData = schema.parse(req.body);
@@ -153,37 +155,39 @@ const validateResponse = (
  */
 export const registerRoutes = (
   router: Router,
-  routeConfigs: Record<string, RouteConfig>,
+  routeConfigs: Record<string, readonly RouteConfig[]>,
 ) => {
-  Object.entries(routeConfigs).forEach(([path, config]) => {
-    const middlewares = [];
+  Object.entries(routeConfigs).forEach(([path, configs]) => {
+    configs.forEach((config) => {
+      const middlewares = [];
 
-    // Add custom middleware if specified
-    if (config.middleware) {
-      middlewares.push(...config.middleware);
-    }
+      // Add custom middleware if specified
+      if (config.middleware) {
+        middlewares.push(...config.middleware);
+      }
 
-    // Add parameter validation middleware if schema exists
-    if (config.paramsSchema) {
-      middlewares.push(validateParams(config.paramsSchema));
-    }
+      // Add parameter validation middleware if schema exists
+      if (config.paramsSchema) {
+        middlewares.push(validateParams(config.paramsSchema));
+      }
 
-    // Add query validation middleware if schema exists
-    if (config.querySchema) {
-      middlewares.push(validateQuery(config.querySchema));
-    }
+      // Add query validation middleware if schema exists
+      if (config.querySchema) {
+        middlewares.push(validateQuery(config.querySchema));
+      }
 
-    // Add request validation middleware if schema exists
-    if (config.requestSchema) {
-      middlewares.push(validateRequest(config.requestSchema));
-    }
+      // Add body validation middleware if schema exists
+      if (config.bodySchema) {
+        middlewares.push(validateBody(config.bodySchema));
+      }
 
-    // Add response validation middleware
-    middlewares.push(validateResponse(config.openapi.responses));
+      // Add response validation middleware
+      middlewares.push(validateResponse(config.openapi.responses));
 
-    // Add the handler (cast to RequestHandler for Express compatibility)
-    middlewares.push(config.handler as RequestHandler);
+      // Add the handler (cast to RequestHandler for Express compatibility)
+      middlewares.push(config.handler as RequestHandler);
 
-    router[config.method](path, ...middlewares);
+      router[config.method](path, ...middlewares);
+    });
   });
 };
