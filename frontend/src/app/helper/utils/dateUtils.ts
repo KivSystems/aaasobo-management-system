@@ -1,4 +1,4 @@
-import { addMinutes, startOfDay, isAfter } from "date-fns";
+import { addMinutes, addMonths, startOfDay, isAfter } from "date-fns";
 import { format, toZonedTime } from "date-fns-tz";
 
 // Function to format time for a given time zone(e.g., 19:00)
@@ -154,6 +154,9 @@ export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
 
 export const nDaysLater = (days: number, dateTime: Date = new Date()) =>
   new Date(dateTime.getTime() + days * 24 * 60 * 60 * 1000);
+
+export const nMonthsLater = (months: number, dateTime: Date = new Date()) =>
+  addMonths(dateTime, months);
 
 export const hasTimePassed = (targetTime: Date | string): boolean =>
   Date.now() > new Date(targetTime).getTime();
