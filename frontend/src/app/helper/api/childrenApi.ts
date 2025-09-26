@@ -9,12 +9,23 @@ import {
   PROFILE_UPDATE_FAILED_MESSAGE,
   PROFILE_UPDATE_SUCCESS_MESSAGE,
 } from "../messages/customerDashboard";
+import type {
+  ChildProfile,
+  ChildrenResponse,
+  RegisterChildRequest,
+  UpdateChildRequest,
+  UpdateChildResponse,
+  DeleteChildResponse,
+  DeleteChildConflictResponse,
+} from "@shared/schemas/children";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
 // GET children data by customer id
-export const getChildrenByCustomerId = async (customerId: number) => {
+export const getChildrenByCustomerId = async (
+  customerId: number,
+): Promise<Child[]> => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/children?customerId=${customerId}`,
@@ -22,8 +33,13 @@ export const getChildrenByCustomerId = async (customerId: number) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const { children } = await response.json();
-    return children;
+    const data: ChildrenResponse = await response.json();
+    // Transform null values to undefined to match frontend Child type
+    return data.children.map((child) => ({
+      ...child,
+      birthdate: child.birthdate ?? undefined,
+      personalInfo: child.personalInfo ?? undefined,
+    }));
   } catch (error) {
     console.error("Failed to fetch children data:", error);
     throw error;
@@ -31,14 +47,19 @@ export const getChildrenByCustomerId = async (customerId: number) => {
 };
 
 // GET a child data by the child's id
-export const getChildById = async (id: number) => {
+export const getChildById = async (id: number): Promise<Child> => {
   try {
     const response = await fetch(`${BACKEND_ORIGIN}/children/${id}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const child = await response.json();
-    return child;
+    const child: ChildProfile = await response.json();
+    // Transform null values to undefined to match frontend Child type
+    return {
+      ...child,
+      birthdate: child.birthdate ?? undefined,
+      personalInfo: child.personalInfo ?? undefined,
+    };
   } catch (error) {
     console.error("Failed to fetch child data:", error);
     throw error;
@@ -53,12 +74,13 @@ export const addChild = async (
 ): Promise<LocalizedMessages> => {
   const childrenURL = `${BACKEND_ORIGIN}/children`;
   const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({
+  const requestData: RegisterChildRequest = {
     name,
     birthdate,
     personalInfo,
     customerId,
-  });
+  };
+  const body = JSON.stringify(requestData);
 
   try {
     const response = await fetch(childrenURL, {
@@ -91,12 +113,13 @@ export const updateChildProfile = async (
 ): Promise<LocalizedMessages> => {
   const childrenURL = `${BACKEND_ORIGIN}/children/${childId}`;
   const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({
+  const requestData: UpdateChildRequest = {
     name: childName,
     birthdate: childBirthdate,
     personalInfo: childInfo,
     customerId: Number(customerId),
-  });
+  };
+  const body = JSON.stringify(requestData);
 
   try {
     const response = await fetch(childrenURL, {
@@ -109,7 +132,7 @@ export const updateChildProfile = async (
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data: UpdateChildResponse = await response.json();
 
     if (data.message === "no_change") {
       return {
@@ -141,7 +164,7 @@ export const deleteChild = async (
     });
 
     if (response.status === 409) {
-      const data = await response.json();
+      const data: DeleteChildConflictResponse = await response.json();
 
       if (data.message === "has_completed_class") {
         return {

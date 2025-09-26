@@ -1,19 +1,19 @@
 import { z } from "zod";
 
 export const AdminIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Admin ID must be a valid number"),
+  id: z.string().regex(/^\d+$/, "Admin ID must be a valid number").transform(val => parseInt(val, 10))
 });
 
 export const InstructorIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Instructor ID must be a valid number"),
+  id: z.string().regex(/^\d+$/, "Instructor ID must be a valid number").transform(val => parseInt(val, 10))
 });
 
 export const PlanIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Plan ID must be a valid number"),
+  id: z.string().regex(/^\d+$/, "Plan ID must be a valid number").transform(val => parseInt(val, 10))
 });
 
 export const EventIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Event ID must be a valid number"),
+  id: z.string().regex(/^\d+$/, "Event ID must be a valid number").transform(val => parseInt(val, 10))
 });
 
 // Admin registration and update schemas

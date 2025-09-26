@@ -57,6 +57,7 @@ export const createMockPrisma = () => {
     },
     classAttendance: {
       findMany: vi.fn(),
+      findFirst: vi.fn(),
       create: vi.fn(),
       createMany: vi.fn(),
       deleteMany: vi.fn(),
@@ -93,6 +94,9 @@ export const createMockPrisma = () => {
     children: {
       findMany: vi.fn(),
       findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
     },
     $queryRaw: vi.fn(),
     $transaction: vi.fn(),
@@ -144,6 +148,16 @@ export const createTestInstructor = () => ({
   createdAt: new Date(),
   updatedAt: new Date(),
   determinationAt: null,
+});
+
+export const createTestChild = () => ({
+  id: 1,
+  name: "Test Child",
+  birthdate: "2016-03-15",
+  personalInfo: "Loves art",
+  customerId: 1,
+  createdAt: new Date(),
+  updatedAt: new Date(),
 });
 
 /**
