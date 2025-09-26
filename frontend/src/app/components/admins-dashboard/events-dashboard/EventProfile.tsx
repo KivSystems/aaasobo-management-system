@@ -1,9 +1,8 @@
 "use client";
 
 import styles from "./EventProfile.module.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useFormState } from "react-dom";
-import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateEventAction } from "@/app/actions/updateContent";
 import { deleteEventAction } from "@/app/actions/deleteContent";
 import {
@@ -31,8 +30,33 @@ function EventProfile({
   const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
     {},
   );
-  const { localMessages, clearErrorMessage } =
-    useFormMessages(updateResultState);
+  // Handle form messages manually for UpdateFormState
+  const [localMessages, setLocalMessages] = useState<Record<string, string>>(
+    {},
+  );
+
+  useEffect(() => {
+    if (updateResultState) {
+      const newMessages: Record<string, string> = {};
+      if (updateResultState.name) newMessages.name = updateResultState.name;
+      if (updateResultState.color) newMessages.color = updateResultState.color;
+      if (updateResultState.errorMessage)
+        newMessages.errorMessage = updateResultState.errorMessage;
+      setLocalMessages(newMessages);
+    }
+  }, [updateResultState]);
+
+  const clearErrorMessage = useCallback((field: string) => {
+    setLocalMessages((prev) => {
+      if (field === "all") {
+        return {};
+      }
+      const updatedMessages = { ...prev };
+      delete updatedMessages[field];
+      delete updatedMessages.errorMessage;
+      return updatedMessages;
+    });
+  }, []);
   const [previousEvent, setPreviousEvent] = useState<BusinessEventType | null>(
     typeof event !== "string" ? event : null,
   );

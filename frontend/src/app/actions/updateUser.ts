@@ -17,7 +17,7 @@ import { getCookie } from "../../middleware";
 import {
   childProfileSchema,
   customerProfileSchema,
-} from "../schemas/customerDashboardSchemas.ts";
+} from "../schemas/customerDashboardSchemas";
 import { updateCustomerProfile } from "../helper/api/customersApi";
 import { revalidatePath } from "next/cache";
 import {
@@ -52,8 +52,7 @@ export async function updateAdminAction(
 
     const response = await updateAdmin(
       id,
-      parsedForm.data.name,
-      parsedForm.data.email,
+      { name: parsedForm.data.name, email: parsedForm.data.email },
       cookie,
     );
 

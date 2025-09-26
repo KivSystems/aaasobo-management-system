@@ -55,11 +55,8 @@ type ClassType = {
   classCode: string;
 };
 
-type Admin = {
-  id: number;
-  name: string;
-  email: string;
-};
+// Use shared types instead of local definitions
+type Admin = import("@shared/schemas/admins").AdminProfile;
 
 type Customer = {
   id: number;
@@ -250,11 +247,18 @@ type UpdateFormState = {
   errorMessage?: string;
   successMessage?: string;
   skipProcessing?: string;
+  admin?: Admin | null;
+  instructor?: InstructorProfile | null;
+  event?: BusinessEventType | null;
+  plan?: Plan | null;
+  result?: string | boolean;
 };
 
 type DeleteFormState = {
   errorMessage?: string;
   successMessage?: string;
+  id?: number | null;
+  message?: string;
 };
 
 type UpcomingClass = {
@@ -311,7 +315,7 @@ type SetClassInfoList = React.Dispatch<React.SetStateAction<ClassInfoList>>;
 type BusinessSchedule = {
   id: number;
   date: string;
-  name: string;
+  event: string;
   color: string;
 };
 

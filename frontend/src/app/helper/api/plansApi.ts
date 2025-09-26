@@ -81,11 +81,15 @@ export const updatePlan = async (
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/update/${planId}`;
     const headers = { "Content-Type": "application/json", Cookie: cookie };
-    const body = JSON.stringify({
-      name: planName,
-      description: planDescription,
-      isDelete,
-    });
+    const body = JSON.stringify(
+      isDelete
+        ? { isDelete: true }
+        : {
+            isDelete: false,
+            name: planName,
+            description: planDescription,
+          },
+    );
 
     const response = await fetch(apiURL, {
       method: "PATCH",

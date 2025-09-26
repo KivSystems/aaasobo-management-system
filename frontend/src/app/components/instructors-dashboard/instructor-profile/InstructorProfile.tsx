@@ -1,9 +1,8 @@
 "use client";
 
 import styles from "./InstructorProfile.module.scss";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useFormState } from "react-dom";
-import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateInstructorAction } from "@/app/actions/updateUser";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import UserStatusSwitcher from "@/app/components/elements/UserStatusSwitcher/UserStatusSwitcher";
@@ -48,8 +47,43 @@ function InstructorProfile({
     updateInstructorAction,
     {},
   );
-  const { localMessages, clearErrorMessage } =
-    useFormMessages(updateResultState);
+  // Handle form messages manually for UpdateFormState
+  const [localMessages, setLocalMessages] = useState<Record<string, string>>(
+    {},
+  );
+
+  useEffect(() => {
+    if (updateResultState) {
+      const newMessages: Record<string, string> = {};
+      if (updateResultState.name) newMessages.name = updateResultState.name;
+      if (updateResultState.nickname)
+        newMessages.nickname = updateResultState.nickname;
+      if (updateResultState.email) newMessages.email = updateResultState.email;
+      if (updateResultState.classURL)
+        newMessages.classURL = updateResultState.classURL;
+      if (updateResultState.meetingId)
+        newMessages.meetingId = updateResultState.meetingId;
+      if (updateResultState.passcode)
+        newMessages.passcode = updateResultState.passcode;
+      if (updateResultState.introductionURL)
+        newMessages.introductionURL = updateResultState.introductionURL;
+      if (updateResultState.errorMessage)
+        newMessages.errorMessage = updateResultState.errorMessage;
+      setLocalMessages(newMessages);
+    }
+  }, [updateResultState]);
+
+  const clearErrorMessage = useCallback((field: string) => {
+    setLocalMessages((prev) => {
+      if (field === "all") {
+        return {};
+      }
+      const updatedMessages = { ...prev };
+      delete updatedMessages[field];
+      delete updatedMessages.errorMessage;
+      return updatedMessages;
+    });
+  }, []);
   const [previousInstructor, setPreviousInstructor] = useState<
     Instructor | InstructorProfile | null
   >(typeof instructor !== "string" ? instructor : null);
@@ -102,12 +136,11 @@ function InstructorProfile({
 
   useEffect(() => {
     if (updateResultState !== undefined) {
-      if ("instructor" in updateResultState) {
-        const result = updateResultState as { instructor: Instructor };
+      if ("instructor" in updateResultState && updateResultState.instructor) {
         toast.success("Profile updated successfully!");
         setIsEditing(false);
 
-        const newInstructor = result.instructor;
+        const newInstructor = updateResultState.instructor;
         if (
           typeof newInstructor.icon === "string" &&
           token &&

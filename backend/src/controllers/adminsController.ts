@@ -1,4 +1,9 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import {
+  RequestWithParams,
+  RequestWithBody,
+  RequestWith,
+} from "../middlewares/validationMiddleware";
 import { registerAdmin, getAdminByEmail } from "../services/adminsService";
 import {
   getAllAdmins,
@@ -34,14 +39,27 @@ import {
 } from "../services/eventsService";
 import { getAllSubscriptions } from "../services/subscriptionsService";
 import { convertToISOString } from "../helper/dateUtils";
+import type {
+  AdminIdParams,
+  InstructorIdParams,
+  PlanIdParams,
+  EventIdParams,
+  RegisterAdminRequest,
+  UpdateAdminRequest,
+  RegisterInstructorRequest,
+  UpdateInstructorRequest,
+  RegisterPlanRequest,
+  UpdatePlanRequest,
+  RegisterEventRequest,
+  UpdateEventRequest,
+} from "@shared/schemas/admins";
 
 // Register Admin
-export const registerAdminController = async (req: Request, res: Response) => {
+export const registerAdminController = async (
+  req: RequestWithBody<RegisterAdminRequest>,
+  res: Response,
+) => {
   const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    return res.sendStatus(400);
-  }
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
@@ -67,17 +85,13 @@ export const registerAdminController = async (req: Request, res: Response) => {
 
 // Update the applicable admin data
 export const updateAdminProfileController = async (
-  req: Request,
+  req: RequestWith<AdminIdParams, UpdateAdminRequest>,
   res: Response,
 ) => {
   const adminId = parseInt(req.params.id);
   const { name, email } = req.body;
 
   try {
-    if (!name || !email) {
-      return res.sendStatus(400);
-    }
-
     // Normalize email
     const normalizedEmail = email.trim().toLowerCase();
 
@@ -98,12 +112,11 @@ export const updateAdminProfileController = async (
   }
 };
 
-export const deleteAdminController = async (req: Request, res: Response) => {
+export const deleteAdminController = async (
+  req: RequestWithParams<AdminIdParams>,
+  res: Response,
+) => {
   const adminId = parseInt(req.params.id);
-
-  if (isNaN(adminId)) {
-    return res.status(400).json({ error: "Invalid admin ID." });
-  }
 
   try {
     const deletedAdmin = await deleteAdmin(adminId);
@@ -157,11 +170,11 @@ function setErrorResponse(res: Response, error: unknown) {
     .json({ message: error instanceof Error ? error.message : `${error}` });
 }
 
-export const getAdminController = async (req: Request, res: Response) => {
+export const getAdminController = async (
+  req: RequestWithParams<AdminIdParams>,
+  res: Response,
+) => {
   const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    return res.status(400).json({ message: "Invalid ID provided." });
-  }
   try {
     const admin = await getAdminById(id);
     if (!admin) {
@@ -258,7 +271,7 @@ export const getAllInstructorsController = async (
 
 // Register instructor by admin
 export const registerInstructorController = async (
-  req: Request,
+  req: RequestWithBody<RegisterInstructorRequest>,
   res: Response,
 ) => {
   const icon = req.file;
@@ -279,19 +292,6 @@ export const registerInstructorController = async (
     passcode,
     introductionURL,
   } = req.body;
-
-  if (
-    !name ||
-    !email ||
-    !password ||
-    !nickname ||
-    !classURL ||
-    !meetingId ||
-    !passcode ||
-    !introductionURL
-  ) {
-    return res.sendStatus(400);
-  }
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
@@ -370,7 +370,7 @@ export const registerInstructorController = async (
 
 // Update the applicable instructor data
 export const updateInstructorProfileController = async (
-  req: Request,
+  req: RequestWith<InstructorIdParams, UpdateInstructorRequest>,
   res: Response,
 ) => {
   const id = parseInt(req.params.id);
@@ -397,7 +397,9 @@ export const updateInstructorProfileController = async (
   const normalizedEmail = email.trim().toLowerCase();
   // Normalize leavingDate and birthdate
   const normalizedLeavingDate =
-    leavingDate !== "null" ? new Date(convertToISOString(leavingDate)) : null;
+    leavingDate && leavingDate !== "null"
+      ? new Date(convertToISOString(leavingDate))
+      : null;
   const normalizedBirthdate = new Date(convertToISOString(birthdate));
 
   // Set unique checks list
@@ -591,12 +593,11 @@ export const getAllPlansController = async (_: Request, res: Response) => {
 };
 
 // Register a new plan
-export const registerPlanController = async (req: Request, res: Response) => {
+export const registerPlanController = async (
+  req: RequestWithBody<RegisterPlanRequest>,
+  res: Response,
+) => {
   const { name, weeklyClassTimes, description } = req.body;
-
-  if (!name || !weeklyClassTimes || !description) {
-    return res.sendStatus(400);
-  }
 
   try {
     await registerPlan({
@@ -613,27 +614,26 @@ export const registerPlanController = async (req: Request, res: Response) => {
 };
 
 // Update the applicable plan data
-export const updatePlanController = async (req: Request, res: Response) => {
+export const updatePlanController = async (
+  req: RequestWith<PlanIdParams, UpdatePlanRequest>,
+  res: Response,
+) => {
   const planId = parseInt(req.params.id);
-  const { name, description, isDelete } = req.body;
+  const body = req.body;
 
   try {
     // If the plan is marked for deletion, proceed with deletion process
-    if (isDelete) {
+    if (body.isDelete) {
       const deletedPlan = await deletePlan(planId);
       return res
         .status(200)
         .json({ message: "Plan deleted successfully", plan: deletedPlan });
     }
 
-    // Validate the input
-    if (!name) {
-      return res.sendStatus(400);
-    }
-
+    // When updating (not deleting), validation ensures both name and description are present
+    const { name, description } = body;
     const updatedPlan = await updatePlan(planId, name, description);
-
-    res.status(200).json({
+    return res.status(200).json({
       message: "Plan is updated successfully",
       plan: updatedPlan,
     });
@@ -667,21 +667,11 @@ export const getAllEventsController = async (_: Request, res: Response) => {
 };
 
 // Register a new event
-export const registerEventController = async (req: Request, res: Response) => {
+export const registerEventController = async (
+  req: RequestWithBody<RegisterEventRequest>,
+  res: Response,
+) => {
   const { name, color } = req.body;
-
-  // Validate the input
-  if (!name || !color) {
-    return res.sendStatus(400);
-  }
-
-  // Check if the event name is in the correct format
-  const nameFormatCheck = /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name);
-  if (nameFormatCheck === false) {
-    return res.status(422).json({
-      items: ["Event Name must be in the format: 日本語名 / English Name"],
-    });
-  }
 
   // Normalize the event name and color code
   const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
@@ -723,7 +713,7 @@ export const registerEventController = async (req: Request, res: Response) => {
 
 // Update the applicable event data
 export const updateEventProfileController = async (
-  req: Request,
+  req: RequestWith<EventIdParams, UpdateEventRequest>,
   res: Response,
 ) => {
   const eventId = parseInt(req.params.id);
@@ -734,19 +724,6 @@ export const updateEventProfileController = async (
   const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
 
   try {
-    // Validate the input
-    if (!name || !color) {
-      return res.sendStatus(400);
-    }
-
-    // Check if the event name is in the correct format
-    const nameFormatCheck = /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name);
-    if (nameFormatCheck === false) {
-      return res.status(422).json({
-        items: ["Event Name must be in the format: 日本語名 / English Name"],
-      });
-    }
-
     // Check if the event with the same name and color already exists
     const existingEvents = await getAllEvents();
     const eventNameExists = existingEvents.some(
@@ -781,12 +758,11 @@ export const updateEventProfileController = async (
 };
 
 // Delete the selected event
-export const deleteEventController = async (req: Request, res: Response) => {
+export const deleteEventController = async (
+  req: RequestWithParams<EventIdParams>,
+  res: Response,
+) => {
   const eventId = parseInt(req.params.id);
-
-  if (isNaN(eventId)) {
-    return res.status(400).json({ error: "Invalid event ID." });
-  }
 
   try {
     const deletedEvent = await deleteEvent(eventId);
