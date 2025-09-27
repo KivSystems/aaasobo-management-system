@@ -3,6 +3,6 @@
   "private": true,
   "description": "Shared schemas between frontend and backend",
   "dependencies": {
-    "zod": "^4.1.0"
+    "zod": "^4.1.11"
   }
 }

@@ -110,7 +110,7 @@ export default function AvailabilityCalendar({
               const absenceDate = new Date(absence.absentAt);
               return absenceDate >= info.start && absenceDate < info.end;
             })
-            .map((absence): CalendarEvent => {
+            .map((absence: InstructorAbsence): CalendarEvent => {
               const start = absence.absentAt;
               const end = new Date(
                 new Date(start).getTime() + 25 * 60000,

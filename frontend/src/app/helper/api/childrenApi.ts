@@ -35,7 +35,7 @@ export const getChildrenByCustomerId = async (
     }
     const data: ChildrenResponse = await response.json();
     // Transform null values to undefined to match frontend Child type
-    return data.children.map((child) => ({
+    return data.children.map((child: ChildProfile) => ({
       ...child,
       birthdate: child.birthdate ?? undefined,
       personalInfo: child.personalInfo ?? undefined,
