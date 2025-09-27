@@ -1,2 +1,5 @@
 .vercel
 .env*.local
+
+# Temporary development files
+TEMP-*.md
