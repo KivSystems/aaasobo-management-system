@@ -1,5 +1,5 @@
-import { addMinutes, addMonths, startOfDay, isAfter } from "date-fns";
-import { format, toZonedTime } from "date-fns-tz";
+import { addMinutes, addMonths, startOfDay, isAfter, format } from "date-fns";
+import { TZDate } from "@date-fns/tz";
 
 // Function to format time for a given time zone(e.g., 19:00)
 export const formatTime = (date: Date, timeZone: string) => {
@@ -50,13 +50,13 @@ export const formatTimeWithAddedMinutes = (
 
 export const isPastPreviousDayDeadline = (classDateUTC: string): boolean => {
   // Convert class date from UTC to Japan time
-  const classDateInJapan = toZonedTime(classDateUTC, "Asia/Tokyo");
+  const classDateInJapan = new TZDate(classDateUTC, "Asia/Tokyo");
 
   // Get the start of the class day in Japan time (00:00:00)
   const classDayStart = startOfDay(classDateInJapan);
 
   // Get the current date in Japan time (00:00:00 today)
-  const todayInJapan = startOfDay(toZonedTime(new Date(), "Asia/Tokyo"));
+  const todayInJapan = startOfDay(new TZDate(new Date(), "Asia/Tokyo"));
 
   // If class date is today or in the past, return true (deadline has passed)
   return !isAfter(classDayStart, todayInJapan);
