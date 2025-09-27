@@ -9,6 +9,7 @@ import {
   batchUpdateInstructorAbsences,
   type AbsenceChange,
 } from "@/app/actions/instructorAbsence";
+import type { InstructorAbsence } from "@shared/schemas/instructors";
 import Calendar from "@/app/components/features/calendar/Calendar";
 import Modal from "@/app/components/elements/modal/Modal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
@@ -105,7 +106,7 @@ export default function AvailabilityCalendar({
         // Add absences (red) - filter to current view range
         if ("absences" in absencesResponse) {
           const absenceEvents = absencesResponse.absences
-            .filter((absence) => {
+            .filter((absence: InstructorAbsence) => {
               const absenceDate = new Date(absence.absentAt);
               return absenceDate >= info.start && absenceDate < info.end;
             })
