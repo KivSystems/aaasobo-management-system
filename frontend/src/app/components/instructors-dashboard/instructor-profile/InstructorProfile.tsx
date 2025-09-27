@@ -34,6 +34,23 @@ import Uploader from "../../features/registerForm/uploadImages/Uploader";
 import { defaultUserImageUrl } from "@/app/helper/data/data";
 import Image from "next/image";
 
+// Define the specific string fields that are editable in this component
+type EditableInstructorFields =
+  | "name"
+  | "nickname"
+  | "birthdate"
+  | "workingTime"
+  | "lifeHistory"
+  | "favoriteFood"
+  | "hobby"
+  | "messageForChildren"
+  | "skill"
+  | "email"
+  | "classURL"
+  | "meetingId"
+  | "passcode"
+  | "introductionURL";
+
 function InstructorProfile({
   instructor,
   token,
@@ -73,17 +90,20 @@ function InstructorProfile({
     }
   }, [updateResultState]);
 
-  const clearErrorMessage = useCallback((field: string) => {
-    setLocalMessages((prev) => {
-      if (field === "all") {
-        return {};
-      }
-      const updatedMessages = { ...prev };
-      delete updatedMessages[field];
-      delete updatedMessages.errorMessage;
-      return updatedMessages;
-    });
-  }, []);
+  const clearErrorMessage = useCallback(
+    (field: string | EditableInstructorFields) => {
+      setLocalMessages((prev) => {
+        if (field === "all") {
+          return {};
+        }
+        const updatedMessages = { ...prev };
+        delete updatedMessages[field];
+        delete updatedMessages.errorMessage;
+        return updatedMessages;
+      });
+    },
+    [],
+  );
   const [previousInstructor, setPreviousInstructor] = useState<
     Instructor | InstructorProfile | null
   >(typeof instructor !== "string" ? instructor : null);
@@ -105,7 +125,7 @@ function InstructorProfile({
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>,
-    field: keyof Instructor,
+    field: EditableInstructorFields,
   ) => {
     if (latestInstructor) {
       setLatestInstructor({ ...latestInstructor, [field]: e.target.value });
