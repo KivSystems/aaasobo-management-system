@@ -94,6 +94,8 @@ export const getLoginPath = (type: UserType): string => {
       return "/instructors/login";
     case "customer":
       return "/customers/login";
+    default:
+      throw new Error(`Unknown user type: ${type}`);
   }
 };
 
@@ -106,5 +108,7 @@ export const getForgotPasswordPath = (type: UserType): string => {
       return "/auth/forgot-password?type=instructor";
     case "customer":
       return "/auth/forgot-password?type=customer";
+    default:
+      throw new Error(`Unknown user type: ${type}`);
   }
 };
