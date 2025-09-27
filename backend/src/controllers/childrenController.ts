@@ -1,4 +1,10 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import {
+  RequestWithParams,
+  RequestWithBody,
+  RequestWith,
+  RequestWithQuery,
+} from "../middlewares/validationMiddleware";
 import {
   deleteChild,
   getChildById,
@@ -12,14 +18,19 @@ import {
   deleteAttendancesByChildId,
 } from "../services/classAttendancesService";
 import { prisma } from "../../prisma/prismaClient";
-import { RequestWithId } from "../middlewares/parseId.middleware";
 import { convertToISOString } from "../helper/dateUtils";
+import type {
+  ChildIdParams,
+  GetChildrenQuery,
+  RegisterChildRequest,
+  UpdateChildRequest,
+} from "@shared/schemas/children";
 
-export const getChildrenController = async (req: Request, res: Response) => {
-  const customerId = req.query.customerId as string;
-  if (!customerId) {
-    return res.status(400).json({ error: "customerId is required" });
-  }
+export const getChildrenController = async (
+  req: RequestWithQuery<GetChildrenQuery>,
+  res: Response,
+) => {
+  const { customerId } = req.query;
 
   try {
     const children = await getChildren(customerId);
@@ -30,12 +41,11 @@ export const getChildrenController = async (req: Request, res: Response) => {
   }
 };
 
-export const registerChildController = async (req: Request, res: Response) => {
+export const registerChildController = async (
+  req: RequestWithBody<RegisterChildRequest>,
+  res: Response,
+) => {
   const { name, birthdate, personalInfo, customerId } = req.body;
-
-  if (!name || !birthdate || !personalInfo || !customerId) {
-    return res.sendStatus(400);
-  }
 
   const formattedBirthdate = convertToISOString(birthdate);
 
@@ -56,15 +66,11 @@ export const registerChildController = async (req: Request, res: Response) => {
 };
 
 export const updateChildProfileController = async (
-  req: RequestWithId,
+  req: RequestWith<ChildIdParams, UpdateChildRequest>,
   res: Response,
 ) => {
-  const childId = req.id;
+  const childId = req.params.id;
   const { name, birthdate, personalInfo, customerId } = req.body;
-
-  if (!name || !birthdate || !personalInfo || customerId == null) {
-    return res.sendStatus(400);
-  }
 
   const formattedBirthdate = convertToISOString(birthdate);
 
@@ -109,10 +115,10 @@ export const updateChildProfileController = async (
 };
 
 export const deleteChildController = async (
-  req: RequestWithId,
+  req: RequestWithParams<ChildIdParams>,
   res: Response,
 ) => {
-  const childId = req.id;
+  const childId = req.params.id;
 
   try {
     const hasCompletedClass = await checkIfChildHasCompletedClass(childId);
@@ -145,8 +151,11 @@ export const deleteChildController = async (
   }
 };
 
-export const getChildByIdController = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
+export const getChildByIdController = async (
+  req: RequestWithParams<ChildIdParams>,
+  res: Response,
+) => {
+  const id = req.params.id;
 
   try {
     const child = await getChildById(id);

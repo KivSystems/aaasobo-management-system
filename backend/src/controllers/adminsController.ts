@@ -88,7 +88,7 @@ export const updateAdminProfileController = async (
   req: RequestWith<AdminIdParams, UpdateAdminRequest>,
   res: Response,
 ) => {
-  const adminId = parseInt(req.params.id);
+  const adminId = req.params.id;
   const { name, email } = req.body;
 
   try {
@@ -116,7 +116,7 @@ export const deleteAdminController = async (
   req: RequestWithParams<AdminIdParams>,
   res: Response,
 ) => {
-  const adminId = parseInt(req.params.id);
+  const adminId = req.params.id;
 
   try {
     const deletedAdmin = await deleteAdmin(adminId);
@@ -174,7 +174,7 @@ export const getAdminController = async (
   req: RequestWithParams<AdminIdParams>,
   res: Response,
 ) => {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   try {
     const admin = await getAdminById(id);
     if (!admin) {
@@ -373,7 +373,7 @@ export const updateInstructorProfileController = async (
   req: RequestWith<InstructorIdParams, UpdateInstructorRequest>,
   res: Response,
 ) => {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const icon = req.file;
   const {
     name,
@@ -618,7 +618,7 @@ export const updatePlanController = async (
   req: RequestWith<PlanIdParams, UpdatePlanRequest>,
   res: Response,
 ) => {
-  const planId = parseInt(req.params.id);
+  const planId = req.params.id;
   const body = req.body;
 
   try {
@@ -716,7 +716,7 @@ export const updateEventProfileController = async (
   req: RequestWith<EventIdParams, UpdateEventRequest>,
   res: Response,
 ) => {
-  const eventId = parseInt(req.params.id);
+  const eventId = req.params.id;
   const { name, color } = req.body;
 
   // Normalize the event name and color code
@@ -762,7 +762,7 @@ export const deleteEventController = async (
   req: RequestWithParams<EventIdParams>,
   res: Response,
 ) => {
-  const eventId = parseInt(req.params.id);
+  const eventId = req.params.id;
 
   try {
     const deletedEvent = await deleteEvent(eventId);

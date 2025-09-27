@@ -1,12 +1,11 @@
 import { z } from "zod";
 
-// Parameter schemas
 export const InstructorIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "ID must be a valid number").transform(Number),
+  id: z.string().regex(/^\d+$/, "Instructor ID must be a valid number").transform(val => parseInt(val, 10))
 });
 
 export const ClassIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Class ID must be a valid number").transform(Number),
+  id: z.string().regex(/^\d+$/, "Class ID must be a valid number").transform(val => parseInt(val, 10))
 });
 
 // Instructor profile schema for public profiles endpoint
