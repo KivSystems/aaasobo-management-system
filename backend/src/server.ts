@@ -17,6 +17,7 @@ import { usersRouter, usersRouterConfig } from "./routes/usersRouter";
 import { instructorsRouterConfig } from "./routes/instructorsRouter";
 import { adminsRouterConfig } from "./routes/adminsRouter";
 import { childrenRouterConfig } from "./routes/childrenRouter";
+import { classesRouterConfig } from "./routes/classesRouter";
 import { jobsRouter } from "./routes/jobsRouter";
 import { globalRegistry, createOpenApiSpec } from "./openapi/spec";
 import { registerRoutesFromConfig } from "./openapi/routerRegistry";
@@ -65,6 +66,7 @@ if (process.env.NODE_ENV === "development") {
   );
   registerRoutesFromConfig(globalRegistry, "/admins", adminsRouterConfig);
   registerRoutesFromConfig(globalRegistry, "/children", childrenRouterConfig);
+  registerRoutesFromConfig(globalRegistry, "/classes", classesRouterConfig);
 
   const openApiSpec = createOpenApiSpec();
   server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));

@@ -16,7 +16,21 @@ import {
   updateClass,
 } from "../services/classesService";
 import { isInstructorAbsent } from "../services/instructorAbsenceService";
-import { RequestWithId } from "../middlewares/parseId.middleware";
+import {
+  RequestWithParams,
+  RequestWithBody,
+  RequestWith,
+} from "../middlewares/validationMiddleware";
+import type {
+  ClassIdParams,
+  RebookClassRequest,
+  CreateClassesForMonthRequest,
+  CheckDoubleBookingRequest,
+  CheckChildConflictsRequest,
+  CancelClassesRequest,
+  UpdateAttendanceRequest,
+  UpdateClassStatusRequest,
+} from "@shared/schemas/classes";
 import { prisma } from "../../prisma/prismaClient";
 import {
   getValidRecurringClasses,
@@ -84,10 +98,10 @@ export const getAllClassesController = async (_: Request, res: Response) => {
 
 // GET classes by customer id along with related instructors and customers data
 export const getClassesByCustomerIdController = async (
-  req: Request,
+  req: RequestWithParams<ClassIdParams>,
   res: Response,
 ) => {
-  const id = Number(req.params.id);
+  const id = req.params.id;
 
   try {
     const classes = await getClassesByCustomerId(id);
@@ -159,18 +173,12 @@ export type NewClassToRebookType = {
 };
 
 export const rebookClassController = async (
-  req: RequestWithId,
+  req: RequestWith<ClassIdParams, RebookClassRequest>,
   res: Response,
 ) => {
-  const classId = req.id;
+  const classId = req.params.id;
 
   const { dateTime, instructorId, customerId, childrenIds } = req.body;
-
-  if (!dateTime || !instructorId || !customerId || !childrenIds) {
-    return res.status(400).json({
-      errorType: "missing parameters",
-    });
-  }
 
   try {
     const classToRebook = await getClassToRebook(classId);
@@ -351,15 +359,13 @@ function getEndOfThisMonth(date: Date): Date {
 }
 
 // DELETE a class
-export const deleteClassController = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const classId = parseInt(id, 10);
+export const deleteClassController = async (
+  req: RequestWithParams<ClassIdParams>,
+  res: Response,
+) => {
+  const classId = req.params.id;
 
   try {
-    if (isNaN(classId)) {
-      return res.status(400).json({ error: "Invalid class ID." });
-    }
-
     const deletedClass = await deleteClass(classId);
 
     return res.status(200).json(deletedClass);
@@ -372,10 +378,11 @@ export const deleteClassController = async (req: Request, res: Response) => {
 };
 
 // Cancel a class
-export const cancelClassController = async (req: Request, res: Response) => {
-  const classId = parseInt(req.params.id);
-
-  if (!classId || isNaN(classId)) res.sendStatus(400);
+export const cancelClassController = async (
+  req: RequestWithParams<ClassIdParams>,
+  res: Response,
+) => {
+  const classId = req.params.id;
 
   try {
     await cancelClassById(classId);
@@ -393,13 +400,10 @@ export const cancelClassController = async (req: Request, res: Response) => {
 };
 
 export const createClassesForMonthController = async (
-  req: Request,
+  req: RequestWithBody<CreateClassesForMonthRequest>,
   res: Response,
 ) => {
   const { year, month } = req.body;
-  if (!year || !month) {
-    return res.status(400).json({ error: "Invalid year or month." });
-  }
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -523,14 +527,10 @@ export const createClassesForMonthController = async (
 
 // Check if there is a class that is already booked at the same dateTime as the newly booked class
 export const checkDoubleBookingController = async (
-  req: Request,
+  req: RequestWithBody<CheckDoubleBookingRequest>,
   res: Response,
 ) => {
   const { customerId, dateTime } = req.body;
-
-  if (!customerId || !dateTime) {
-    return res.sendStatus(400);
-  }
 
   try {
     const isDoubleBooked = await checkDoubleBooking(customerId, dateTime);
@@ -550,14 +550,10 @@ export const checkDoubleBookingController = async (
 };
 
 export const checkChildConflictsController = async (
-  req: Request,
+  req: RequestWithBody<CheckChildConflictsRequest>,
   res: Response,
 ) => {
   const { dateTime, selectedChildrenIds } = req.body;
-
-  if (!dateTime || !selectedChildrenIds) {
-    return res.sendStatus(400);
-  }
 
   try {
     const conflictingChildren = await checkChildConflicts(
@@ -578,12 +574,11 @@ export const checkChildConflictsController = async (
   }
 };
 
-export const cancelClassesController = async (req: Request, res: Response) => {
+export const cancelClassesController = async (
+  req: RequestWithBody<CancelClassesRequest>,
+  res: Response,
+) => {
   const { classIds } = req.body;
-
-  if (!Array.isArray(classIds) || classIds.length === 0) {
-    return res.sendStatus(400);
-  }
 
   try {
     await cancelClasses(classIds);
@@ -602,15 +597,11 @@ export const cancelClassesController = async (req: Request, res: Response) => {
 };
 
 export const updateAttendanceController = async (
-  req: RequestWithId,
+  req: RequestWith<ClassIdParams, UpdateAttendanceRequest>,
   res: Response,
 ) => {
-  const classId = req.id;
-  const { childrenIds }: { childrenIds: number[] } = req.body;
-
-  if (!Array.isArray(childrenIds)) {
-    return res.sendStatus(400);
-  }
+  const classId = req.params.id;
+  const { childrenIds } = req.body;
 
   try {
     if (childrenIds.length === 0) {
@@ -637,15 +628,11 @@ export const updateAttendanceController = async (
 };
 
 export const updateClassStatusController = async (
-  req: RequestWithId,
+  req: RequestWith<ClassIdParams, UpdateClassStatusRequest>,
   res: Response,
 ) => {
-  const classId = req.id;
+  const classId = req.params.id;
   const { status } = req.body;
-
-  if (!status) {
-    return res.sendStatus(400);
-  }
 
   try {
     const classToUpdate = await getClassToRebook(classId);
