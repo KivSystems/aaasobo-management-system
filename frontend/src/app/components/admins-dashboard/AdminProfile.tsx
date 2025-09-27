@@ -73,7 +73,7 @@ function AdminProfile({
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof Admin,
+    field: keyof Admin & string,
   ) => {
     if (latestAdmin) {
       setLatestAdmin({ ...latestAdmin, [field]: e.target.value });
