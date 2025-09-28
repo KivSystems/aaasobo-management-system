@@ -29,7 +29,7 @@ export interface RequestWith<ParamsT = any, BodyT = any, QueryT = any>
   query: QueryT;
 }
 
-const validateBody = (schema: z.ZodSchema) => {
+const validateBody = (schema: z.ZodTypeAny) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const validatedData = schema.parse(req.body);
@@ -49,7 +49,7 @@ const validateBody = (schema: z.ZodSchema) => {
   };
 };
 
-const validateParams = (schema: z.ZodSchema) => {
+const validateParams = (schema: z.ZodTypeAny) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const validatedParams = schema.parse(req.params);
@@ -69,7 +69,7 @@ const validateParams = (schema: z.ZodSchema) => {
   };
 };
 
-const validateQuery = (schema: z.ZodSchema) => {
+const validateQuery = (schema: z.ZodTypeAny) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const validatedQuery = schema.parse(req.query);
@@ -96,7 +96,7 @@ const validateQuery = (schema: z.ZodSchema) => {
 const validateResponse = (
   responseSchemas: Record<
     string,
-    { description: string; schema?: z.ZodSchema }
+    { description: string; schema?: z.ZodTypeAny }
   >,
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {

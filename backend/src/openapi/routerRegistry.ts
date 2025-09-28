@@ -11,17 +11,19 @@ export type RouteHandler = (
   next?: NextFunction,
 ) => any;
 
+// Minimal schema contract we rely on at runtime
 export type RouteConfig = {
   method: "get" | "post" | "put" | "patch" | "delete";
-  bodySchema?: z.ZodSchema;
-  paramsSchema?: z.ZodSchema;
-  querySchema?: z.ZodSchema;
+  // Strong Zod typing; relies on zod-to-openapi supporting Zod v4
+  bodySchema?: z.ZodTypeAny;
+  paramsSchema?: z.ZodTypeAny;
+  querySchema?: z.ZodTypeAny;
   handler: RouteHandler;
   middleware?: RequestHandler[];
   openapi: {
     summary: string;
     description: string;
-    responses: Record<string, { description: string; schema?: z.ZodSchema }>;
+    responses: Record<string, { description: string; schema?: z.ZodTypeAny }>;
   };
 };
 
@@ -48,7 +50,8 @@ export const registerRoutesFromConfig = (
           if (responseConfig.schema) {
             responses[status].content = {
               "application/json": {
-                schema: responseConfig.schema,
+                // Cast to any to bridge Zod v4 types to zod-to-openapi's expected Zod types
+                schema: responseConfig.schema as any,
               },
             };
           }
@@ -66,7 +69,8 @@ export const registerRoutesFromConfig = (
               body: {
                 content: {
                   "application/json": {
-                    schema: config.bodySchema,
+                    // Cast to any to bridge Zod v4 types to zod-to-openapi's expected Zod types
+                    schema: config.bodySchema as any,
                   },
                 },
               },
