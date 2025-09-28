@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import {
   deleteCustomer,
   getCustomerByEmail,
@@ -13,7 +13,6 @@ import {
 } from "../services/subscriptionsService";
 import { getWeeklyClassTimes } from "../services/plansService";
 import { createNewRecurringClass } from "../services/recurringClassesService";
-import { RequestWithId } from "../middlewares/parseId.middleware";
 import {
   createFreeTrialClass,
   declineFreeTrialClass,
@@ -31,27 +30,29 @@ import { prisma } from "../../prisma/prismaClient";
 import { deleteChild, registerChild } from "../services/childrenService";
 import { getChildProfiles } from "../services/childrenService";
 import { convertToISOString } from "../helper/dateUtils";
+import {
+  RequestWithParams,
+  RequestWithBody,
+  RequestWith,
+} from "../middlewares/validationMiddleware";
+import type {
+  CustomerIdParams,
+  RegisterCustomerRequest,
+  UpdateCustomerProfileRequest,
+  RegisterSubscriptionRequest,
+  VerifyEmailRequest,
+  CheckEmailConflictsRequest,
+  DeclineFreeTrialRequest,
+} from "@shared/schemas/customers";
 
 export const registerCustomerController = async (
-  req: Request,
+  req: RequestWithBody<RegisterCustomerRequest>,
   res: Response,
 ) => {
   const { customerData, childData } = req.body;
 
   const { email, password, prefecture } = customerData;
   const { birthdate, personalInfo } = childData;
-
-  if (
-    !customerData.name ||
-    !email ||
-    !password ||
-    !prefecture ||
-    !childData.name ||
-    !birthdate ||
-    !personalInfo
-  ) {
-    return res.sendStatus(400);
-  }
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
@@ -123,10 +124,10 @@ export const registerCustomerController = async (
 };
 
 export const getSubscriptionsByIdController = async (
-  req: Request,
+  req: RequestWithParams<CustomerIdParams>,
   res: Response,
 ) => {
-  const customerId = parseInt(req.params.id);
+  const customerId = req.params.id;
 
   try {
     const subscriptions = await getSubscriptionsById(customerId);
@@ -138,10 +139,10 @@ export const getSubscriptionsByIdController = async (
 };
 
 export const getCustomerByIdController = async (
-  req: RequestWithId,
+  req: RequestWithParams<CustomerIdParams>,
   res: Response,
 ) => {
-  const customerId = req.id;
+  const customerId = req.params.id;
 
   try {
     const customer = await getCustomerById(customerId);
@@ -163,10 +164,10 @@ export const getCustomerByIdController = async (
 };
 
 export const updateCustomerProfileController = async (
-  req: Request,
+  req: RequestWith<CustomerIdParams, UpdateCustomerProfileRequest>,
   res: Response,
 ) => {
-  const customerId = parseInt(req.params.id);
+  const customerId = req.params.id;
   const { name, email, prefecture } = req.body;
   const updatedEmail = email.trim().toLowerCase();
 
@@ -225,10 +226,10 @@ export const updateCustomerProfileController = async (
 };
 
 export const registerSubscriptionController = async (
-  req: Request,
+  req: RequestWith<CustomerIdParams, RegisterSubscriptionRequest>,
   res: Response,
 ) => {
-  const customerId = parseInt(req.params.id);
+  const customerId = req.params.id;
   const { planId, startAt } = req.body;
 
   try {
@@ -269,10 +270,10 @@ export const registerSubscriptionController = async (
 };
 
 export const getRebookableClassesController = async (
-  req: RequestWithId,
+  req: RequestWithParams<CustomerIdParams>,
   res: Response,
 ) => {
-  const customerId = req.id;
+  const customerId = req.params.id;
 
   try {
     const rebookableClasses = await getRebookableClasses(customerId);
@@ -287,10 +288,10 @@ export const getRebookableClassesController = async (
 };
 
 export const getUpcomingClassesController = async (
-  req: RequestWithId,
+  req: RequestWithParams<CustomerIdParams>,
   res: Response,
 ) => {
-  const customerId = req.id;
+  const customerId = req.params.id;
 
   try {
     const upcomingClasses = await getUpcomingClasses(customerId);
@@ -305,10 +306,10 @@ export const getUpcomingClassesController = async (
 };
 
 export const getClassesController = async (
-  req: RequestWithId,
+  req: RequestWithParams<CustomerIdParams>,
   res: Response,
 ) => {
-  const customerId = req.id;
+  const customerId = req.params.id;
 
   try {
     const classes = await getCustomerClasses(customerId);
@@ -323,14 +324,10 @@ export const getClassesController = async (
 };
 
 export const verifyCustomerEmailController = async (
-  req: Request,
+  req: RequestWithBody<VerifyEmailRequest>,
   res: Response,
 ) => {
   const { token } = req.body;
-
-  if (!token) {
-    return res.sendStatus(400);
-  }
 
   try {
     const existingToken = await getVerificationTokenByToken(token);
@@ -372,14 +369,10 @@ export const verifyCustomerEmailController = async (
 };
 
 export const checkEmailConflictsController = async (
-  req: Request,
+  req: RequestWithBody<CheckEmailConflictsRequest>,
   res: Response,
 ) => {
   const { email } = req.body;
-
-  if (!email) {
-    return res.sendStatus(400);
-  }
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
@@ -404,10 +397,10 @@ export const checkEmailConflictsController = async (
 };
 
 export const getChildProfilesController = async (
-  req: RequestWithId,
+  req: RequestWithParams<CustomerIdParams>,
   res: Response,
 ) => {
-  const customerId = req.id;
+  const customerId = req.params.id;
 
   try {
     const childProfiles = await getChildProfiles(customerId);
@@ -425,10 +418,10 @@ export const getChildProfilesController = async (
 };
 
 export const markWelcomeSeenController = async (
-  req: RequestWithId,
+  req: RequestWithParams<CustomerIdParams>,
   res: Response,
 ) => {
-  const customerId = req.id;
+  const customerId = req.params.id;
 
   try {
     await updateCustomerProfile(customerId, { hasSeenWelcome: true });
@@ -446,10 +439,10 @@ export const markWelcomeSeenController = async (
 };
 
 export const declineFreeTrialClassController = async (
-  req: RequestWithId,
+  req: RequestWith<CustomerIdParams, DeclineFreeTrialRequest>,
   res: Response,
 ) => {
-  const customerId = req.id;
+  const customerId = req.params.id;
   const { classCode } = req.body;
 
   try {
