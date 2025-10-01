@@ -449,7 +449,7 @@ export const declineFreeTrialClassController = async (
     const updatedClass = await declineFreeTrialClass(customerId, classCode);
 
     if (updatedClass.count === 0) {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
 
     res.sendStatus(200);
