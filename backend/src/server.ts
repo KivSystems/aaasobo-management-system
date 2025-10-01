@@ -5,7 +5,10 @@ import swaggerUi from "swagger-ui-express";
 import "dotenv/config";
 import { instructorsRouter } from "./routes/instructorsRouter";
 import { classesRouter } from "./routes/classesRouter";
-import { customersRouter } from "./routes/customersRouter";
+import {
+  customersRouter,
+  customersRouterConfig,
+} from "./routes/customersRouter";
 import { adminsRouter } from "./routes/adminsRouter";
 import { childrenRouter } from "./routes/childrenRouter";
 import { recurringClassesRouter } from "./routes/recurringClassesRouter";
@@ -67,6 +70,7 @@ if (process.env.NODE_ENV === "development") {
   registerRoutesFromConfig(globalRegistry, "/admins", adminsRouterConfig);
   registerRoutesFromConfig(globalRegistry, "/children", childrenRouterConfig);
   registerRoutesFromConfig(globalRegistry, "/classes", classesRouterConfig);
+  registerRoutesFromConfig(globalRegistry, "/customers", customersRouterConfig);
 
   const openApiSpec = createOpenApiSpec();
   server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));

@@ -10,6 +10,9 @@ export const createMockPrisma = () => {
     },
     customer: {
       findUnique: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
     },
     admins: {
       findUnique: vi.fn(),
@@ -70,12 +73,21 @@ export const createMockPrisma = () => {
     },
     subscription: {
       findFirst: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
     },
     plan: {
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
       findMany: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+    },
+    verificationToken: {
+      findFirst: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
     },
     recurringClass: {
       findMany: vi.fn(),
