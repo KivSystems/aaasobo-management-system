@@ -4,6 +4,7 @@ import {
   CONTENT_REGISTRATION_SUCCESS_MESSAGE,
 } from "../messages/formValidation";
 import { EVENT_DELETE_CONSTRAINT_MESSAGE } from "../messages/formValidation";
+import type { EventResponse } from "@shared/schemas/events";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -15,9 +16,9 @@ export type Response<T> = T | { message: string };
 // Get event by ID
 export const getEventById = async (
   id: number,
-): Promise<Response<{ event: BusinessEventType }>> => {
+): Promise<Response<EventResponse>> => {
   const apiUrl = `${BASE_URL}/${id}`;
-  const data: Response<{ event: BusinessEventType }> = await fetch(apiUrl, {
+  const data: Response<EventResponse> = await fetch(apiUrl, {
     cache: "no-store",
   }).then((res) => res.json());
 

@@ -13,7 +13,7 @@ import { adminsRouter } from "./routes/adminsRouter";
 import { childrenRouter } from "./routes/childrenRouter";
 import { recurringClassesRouter } from "./routes/recurringClassesRouter";
 import { plansRouter } from "./routes/plansRouter";
-import { eventsRouter } from "./routes/eventsRouter";
+import { eventsRouter, eventsRouterConfig } from "./routes/eventsRouter";
 import { subscriptionsRouter } from "./routes/subscriptionsRouter";
 import { indexRouter } from "./routes/indexRouter";
 import { usersRouter, usersRouterConfig } from "./routes/usersRouter";
@@ -71,6 +71,7 @@ if (process.env.NODE_ENV === "development") {
   registerRoutesFromConfig(globalRegistry, "/children", childrenRouterConfig);
   registerRoutesFromConfig(globalRegistry, "/classes", classesRouterConfig);
   registerRoutesFromConfig(globalRegistry, "/customers", customersRouterConfig);
+  registerRoutesFromConfig(globalRegistry, "/events", eventsRouterConfig);
 
   const openApiSpec = createOpenApiSpec();
   server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));

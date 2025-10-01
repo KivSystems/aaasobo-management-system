@@ -1,5 +1,7 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { getEventById } from "../services/eventsService";
+import { RequestWithParams } from "../middlewares/validationMiddleware";
+import type { EventIdParams } from "@shared/schemas/events";
 
 function setErrorResponse(res: Response, error: unknown) {
   return res
@@ -8,11 +10,11 @@ function setErrorResponse(res: Response, error: unknown) {
 }
 
 // Get event by ID
-export const getEventController = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    return res.status(400).json({ message: "Invalid ID provided." });
-  }
+export const getEventController = async (
+  req: RequestWithParams<EventIdParams>,
+  res: Response,
+) => {
+  const id = req.params.id;
   try {
     const event = await getEventById(id);
     if (!event) {
