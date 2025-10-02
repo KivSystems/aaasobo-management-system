@@ -1,91 +1,24 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import {
   createRegularClass,
   getRegularClassById,
   getRegularClassesBySubscriptionId,
   updateRegularClass,
+  getValidRecurringClassesByInstructorId,
 } from "../services/recurringClassesService";
-import { RequestWithId } from "../middlewares/parseId.middleware";
-
-interface RegularClassParams {
-  instructorId: number;
-  weekday: number;
-  startTime: string;
-  customerId: number;
-  childrenIds: number[];
-  subscriptionId: number;
-  startDate: string;
-  timezone?: string;
-}
-
-function validateRegularClassParams(params: RegularClassParams): string | null {
-  const {
-    instructorId,
-    weekday,
-    startTime,
-    customerId,
-    childrenIds,
-    subscriptionId,
-    startDate,
-  } = params;
-
-  if (
-    !instructorId ||
-    weekday === undefined ||
-    !startTime ||
-    !customerId ||
-    !childrenIds ||
-    !subscriptionId ||
-    !startDate
-  ) {
-    return "Missing required parameters";
-  }
-
-  if (weekday < 0 || weekday > 6) {
-    return "Invalid weekday. Must be 0-6";
-  }
-
-  if (!/^\d{2}:\d{2}$/.test(startTime)) {
-    return "Invalid time format. Use HH:mm";
-  }
-
-  return null;
-}
-
-// Validation for updates - subscriptionId is not required since we get it from existing record
-function validateUpdateRegularClassParams(
-  params: Omit<RegularClassParams, "subscriptionId">,
-): string | null {
-  const {
-    instructorId,
-    weekday,
-    startTime,
-    customerId,
-    childrenIds,
-    startDate,
-  } = params;
-
-  if (
-    !instructorId ||
-    weekday === undefined ||
-    !startTime ||
-    !customerId ||
-    !childrenIds ||
-    !startDate
-  ) {
-    return "Missing required parameters";
-  }
-
-  if (weekday < 0 || weekday > 6) {
-    return "Invalid weekday. Must be 0-6";
-  }
-
-  if (!/^\d{2}:\d{2}$/.test(startTime)) {
-    return "Invalid time format. Use HH:mm";
-  }
-
-  return null;
-}
+import {
+  RequestWithParams,
+  RequestWithBody,
+  RequestWith,
+  RequestWithQuery,
+} from "../middlewares/validationMiddleware";
+import type {
+  RecurringClassIdParams,
+  GetRecurringClassesBySubscriptionQuery,
+  GetRecurringClassesByInstructorQuery,
+  CreateRecurringClassRequest,
+  UpdateRecurringClassRequest,
+} from "@shared/schemas/recurringClasses";
 
 function handleRegularClassError(error: unknown, res: Response): Response {
   const err =
@@ -111,38 +44,11 @@ function handleRegularClassError(error: unknown, res: Response): Response {
 }
 
 export const createRegularClassController = async (
-  req: Request,
+  req: RequestWithBody<CreateRecurringClassRequest>,
   res: Response,
 ) => {
-  const {
-    instructorId,
-    weekday,
-    startTime,
-    customerId,
-    childrenIds,
-    subscriptionId,
-    startDate,
-    timezone = "Asia/Tokyo",
-  } = req.body;
-
-  const params = {
-    instructorId,
-    weekday,
-    startTime,
-    customerId,
-    childrenIds,
-    subscriptionId,
-    startDate,
-    timezone,
-  };
-
-  const validationError = validateRegularClassParams(params);
-  if (validationError) {
-    return res.status(400).json({ message: validationError });
-  }
-
   try {
-    const recurringClass = await createRegularClass(params);
+    const recurringClass = await createRegularClass(req.body);
 
     res.status(201).json({
       message: "Regular class created successfully",
@@ -154,31 +60,13 @@ export const createRegularClassController = async (
 };
 
 export const getRegularClassesBySubscriptionIdController = async (
-  req: Request,
+  req: RequestWithQuery<GetRecurringClassesBySubscriptionQuery>,
   res: Response,
 ) => {
-  const subscriptionId = parseInt(req.query.subscriptionId as string);
-  const status = req.query.status as string;
-
-  if (!req.query.subscriptionId) {
-    return res.status(400).json({ message: "subscriptionId is required" });
-  }
-
-  if (isNaN(subscriptionId)) {
-    return res.status(400).json({ message: "Invalid subscription ID" });
-  }
-
-  // Validate status parameter
-  if (status && !["active", "history"].includes(status)) {
-    return res
-      .status(400)
-      .json({ message: "status must be 'active' or 'history'" });
-  }
-
   try {
     const recurringClasses = await getRegularClassesBySubscriptionId(
-      subscriptionId,
-      status as "active" | "history" | undefined,
+      req.query.subscriptionId,
+      req.query.status,
     );
 
     res.json({ recurringClasses });
@@ -190,38 +78,13 @@ export const getRegularClassesBySubscriptionIdController = async (
 };
 
 export const updateRegularClassController = async (
-  req: RequestWithId,
+  req: RequestWith<RecurringClassIdParams, UpdateRecurringClassRequest>,
   res: Response,
 ) => {
-  const {
-    instructorId,
-    weekday,
-    startTime,
-    customerId,
-    childrenIds,
-    startDate,
-    timezone = "Asia/Tokyo",
-  } = req.body;
-
-  const updateParams = {
-    instructorId,
-    weekday,
-    startTime,
-    customerId,
-    childrenIds,
-    startDate,
-    timezone,
-  };
-
-  const validationError = validateUpdateRegularClassParams(updateParams);
-  if (validationError) {
-    return res.status(400).json({ message: validationError });
-  }
-
   try {
     const result = await updateRegularClass({
-      recurringClassId: req.id,
-      ...updateParams,
+      recurringClassId: req.params.id,
+      ...req.body,
     });
 
     res.status(200).json({
@@ -235,11 +98,11 @@ export const updateRegularClassController = async (
 };
 
 export const getRegularClassByIdController = async (
-  req: RequestWithId,
+  req: RequestWithParams<RecurringClassIdParams>,
   res: Response,
 ) => {
   try {
-    const recurringClass = await getRegularClassById(req.id);
+    const recurringClass = await getRegularClassById(req.params.id);
     res.status(200).json(recurringClass);
   } catch (error) {
     const err =
@@ -254,21 +117,13 @@ export const getRegularClassByIdController = async (
   }
 };
 
-import { getValidRecurringClassesByInstructorId } from "../services/recurringClassesService";
-
-// GET recurring classes by instructor ID
 export const getRecurringClassesByInstructorIdController = async (
-  req: Request,
+  req: RequestWithQuery<GetRecurringClassesByInstructorQuery>,
   res: Response,
 ) => {
   try {
-    const { instructorId } = req.query;
-    if (!instructorId) {
-      return res.status(400).json({ message: "instructorId is required" });
-    }
-
     const recurringClasses = await getValidRecurringClassesByInstructorId(
-      Number(instructorId),
+      req.query.instructorId,
       new Date(),
     );
 

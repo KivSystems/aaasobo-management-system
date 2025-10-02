@@ -1,3 +1,5 @@
+import type { UpdateRecurringClassRequest } from "@shared/schemas/recurringClasses";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/recurring-classes`;
@@ -6,7 +8,7 @@ const BASE_URL = `${BACKEND_ORIGIN}/recurring-classes`;
 export const getRecurringClassesBySubscriptionId = async (
   subscriptionId: number,
   status?: "active" | "history",
-) => {
+): Promise<RecurringClasses> => {
   try {
     const params = new URLSearchParams({
       subscriptionId: subscriptionId.toString(),
@@ -29,16 +31,12 @@ export const getRecurringClassesBySubscriptionId = async (
 
 export const editRecurringClass = async (
   recurringClassId: number,
-  recurringClassData: {
-    instructorId: number;
-    customerId: number;
-    childrenIds: Array<number>;
-    weekday: number;
-    startTime: string;
-    startDate: string;
-    timezone?: string;
-  },
-) => {
+  recurringClassData: UpdateRecurringClassRequest,
+): Promise<{
+  message: string;
+  oldRecurringClass: RecurringClass;
+  newRecurringClass: RecurringClass;
+}> => {
   const URL = `${BASE_URL}/${recurringClassId}`;
 
   try {

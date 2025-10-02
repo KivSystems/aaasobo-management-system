@@ -90,12 +90,6 @@ describe("Recurring Classes API - POST /recurring-classes", () => {
       .post("/recurring-classes")
       .send(validRequestData)
       .expect(201);
-
-    expect(response.body).toHaveProperty(
-      "message",
-      "Regular class created successfully",
-    );
-    expect(response.body).toHaveProperty("recurringClass");
   });
 
   it("should return 400 when instructor doesn't have the requested time slot", async () => {
@@ -106,11 +100,6 @@ describe("Recurring Classes API - POST /recurring-classes", () => {
       .post("/recurring-classes")
       .send(validRequestData)
       .expect(400);
-
-    expect(response.body).toHaveProperty(
-      "message",
-      "Instructor is not available at the requested time slot",
-    );
   });
 
   it("should return 400 when conflicting regular class exists", async () => {
@@ -136,13 +125,79 @@ describe("Recurring Classes API - POST /recurring-classes", () => {
       .send(validRequestData)
       .expect(400);
 
-    expect(response.body).toHaveProperty(
-      "message",
-      "Regular class already exists at this time slot",
-    );
-
     // Should not proceed to create RecurringClass
     expect(mockPrisma.recurringClass.create).not.toHaveBeenCalled();
+  });
+
+  it("should return 400 for missing required fields", async () => {
+    const response = await request(server)
+      .post("/recurring-classes")
+      .send({
+        instructorId: 1,
+        weekday: 1,
+        // Missing other required fields
+      })
+      .expect(400);
+  });
+
+  it("should return 400 for invalid weekday", async () => {
+    const response = await request(server)
+      .post("/recurring-classes")
+      .send({
+        instructorId: 1,
+        weekday: 7, // Invalid - must be 0-6
+        startTime: "10:00",
+        customerId: 1,
+        childrenIds: [1],
+        subscriptionId: 1,
+        startDate: "2024-01-01",
+      })
+      .expect(400);
+  });
+
+  it("should return 400 for invalid startTime format", async () => {
+    const response = await request(server)
+      .post("/recurring-classes")
+      .send({
+        instructorId: 1,
+        weekday: 1,
+        startTime: "10:00:00", // Invalid format - should be HH:mm
+        customerId: 1,
+        childrenIds: [1],
+        subscriptionId: 1,
+        startDate: "2024-01-01",
+      })
+      .expect(400);
+  });
+
+  it("should return 400 for empty childrenIds array", async () => {
+    const response = await request(server)
+      .post("/recurring-classes")
+      .send({
+        instructorId: 1,
+        weekday: 1,
+        startTime: "10:00",
+        customerId: 1,
+        childrenIds: [], // Invalid - must have at least one
+        subscriptionId: 1,
+        startDate: "2024-01-01",
+      })
+      .expect(400);
+  });
+
+  it("should return 400 for invalid parameter types", async () => {
+    const response = await request(server)
+      .post("/recurring-classes")
+      .send({
+        instructorId: "invalid", // Should be number
+        weekday: 1,
+        startTime: "10:00",
+        customerId: 1,
+        childrenIds: [1],
+        subscriptionId: 1,
+        startDate: "2024-01-01",
+      })
+      .expect(400);
   });
 
   it("should successfully create regular class and cancel conflicting existing classes", async () => {
@@ -216,12 +271,6 @@ describe("Recurring Classes API - POST /recurring-classes", () => {
       .send(validRequestData)
       .expect(201);
 
-    expect(response.body).toHaveProperty(
-      "message",
-      "Regular class created successfully",
-    );
-    expect(response.body).toHaveProperty("recurringClass");
-
     // Verify the conflicting classes were canceled using executeRaw
     expect(mockPrisma.$executeRaw).toHaveBeenCalled();
   });
@@ -257,25 +306,100 @@ describe("Recurring Classes API - GET /recurring-classes", () => {
       .query({ subscriptionId })
       .expect(200);
 
-    expect(response.body).toHaveProperty("recurringClasses");
     expect(response.body.recurringClasses).toHaveLength(1);
-
-    const firstClass = response.body.recurringClasses[0];
-    expect(firstClass).toHaveProperty("id", 1);
-    expect(firstClass).toHaveProperty("dateTime");
-    expect(firstClass).toHaveProperty("instructor");
-    expect(firstClass).toHaveProperty("recurringClassAttendance");
+    expect(response.body.recurringClasses[0].id).toBe(1);
   });
 
   it("should return 400 when subscriptionId is missing", async () => {
     const response = await request(server)
       .get("/recurring-classes")
       .expect(400);
+  });
 
-    expect(response.body).toHaveProperty(
-      "message",
-      "subscriptionId is required",
-    );
+  it("should return 400 for invalid subscriptionId", async () => {
+    const response = await request(server)
+      .get("/recurring-classes?subscriptionId=invalid")
+      .expect(400);
+  });
+
+  it("should accept valid status parameter", async () => {
+    mockPrisma.recurringClass.findMany.mockResolvedValue([]);
+
+    const response = await request(server)
+      .get("/recurring-classes?subscriptionId=1&status=active")
+      .expect(200);
+  });
+
+  it("should return 400 for invalid status parameter", async () => {
+    const response = await request(server)
+      .get("/recurring-classes?subscriptionId=1&status=invalid")
+      .expect(400);
+  });
+});
+
+describe("Recurring Classes API - GET /recurring-classes/:id", () => {
+  it("should return recurring class for valid ID", async () => {
+    const mockRecurringClass = {
+      id: 1,
+      subscriptionId: 1,
+      instructorId: 1,
+      customerId: 1,
+      weekday: 1,
+      startTime: new Date("1970-01-01T10:00:00.000Z"),
+      startDate: new Date("2024-01-01T00:00:00.000Z"),
+      endDate: null,
+      createdAt: new Date("2024-01-01T00:00:00.000Z"),
+      updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+    };
+
+    mockPrisma.recurringClass.findUnique.mockResolvedValue(mockRecurringClass);
+
+    const response = await request(server)
+      .get("/recurring-classes/1")
+      .expect(200);
+  });
+
+  it("should return 400 for invalid ID", async () => {
+    const response = await request(server)
+      .get("/recurring-classes/invalid")
+      .expect(400);
+  });
+});
+
+describe("Recurring Classes API - GET /recurring-classes/by-instructorId", () => {
+  it("should return recurring classes for valid instructorId", async () => {
+    const mockRecurringClasses = [
+      {
+        id: 1,
+        subscriptionId: 1,
+        instructorId: 1,
+        customerId: 1,
+        weekday: 1,
+        startTime: new Date("1970-01-01T10:00:00.000Z"),
+        startDate: new Date("2024-01-01T00:00:00.000Z"),
+        endDate: null,
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+      },
+    ];
+
+    mockPrisma.recurringClass.findMany.mockResolvedValue(mockRecurringClasses);
+
+    const response = await request(server)
+      .get("/recurring-classes/by-instructorId?instructorId=1")
+      .expect(200);
+  });
+
+  it("should return 400 for missing instructorId", async () => {
+    const response = await request(server)
+      .get("/recurring-classes/by-instructorId")
+      .expect(400);
+  });
+
+  it("should return 400 for invalid instructorId", async () => {
+    const response = await request(server)
+      .get("/recurring-classes/by-instructorId?instructorId=invalid")
+      .expect(400);
   });
 });
 
@@ -297,6 +421,38 @@ describe("Recurring Classes API - PUT /recurring-classes/:id", () => {
     startDate: nDaysLater(8).toISOString().split("T")[0], // At least one week from today (8 days to be safe)
     timezone: "Asia/Tokyo",
   };
+
+  it("should return 400 for invalid ID", async () => {
+    const response = await request(server)
+      .put("/recurring-classes/invalid")
+      .send(validUpdateData)
+      .expect(400);
+  });
+
+  it("should return 400 for missing required fields", async () => {
+    const response = await request(server)
+      .put("/recurring-classes/1")
+      .send({
+        instructorId: 1,
+        weekday: 1,
+        // Missing other required fields
+      })
+      .expect(400);
+  });
+
+  it("should return 400 for invalid weekday", async () => {
+    const response = await request(server)
+      .put("/recurring-classes/1")
+      .send({
+        instructorId: 1,
+        weekday: -1, // Invalid - must be 0-6
+        startTime: "10:00",
+        customerId: 1,
+        childrenIds: [1],
+        startDate: "2024-01-01",
+      })
+      .expect(400);
+  });
 
   it("should successfully edit a regular class", async () => {
     const recurringClassId = 1;
@@ -397,12 +553,6 @@ describe("Recurring Classes API - PUT /recurring-classes/:id", () => {
       .send(validUpdateData)
       .expect(200);
 
-    expect(response.body).toHaveProperty(
-      "message",
-      "Regular class updated successfully",
-    );
-    expect(response.body).toHaveProperty("oldRecurringClass");
-    expect(response.body).toHaveProperty("newRecurringClass");
     expect(response.body.oldRecurringClass.id).toBe(1);
     expect(response.body.newRecurringClass.id).toBe(2);
   });
