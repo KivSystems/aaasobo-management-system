@@ -201,6 +201,7 @@ export default function EditRegularClassModal({
         weekday: finalWeekday,
         startTime: finalStartTime,
         startDate: startDate,
+        timezone: "Asia/Tokyo",
       };
 
       await editRecurringClass(recurringClass.id, updateData);

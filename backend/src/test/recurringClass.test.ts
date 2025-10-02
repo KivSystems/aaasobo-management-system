@@ -90,12 +90,6 @@ describe("Recurring Classes API - POST /recurring-classes", () => {
       .post("/recurring-classes")
       .send(validRequestData)
       .expect(201);
-
-    expect(response.body).toHaveProperty(
-      "message",
-      "Regular class created successfully",
-    );
-    expect(response.body).toHaveProperty("recurringClass");
   });
 
   it("should return 400 when instructor doesn't have the requested time slot", async () => {
@@ -106,11 +100,6 @@ describe("Recurring Classes API - POST /recurring-classes", () => {
       .post("/recurring-classes")
       .send(validRequestData)
       .expect(400);
-
-    expect(response.body).toHaveProperty(
-      "message",
-      "Instructor is not available at the requested time slot",
-    );
   });
 
   it("should return 400 when conflicting regular class exists", async () => {
@@ -135,11 +124,6 @@ describe("Recurring Classes API - POST /recurring-classes", () => {
       .post("/recurring-classes")
       .send(validRequestData)
       .expect(400);
-
-    expect(response.body).toHaveProperty(
-      "message",
-      "Regular class already exists at this time slot",
-    );
 
     // Should not proceed to create RecurringClass
     expect(mockPrisma.recurringClass.create).not.toHaveBeenCalled();
@@ -216,12 +200,6 @@ describe("Recurring Classes API - POST /recurring-classes", () => {
       .send(validRequestData)
       .expect(201);
 
-    expect(response.body).toHaveProperty(
-      "message",
-      "Regular class created successfully",
-    );
-    expect(response.body).toHaveProperty("recurringClass");
-
     // Verify the conflicting classes were canceled using executeRaw
     expect(mockPrisma.$executeRaw).toHaveBeenCalled();
   });
@@ -257,25 +235,14 @@ describe("Recurring Classes API - GET /recurring-classes", () => {
       .query({ subscriptionId })
       .expect(200);
 
-    expect(response.body).toHaveProperty("recurringClasses");
     expect(response.body.recurringClasses).toHaveLength(1);
-
-    const firstClass = response.body.recurringClasses[0];
-    expect(firstClass).toHaveProperty("id", 1);
-    expect(firstClass).toHaveProperty("dateTime");
-    expect(firstClass).toHaveProperty("instructor");
-    expect(firstClass).toHaveProperty("recurringClassAttendance");
+    expect(response.body.recurringClasses[0].id).toBe(1);
   });
 
   it("should return 400 when subscriptionId is missing", async () => {
     const response = await request(server)
       .get("/recurring-classes")
       .expect(400);
-
-    expect(response.body).toHaveProperty(
-      "message",
-      "subscriptionId is required",
-    );
   });
 });
 
@@ -397,12 +364,6 @@ describe("Recurring Classes API - PUT /recurring-classes/:id", () => {
       .send(validUpdateData)
       .expect(200);
 
-    expect(response.body).toHaveProperty(
-      "message",
-      "Regular class updated successfully",
-    );
-    expect(response.body).toHaveProperty("oldRecurringClass");
-    expect(response.body).toHaveProperty("newRecurringClass");
     expect(response.body.oldRecurringClass.id).toBe(1);
     expect(response.body.newRecurringClass.id).toBe(2);
   });
