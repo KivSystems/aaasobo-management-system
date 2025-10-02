@@ -17,7 +17,10 @@ import {
 } from "./routes/recurringClassesRouter";
 import { plansRouter, plansRouterConfig } from "./routes/plansRouter";
 import { eventsRouter, eventsRouterConfig } from "./routes/eventsRouter";
-import { subscriptionsRouter } from "./routes/subscriptionsRouter";
+import {
+  subscriptionsRouter,
+  subscriptionsRouterConfig,
+} from "./routes/subscriptionsRouter";
 import { indexRouter } from "./routes/indexRouter";
 import { usersRouter, usersRouterConfig } from "./routes/usersRouter";
 import { instructorsRouterConfig } from "./routes/instructorsRouter";
@@ -80,6 +83,11 @@ if (process.env.NODE_ENV === "development") {
     globalRegistry,
     "/recurring-classes",
     recurringClassesRouterConfig,
+  );
+  registerRoutesFromConfig(
+    globalRegistry,
+    "/subscriptions",
+    subscriptionsRouterConfig,
   );
 
   const openApiSpec = createOpenApiSpec();

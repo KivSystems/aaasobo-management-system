@@ -75,6 +75,7 @@ export const createMockPrisma = () => {
     subscription: {
       findFirst: vi.fn(),
       findMany: vi.fn(),
+      findUnique: vi.fn(),
       create: vi.fn(),
     },
     plan: {
