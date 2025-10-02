@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
-import {
-  getAllPlans,
-  getPlanById,
-  getWeeklyClassTimes,
-} from "../services/plansService";
+import { RequestWithParams } from "../middlewares/validationMiddleware";
+import { getAllPlans, getPlanById } from "../services/plansService";
+import type { PlanIdParams } from "@shared/schemas/plans";
 
 // Get all plans' information
 export const getAllPlansController = async (_: Request, res: Response) => {
@@ -23,11 +21,11 @@ function setErrorResponse(res: Response, error: unknown) {
 }
 
 // Get plan by ID
-export const getPlanController = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    return res.status(400).json({ message: "Invalid ID provided." });
-  }
+export const getPlanController = async (
+  req: RequestWithParams<PlanIdParams>,
+  res: Response,
+) => {
+  const { id } = req.params;
   try {
     const plan = await getPlanById(id);
     if (!plan) {
