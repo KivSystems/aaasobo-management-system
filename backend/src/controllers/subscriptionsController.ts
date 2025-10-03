@@ -1,13 +1,14 @@
 import { Response } from "express";
-import { RequestWithId } from "../middlewares/parseId.middleware";
+import { RequestWithParams } from "../middlewares/validationMiddleware";
+import type { SubscriptionIdParams } from "@shared/schemas/subscriptions";
 import { getSubscriptionById } from "../services/subscriptionsService";
 
 export const getSubscriptionByIdController = async (
-  req: RequestWithId,
+  req: RequestWithParams<SubscriptionIdParams>,
   res: Response,
 ) => {
   try {
-    const subscription = await getSubscriptionById(req.id);
+    const subscription = await getSubscriptionById(req.params.id);
 
     if (!subscription) {
       return res.status(404).json({ error: "Subscription not found." });

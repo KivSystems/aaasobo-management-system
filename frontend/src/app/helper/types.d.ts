@@ -118,7 +118,7 @@ type Subscription = {
   planId: number;
   customerId: number;
   startAt: string;
-  endAt: string;
+  endAt: string | null;
   plan: Plan;
 };
 

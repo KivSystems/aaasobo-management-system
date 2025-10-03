@@ -1,8 +1,17 @@
+import type {
+  SubscriptionsResponse,
+  RegisterSubscriptionRequest,
+  NewSubscriptionResponse,
+} from "@shared/schemas/customers";
+import type { SubscriptionResponse } from "@shared/schemas/subscriptions";
+
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
 // GET subscriptions by a customer id
-export const getSubscriptionsByCustomerId = async (customerId: number) => {
+export const getSubscriptionsByCustomerId = async (
+  customerId: number,
+): Promise<SubscriptionsResponse> => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/subscriptions`,
@@ -22,8 +31,8 @@ export const getSubscriptionsByCustomerId = async (customerId: number) => {
 // Register a subscription
 export const registerSubscription = async (
   customerId: number,
-  subscriptionData: RegisterSubscription,
-) => {
+  subscriptionData: RegisterSubscriptionRequest,
+): Promise<NewSubscriptionResponse> => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/customers/${customerId}/subscription`,
@@ -38,7 +47,7 @@ export const registerSubscription = async (
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return;
+    return await response.json();
   } catch (error) {
     console.error("Failed to register a subscription:", error);
     throw error;
@@ -46,7 +55,9 @@ export const registerSubscription = async (
 };
 
 // GET subscription by a subscription id
-export const getSubscriptionById = async (subscriptionId: number) => {
+export const getSubscriptionById = async (
+  subscriptionId: number,
+): Promise<SubscriptionResponse> => {
   try {
     const response = await fetch(
       `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}`,
