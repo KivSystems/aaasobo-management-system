@@ -9,6 +9,8 @@ import {
   getFirstDesignatedDayOfYear,
   convertToISOString,
 } from "../helper/dateUtils";
+import { RequestWithBody } from "../middlewares/validationMiddleware";
+import type { UpdateSundayColorRequest } from "@shared/schemas/jobs";
 
 // Admin dashboard for displaying all schedules
 export const getAllSchedulesController = async (_: Request, res: Response) => {
@@ -83,16 +85,10 @@ export const updateBusinessScheduleController = async (
 
 // Update next year's all Sunday's color
 export const updateSundayColorController = async (
-  req: Request,
+  req: RequestWithBody<UpdateSundayColorRequest>,
   res: Response,
 ) => {
-  const eventId = parseInt(req.body.eventId);
-
-  if (isNaN(eventId)) {
-    return res.status(400).json({
-      error: "Invalid event ID.",
-    });
-  }
+  const { eventId } = req.body;
 
   try {
     // Create date & data list to be sent to the service layer
@@ -124,12 +120,12 @@ export const updateSundayColorController = async (
 
     if (!result) {
       return res.status(500).json({
-        error: "Failed to update Sunday's color.",
+        message: "Failed to update Sunday's color.",
       });
     }
 
     res.status(200).json({ result });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    res.status(500).json({ message: `${error}` });
   }
 };
