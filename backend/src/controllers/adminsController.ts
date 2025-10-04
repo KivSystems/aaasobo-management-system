@@ -630,18 +630,21 @@ export const updatePlanController = async (
         .json({ message: "Plan deleted successfully", plan: deletedPlan });
     }
 
-    // When updating (not deleting), validation ensures both name and description are present
-    if (!body.name || !body.description) {
-      return res
-        .status(400)
-        .json({ message: "Name and description are required for update" });
+    // TypeScript now knows body is the update variant (isDelete: false)
+    if (body.isDelete === false) {
+      // Validate that name and description are present for update
+      if (!body.name || !body.description) {
+        return res
+          .status(400)
+          .json({ message: "Name and description are required for update" });
+      }
+      const { name, description } = body;
+      const updatedPlan = await updatePlan(planId, name, description);
+      return res.status(200).json({
+        message: "Plan is updated successfully",
+        plan: updatedPlan,
+      });
     }
-    const { name, description } = body;
-    const updatedPlan = await updatePlan(planId, name, description);
-    return res.status(200).json({
-      message: "Plan is updated successfully",
-      plan: updatedPlan,
-    });
   } catch (error) {
     res.status(500).json({ error: `${error}` });
   }

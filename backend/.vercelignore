@@ -1,0 +1,6 @@
+src
+api/app.ts
+*.ts
+!*.d.ts
+!*.js
+!prisma/schema.prisma
