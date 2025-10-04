@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const ChildIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Child ID must be a valid number").transform(val => parseInt(val, 10))
+  id: z
+    .string()
+    .regex(/^\d+$/, "Child ID must be a valid number")
+    .transform((val) => parseInt(val, 10)),
 });
 
 export const GetChildrenQuery = z.object({
@@ -12,24 +15,32 @@ export const RegisterChildRequest = z.object({
   name: z.string().min(1, "Name is required"),
   birthdate: z.string().min(1, "Birthdate is required"),
   personalInfo: z.string().min(1, "Personal info is required"),
-  customerId: z.number().int().positive("Customer ID must be a positive integer"),
+  customerId: z
+    .number()
+    .int()
+    .positive("Customer ID must be a positive integer"),
 });
 
 export const UpdateChildRequest = z.object({
   name: z.string().min(1, "Name is required"),
   birthdate: z.string().min(1, "Birthdate is required"),
   personalInfo: z.string().min(1, "Personal info is required"),
-  customerId: z.number().int().positive("Customer ID must be a positive integer"),
+  customerId: z
+    .number()
+    .int()
+    .positive("Customer ID must be a positive integer"),
 });
 
 // Response schemas - matches frontend Child type
-export const ChildProfile = z.object({
-  id: z.number(),
-  name: z.string(),
-  birthdate: z.string().nullish(), // Handle both null and undefined
-  personalInfo: z.string().nullish(),
-  customerId: z.number().optional(),
-}).passthrough(); // Allow additional properties from database
+export const ChildProfile = z
+  .object({
+    id: z.number(),
+    name: z.string(),
+    birthdate: z.string().nullish(), // Handle both null and undefined
+    personalInfo: z.string().nullish(),
+    customerId: z.number().optional(),
+  })
+  .passthrough(); // Allow additional properties from database
 
 export const ChildrenResponse = z.object({
   children: z.array(ChildProfile),
@@ -61,4 +72,6 @@ export type ChildProfile = z.infer<typeof ChildProfile>;
 export type ChildrenResponse = z.infer<typeof ChildrenResponse>;
 export type UpdateChildResponse = z.infer<typeof UpdateChildResponse>;
 export type DeleteChildResponse = z.infer<typeof DeleteChildResponse>;
-export type DeleteChildConflictResponse = z.infer<typeof DeleteChildConflictResponse>;
+export type DeleteChildConflictResponse = z.infer<
+  typeof DeleteChildConflictResponse
+>;

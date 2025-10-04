@@ -1,31 +1,43 @@
 import { z } from "zod";
 
 export const AdminIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Admin ID must be a valid number").transform(val => parseInt(val, 10))
+  id: z
+    .string()
+    .regex(/^\d+$/, "Admin ID must be a valid number")
+    .transform((val) => parseInt(val, 10)),
 });
 
 export const InstructorIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Instructor ID must be a valid number").transform(val => parseInt(val, 10))
+  id: z
+    .string()
+    .regex(/^\d+$/, "Instructor ID must be a valid number")
+    .transform((val) => parseInt(val, 10)),
 });
 
 export const PlanIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Plan ID must be a valid number").transform(val => parseInt(val, 10))
+  id: z
+    .string()
+    .regex(/^\d+$/, "Plan ID must be a valid number")
+    .transform((val) => parseInt(val, 10)),
 });
 
 export const EventIdParams = z.object({
-  id: z.string().regex(/^\d+$/, "Event ID must be a valid number").transform(val => parseInt(val, 10))
+  id: z
+    .string()
+    .regex(/^\d+$/, "Event ID must be a valid number")
+    .transform((val) => parseInt(val, 10)),
 });
 
 // Admin registration and update schemas
 export const RegisterAdminRequest = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email format"),
+  email: z.email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
 });
 
 export const UpdateAdminRequest = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email format"),
+  email: z.email("Invalid email format"),
 });
 
 // Instructor registration and update schemas
@@ -68,7 +80,10 @@ export const UpdateInstructorRequest = z.object({
 // Plan schemas
 export const RegisterPlanRequest = z.object({
   name: z.string().min(1, "Plan name is required"),
-  weeklyClassTimes: z.number().int().positive("Weekly class times must be a positive integer"),
+  weeklyClassTimes: z
+    .number()
+    .int()
+    .positive("Weekly class times must be a positive integer"),
   description: z.string().min(1, "Description is required"),
 });
 
@@ -87,12 +102,24 @@ export const UpdatePlanRequest = z.discriminatedUnion("isDelete", [
 
 // Event schemas
 export const RegisterEventRequest = z.object({
-  name: z.string().min(1, "Event name is required").regex(/^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/, "Event Name must be in the format: 日本語名 / English Name"),
+  name: z
+    .string()
+    .min(1, "Event name is required")
+    .regex(
+      /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/,
+      "Event Name must be in the format: 日本語名 / English Name",
+    ),
   color: z.string().min(1, "Color is required"),
 });
 
 export const UpdateEventRequest = z.object({
-  name: z.string().min(1, "Event name is required").regex(/^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/, "Event Name must be in the format: 日本語名 / English Name"),
+  name: z
+    .string()
+    .min(1, "Event name is required")
+    .regex(
+      /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/,
+      "Event Name must be in the format: 日本語名 / English Name",
+    ),
   color: z.string().min(1, "Color is required"),
 });
 
@@ -242,31 +269,37 @@ export const UpdateAdminResponse = z.object({
 
 export const UpdateInstructorResponse = z.object({
   message: z.string(),
-  instructor: z.object({
-    id: z.number(),
-    name: z.string(),
-    nickname: z.string(),
-    email: z.string(),
-    terminationAt: z.date().nullable(),
-  }).passthrough(), // Allow additional properties
+  instructor: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      nickname: z.string(),
+      email: z.string(),
+      terminationAt: z.iso.datetime().nullable(),
+    })
+    .passthrough(), // Allow additional properties
 });
 
 export const UpdatePlanResponse = z.object({
   message: z.string(),
-  plan: z.object({
-    id: z.number(),
-    name: z.string(),
-    description: z.string(),
-  }).passthrough(),
+  plan: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      description: z.string(),
+    })
+    .passthrough(),
 });
 
 export const UpdateEventResponse = z.object({
   message: z.string(),
-  event: z.object({
-    id: z.number(),
-    name: z.string(),
-    color: z.string(),
-  }).passthrough(),
+  event: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      color: z.string(),
+    })
+    .passthrough(),
 });
 
 export const DeleteResponse = z.object({
@@ -292,13 +325,17 @@ export type EventIdParams = z.infer<typeof EventIdParams>;
 
 export type RegisterAdminRequest = z.infer<typeof RegisterAdminRequest>;
 export type UpdateAdminRequest = z.infer<typeof UpdateAdminRequest>;
-export type RegisterInstructorRequest = z.infer<typeof RegisterInstructorRequest>;
+export type RegisterInstructorRequest = z.infer<
+  typeof RegisterInstructorRequest
+>;
 export type UpdateInstructorRequest = z.infer<typeof UpdateInstructorRequest>;
 export type RegisterPlanRequest = z.infer<typeof RegisterPlanRequest>;
 export type UpdatePlanRequest = z.infer<typeof UpdatePlanRequest>;
 export type RegisterEventRequest = z.infer<typeof RegisterEventRequest>;
 export type UpdateEventRequest = z.infer<typeof UpdateEventRequest>;
-export type UpdateBusinessScheduleRequest = z.infer<typeof UpdateBusinessScheduleRequest>;
+export type UpdateBusinessScheduleRequest = z.infer<
+  typeof UpdateBusinessScheduleRequest
+>;
 
 export type AdminProfile = z.infer<typeof AdminProfile>;
 export type AdminResponse = z.infer<typeof AdminResponse>;
@@ -307,7 +344,9 @@ export type InstructorsListResponse = z.infer<typeof InstructorsListResponse>;
 export type CustomersListResponse = z.infer<typeof CustomersListResponse>;
 export type ChildrenListResponse = z.infer<typeof ChildrenListResponse>;
 export type PlansListResponse = z.infer<typeof PlansListResponse>;
-export type SubscriptionsListResponse = z.infer<typeof SubscriptionsListResponse>;
+export type SubscriptionsListResponse = z.infer<
+  typeof SubscriptionsListResponse
+>;
 export type EventsListResponse = z.infer<typeof EventsListResponse>;
 export type ClassesListResponse = z.infer<typeof ClassesListResponse>;
 export type SchedulesListResponse = z.infer<typeof SchedulesListResponse>;

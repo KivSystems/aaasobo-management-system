@@ -2,10 +2,7 @@ import { z } from "zod";
 
 // Parameter schemas
 export const RecurringClassIdParams = z.object({
-  id: z
-    .string()
-    .regex(/^\d+$/, "Must be a valid number")
-    .transform(Number),
+  id: z.string().regex(/^\d+$/, "Must be a valid number").transform(Number),
 });
 
 // Query schemas
@@ -84,11 +81,11 @@ export const RecurringClassResponse = z.object({
   instructorId: z.number().nullable(),
   customerId: z.number().nullable(),
   weekday: z.number().nullable(),
-  startTime: z.string().datetime().nullable(),
-  startDate: z.string().datetime().nullable(),
-  endDate: z.string().datetime().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  startTime: z.iso.datetime().nullable(),
+  startDate: z.iso.datetime().nullable(),
+  endDate: z.iso.datetime().nullable(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 export const RecurringClassesListResponse = z.object({

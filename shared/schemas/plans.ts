@@ -22,9 +22,12 @@ export const PlansListResponse = z.object({
       name: z.string().describe("Plan name"),
       weeklyClassTimes: z.number().describe("Number of weekly class times"),
       description: z.string().describe("Plan description"),
-      createdAt: z.string().datetime().describe("Creation timestamp"),
-      updatedAt: z.string().datetime().describe("Last update timestamp"),
-      terminationAt: z.string().datetime().nullable().describe("Termination timestamp"),
+      createdAt: z.iso.datetime().describe("Creation timestamp"),
+      updatedAt: z.iso.datetime().describe("Last update timestamp"),
+      terminationAt: z.iso
+        .datetime()
+        .nullable()
+        .describe("Termination timestamp"),
     }),
   ),
 });
