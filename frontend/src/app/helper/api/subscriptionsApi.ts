@@ -53,23 +53,3 @@ export const registerSubscription = async (
     throw error;
   }
 };
-
-// GET subscription by a subscription id
-export const getSubscriptionById = async (
-  subscriptionId: number,
-): Promise<SubscriptionResponse> => {
-  try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}`,
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const subscription = await response.json();
-
-    return subscription;
-  } catch (error) {
-    console.error("Failed to fetch subscription:", error);
-    throw error;
-  }
-};

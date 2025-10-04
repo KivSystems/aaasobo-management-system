@@ -46,26 +46,6 @@ export const getChildrenByCustomerId = async (
   }
 };
 
-// GET a child data by the child's id
-export const getChildById = async (id: number): Promise<Child> => {
-  try {
-    const response = await fetch(`${BACKEND_ORIGIN}/children/${id}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const child: ChildProfile = await response.json();
-    // Transform null values to undefined to match frontend Child type
-    return {
-      ...child,
-      birthdate: child.birthdate ?? undefined,
-      personalInfo: child.personalInfo ?? undefined,
-    };
-  } catch (error) {
-    console.error("Failed to fetch child data:", error);
-    throw error;
-  }
-};
-
 export const addChild = async (
   name: string,
   birthdate: string,

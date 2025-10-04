@@ -11,7 +11,7 @@ const BACKEND_ORIGIN =
 
 const BASE_URL = `${BACKEND_ORIGIN}/events`;
 
-export type Response<T> = T | { message: string };
+type Response<T> = T | { message: string };
 
 // Get event by ID
 export const getEventById = async (

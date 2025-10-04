@@ -152,9 +152,6 @@ export const nHoursBefore = (n: number, dateTime: Date = new Date()): Date => {
   return new Date(dateTime.getTime() - n * 60 * 60 * 1000);
 };
 
-export const nDaysLater = (days: number, dateTime: Date = new Date()) =>
-  new Date(dateTime.getTime() + days * 24 * 60 * 60 * 1000);
-
 export const nMonthsLater = (months: number, dateTime: Date = new Date()) =>
   addMonths(dateTime, months);
 

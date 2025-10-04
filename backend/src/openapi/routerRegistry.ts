@@ -5,11 +5,7 @@ import {
 import { z } from "zod";
 import { RequestHandler, Request, Response, NextFunction } from "express";
 
-export type RouteHandler = (
-  req: any,
-  res: Response,
-  next?: NextFunction,
-) => any;
+type RouteHandler = (req: any, res: Response, next?: NextFunction) => any;
 
 // Minimal schema contract we rely on at runtime
 export type RouteConfig = {

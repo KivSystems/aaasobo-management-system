@@ -8,7 +8,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:unused": "knip"
   },
   "engines": {
     "node": "20.x"
@@ -16,6 +17,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "@fullcalendar/core": "^6.1.17",
+    "@fullcalendar/daygrid": "^6.1.14",
     "@fullcalendar/interaction": "^6.1.14",
     "@fullcalendar/moment-timezone": "^6.1.14",
     "@fullcalendar/multimonth": "^6.1.17",
@@ -25,6 +27,7 @@
     "@tanstack/react-table": "^8.19.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "jose": "^6.0.11",
     "next": "14.2.4",
     "next-auth": "^5.0.0-beta.25",
     "react": "^18",
@@ -41,6 +44,7 @@
     "@types/zxcvbn": "^4.4.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
+    "knip": "^5.64.1",
     "prettier": "^3.3.2",
     "sass": "^1.77.6",
     "typescript": "^5"

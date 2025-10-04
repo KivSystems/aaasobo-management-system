@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "app.ts",
+  "main": "api/app.ts",
   "scripts": {
     "format": "npx prettier --write . && npx prisma format",
     "format-check": "npx prettier --check .",
@@ -9,7 +9,8 @@
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register ./api/app.ts",
     "prisma:init": "npx prisma migrate reset && npx ts-node ./src/seed/dummy.ts",
     "test": "vitest run",
-    "build": "prisma generate && prisma migrate reset --force && echo 'Start executing dummy.ts' && ts-node ./src/seed/dummy.ts && echo 'Finish executing dummy.ts'"
+    "build": "prisma generate && prisma migrate reset --force && echo 'Start executing dummy.ts' && ts-node ./src/seed/dummy.ts && echo 'Finish executing dummy.ts'",
+    "lint:unused": "knip"
   },
   "engines": {
     "node": "20.x"
@@ -24,12 +25,12 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^1.4.13",
     "@types/node": "^20.14.6",
     "@types/supertest": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^10.0.0",
+    "knip": "^5.64.1",
     "nodemon": "^3.1.0",
     "prettier": "^3.3.2",
     "prisma": "^5.19.1",
@@ -39,25 +40,20 @@
     "typescript": "^5.4.5",
     "vite": "^7.1.5",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4",
-    "vitest-mock-extended": "^3.1.0"
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^8.1.0",
-    "@panva/hkdf": "^1.2.1",
     "@prisma/client": "^5.19.1",
     "@vercel/blob": "^1.1.1",
-    "@vercel/postgres": "^0.10.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jose": "^6.0.11",
-    "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
     "resend": "^4.1.2",
-    "rrule": "^2.8.1",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.0.5",
     "zod": "4.1.11"

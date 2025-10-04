@@ -36,10 +36,10 @@ const getSubscriptionByIdConfig = {
   },
 };
 
-export const validatedRouteConfigs: Record<string, readonly RouteConfig[]> = {
+const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id": [getSubscriptionByIdConfig],
 };
 
-registerRoutes(subscriptionsRouter, validatedRouteConfigs);
+registerRoutes(subscriptionsRouter, routeConfigs);
 
-export { validatedRouteConfigs as subscriptionsRouterConfig };
+export const subscriptionsRouterConfig = routeConfigs;

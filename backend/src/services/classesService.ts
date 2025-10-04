@@ -93,42 +93,6 @@ export const getClassByClassId = async (classId: number) => {
   }
 };
 
-// Create a new class in the DB
-export const createClass = async (
-  classData: {
-    dateTime: string;
-    instructorId: number;
-    customerId: number;
-    status: Status;
-    subscriptionId: number;
-    recurringClassId: number;
-    rebookableUntil: string | Date;
-    updatedAt: Date;
-    classCode: string;
-  },
-  childrenIds: number[],
-) => {
-  try {
-    const CreatedClass = await prisma.class.create({
-      data: classData,
-    });
-    const classAttendancePromises = childrenIds.map((childrenId) => {
-      return prisma.classAttendance.create({
-        data: {
-          classId: CreatedClass.id,
-          childrenId,
-        },
-      });
-    });
-    const classAttendance = await Promise.all(classAttendancePromises);
-
-    return { CreatedClass, classAttendance };
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to add class.");
-  }
-};
-
 // Delete a class in the DB
 export const deleteClass = async (classId: number) => {
   try {
@@ -184,24 +148,6 @@ export const updateClass = async (
   }
 };
 
-export async function countClassesOfSubscription(
-  subscriptionId: number,
-  until: Date,
-) {
-  try {
-    return await prisma.class.count({
-      where: {
-        subscriptionId,
-        OR: [{ status: "booked" }, { status: "completed" }],
-        dateTime: { lte: until },
-      },
-    });
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to count lessons.");
-  }
-}
-
 // Cancel a class
 export const cancelClassById = async (classId: number) => {
   await prisma.$transaction(async (tx) => {
@@ -214,29 +160,6 @@ export const cancelClassById = async (classId: number) => {
       data: { status: "canceledByCustomer", updatedAt: new Date() },
     });
   });
-};
-
-export const fetchInstructorClasses = async (instructorId: number) => {
-  try {
-    const classes = await prisma.class.findMany({
-      where: { instructorId },
-      include: {
-        instructor: true,
-        customer: {
-          include: {
-            children: true,
-          },
-        },
-        classAttendance: { include: { children: true } },
-      },
-      orderBy: { dateTime: "asc" },
-    });
-
-    return classes;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch classes.");
-  }
 };
 
 // Create classes based on the recurring class id
@@ -484,76 +407,6 @@ export const cancelClasses = async (classIds: number[]) => {
   });
 };
 
-// Fetch valid classes by instructor id.
-export const getValidClassesByInstructorId = async (
-  tx: Prisma.TransactionClient,
-  instructorId: number,
-  date: Date,
-) => {
-  try {
-    const classes = await tx.class.findMany({
-      where: { instructorId, dateTime: { gte: date } },
-    });
-
-    return classes;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch classes.");
-  }
-};
-
-// Create new canceled classes
-export const createCanceledClasses = async ({
-  tx,
-  dateTimes,
-  instructorId,
-  customerId,
-  subscriptionId,
-  recurringClassId,
-  childrenIds,
-}: {
-  tx: Prisma.TransactionClient;
-  dateTimes: Date[];
-  instructorId: number;
-  customerId: number;
-  subscriptionId: number;
-  recurringClassId: number;
-  childrenIds: number[];
-}) => {
-  try {
-    const createdClasses = await tx.class.createManyAndReturn({
-      data: dateTimes.map((dateTime, index) => ({
-        instructorId,
-        customerId,
-        recurringClassId,
-        subscriptionId,
-        dateTime,
-        status: "pending", // NOTE: the status has been changed from "canceledByInstructor" to "pending"
-        rebookableUntil: nHoursLater(180 * 24, dateTime), // 180 days (* 24 hours) after the class dateTime
-        updatedAt: new Date(),
-        classCode: `${recurringClassId}-f-${index}`, // "f" = failed booking
-      })),
-    });
-    // Add the Class Attendance to the ClassAttendance Table based on the Class ID.
-    // NOTE(to Saeka): Do we need to create ClassAttendance records for classes that were unable to be booked as regular classes? I temporarily commented out the following logic. (Shingo)
-    // await tx.classAttendance.createMany({
-    //   data: createdClasses
-    //     .map((createdClass) => {
-    //       return childrenIds.map((childrenId) => ({
-    //         classId: createdClass.id,
-    //         childrenId,
-    //       }));
-    //     })
-    //     .flat(),
-    // });
-
-    return createdClasses;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to add class.");
-  }
-};
-
 export const getCustomerClasses = async (customerId: number) => {
   const classes = await prisma.class.findMany({
     where: {
@@ -691,17 +544,6 @@ export const getCalendarClasses = async (instructorId: number) => {
     };
   });
   return instructorCalendarClasses;
-};
-
-export const getRebookableUntil = async (classId: number) => {
-  const classData = await prisma.class.findUnique({
-    where: { id: classId },
-  });
-
-  return {
-    rebookableUntil: classData?.rebookableUntil,
-    isFreeTrial: classData?.isFreeTrial,
-  };
 };
 
 export const getClassToRebook = async (classId: number) => {

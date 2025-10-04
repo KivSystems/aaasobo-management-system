@@ -231,8 +231,6 @@ export const userLoginSchema = z.object({
   }),
 });
 
-export const userTypeSchema = z.enum(["admin", "customer", "instructor"]);
-
 export const forgotPasswordFormSchema = z.object({
   email: z
     .string()
