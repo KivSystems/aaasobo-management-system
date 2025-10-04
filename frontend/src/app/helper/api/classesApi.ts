@@ -14,42 +14,6 @@ import {
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
-// GET classes by customer id
-export const getClassesByCustomerId = async (customerId: number) => {
-  try {
-    const response = await fetch(`${BACKEND_ORIGIN}/classes/${customerId}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const { classes } = await response.json();
-    return classes;
-  } catch (error) {
-    console.error("Failed to fetch classes:", error);
-    throw error;
-  }
-};
-
-// DELETE a class with class id
-export const deleteClass = async (classId: number) => {
-  try {
-    const response = await fetch(`${BACKEND_ORIGIN}/classes/${classId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.error("Failed to delete class:", error);
-    throw error;
-  }
-};
-
 export const rebookClass = async (
   classId: number,
   classData: {

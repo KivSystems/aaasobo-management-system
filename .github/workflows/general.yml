@@ -18,9 +18,13 @@ jobs:
         working-directory: ./frontend
       - run: npm run lint -- --max-warnings 0
         working-directory: ./frontend
+      - run: npm run lint:unused
+        working-directory: ./frontend
       - run: npm run build
         working-directory: ./frontend
       - run: npm ci
         working-directory: ./backend
       - run: npm run format-check
+        working-directory: ./backend
+      - run: npm run lint:unused
         working-directory: ./backend

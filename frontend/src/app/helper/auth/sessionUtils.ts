@@ -17,7 +17,7 @@ export async function getUserSession(userType?: UserType) {
   return session;
 }
 
-export async function getUserSessionType(userType: UserType, id: string) {
+async function getUserSessionType(userType: UserType, id: string) {
   const userSession = await getUserSession(userType);
 
   if (!userSession) {

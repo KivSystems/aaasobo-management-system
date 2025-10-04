@@ -157,7 +157,7 @@ export function getDayCellColorHandler(
 }
 
 // Calculate the first day of the previous year (e.g., 20XX-01-01)
-export const firstDayOfPreviousYear = () => {
+const firstDayOfPreviousYear = () => {
   const now = new Date();
   return new Date(now.getFullYear() - 1, 0, 2).toISOString().split("T")[0];
 };
