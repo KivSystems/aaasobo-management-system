@@ -2,7 +2,14 @@
   "name": "shared",
   "private": true,
   "description": "Shared schemas between frontend and backend",
+  "scripts": {
+    "format": "npx prettier --write .",
+    "format-check": "npx prettier --check ."
+  },
   "dependencies": {
     "zod": "4.1.11"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.2"
   }
 }

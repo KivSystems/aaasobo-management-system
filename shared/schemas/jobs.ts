@@ -29,7 +29,7 @@ export const MaskInstructorsResponse = z.array(
     name: z.string().describe("Masked instructor name"),
     email: z.string().describe("Masked instructor email"),
     password: z.string().describe("Masked instructor password"),
-    birthdate: z.string().datetime().describe("Masked birthdate"),
+    birthdate: z.iso.datetime().describe("Masked birthdate"),
     workingTime: z.string().describe("Masked working time"),
     lifeHistory: z.string().describe("Masked life history"),
     favoriteFood: z.string().describe("Masked favorite food"),
