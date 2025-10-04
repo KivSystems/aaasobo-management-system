@@ -112,6 +112,13 @@ export const createMockPrisma = () => {
       update: vi.fn(),
       delete: vi.fn(),
     },
+    systemStatus: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
+    businessSchedule: {
+      createMany: vi.fn(),
+    },
     $queryRaw: vi.fn(),
     $transaction: vi.fn(),
     $executeRaw: vi.fn(),
