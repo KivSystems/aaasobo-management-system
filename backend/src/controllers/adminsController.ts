@@ -631,6 +631,11 @@ export const updatePlanController = async (
     }
 
     // When updating (not deleting), validation ensures both name and description are present
+    if (!body.name || !body.description) {
+      return res
+        .status(400)
+        .json({ message: "Name and description are required for update" });
+    }
     const { name, description } = body;
     const updatedPlan = await updatePlan(planId, name, description);
     return res.status(200).json({

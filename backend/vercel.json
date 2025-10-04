@@ -1,6 +1,6 @@
 {
   "version": 2,
   "buildCommand": "npm run vercel:build",
-  "outputDirectory": "dist/backend",
-  "rewrites": [{ "source": "/(.*)", "destination": "/api/app" }]
+  "outputDirectory": "dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/backend/api/app" }]
 }
