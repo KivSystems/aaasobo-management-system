@@ -97,6 +97,15 @@ const ClassItemForAdmin = ({
                 className="classItemForAdmin"
               />
               <CheckboxInput
+                label="Canceled by Customer"
+                checked={selectedStatus === "canceledByCustomer"}
+                onClick={(e) => e.stopPropagation()}
+                onChange={() => {
+                  setSelectedStatus("canceledByCustomer");
+                }}
+                className="classItemForAdmin"
+              />
+              <CheckboxInput
                 label="Canceled by Instructor"
                 checked={selectedStatus === "canceledByInstructor"}
                 onClick={(e) => e.stopPropagation()}
