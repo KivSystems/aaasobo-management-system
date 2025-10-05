@@ -7,6 +7,13 @@ export const AdminIdParams = z.object({
     .transform((val) => parseInt(val, 10)),
 });
 
+export const CustomerIdParams = z.object({
+  id: z
+    .string()
+    .regex(/^\d+$/, "Customer ID must be a valid number")
+    .transform((val) => parseInt(val, 10)),
+});
+
 export const InstructorIdParams = z.object({
   id: z
     .string()
@@ -319,6 +326,7 @@ export const ConflictErrorResponse = z.object({
 export const InstructorUpdateErrorResponse = z.record(z.string(), z.string());
 
 export type AdminIdParams = z.infer<typeof AdminIdParams>;
+export type CustomerIdParams = z.infer<typeof CustomerIdParams>;
 export type InstructorIdParams = z.infer<typeof InstructorIdParams>;
 export type PlanIdParams = z.infer<typeof PlanIdParams>;
 export type EventIdParams = z.infer<typeof EventIdParams>;
