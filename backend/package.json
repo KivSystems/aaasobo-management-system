@@ -20,6 +20,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@faker-js/faker": "^10.0.0",
+    "@testcontainers/postgresql": "^11.7.1",
     "@tsconfig/node20": "^20.1.4",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
