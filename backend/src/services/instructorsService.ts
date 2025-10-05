@@ -6,6 +6,7 @@ import {
   validateUserImageUrl,
   maskedHeadLetters,
   maskedSuffix,
+  maskedBirthdate,
 } from "../helper/commonUtils";
 import { convertToUTCDate } from "../helper/dateUtils";
 import { put, del } from "@vercel/blob";
@@ -339,20 +340,20 @@ export const maskInstructors = async (instructors: Instructor[]) => {
         prisma.instructor.update({
           where: { id: instructor.id },
           data: {
-            name: `${headLetters}_${suffix}${instructor.id}`,
-            email: `${headLetters}_${suffix}${instructor.id}`,
+            name: headLetters,
+            email: `${headLetters}@${suffix}${instructor.id}.xxx`,
             password: `${headLetters}_${suffix}${instructor.id}`,
-            birthdate: new Date("1900-01-01"),
-            workingTime: `${headLetters}_${suffix}${instructor.id}`,
-            lifeHistory: `${headLetters}_${suffix}${instructor.id}`,
-            favoriteFood: `${headLetters}_${suffix}${instructor.id}`,
-            hobby: `${headLetters}_${suffix}${instructor.id}`,
-            messageForChildren: `${headLetters}_${suffix}${instructor.id}`,
-            skill: `${headLetters}_${suffix}${instructor.id}`,
+            birthdate: maskedBirthdate,
+            workingTime: headLetters,
+            lifeHistory: headLetters,
+            favoriteFood: headLetters,
+            hobby: headLetters,
+            messageForChildren: headLetters,
+            skill: headLetters,
             classURL: `${headLetters}_${suffix}${instructor.id}`,
             meetingId: `${headLetters}_${suffix}${instructor.id}`,
             passcode: `${headLetters}_${suffix}${instructor.id}`,
-            introductionURL: `${headLetters}_${suffix}${instructor.id}`,
+            introductionURL: headLetters,
           },
         }),
       ),

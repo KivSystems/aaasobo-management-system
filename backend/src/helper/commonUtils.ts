@@ -30,6 +30,7 @@ export const MONTHS_TO_DELETE_CLASSES = 13;
 
 export const maskedHeadLetters = "Masked";
 export const maskedSuffix = randomUUID().split("-")[0]; // Generate a short random string
+export const maskedBirthdate = new Date("1900-01-01");
 
 // Standardize salt rounds for hashing passwords
 const saltRounds = 12;

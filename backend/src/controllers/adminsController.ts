@@ -4,13 +4,15 @@ import {
   RequestWithBody,
   RequestWith,
 } from "../middlewares/validationMiddleware";
-import { registerAdmin, getAdminByEmail } from "../services/adminsService";
 import {
+  registerAdmin,
+  getAdminByEmail,
   getAllAdmins,
   getAdminById,
   updateAdmin,
   deleteAdmin,
 } from "../services/adminsService";
+import { deactivateCustomer } from "../services/customersService";
 import {
   getAllInstructors,
   registerInstructor,
@@ -41,6 +43,7 @@ import { getAllSubscriptions } from "../services/subscriptionsService";
 import { convertToISOString } from "../helper/dateUtils";
 import type {
   AdminIdParams,
+  CustomerIdParams,
   InstructorIdParams,
   PlanIdParams,
   EventIdParams,
@@ -128,6 +131,26 @@ export const deleteAdminController = async (
   } catch (error) {
     console.error("Failed to delete the admin profile:", error);
     res.status(500).json({ error: "Failed to delete the admin profile." });
+  }
+};
+
+export const deactivateCustomerController = async (
+  req: RequestWithParams<CustomerIdParams>,
+  res: Response,
+) => {
+  const customerId = req.params.id;
+
+  try {
+    // Deactivate (soft delete) the customer and children data by masking their profiles
+    const deactivatedUsers = await deactivateCustomer(customerId);
+
+    res.status(200).json({
+      message: "The users were deactivated successfully",
+      users: deactivatedUsers,
+    });
+  } catch (error) {
+    console.error("Failed to deactivate the customer:", error);
+    res.status(500).json({ error: "Failed to deactivate the customer." });
   }
 };
 
