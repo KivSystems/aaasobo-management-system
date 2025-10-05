@@ -8,10 +8,19 @@ export default defineConfig({
     environment: "node",
     silent: false, // Keep test output visible
     logHeapUsage: false,
+    setupFiles: ["./src/test/setup.ts"],
+    exclude: ["**/node_modules/**", "**/test.bak/**"],
     env: {
       NODE_ENV: "development",
       AUTH_SALT: "test-auth-salt",
       AUTH_SECRET: "test-auth-secret",
+    },
+    // Run tests sequentially to avoid database conflicts
+    pool: "forks",
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
     },
     // Suppress console output during tests for cleaner output
     onConsoleLog: (log, type) => {
