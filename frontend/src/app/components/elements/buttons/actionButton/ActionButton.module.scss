@@ -256,6 +256,7 @@
 }
 
 .deleteAdmin,
+.deleteCustomer,
 .deleteChild,
 .deleteEvent,
 .deletePlan,
@@ -284,10 +285,6 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(38, 143, 255, 0.5);
   }
-}
-
-.cancelEditingCustomer {
-  height: 40px;
 }
 
 .editAdmin,
@@ -321,18 +318,6 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(38, 143, 255, 0.5);
   }
-}
-
-.editCustomer {
-  width: 160px;
-  height: 40px;
-  padding: 0.5rem;
-}
-
-.saveCustomer {
-  width: 130px;
-  height: 40px;
-  padding: 0.5rem;
 }
 
 .rebookClass,

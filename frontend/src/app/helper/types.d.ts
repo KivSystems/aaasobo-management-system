@@ -302,8 +302,9 @@ type CustomerProfile = {
   name: string;
   email: string;
   prefecture: string;
-  createdAt: string;
   hasSeenWelcome: boolean;
+  createdAt: string;
+  terminationAt: string | null;
 };
 
 type LanguageType = "ja" | "en";
@@ -541,6 +542,7 @@ type ChildrenProfilesProps = {
   customerId: number;
   childProfiles: Child[];
   userSessionType?: UserType;
+  terminationAt: string | null;
 };
 
 type AddChildFormProps = {

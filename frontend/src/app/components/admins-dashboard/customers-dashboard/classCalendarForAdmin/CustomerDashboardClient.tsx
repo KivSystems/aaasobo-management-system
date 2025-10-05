@@ -77,6 +77,7 @@ function CustomerDashboardClient({
           customerId={customerId}
           userSessionType={userSessionType}
           childProfiles={childProfiles}
+          terminationAt={customerProfile.terminationAt ?? null}
         />
       ),
     },
