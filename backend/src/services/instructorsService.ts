@@ -319,7 +319,7 @@ export const getInstructorsToMask = async () => {
         ],
         classURL: {
           not: {
-            contains: "Masked", // Not include the word "Masked"
+            contains: maskedHeadLetters, // Not include the word "Masked"
           },
         },
       },
@@ -332,7 +332,6 @@ export const getInstructorsToMask = async () => {
 
 // Mask instructors who have left the organization
 export const maskInstructors = async (instructors: Instructor[]) => {
-  const headLetters = maskedHeadLetters;
   const suffix = maskedSuffix;
   try {
     return await prisma.$transaction(
@@ -340,20 +339,20 @@ export const maskInstructors = async (instructors: Instructor[]) => {
         prisma.instructor.update({
           where: { id: instructor.id },
           data: {
-            name: headLetters,
-            email: `${headLetters}@${suffix}${instructor.id}.xxx`,
-            password: `${headLetters}_${suffix}${instructor.id}`,
+            name: maskedHeadLetters,
+            email: `${maskedHeadLetters}@${suffix}${instructor.id}.xxx`,
+            password: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             birthdate: maskedBirthdate,
-            workingTime: headLetters,
-            lifeHistory: headLetters,
-            favoriteFood: headLetters,
-            hobby: headLetters,
-            messageForChildren: headLetters,
-            skill: headLetters,
-            classURL: `${headLetters}_${suffix}${instructor.id}`,
-            meetingId: `${headLetters}_${suffix}${instructor.id}`,
-            passcode: `${headLetters}_${suffix}${instructor.id}`,
-            introductionURL: headLetters,
+            workingTime: maskedHeadLetters,
+            lifeHistory: maskedHeadLetters,
+            favoriteFood: maskedHeadLetters,
+            hobby: maskedHeadLetters,
+            messageForChildren: maskedHeadLetters,
+            skill: maskedHeadLetters,
+            classURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
+            meetingId: `${maskedHeadLetters}_${suffix}${instructor.id}`,
+            passcode: `${maskedHeadLetters}_${suffix}${instructor.id}`,
+            introductionURL: maskedHeadLetters,
           },
         }),
       ),

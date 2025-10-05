@@ -40,27 +40,18 @@ export const updateCustomerProfile = async (
 
 // Deactivate (soft delete) a customer and their children by masking their profile
 export const deactivateCustomer = async (id: number) => {
-  const headLetters = maskedHeadLetters;
   const suffix = maskedSuffix;
-  const maskedLetters = `${headLetters}_${suffix}`;
-  const maskedEmailLetters = `${headLetters}@${suffix}${id}.xxx`;
+  const maskedLetters = `${maskedHeadLetters}_${suffix}`;
+  const maskedEmailLetters = `${maskedHeadLetters}@${suffix}${id}.xxx`;
 
   // Use a transaction to ensure both customer and children are updated atomically
   const deactivatedUsers = await prisma.$transaction(async (tx) => {
-    // Fetch the applicable customer name
-    const customer = await tx.customer.findUnique({
-      where: { id },
-      select: { name: true },
-    });
-
     // Fetch the applicable children ids and names
     const children = await tx.children.findMany({
       where: { customerId: id },
       select: { name: true, id: true },
     });
 
-    const customerName = customer!.name;
-    const updatedCustomerName = `${customerName} (Left)`;
     const updatedChildrenNames = children.map((child) => ({
       id: child.id,
       name: child.name,
@@ -72,10 +63,9 @@ export const deactivateCustomer = async (id: number) => {
         id,
       },
       data: {
-        name: updatedCustomerName,
         email: maskedEmailLetters,
         password: maskedLetters + id,
-        prefecture: "マスク済み / Masked",
+        prefecture: maskedHeadLetters,
         terminationAt: new Date(),
       },
     });
@@ -91,7 +81,6 @@ export const deactivateCustomer = async (id: number) => {
         tx.children.update({
           where: { id: child.id },
           data: {
-            name: `${child.name} (Left)`,
             birthdate: maskedBirthdate,
             personalInfo: maskedHeadLetters,
           },
