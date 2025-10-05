@@ -4,8 +4,8 @@ import { getSubscriptionByIdController } from "../../src/controllers/subscriptio
 import {
   SubscriptionIdParams,
   SubscriptionResponse,
-} from "@shared/schemas/subscriptions";
-import { ErrorResponse } from "@shared/schemas/common";
+} from "../../../shared/schemas/subscriptions";
+import { ErrorResponse } from "../../../shared/schemas/common";
 import { RouteConfig } from "../openapi/routerRegistry";
 
 export const subscriptionsRouter = express.Router();

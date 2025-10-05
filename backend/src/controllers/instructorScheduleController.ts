@@ -22,7 +22,7 @@ import {
   CreateSlotRequest,
   InstructorScheduleParams,
   ActiveScheduleQuery,
-} from "@shared/schemas/instructors";
+} from "../../../shared/schemas/instructors";
 
 export const getInstructorSchedulesController = async (
   req: RequestWithParams<InstructorIdParams>,

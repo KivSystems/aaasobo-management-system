@@ -8,8 +8,8 @@ import {
   PlanIdParams,
   PlanResponse,
   PlansListResponse,
-} from "@shared/schemas/plans";
-import { MessageErrorResponse } from "@shared/schemas/common";
+} from "../../../shared/schemas/plans";
+import { MessageErrorResponse } from "../../../shared/schemas/common";
 
 export const plansRouter = express.Router();
 

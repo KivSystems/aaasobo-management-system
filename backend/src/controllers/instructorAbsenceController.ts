@@ -12,7 +12,7 @@ import {
   InstructorIdParams,
   CreateAbsenceRequest,
   InstructorAbsenceParams,
-} from "@shared/schemas/instructors";
+} from "../../../shared/schemas/instructors";
 
 export const getInstructorAbsencesController = async (
   req: RequestWithParams<InstructorIdParams>,

@@ -43,7 +43,7 @@ import type {
   VerifyEmailRequest,
   CheckEmailConflictsRequest,
   DeclineFreeTrialRequest,
-} from "@shared/schemas/customers";
+} from "../../../shared/schemas/customers";
 
 export const registerCustomerController = async (
   req: RequestWithBody<RegisterCustomerRequest>,

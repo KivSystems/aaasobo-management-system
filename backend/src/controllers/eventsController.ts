@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { getEventById } from "../services/eventsService";
 import { RequestWithParams } from "../middlewares/validationMiddleware";
-import type { EventIdParams } from "@shared/schemas/events";
+import type { EventIdParams } from "../../../shared/schemas/events";
 
 function setErrorResponse(res: Response, error: unknown) {
   return res

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { RequestWithParams } from "../middlewares/validationMiddleware";
 import { getAllPlans, getPlanById } from "../services/plansService";
-import type { PlanIdParams } from "@shared/schemas/plans";
+import type { PlanIdParams } from "../../../shared/schemas/plans";
 
 // Get all plans' information
 export const getAllPlansController = async (_: Request, res: Response) => {

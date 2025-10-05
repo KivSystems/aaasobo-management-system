@@ -32,8 +32,8 @@ import {
   UpcomingClassesResponse,
   CustomerClassesResponse,
   ChildProfilesResponse,
-} from "@shared/schemas/customers";
-import { ErrorResponse } from "@shared/schemas/common";
+} from "../../../shared/schemas/customers";
+import { ErrorResponse } from "../../../shared/schemas/common";
 
 export const customersRouter = express.Router();
 
