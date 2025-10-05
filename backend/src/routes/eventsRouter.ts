@@ -1,8 +1,8 @@
 import express from "express";
 import { getEventController } from "../controllers/eventsController";
 import { registerRoutes } from "../middlewares/validationMiddleware";
-import { EventIdParams, EventResponse } from "@shared/schemas/events";
-import { MessageErrorResponse } from "@shared/schemas/common";
+import { EventIdParams, EventResponse } from "../../../shared/schemas/events";
+import { MessageErrorResponse } from "../../../shared/schemas/common";
 
 export const eventsRouter = express.Router();
 

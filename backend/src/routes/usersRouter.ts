@@ -7,13 +7,13 @@ import {
 } from "../controllers/usersController";
 import { z } from "zod";
 import { registerRoutes } from "../middlewares/validationMiddleware";
-import { ErrorResponse } from "@shared/schemas/common";
+import { ErrorResponse } from "../../../shared/schemas/common";
 import {
   authenticateSchema,
   sendPasswordResetSchema,
   verifyResetTokenSchema,
   updatePasswordSchema,
-} from "@shared/schemas/users";
+} from "../../../shared/schemas/users";
 
 const authenticateConfig = {
   method: "post" as const,

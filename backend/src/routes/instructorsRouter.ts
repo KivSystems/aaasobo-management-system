@@ -10,7 +10,10 @@ import {
   getSameDateClassesController,
 } from "../../src/controllers/instructorsController";
 import { registerRoutes } from "../middlewares/validationMiddleware";
-import { MessageErrorResponse, ErrorResponse } from "@shared/schemas/common";
+import {
+  MessageErrorResponse,
+  ErrorResponse,
+} from "../../../shared/schemas/common";
 import {
   InstructorProfilesResponse,
   AllInstructorProfilesResponse,
@@ -36,7 +39,7 @@ import {
   CreateAbsenceResponse,
   DeleteAbsenceResponse,
   PostTerminationScheduleResponse,
-} from "@shared/schemas/instructors";
+} from "../../../shared/schemas/instructors";
 import {
   type RequestWithId,
   parseId,

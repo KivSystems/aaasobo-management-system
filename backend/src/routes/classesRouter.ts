@@ -31,7 +31,7 @@ import {
   DeleteClassResponse,
   RebookClassErrorResponse,
   ValidationErrorResponse,
-} from "@shared/schemas/classes";
+} from "../../../shared/schemas/classes";
 
 export const classesRouter = express.Router();
 

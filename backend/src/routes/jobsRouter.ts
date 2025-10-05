@@ -16,8 +16,8 @@ import {
   UpdateSundayColorResponse,
   MaskInstructorsResponse,
   DeleteOldClassesResponse,
-} from "@shared/schemas/jobs";
-import { MessageErrorResponse } from "@shared/schemas/common";
+} from "../../../shared/schemas/jobs";
+import { MessageErrorResponse } from "../../../shared/schemas/common";
 
 export const jobsRouter = express.Router();
 

@@ -52,7 +52,7 @@ import type {
   UpdatePlanRequest,
   RegisterEventRequest,
   UpdateEventRequest,
-} from "@shared/schemas/admins";
+} from "../../../shared/schemas/admins";
 
 // Register Admin
 export const registerAdminController = async (

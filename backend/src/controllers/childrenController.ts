@@ -24,7 +24,7 @@ import type {
   GetChildrenQuery,
   RegisterChildRequest,
   UpdateChildRequest,
-} from "@shared/schemas/children";
+} from "../../../shared/schemas/children";
 
 export const getChildrenController = async (
   req: RequestWithQuery<GetChildrenQuery>,
