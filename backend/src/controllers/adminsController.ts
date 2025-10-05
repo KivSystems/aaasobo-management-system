@@ -41,6 +41,7 @@ import {
 } from "../services/eventsService";
 import { getAllSubscriptions } from "../services/subscriptionsService";
 import { convertToISOString } from "../helper/dateUtils";
+import { maskedHeadLetters, maskedBirthdate } from "../helper/commonUtils";
 import type {
   AdminIdParams,
   CustomerIdParams,
@@ -247,7 +248,13 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
 
     // Transform the data structure.
     const data = customers.map((customer, number) => {
-      const { id, name, email, prefecture } = customer;
+      let { id, name, email, prefecture, terminationAt } = customer;
+
+      // Mask customer info if the customer has left
+      if (terminationAt) {
+        name = `${name} (Left)`;
+        email = maskedHeadLetters;
+      }
 
       return {
         No: number + 1,
@@ -517,7 +524,14 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
 
     // Transform the data structure.
     const data = children.map((child, number) => {
-      const { id, name, customer, birthdate, personalInfo } = child;
+      let { id, name, customer, birthdate, personalInfo } = child;
+      let displayedBirthdate = birthdate?.toISOString().slice(0, 10);
+
+      // Mask children's info if the customer has left
+      if (customer.terminationAt) {
+        name = `${name} (Left)`;
+        displayedBirthdate = maskedHeadLetters;
+      }
 
       return {
         No: number + 1,
@@ -525,7 +539,7 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
         Child: name,
         "Customer ID": customer.id,
         Customer: customer.name,
-        Birthdate: birthdate?.toISOString().slice(0, 10),
+        Birthdate: displayedBirthdate,
         "Personal Info": personalInfo,
       };
     });
@@ -548,7 +562,7 @@ export const getAllSubscriptionsController = async (
     // Transform the data structure
     const data = subscriptions.reduce((acc, subscription) => {
       const { plan, customer, endAt } = subscription;
-      const { id: customerId, name: customerName } = customer;
+      let { id: customerId, name: customerName } = customer;
       const { name: planName, terminationAt: planTerminationAt } = plan;
 
       let comment = "";
@@ -571,6 +585,11 @@ export const getAllSubscriptionsController = async (
         } else {
           comment = "Delete this subscription (plan no longer exists)";
         }
+      }
+
+      // Mask customer name if the customer has left
+      if (customer.terminationAt) {
+        customerName = `${customerName} (Left)`;
       }
 
       acc.push({
@@ -830,7 +849,7 @@ export const getClassesWithinPeriodController = async (
 
       // If the free trial class status is "pending" or "declined" before booking, an instructor is not assigned — return "Not Set".
       const instructorName = instructor?.nickname ?? "Not Set";
-      const customerName = customer.name;
+      let customerName = customer.name;
 
       // If the free trial class status is "pending" or "declined" before booking, no dateTime is selected — return "Not Set".
       let date = "Not Set";
@@ -871,6 +890,11 @@ export const getClassesWithinPeriodController = async (
         case "declined":
           statusText = "Declined";
           break;
+      }
+
+      // Mask customer's names if the customer has left
+      if (customer.terminationAt) {
+        customerName = `${customerName} (Left)`;
       }
 
       return {
