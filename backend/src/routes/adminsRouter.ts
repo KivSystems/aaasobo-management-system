@@ -376,7 +376,7 @@ const getAllCustomersConfig = {
 const deactivateCustomerConfig = {
   method: "patch" as const,
   paramsSchema: CustomerIdParams,
-  // middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication] as RequestHandler[],
   handler: deactivateCustomerController,
   openapi: {
     summary: "Deactivate customer",
