@@ -364,7 +364,7 @@ type RebookableClass = {
 type RebookingModalControllerProps = {
   rebookableClasses: RebookableClass[] | [];
   hasChildProfile: boolean;
-  userSessionType: UserType;
+  userSessionType?: UserType;
   terminationAt: string | null;
   modalContent: React.ReactNode;
 };
