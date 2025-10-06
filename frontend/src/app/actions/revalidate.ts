@@ -26,6 +26,10 @@ export async function revalidateAdminList() {
   revalidateTag("admin-list");
 }
 
+export async function revalidateCustomerList() {
+  revalidateTag("customer-list");
+}
+
 export async function revalidateInstructorList() {
   revalidateTag("instructor-list");
 }
