@@ -4,6 +4,7 @@ export const defaultUserImageUrl = "/images/default-user-icon.jpg";
 export const defaultColor = "#000000";
 export const maskedHeadLetters = "Masked";
 export const maskedBirthdate = "1900-01-01";
+export const omitClassStatuses = ["Canceled(Customer)"]; // Omit these statuses from linking on class list page
 
 export const prefectures = [
   "海外 / Overseas",

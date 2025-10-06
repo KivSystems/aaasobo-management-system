@@ -16,6 +16,7 @@ import Modal from "@/app/components/elements/modal/Modal";
 import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import GenerateClassesForm from "./GenerateClassesForm";
+import { omitClassStatuses } from "@/app/helper/data/data";
 
 type ListTableProps = {
   listType: string;
@@ -130,6 +131,7 @@ function ListTable({
               header: key,
               cell: (data) => {
                 const value = data.getValue() as any;
+                // Only for Event List page
                 // If the item is a color code, display it as a colored box
                 if (key === "Color Code" && typeof value === "string") {
                   return (
@@ -156,6 +158,11 @@ function ListTable({
                     `[${replaceItem}]`,
                     data.row.original[replaceItem],
                   );
+                  // Only for Class List page
+                  // If the class status is in the omitClassStatuses list, do not set the link URL
+                  if (omitClassStatuses.includes(data.row.original.Status)) {
+                    linkUrl = "";
+                  }
                 });
                 return <Link href={linkUrl}>{value}</Link>;
               },
