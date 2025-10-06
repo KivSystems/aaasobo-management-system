@@ -831,6 +831,7 @@ export const getSameDateClasses = async (
       customer: {
         select: {
           name: true,
+          terminationAt: true,
           children: {
             select: {
               id: true,
@@ -880,6 +881,7 @@ export const getSameDateClasses = async (
       isFreeTrial: true,
       customer: {
         select: {
+          terminationAt: true,
           children: {
             select: {
               id: true,
@@ -900,6 +902,41 @@ export const getSameDateClasses = async (
       },
     },
     orderBy: { dateTime: "asc" },
+  });
+
+  // If the applicable customer has already left, add "(Left)" to the children's names
+  if (targetClass.customer.terminationAt) {
+    targetClass.customer.children = targetClass.customer.children.map(
+      (child) => ({
+        ...child,
+        name: `${child.name} (Left)`,
+      }),
+    );
+    targetClass.classAttendance = targetClass.classAttendance.map(
+      (attendance) => ({
+        ...attendance,
+        children: {
+          ...attendance.children,
+          name: `${attendance.children.name} (Left)`,
+        },
+      }),
+    );
+  }
+
+  classes.forEach((cls) => {
+    if (cls.customer.terminationAt) {
+      cls.customer.children = cls.customer.children.map((child) => ({
+        ...child,
+        name: `${child.name} (Left)`,
+      }));
+      cls.classAttendance = cls.classAttendance.map((attendance) => ({
+        ...attendance,
+        children: {
+          ...attendance.children,
+          name: `${attendance.children.name} (Left)`,
+        },
+      }));
+    }
   });
 
   const formattedTargetClass = {
