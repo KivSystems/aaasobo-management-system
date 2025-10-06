@@ -20,10 +20,15 @@ export const getSubscriptionsById = async (customerId: number) => {
   try {
     const subscriptions = await prisma.subscription.findMany({
       where: { customerId },
-      include: { plan: true },
+      include: { plan: true, customer: { select: { terminationAt: true } } },
     });
 
-    return subscriptions;
+    const formattedSubscriptions = subscriptions.map((subscription) => ({
+      ...subscription,
+      customerTerminationAt: subscription.customer.terminationAt,
+    }));
+
+    return formattedSubscriptions;
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch the customer's subscriptions.");
