@@ -25,7 +25,7 @@ function CurrentSubscription({
     <div className={styles.outsideContainer}>
       {subscriptionsData && subscriptionsData.subscriptions.length > 0 ? (
         subscriptionsData.subscriptions.map((subscription, index) => {
-          const { id, plan, startAt } = subscription;
+          const { id, plan, startAt, customerTerminationAt } = subscription;
           const startDate = new Date(startAt);
 
           return (
@@ -59,6 +59,7 @@ function CurrentSubscription({
                   userSessionType={userSessionType}
                   adminId={adminId}
                   customerId={customerId}
+                  customerTerminationAt={customerTerminationAt}
                   language={language}
                 />
               </div>

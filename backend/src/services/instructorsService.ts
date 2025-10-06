@@ -6,6 +6,7 @@ import {
   validateUserImageUrl,
   maskedHeadLetters,
   maskedSuffix,
+  maskedBirthdate,
 } from "../helper/commonUtils";
 import { convertToUTCDate } from "../helper/dateUtils";
 import { put, del } from "@vercel/blob";
@@ -318,7 +319,7 @@ export const getInstructorsToMask = async () => {
         ],
         classURL: {
           not: {
-            contains: "Masked", // Not include the word "Masked"
+            contains: maskedHeadLetters, // Not include the word "Masked"
           },
         },
       },
@@ -331,7 +332,6 @@ export const getInstructorsToMask = async () => {
 
 // Mask instructors who have left the organization
 export const maskInstructors = async (instructors: Instructor[]) => {
-  const headLetters = maskedHeadLetters;
   const suffix = maskedSuffix;
   try {
     return await prisma.$transaction(
@@ -339,20 +339,20 @@ export const maskInstructors = async (instructors: Instructor[]) => {
         prisma.instructor.update({
           where: { id: instructor.id },
           data: {
-            name: `${headLetters}_${suffix}${instructor.id}`,
-            email: `${headLetters}_${suffix}${instructor.id}`,
-            password: `${headLetters}_${suffix}${instructor.id}`,
-            birthdate: new Date("1900-01-01"),
-            workingTime: `${headLetters}_${suffix}${instructor.id}`,
-            lifeHistory: `${headLetters}_${suffix}${instructor.id}`,
-            favoriteFood: `${headLetters}_${suffix}${instructor.id}`,
-            hobby: `${headLetters}_${suffix}${instructor.id}`,
-            messageForChildren: `${headLetters}_${suffix}${instructor.id}`,
-            skill: `${headLetters}_${suffix}${instructor.id}`,
-            classURL: `${headLetters}_${suffix}${instructor.id}`,
-            meetingId: `${headLetters}_${suffix}${instructor.id}`,
-            passcode: `${headLetters}_${suffix}${instructor.id}`,
-            introductionURL: `${headLetters}_${suffix}${instructor.id}`,
+            name: maskedHeadLetters,
+            email: `${maskedHeadLetters}@${suffix}${instructor.id}.xxx`,
+            password: `${maskedHeadLetters}_${suffix}${instructor.id}`,
+            birthdate: maskedBirthdate,
+            workingTime: maskedHeadLetters,
+            lifeHistory: maskedHeadLetters,
+            favoriteFood: maskedHeadLetters,
+            hobby: maskedHeadLetters,
+            messageForChildren: maskedHeadLetters,
+            skill: maskedHeadLetters,
+            classURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
+            meetingId: `${maskedHeadLetters}_${suffix}${instructor.id}`,
+            passcode: `${maskedHeadLetters}_${suffix}${instructor.id}`,
+            introductionURL: maskedHeadLetters,
           },
         }),
       ),

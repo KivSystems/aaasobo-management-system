@@ -1,6 +1,11 @@
 import { Customer, Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
-import { hashPassword } from "../helper/commonUtils";
+import {
+  hashPassword,
+  maskedHeadLetters,
+  maskedSuffix,
+  maskedBirthdate,
+} from "../helper/commonUtils";
 
 export const getCustomerById = async (customerId: number) => {
   const customer = await prisma.customer.findUnique({
@@ -31,6 +36,62 @@ export const updateCustomerProfile = async (
     },
     data: dataToUpdate,
   });
+};
+
+// Deactivate (soft delete) a customer and their children by masking their profile
+export const deactivateCustomer = async (id: number) => {
+  const suffix = maskedSuffix;
+  const maskedLetters = `${maskedHeadLetters}_${suffix}`;
+  const maskedEmailLetters = `${maskedHeadLetters}@${suffix}${id}.xxx`;
+
+  // Use a transaction to ensure both customer and children are updated atomically
+  const deactivatedUsers = await prisma.$transaction(async (tx) => {
+    // Fetch the applicable children ids and names
+    const children = await tx.children.findMany({
+      where: { customerId: id },
+      select: { name: true, id: true },
+    });
+
+    const updatedChildrenNames = children.map((child) => ({
+      id: child.id,
+      name: child.name,
+    }));
+
+    // Mask the customer information
+    const deactivatedCustomer = await tx.customer.update({
+      where: {
+        id,
+      },
+      data: {
+        email: maskedEmailLetters,
+        password: maskedLetters + id,
+        prefecture: maskedHeadLetters,
+        terminationAt: new Date(),
+      },
+    });
+
+    // If there are no children, return early
+    if (children.length === 0) {
+      return { customer: deactivatedCustomer, children: [] };
+    }
+
+    // Mask the children information
+    const deactivatedChildren = await Promise.all(
+      updatedChildrenNames.map((child) =>
+        tx.children.update({
+          where: { id: child.id },
+          data: {
+            birthdate: maskedBirthdate,
+            personalInfo: maskedHeadLetters,
+          },
+        }),
+      ),
+    );
+
+    return { customer: deactivatedCustomer, children: deactivatedChildren };
+  });
+
+  return deactivatedUsers;
 };
 
 // Fetch all customers information

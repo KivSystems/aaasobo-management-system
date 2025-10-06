@@ -1,3 +1,4 @@
+import { DeleteResponse } from "@shared/schemas/admins";
 import {
   FAILED_TO_FETCH_CHILD_PROFILES,
   FAILED_TO_FETCH_CUSTOMER_CLASSES,
@@ -21,7 +22,9 @@ import {
   EMAIL_VERIFICATION_TOKEN_EXPIRED,
   EMAIL_VERIFICATION_UNEXPECTED_ERROR,
   UNEXPECTED_ERROR_MESSAGE,
+  GENERAL_ERROR_MESSAGE,
 } from "../messages/formValidation";
+import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -99,6 +102,34 @@ export const updateCustomerProfile = async (
     console.error("API error while updating customer profile:", error);
     return {
       errorMessage: PROFILE_UPDATE_FAILED_MESSAGE,
+    };
+  }
+};
+
+// Deactivate customer and child profiles
+export const deactivateCustomer = async (
+  customerId: number,
+  cookie: string,
+): Promise<DeleteResponse | { errorMessage: string }> => {
+  try {
+    // Define the data to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/customer-list/deactivate/${customerId}`;
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const response = await fetch(apiURL, {
+      method: "PATCH",
+      headers,
+    });
+
+    if (response.status !== 200) {
+      return { errorMessage: ERROR_PAGE_MESSAGE_EN };
+    }
+    const result: DeleteResponse = await response.json();
+
+    return result;
+  } catch (error) {
+    console.error("Failed to deactivate the customer:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
     };
   }
 };

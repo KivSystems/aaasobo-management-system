@@ -4,9 +4,11 @@ import { getUpcomingClasses } from "@/app/helper/api/customersApi";
 export default async function CancelClassesActions({
   customerId,
   userSessionType,
+  terminationAt,
 }: {
   customerId: number;
   userSessionType: UserType;
+  terminationAt: string | null;
 }) {
   const upcomingClasses: UpcomingClass[] | [] =
     await getUpcomingClasses(customerId);
@@ -16,6 +18,7 @@ export default async function CancelClassesActions({
       customerId={customerId}
       upcomingClasses={upcomingClasses}
       userSessionType={userSessionType}
+      terminationAt={terminationAt}
     />
   );
 }

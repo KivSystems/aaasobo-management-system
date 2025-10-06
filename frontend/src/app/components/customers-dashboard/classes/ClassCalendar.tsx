@@ -25,6 +25,7 @@ export default async function ClassCalendar({
 
   const createdAt = customer.createdAt;
   const hasSeenWelcomeModal = customer.hasSeenWelcome;
+  const terminationAt = customer.terminationAt;
 
   const colorsForEvents: { event: string; color: string }[] = events.map(
     (e: EventColor) => ({
@@ -35,7 +36,11 @@ export default async function ClassCalendar({
 
   return (
     <main className={styles.calendarContainer}>
-      <ClassActions userSessionType={userSessionType} customerId={customerId} />
+      <ClassActions
+        userSessionType={userSessionType}
+        customerId={customerId}
+        terminationAt={terminationAt}
+      />
 
       <CustomerCalendar
         customerId={customerId}

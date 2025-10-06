@@ -26,6 +26,10 @@ export async function revalidateAdminList() {
   revalidateTag("admin-list");
 }
 
+export async function revalidateCustomerList() {
+  revalidateTag("customer-list");
+}
+
 export async function revalidateInstructorList() {
   revalidateTag("instructor-list");
 }
@@ -44,4 +48,8 @@ export async function revalidateBusinessSchedule() {
 
 export async function revalidateClassList() {
   revalidateTag("class-list");
+}
+
+export async function revalidateSubscriptionList() {
+  revalidateTag("subscription-list");
 }

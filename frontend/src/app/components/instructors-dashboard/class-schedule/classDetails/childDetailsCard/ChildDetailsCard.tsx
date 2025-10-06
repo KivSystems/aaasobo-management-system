@@ -2,6 +2,7 @@ import React from "react";
 import { UserIcon as UserIconOutline } from "@heroicons/react/24/outline";
 import styles from "./ChildDetailsCard.module.scss"; // or adjust based on your file structure
 import { formatBirthdateToISO } from "@/app/helper/utils/dateUtils";
+import { maskedHeadLetters } from "@/app/helper/data/data";
 
 export default function ChildDetailsCard({ child }: { child: Child }) {
   return (
@@ -18,7 +19,11 @@ export default function ChildDetailsCard({ child }: { child: Child }) {
       <div className={styles.children__birthdateContainer}>
         <div className={styles.children__birthdateTitle}>Birthdate</div>
         <div className={styles.children__birthdate}>
-          {child.birthdate ? formatBirthdateToISO(child.birthdate) : "N/A"}
+          {child.birthdate
+            ? child.personalInfo?.includes(maskedHeadLetters)
+              ? maskedHeadLetters
+              : formatBirthdateToISO(child.birthdate)
+            : "N/A"}
         </div>
       </div>
       <div className={styles.children__personalInfoContainer}>

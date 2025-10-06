@@ -63,7 +63,7 @@ export const getInstructor = async (
     const instructorId = instructor.id;
     const instructorIcon = instructor.icon;
     const blob = await validateUserImageUrl(instructorIcon, instructorId);
-    // Convert from UTC to JST
+    // Convert terminationAt from UTC to JST
     const terminationAt = instructor.terminationAt
       ? convertToTimezoneDate(instructor.terminationAt, "Asia/Tokyo")
       : null;

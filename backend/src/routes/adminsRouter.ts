@@ -9,6 +9,7 @@ import {
   updateEventProfileController,
   updatePlanController,
   deleteAdminController,
+  deactivateCustomerController,
   deleteEventController,
   getAdminController,
   getAllAdminsController,
@@ -31,6 +32,7 @@ import {
 } from "../../../shared/schemas/common";
 import {
   AdminIdParams,
+  CustomerIdParams,
   InstructorIdParams,
   PlanIdParams,
   EventIdParams,
@@ -371,6 +373,26 @@ const getAllCustomersConfig = {
   },
 } as const;
 
+const deactivateCustomerConfig = {
+  method: "patch" as const,
+  paramsSchema: CustomerIdParams,
+  middleware: [verifyAuthentication] as RequestHandler[],
+  handler: deactivateCustomerController,
+  openapi: {
+    summary: "Deactivate customer",
+    description: "Deactivate a customer in the system",
+    responses: {
+      200: {
+        description: "Customer deactivated successfully",
+      },
+      500: {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const getAllChildrenConfig = {
   method: "get" as const,
   handler: getAllChildrenController,
@@ -677,14 +699,15 @@ const getAllSchedulesConfig = {
 const validatedRouteConfigs = {
   "/admin-list/register": [registerAdminConfig],
   "/:id": [updateAdminConfig],
-  "/admin-list/:id": [deleteAdminConfig, getAdminConfig],
   "/admin-list": [getAllAdminsConfig],
+  "/admin-list/:id": [deleteAdminConfig, getAdminConfig],
   "/instructor-list/register": [registerInstructorConfig],
   "/instructor-list/register/withIcon": [registerInstructorWithIconConfig],
   "/instructor-list/update/:id": [updateInstructorConfig],
   "/instructor-list/update/:id/withIcon": [updateInstructorWithIconConfig],
   "/instructor-list": [getAllInstructorsConfig],
   "/customer-list": [getAllCustomersConfig],
+  "/customer-list/deactivate/:id": [deactivateCustomerConfig],
   "/child-list": [getAllChildrenConfig],
   "/plan-list/register": [registerPlanConfig],
   "/plan-list/update/:id": [updatePlanConfig],

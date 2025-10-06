@@ -10,20 +10,23 @@ export default function CancelClassesModalController({
   upcomingClasses,
   customerId,
   userSessionType,
+  terminationAt,
 }: CancelClassesModalControllerProps) {
   const [isCancelingModalOpen, setIsCancelingModalOpen] = useState(false);
   const { language } = useLanguage();
 
   return (
     <>
-      <ActionButton
-        btnText={language === "ja" ? "予約をキャンセル" : "Cancel Classes"}
-        className="cancelClasses"
-        onClick={() => {
-          setIsCancelingModalOpen(true);
-        }}
-        disabled={upcomingClasses.length === 0}
-      />
+      {userSessionType === "admin" || !terminationAt ? (
+        <ActionButton
+          btnText={language === "ja" ? "予約をキャンセル" : "Cancel Classes"}
+          className="cancelClasses"
+          onClick={() => {
+            setIsCancelingModalOpen(true);
+          }}
+          disabled={upcomingClasses.length === 0}
+        />
+      ) : null}
       <Modal
         isOpen={isCancelingModalOpen}
         onClose={() => setIsCancelingModalOpen(false)}

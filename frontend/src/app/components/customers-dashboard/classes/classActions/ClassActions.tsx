@@ -5,9 +5,11 @@ import RebookingActions from "./rebookingActions/RebookingActions";
 export default async function ClassActions({
   userSessionType,
   customerId,
+  terminationAt,
 }: {
   userSessionType: UserType;
   customerId: number;
+  terminationAt: string | null;
 }) {
   return (
     <div className={styles.calendarHeaderContainer}>
@@ -16,11 +18,13 @@ export default async function ClassActions({
           <CancelClassesActions
             customerId={customerId}
             userSessionType={userSessionType}
+            terminationAt={terminationAt}
           />
 
           <RebookingActions
             customerId={customerId}
             userSessionType={userSessionType}
+            terminationAt={terminationAt}
           />
         </div>
       </div>

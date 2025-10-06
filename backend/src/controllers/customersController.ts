@@ -29,7 +29,7 @@ import { resendVerificationEmail, sendVerificationEmail } from "../helper/mail";
 import { prisma } from "../../prisma/prismaClient";
 import { deleteChild, registerChild } from "../services/childrenService";
 import { getChildProfiles } from "../services/childrenService";
-import { convertToISOString } from "../helper/dateUtils";
+import { convertToISOString, convertToTimezoneDate } from "../helper/dateUtils";
 import {
   RequestWithParams,
   RequestWithBody,
@@ -151,7 +151,12 @@ export const getCustomerByIdController = async (
       return res.status(404).json({ error: "Customer not found." });
     }
 
-    res.json(customer);
+    // Convert terminationAt from UTC to JST
+    const terminationAt = customer.terminationAt
+      ? convertToTimezoneDate(customer.terminationAt, "Asia/Tokyo")
+      : null;
+
+    res.json({ ...customer, terminationAt });
   } catch (error) {
     console.error("Error fetching customer:", error);
     res.status(500).json({

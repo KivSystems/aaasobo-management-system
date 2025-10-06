@@ -26,6 +26,7 @@ import {
   CONFIRM_DELETE_CHILD_PROFILE_MESSAGE,
 } from "@/app/helper/messages/customerDashboard";
 import { deleteChildProfileAction } from "@/app/actions/deleteUser";
+import { maskedHeadLetters, maskedBirthdate } from "@/app/helper/data/data";
 import Modal from "../../elements/modal/Modal";
 import AddChildForm from "./AddChildForm";
 
@@ -33,6 +34,7 @@ function ChildrenProfiles({
   customerId,
   childProfiles,
   userSessionType,
+  terminationAt,
 }: ChildrenProfilesProps) {
   const [updateResult, updateAction] = useFormState(
     updateChildProfileAction,
@@ -97,19 +99,21 @@ function ChildrenProfiles({
 
   return (
     <div className={styles.container}>
-      <div className={styles.addBtn}>
-        <ActionButton
-          btnText={language === "ja" ? "お子さまを追加" : "Add Child"}
-          className="addBtn"
-          Icon={PlusIcon}
-          onClick={(e) => {
-            e.preventDefault();
-            setEditingChildId(null);
-            clearErrorMessage("all");
-            setIsAddChildModalOpen(true);
-          }}
-        />
-      </div>
+      {!terminationAt && (
+        <div className={styles.addBtn}>
+          <ActionButton
+            btnText={language === "ja" ? "お子さまを追加" : "Add Child"}
+            className="addBtn"
+            Icon={PlusIcon}
+            onClick={(e) => {
+              e.preventDefault();
+              setEditingChildId(null);
+              clearErrorMessage("all");
+              setIsAddChildModalOpen(true);
+            }}
+          />
+        </div>
+      )}
 
       <Modal
         isOpen={isAddChildModalOpen}
@@ -184,7 +188,11 @@ function ChildrenProfiles({
                   ) : (
                     <div className={styles.profileInfo}>
                       <div className={styles.profileInfo__data}>
-                        {formatBirthdateToISO(child.birthdate)}
+                        {formatBirthdateToISO(child.birthdate).includes(
+                          maskedBirthdate,
+                        )
+                          ? maskedHeadLetters
+                          : formatBirthdateToISO(child.birthdate)}
                       </div>
                     </div>
                   )}
@@ -240,48 +248,52 @@ function ChildrenProfiles({
               )}
             </div>
 
-            {editingChildId === child.id ? (
-              <div className={styles.childCard__buttons}>
-                <ActionButton
-                  className="cancelEditingCustomer"
-                  btnText={language === "ja" ? "キャンセル" : "Cancel"}
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    clearErrorMessage("all");
-                    setEditingChildId(null);
-                  }}
-                />
+            {!terminationAt && (
+              <>
+                {editingChildId === child.id ? (
+                  <div className={styles.childCard__buttons}>
+                    <ActionButton
+                      className="cancelEditingCustomer"
+                      btnText={language === "ja" ? "キャンセル" : "Cancel"}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        clearErrorMessage("all");
+                        setEditingChildId(null);
+                      }}
+                    />
 
-                <ActionButton
-                  className="saveCustomer"
-                  btnText={language === "ja" ? "変更を保存" : "Save"}
-                  type="submit"
-                />
-              </div>
-            ) : (
-              <div className={styles.childCard__buttons}>
-                <ActionButton
-                  className="deleteChild"
-                  btnText={language === "ja" ? "削除" : "Delete"}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDeleteClick(child.id);
-                  }}
-                  disabled={editingChildId !== null}
-                />
-                <ActionButton
-                  className="editChild"
-                  btnText={language === "ja" ? "編集" : "Edit"}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    clearErrorMessage("all");
-                    setEditingChildId(child.id);
-                    setEditingSuccessChildId(null);
-                  }}
-                  disabled={editingChildId !== null}
-                />
-              </div>
+                    <ActionButton
+                      className="saveCustomer"
+                      btnText={language === "ja" ? "変更を保存" : "Save"}
+                      type="submit"
+                    />
+                  </div>
+                ) : (
+                  <div className={styles.childCard__buttons}>
+                    <ActionButton
+                      className="deleteChild"
+                      btnText={language === "ja" ? "削除" : "Delete"}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeleteClick(child.id);
+                      }}
+                      disabled={editingChildId !== null}
+                    />
+                    <ActionButton
+                      className="editChild"
+                      btnText={language === "ja" ? "編集" : "Edit"}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        clearErrorMessage("all");
+                        setEditingChildId(child.id);
+                        setEditingSuccessChildId(null);
+                      }}
+                      disabled={editingChildId !== null}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             {/* Hidden fields to include in form submission */}

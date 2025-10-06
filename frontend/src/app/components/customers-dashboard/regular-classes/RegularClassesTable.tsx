@@ -18,12 +18,14 @@ function RegularClassesTable({
   userSessionType,
   adminId,
   customerId,
+  customerTerminationAt,
   language,
 }: {
   subscriptionId: number;
   userSessionType?: UserType;
   adminId?: number;
   customerId: number;
+  customerTerminationAt?: string | null;
   language: LanguageType;
 }) {
   const [activeRecurringClasses, setActiveRecurringClasses] = useState<
@@ -140,6 +142,8 @@ function RegularClassesTable({
               recurringClass={recurringClass}
               onEdit={handleEditRegularClass}
               language={language}
+              userSessionType={userSessionType}
+              customerTerminationAt={customerTerminationAt}
             />
           ))}
         </div>

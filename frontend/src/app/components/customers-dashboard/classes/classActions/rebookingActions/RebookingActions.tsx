@@ -9,9 +9,11 @@ import { getInstructorProfiles } from "@/app/helper/api/instructorsApi";
 export default async function RebookingActions({
   userSessionType,
   customerId,
+  terminationAt,
 }: {
   userSessionType?: UserType;
   customerId: number;
+  terminationAt: string | null;
 }) {
   const [rebookableClasses, instructorProfiles, childProfiles] =
     await Promise.all([
@@ -26,6 +28,8 @@ export default async function RebookingActions({
     <RebookingModalController
       rebookableClasses={rebookableClasses}
       hasChildProfile={hasChildProfile}
+      userSessionType={userSessionType}
+      terminationAt={terminationAt}
       modalContent={
         <RebookingForm
           customerId={customerId}

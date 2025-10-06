@@ -100,6 +100,30 @@
   }
 }
 
+.userLeft {
+  display: flex;
+  align-items: flex-start;
+  margin: 0 0 0 2rem;
+
+  &__text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: $red-alert;
+    width: 100%;
+    margin: 0 0 1rem 0;
+  }
+
+  &__icon {
+    width: 20px;
+    height: 20px;
+    margin: 0 0.2rem 0 0;
+    color: $red-alert;
+    position: relative;
+    top: 1px;
+  }
+}
+
 // buttons
 .buttons {
   display: flex;
