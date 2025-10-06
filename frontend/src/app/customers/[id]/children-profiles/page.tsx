@@ -1,7 +1,10 @@
 import ChildrenProfiles from "@/app/components/customers-dashboard/children-profiles/ChildrenProfiles";
 import { INVALID_CUSTOMER_ID } from "@/app/helper/messages/customerDashboard";
 import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
-import { getChildProfiles } from "@/app/helper/api/customersApi";
+import {
+  getChildProfiles,
+  getCustomerById,
+} from "@/app/helper/api/customersApi";
 
 async function ChildrenProfilesPage({ params }: { params: { id: string } }) {
   const customerId = parseInt(params.id);
@@ -11,6 +14,7 @@ async function ChildrenProfilesPage({ params }: { params: { id: string } }) {
     throw new Error(INVALID_CUSTOMER_ID);
   }
 
+  const customerProfile = await getCustomerById(customerId);
   const childProfiles = await getChildProfiles(customerId);
 
   return (
@@ -21,7 +25,11 @@ async function ChildrenProfilesPage({ params }: { params: { id: string } }) {
         ]}
         className="profile"
       />
-      <ChildrenProfiles customerId={customerId} childProfiles={childProfiles} />
+      <ChildrenProfiles
+        customerId={customerId}
+        childProfiles={childProfiles}
+        terminationAt={customerProfile.terminationAt ?? null}
+      />
     </main>
   );
 }
