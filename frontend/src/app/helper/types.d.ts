@@ -542,7 +542,7 @@ type ChildrenProfilesProps = {
   customerId: number;
   childProfiles: Child[];
   userSessionType?: UserType;
-  terminationAt: string | null;
+  terminationAt?: string | null;
 };
 
 type AddChildFormProps = {
