@@ -11,6 +11,7 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useFormState } from "react-dom";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateCustomerProfileAction } from "@/app/actions/updateUser";
+import { deactivateCustomerAction } from "@/app/actions/deleteUser";
 import InputField from "../../elements/inputField/InputField";
 import PrefectureSelect from "../../features/registerForm/prefectureSelect/PrefectureSelect";
 import { getLocalizedText } from "@/app/helper/utils/stringUtils";
@@ -25,12 +26,14 @@ function CustomerProfile({
   customerProfile: CustomerProfile;
   userSessionType?: UserType;
 }) {
+  // Use `useFormState` hook for updating a customer profile
   const [profileUpdateResult, formAction] = useFormState(
     updateCustomerProfileAction,
     undefined,
   );
-  const [latestCustomer, setLatestCustomer] = useState<CustomerProfile | null>(
-    typeof customerProfile !== "string" ? customerProfile : null,
+  // Use `useState` hook and FormData for deactivating a customer profile
+  const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
+    {},
   );
   const [isEditing, setIsEditing] = useState(false);
 
@@ -57,17 +60,33 @@ function CustomerProfile({
   const isError = !!localMessages.errorMessage;
   const isSuccess = !!localMessages.successMessage;
 
+  const handleDeactivateClick = async () => {
+    const confirmed = window.confirm(
+      `Are you sure to deactivate this customer? This action cannot be undone.`,
+    );
+    if (confirmed && customerProfile) {
+      const formData = new FormData();
+      formData.append("id", String(customerProfile.id));
+
+      const result = await deactivateCustomerAction(
+        deleteResultState,
+        formData,
+      );
+      setDeleteResultState(result);
+    }
+  };
+
   useEffect(() => {
     // Set date info
-    if (latestCustomer?.terminationAt) {
-      const fullDate = latestCustomer.terminationAt.split("T")[0];
+    if (customerProfile.terminationAt) {
+      const fullDate = customerProfile.terminationAt.split("T")[0];
       const targetDate = new Date(fullDate);
       const month = targetDate.getMonth();
       const date = targetDate.getDate();
       const year = targetDate.getFullYear();
       setDateInfo({ fullDate, month, date, year });
     }
-  }, [latestCustomer?.terminationAt]);
+  }, [customerProfile.terminationAt]);
 
   // If the profile update was successful, exit editing mode.
   useEffect(() => {
@@ -193,7 +212,7 @@ function CustomerProfile({
         </div>
       ) : (
         <>
-          {latestCustomer?.terminationAt ? (
+          {customerProfile.terminationAt ? (
             <div className={styles.userLeft}>
               <ExclamationTriangleIcon className={styles.userLeft__icon} />
               <p className={styles.userLeft__text}>
@@ -204,14 +223,10 @@ function CustomerProfile({
             <div className={styles.buttons}>
               {userSessionType === "admin" ? (
                 <ActionButton
-                  className="deleteCustomer"
-                  btnText={"Delete"}
+                  className="deactivateCustomer"
+                  btnText={"Deactivate"}
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setIsEditing(true);
-                    clearErrorMessage("all");
-                  }}
+                  onClick={handleDeactivateClick}
                 />
               ) : null}
               <ActionButton
