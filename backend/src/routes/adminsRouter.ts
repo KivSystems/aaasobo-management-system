@@ -704,7 +704,7 @@ const validatedRouteConfigs = {
   "/instructor-list/update/:id/withIcon": [updateInstructorWithIconConfig],
   "/instructor-list": [getAllInstructorsConfig],
   "/customer-list": [getAllCustomersConfig],
-  "/customer-list/delete/:id": [deactivateCustomerConfig],
+  "/customer-list/deactivate/:id": [deactivateCustomerConfig],
   "/child-list": [getAllChildrenConfig],
   "/plan-list/register": [registerPlanConfig],
   "/plan-list/update/:id": [updatePlanConfig],
