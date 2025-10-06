@@ -9,6 +9,8 @@ import { CHILD_PROFILE_REQUIRED_MESSAGE } from "@/app/helper/messages/customerDa
 export default function RebookingModalController({
   rebookableClasses,
   hasChildProfile,
+  userSessionType,
+  terminationAt,
   modalContent,
 }: RebookingModalControllerProps) {
   const { language } = useLanguage();
@@ -36,12 +38,14 @@ export default function RebookingModalController({
 
   return (
     <>
-      <ActionButton
-        btnText={buttonText}
-        className="rebookClass"
-        onClick={handleRebookingClick}
-        disabled={rebookableClassesNumber === 0}
-      />
+      {userSessionType === "admin" || !terminationAt ? (
+        <ActionButton
+          btnText={buttonText}
+          className="rebookClass"
+          onClick={handleRebookingClick}
+          disabled={rebookableClassesNumber === 0}
+        />
+      ) : null}
       <Modal
         isOpen={isRebookingModalOpen}
         onClose={() => setIsRebookingModalOpen(false)}

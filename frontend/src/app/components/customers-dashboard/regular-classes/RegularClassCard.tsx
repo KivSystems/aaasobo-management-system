@@ -22,12 +22,16 @@ interface RegularClassCardProps {
   recurringClass: RecurringClass;
   onEdit?: (id: number) => void;
   language: LanguageType;
+  userSessionType?: UserType;
+  customerTerminationAt?: string | null;
 }
 
 function RegularClassCard({
   recurringClass,
   onEdit,
   language,
+  userSessionType,
+  customerTerminationAt,
 }: RegularClassCardProps) {
   const timeZone = "Asia/Tokyo"; // Use JST for consistency
 
@@ -57,7 +61,7 @@ function RegularClassCard({
             </div>
           </div>
         </div>
-        {onEdit && (
+        {onEdit && (userSessionType === "admin" || !customerTerminationAt) && (
           <button
             onClick={handleEdit}
             className={styles.editButtonTopRight}

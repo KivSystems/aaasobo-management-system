@@ -117,6 +117,7 @@ type Subscription = {
   id: number;
   planId: number;
   customerId: number;
+  customerTerminationAt?: string | null;
   startAt: string;
   endAt: string | null;
   plan: Plan;
@@ -274,7 +275,8 @@ type UpcomingClass = {
 type CancelClassesModalControllerProps = {
   upcomingClasses: UpcomingClass[] | [];
   customerId: number;
-  userSessionType?: UserType;
+  userSessionType: UserType;
+  terminationAt: string | null;
 };
 
 type CancelClassesModalProps = {
@@ -362,6 +364,8 @@ type RebookableClass = {
 type RebookingModalControllerProps = {
   rebookableClasses: RebookableClass[] | [];
   hasChildProfile: boolean;
+  userSessionType: UserType;
+  terminationAt: string | null;
   modalContent: React.ReactNode;
 };
 
