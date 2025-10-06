@@ -18,7 +18,7 @@ import type {
   GetRecurringClassesByInstructorQuery,
   CreateRecurringClassRequest,
   UpdateRecurringClassRequest,
-} from "@shared/schemas/recurringClasses";
+} from "../../../shared/schemas/recurringClasses";
 
 function handleRegularClassError(error: unknown, res: Response): Response {
   const err =

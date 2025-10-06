@@ -56,7 +56,7 @@ import type {
   UpdatePlanRequest,
   RegisterEventRequest,
   UpdateEventRequest,
-} from "@shared/schemas/admins";
+} from "../../../shared/schemas/admins";
 
 // Register Admin
 export const registerAdminController = async (
@@ -673,6 +673,11 @@ export const updatePlanController = async (
     }
 
     // When updating (not deleting), validation ensures both name and description are present
+    if (!body.name || !body.description) {
+      return res
+        .status(400)
+        .json({ message: "Name and description are required for update" });
+    }
     const { name, description } = body;
     const updatedPlan = await updatePlan(planId, name, description);
     return res.status(200).json({

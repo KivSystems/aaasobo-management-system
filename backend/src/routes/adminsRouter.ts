@@ -26,7 +26,10 @@ import {
   updateBusinessScheduleController,
 } from "../../src/controllers/schedulesController";
 import { registerRoutes } from "../middlewares/validationMiddleware";
-import { MessageErrorResponse, ErrorResponse } from "@shared/schemas/common";
+import {
+  MessageErrorResponse,
+  ErrorResponse,
+} from "../../../shared/schemas/common";
 import {
   AdminIdParams,
   CustomerIdParams,
@@ -60,7 +63,7 @@ import {
   ValidationErrorResponse,
   ConflictErrorResponse,
   InstructorUpdateErrorResponse,
-} from "@shared/schemas/admins";
+} from "../../../shared/schemas/admins";
 
 import { verifyAuthentication } from "../middlewares/auth.middleware";
 import upload from "../middlewares/upload.middleware";

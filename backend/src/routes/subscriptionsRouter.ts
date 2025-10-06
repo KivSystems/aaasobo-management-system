@@ -4,8 +4,8 @@ import { getSubscriptionByIdController } from "../../src/controllers/subscriptio
 import {
   SubscriptionIdParams,
   SubscriptionResponse,
-} from "@shared/schemas/subscriptions";
-import { ErrorResponse } from "@shared/schemas/common";
+} from "../../../shared/schemas/subscriptions";
+import { ErrorResponse } from "../../../shared/schemas/common";
 import { RouteConfig } from "../openapi/routerRegistry";
 
 export const subscriptionsRouter = express.Router();
@@ -36,10 +36,10 @@ const getSubscriptionByIdConfig = {
   },
 };
 
-export const validatedRouteConfigs: Record<string, readonly RouteConfig[]> = {
+const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id": [getSubscriptionByIdConfig],
 };
 
-registerRoutes(subscriptionsRouter, validatedRouteConfigs);
+registerRoutes(subscriptionsRouter, routeConfigs);
 
-export { validatedRouteConfigs as subscriptionsRouterConfig };
+export const subscriptionsRouterConfig = routeConfigs;

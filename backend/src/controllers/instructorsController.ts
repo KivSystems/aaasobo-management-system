@@ -4,7 +4,7 @@ import {
   InstructorIdParams,
   ClassIdParams,
   InstructorClassParams,
-} from "@shared/schemas/instructors";
+} from "../../../shared/schemas/instructors";
 import { validateUserImageUrl } from "../helper/commonUtils";
 import {
   getInstructorById,

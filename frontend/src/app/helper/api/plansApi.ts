@@ -11,7 +11,7 @@ const BACKEND_ORIGIN =
 
 const BASE_URL = `${BACKEND_ORIGIN}/plans`;
 
-export type Response<T> = T | { message: string };
+type Response<T> = T | { message: string };
 
 // GET all plans data
 export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {

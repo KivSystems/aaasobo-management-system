@@ -13,8 +13,8 @@ import {
   GetRecurringClassesByInstructorQuery,
   CreateRecurringClassRequest,
   UpdateRecurringClassRequest,
-} from "@shared/schemas/recurringClasses";
-import { MessageErrorResponse } from "@shared/schemas/common";
+} from "../../../shared/schemas/recurringClasses";
+import { MessageErrorResponse } from "../../../shared/schemas/common";
 
 export const recurringClassesRouter = express.Router();
 

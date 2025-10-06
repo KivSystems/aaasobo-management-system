@@ -25,7 +25,7 @@ const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/admins`;
 
-export type Response<T> = T | { message: string };
+type Response<T> = T | { message: string };
 
 export const getAdminById = async (
   id: number,
@@ -320,19 +320,5 @@ export const deleteAdmin = async (
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
-  }
-};
-
-export const logoutAdmin = async () => {
-  try {
-    const response = await fetch(`${BASE_URL}/logout`, {
-      credentials: "include",
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-  } catch (error) {
-    console.error("Failed to logout:", error);
-    throw error;
   }
 };

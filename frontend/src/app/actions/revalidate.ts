@@ -30,14 +30,6 @@ export async function revalidateInstructorList() {
   revalidateTag("instructor-list");
 }
 
-export async function revalidateCustomerList() {
-  revalidateTag("customer-list");
-}
-
-export async function revalidateChildList() {
-  revalidateTag("child-list");
-}
-
 export async function revalidatePlanList() {
   revalidateTag("plan-list");
 }

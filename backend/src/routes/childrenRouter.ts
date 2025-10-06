@@ -7,7 +7,7 @@ import {
   getChildByIdController,
 } from "../../src/controllers/childrenController";
 import { registerRoutes } from "../middlewares/validationMiddleware";
-import { MessageErrorResponse } from "@shared/schemas/common";
+import { MessageErrorResponse } from "../../../shared/schemas/common";
 import {
   ChildIdParams,
   GetChildrenQuery,
@@ -18,7 +18,7 @@ import {
   UpdateChildResponse,
   DeleteChildResponse,
   DeleteChildConflictResponse,
-} from "@shared/schemas/children";
+} from "../../../shared/schemas/children";
 
 // Route configurations
 const getChildrenConfig = {

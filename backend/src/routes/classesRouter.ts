@@ -31,7 +31,7 @@ import {
   DeleteClassResponse,
   RebookClassErrorResponse,
   ValidationErrorResponse,
-} from "@shared/schemas/classes";
+} from "../../../shared/schemas/classes";
 
 export const classesRouter = express.Router();
 
@@ -314,8 +314,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
 registerRoutes(classesRouter, routeConfigs);
 
 // Export route configs for OpenAPI registration
-export const validatedRouteConfigs = routeConfigs as Record<
+export const classesRouterConfig = routeConfigs as Record<
   string,
   readonly RouteConfig[]
 >;
-export { validatedRouteConfigs as classesRouterConfig };

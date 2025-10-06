@@ -30,7 +30,7 @@ import type {
   CancelClassesRequest,
   UpdateAttendanceRequest,
   UpdateClassStatusRequest,
-} from "@shared/schemas/classes";
+} from "../../../shared/schemas/classes";
 import { prisma } from "../../prisma/prismaClient";
 import {
   getValidRecurringClasses,

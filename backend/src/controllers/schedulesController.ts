@@ -10,7 +10,7 @@ import {
   convertToISOString,
 } from "../helper/dateUtils";
 import { RequestWithBody } from "../middlewares/validationMiddleware";
-import type { UpdateSundayColorRequest } from "@shared/schemas/jobs";
+import type { UpdateSundayColorRequest } from "../../../shared/schemas/jobs";
 
 // Admin dashboard for displaying all schedules
 export const getAllSchedulesController = async (_: Request, res: Response) => {
