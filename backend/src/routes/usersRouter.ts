@@ -103,8 +103,8 @@ const updatePasswordConfig = {
 const routeConfigs = {
   "/authenticate": [authenticateConfig],
   "/send-password-reset": [sendPasswordResetConfig],
-  "/verify-reset-token": [verifyResetTokenConfig],
   "/update-password": [updatePasswordConfig],
+  "/verify-reset-token": [verifyResetTokenConfig],
 } as const;
 
 export const usersRouter = express.Router();

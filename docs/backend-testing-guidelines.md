@@ -49,7 +49,37 @@ This document summarizes the current decisions for setting up API-level tests fo
 
 ---
 
-## 6. Operational Notes
+## 6. Test Naming Conventions
+
+- **One `describe` block per method+endpoint combination**
+  - Example: `describe("POST /users/authenticate")`, `describe("GET /admins/admin-list/:id")`
+  - Nested `describe` blocks can be used for different user types or scenarios
+- **Success test names start with "succeed"**
+  - Example: `it("succeed with valid credentials")`
+- **Failure test names start with "fail"**
+  - Example: `it("fail with invalid ID parameter")`, `it("fail for non-existent admin")`
+- **Avoid redundant assertions**
+  - Don't use `toHaveProperty` for response validation - Zod middleware already validates response schemas
+  - Don't use `toHaveLength` when `toEqual` already checks the full array
+  - Focus on testing business logic and data correctness, not response structure
+
+---
+
+## 7. Faker Import Pattern
+
+- Use **CommonJS `require`** syntax to avoid warnings:
+  ```typescript
+  const { faker } = require("@faker-js/faker");
+  ```
+- Set a **consistent seed** in `setup.ts` for reproducibility:
+  ```typescript
+  faker.seed(12345);
+  ```
+- This ensures the same test data is generated across all test runs
+
+---
+
+## 8. Operational Notes
 
 - Clearly define PrismaClient scope and manage connections.
 - If seed data is required, insert it after truncating tables.
