@@ -6,6 +6,8 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 
+const { faker } = require("@faker-js/faker");
+
 let postgresContainer: StartedPostgreSqlContainer | undefined;
 let prisma: PrismaClient;
 
@@ -44,6 +46,9 @@ beforeAll(async () => {
   // Connect Prisma client
   await prisma.$connect();
   console.log("Prisma client connected");
+
+  // Set consistent seed for reproducible test data
+  faker.seed(12345);
 }, 60000); // 60 second timeout for container startup
 
 beforeEach(async () => {
