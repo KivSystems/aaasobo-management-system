@@ -267,19 +267,19 @@ const registerSubscriptionConfig = {
 
 // Route configurations for validation and OpenAPI
 const routeConfigs = {
-  "/register": [registerConfig],
   "/check-email-conflicts": [checkEmailConflictsConfig],
+  "/register": [registerConfig],
   "/verify-email": [verifyEmailConfig],
-  "/:id/subscriptions": [getSubscriptionsConfig],
-  "/:id/customer": [getCustomerProfileConfig],
-  "/:id/rebookable-classes": [getRebookableClassesConfig],
-  "/:id/upcoming-classes": [getUpcomingClassesConfig],
-  "/:id/classes": [getCustomerClassesConfig],
-  "/:id/child-profiles": [getChildProfilesConfig],
   "/:id": [updateCustomerProfileConfig],
-  "/:id/seen-welcome": [markWelcomeSeenConfig],
+  "/:id/child-profiles": [getChildProfilesConfig],
+  "/:id/classes": [getCustomerClassesConfig],
+  "/:id/customer": [getCustomerProfileConfig],
   "/:id/free-trial/decline": [declineFreeTrialConfig],
+  "/:id/rebookable-classes": [getRebookableClassesConfig],
+  "/:id/seen-welcome": [markWelcomeSeenConfig],
   "/:id/subscription": [registerSubscriptionConfig],
+  "/:id/subscriptions": [getSubscriptionsConfig],
+  "/:id/upcoming-classes": [getUpcomingClassesConfig],
 } as const;
 
 // Register all routes with validation
