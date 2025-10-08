@@ -173,7 +173,7 @@ function generateTestSubscription(planId: number, customerId: number) {
 /**
  * Create a subscription in the database
  */
-async function createSubscription(
+export async function createSubscription(
   planId: number,
   customerId: number,
   data?: Partial<ReturnType<typeof generateTestSubscription>>,
@@ -249,6 +249,34 @@ export async function createPasswordResetToken(
       email,
       token: faker.string.alphanumeric(32),
       expires: new Date(Date.now() + expiresInHours * 60 * 60 * 1000),
+    },
+  });
+}
+
+/**
+ * Create a verification token in the database
+ */
+export async function createVerificationToken(
+  email: string,
+  expiresInHours: number = 1,
+) {
+  return await prisma.verificationToken.create({
+    data: {
+      email,
+      token: faker.string.alphanumeric(32),
+      expires: new Date(Date.now() + expiresInHours * 60 * 60 * 1000),
+    },
+  });
+}
+
+/**
+ * Create a class attendance record in the database
+ */
+export async function createClassAttendance(classId: number, childId: number) {
+  return await prisma.classAttendance.create({
+    data: {
+      classId,
+      childrenId: childId,
     },
   });
 }
