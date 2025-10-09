@@ -85,7 +85,7 @@ export async function createCustomer(data = generateTestCustomer()) {
 /**
  * Create an instructor in the database
  */
-export async function createInstructor(data = generateTestInstructor()) {
+export async function createInstructor(data: any = generateTestInstructor()) {
   return await prisma.instructor.create({
     data: {
       ...data,
@@ -277,6 +277,69 @@ export async function createClassAttendance(classId: number, childId: number) {
     data: {
       classId,
       childrenId: childId,
+    },
+  });
+}
+
+/**
+ * Generate a test instructor schedule
+ */
+export function generateTestInstructorSchedule(
+  instructorId: number,
+  effectiveFrom?: Date,
+  effectiveTo?: Date | null,
+) {
+  return {
+    instructorId,
+    effectiveFrom: effectiveFrom || faker.date.past(),
+    effectiveTo: effectiveTo === undefined ? faker.date.future() : effectiveTo,
+    timezone: faker.location.timeZone(),
+  };
+}
+
+/**
+ * Create an instructor schedule in the database
+ */
+export async function createInstructorSchedule(
+  instructorId: number,
+  data?: Partial<ReturnType<typeof generateTestInstructorSchedule>>,
+) {
+  return await prisma.instructorSchedule.create({
+    data: {
+      ...generateTestInstructorSchedule(instructorId),
+      ...data,
+    },
+  });
+}
+
+/**
+ * Create an instructor slot in the database
+ */
+export async function createInstructorSlot(
+  scheduleId: number,
+  weekday: number,
+  startTime: Date,
+) {
+  return await prisma.instructorSlot.create({
+    data: {
+      scheduleId,
+      weekday,
+      startTime,
+    },
+  });
+}
+
+/**
+ * Create an instructor absence in the database
+ */
+export async function createInstructorAbsence(
+  instructorId: number,
+  absentAt: Date,
+) {
+  return await prisma.instructorAbsence.create({
+    data: {
+      instructorId,
+      absentAt,
     },
   });
 }
