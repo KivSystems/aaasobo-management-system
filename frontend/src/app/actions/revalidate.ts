@@ -45,3 +45,7 @@ export async function revalidateBusinessSchedule() {
 export async function revalidateClassList() {
   revalidateTag("class-list");
 }
+
+export async function revalidateSubscriptionList() {
+  revalidateTag("subscription-list");
+}

@@ -8,6 +8,8 @@ import {
   NO_SUBSCRIPTION_MESSAGE,
 } from "@/app/helper/messages/customerDashboard";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
+import { deleteSubscriptionAction } from "@/app/actions/deleteContent";
+import { useState } from "react";
 
 function CurrentSubscription({
   subscriptionsData,
@@ -22,7 +24,19 @@ function CurrentSubscription({
   customerId: number;
   language: LanguageType;
 }) {
-  const deleteSubscription = () => {};
+  const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
+    {},
+  );
+
+  const handleDeleteSubscription = async (id: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this subscription?",
+    );
+    if (!confirmed) return;
+
+    const result = await deleteSubscriptionAction(id);
+    setDeleteResultState(result);
+  };
 
   return (
     <div className={styles.outsideContainer}>
@@ -58,7 +72,7 @@ function CurrentSubscription({
                   </div>
                   <div className={styles.buttons}>
                     <ActionButton
-                      onClick={deleteSubscription}
+                      onClick={() => handleDeleteSubscription(id)}
                       btnText="DELETE"
                       className="deleteBtn"
                     />

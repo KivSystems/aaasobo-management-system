@@ -3,7 +3,8 @@ import type {
   RegisterSubscriptionRequest,
   NewSubscriptionResponse,
 } from "@shared/schemas/customers";
-import type { SubscriptionResponse } from "@shared/schemas/subscriptions";
+import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
+import { DeleteResponse } from "@shared/schemas/admins";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -50,6 +51,31 @@ export const registerSubscription = async (
     return await response.json();
   } catch (error) {
     console.error("Failed to register a subscription:", error);
+    throw error;
+  }
+};
+
+// Delete a subscription
+export const deleteSubscription = async (
+  subscriptionId: number,
+  cookie: string,
+): Promise<DeleteResponse | { errorMessage: string }> => {
+  try {
+    const URL = `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}`;
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const response = await fetch(URL, {
+      method: "DELETE",
+      headers,
+    });
+
+    if (response.status !== 200) {
+      return { errorMessage: ERROR_PAGE_MESSAGE_EN };
+    }
+    const result: DeleteResponse = await response.json();
+
+    return result;
+  } catch (error) {
+    console.error("Failed to delete the subscription:", error);
     throw error;
   }
 };
