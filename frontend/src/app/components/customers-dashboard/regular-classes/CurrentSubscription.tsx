@@ -7,6 +7,7 @@ import {
   PRESENT_LABEL,
   NO_SUBSCRIPTION_MESSAGE,
 } from "@/app/helper/messages/customerDashboard";
+import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 
 function CurrentSubscription({
   subscriptionsData,
@@ -21,6 +22,8 @@ function CurrentSubscription({
   customerId: number;
   language: LanguageType;
 }) {
+  const deleteSubscription = () => {};
+
   return (
     <div className={styles.outsideContainer}>
       {subscriptionsData && subscriptionsData.subscriptions.length > 0 ? (
@@ -32,24 +35,33 @@ function CurrentSubscription({
             <div key={id} className={styles.subscriptionSection}>
               <div className={styles.enhancedHeader}>
                 <div className={styles.headerContent}>
-                  <div className={styles.planInfo}>
-                    <span className={styles.planName}>
-                      {plan.name} {PLAN_LABEL[language]}
-                    </span>
+                  <div className={styles.planDateInfo}>
+                    <div className={styles.planInfo}>
+                      <span className={styles.planName}>
+                        {plan.name} {PLAN_LABEL[language]}
+                      </span>
+                    </div>
+                    <div className={styles.dateInfo}>
+                      <span className={styles.dateText}>
+                        {language === "ja"
+                          ? startDate.toLocaleDateString("ja-JP", {
+                              year: "numeric",
+                              month: "long",
+                            })
+                          : startDate.toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                            })}{" "}
+                        - {PRESENT_LABEL[language]}
+                      </span>
+                    </div>
                   </div>
-                  <div className={styles.dateInfo}>
-                    <span className={styles.dateText}>
-                      {language === "ja"
-                        ? startDate.toLocaleDateString("ja-JP", {
-                            year: "numeric",
-                            month: "long",
-                          })
-                        : startDate.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                          })}{" "}
-                      - {PRESENT_LABEL[language]}
-                    </span>
+                  <div className={styles.buttons}>
+                    <ActionButton
+                      onClick={deleteSubscription}
+                      btnText="DELETE"
+                      className="deleteBtn"
+                    />
                   </div>
                 </div>
               </div>
