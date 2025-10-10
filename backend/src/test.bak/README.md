@@ -20,8 +20,8 @@ Or temporarily remove `**/test.bak/**` from the exclude list in `vitest.config.m
 
 - [x] users (migrated to `src/test/users.test.ts`)
 - [x] admins (migrated to `src/test/admins.test.ts`)
-- [ ] customers
-- [ ] instructors
+- [x] customers (migrated to `src/test/customers.test.ts`)
+- [x] instructors (migrated to `src/test/instructors.test.ts`)
 - [ ] instructorSchedule
 - [ ] instructorAbsence
 - [ ] children

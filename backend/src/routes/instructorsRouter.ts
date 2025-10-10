@@ -507,21 +507,21 @@ const postTerminationScheduleConfig = {
 } as const;
 
 const validatedRouteConfigs = {
-  "/profiles": [profilesConfig],
   "/all-profiles": [allProfilesConfig],
   "/available-slots": [availableSlotsConfig],
-  "/:id/classes/:classId/same-date": [sameDateClassesConfig],
-  "/:id/calendar-classes": [calendarClassesConfig],
+  "/class/:id": [classInstructorConfig],
+  "/profiles": [profilesConfig],
+  "/schedules/post-termination": [postTerminationScheduleConfig],
   "/:id": [instructorByIdConfig],
+  "/:id/absences": [instructorAbsencesConfig, createAbsenceConfig],
+  "/:id/absences/:absentAt": [deleteAbsenceConfig],
+  "/:id/available-slots": [instructorAvailableSlotsConfig],
+  "/:id/calendar-classes": [calendarClassesConfig],
+  "/:id/classes/:classId/same-date": [sameDateClassesConfig],
   "/:id/profile": [instructorProfileConfig],
   "/:id/schedules": [instructorSchedulesConfig, createScheduleConfig],
   "/:id/schedules/active": [activeScheduleConfig],
   "/:id/schedules/:scheduleId": [scheduleByIdConfig],
-  "/:id/available-slots": [instructorAvailableSlotsConfig],
-  "/:id/absences": [instructorAbsencesConfig, createAbsenceConfig],
-  "/:id/absences/:absentAt": [deleteAbsenceConfig],
-  "/schedules/post-termination": [postTerminationScheduleConfig],
-  "/class/:id": [classInstructorConfig],
 } as const;
 
 export const instructorsRouter = express.Router();
