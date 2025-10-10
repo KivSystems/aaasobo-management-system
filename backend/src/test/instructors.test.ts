@@ -35,34 +35,6 @@ describe("GET /instructors/all-profiles", () => {
   });
 });
 
-describe("GET /instructors/available-slots", () => {
-  it("succeed returning available slots", async () => {
-    const instructor = await createInstructor();
-    const schedule = await createInstructorSchedule(instructor.id, {
-      effectiveFrom: new Date("2024-01-01"),
-      effectiveTo: new Date("2024-12-31"),
-      timezone: "Asia/Tokyo",
-    });
-    await createInstructorSlot(
-      schedule.id,
-      1,
-      new Date("1970-01-01T09:00:00Z"),
-    );
-
-    const response = await request(server)
-      .get("/instructors/available-slots")
-      .query({
-        start: "2024-06-01",
-        end: "2024-06-30",
-        timezone: "Asia/Tokyo",
-      })
-      .expect(200);
-
-    // Mondays in June 2024 within [2024-06-01, 2024-06-30) => 4 days (3, 10, 17, 24)
-    expect(response.body.data.length).toBe(4);
-  });
-});
-
 describe("GET /instructors/class/:id", () => {
   it("succeed returning instructor ID for valid class", async () => {
     const customer = await createCustomer();
@@ -91,28 +63,6 @@ describe("GET /instructors/profiles", () => {
       .expect(200);
 
     expect(response.body).toHaveLength(2);
-  });
-});
-
-describe("POST /instructors/schedules/post-termination", () => {
-  it("succeed creating post-termination schedules", async () => {
-    const futureDate = faker.date.future();
-    const testData = generateTestInstructor();
-    const instructor = await createInstructor({
-      ...testData,
-      birthdate: new Date(testData.birthdate),
-      terminationAt: futureDate,
-    });
-    await createInstructorSchedule(instructor.id, {
-      effectiveFrom: new Date("2024-01-01"),
-      effectiveTo: null,
-    });
-
-    const response = await request(server)
-      .post("/instructors/schedules/post-termination")
-      .expect(201);
-
-    expect(response.body.message).toContain("successfully");
   });
 });
 
@@ -213,34 +163,6 @@ describe("DELETE /instructors/:id/absences/:absentAt", () => {
   });
 });
 
-describe("GET /instructors/:id/available-slots", () => {
-  it("succeed returning instructor available slots", async () => {
-    const instructor = await createInstructor();
-    const schedule = await createInstructorSchedule(instructor.id, {
-      effectiveFrom: new Date("2024-01-01"),
-      effectiveTo: new Date("2024-12-31"),
-      timezone: "Asia/Tokyo",
-    });
-    await createInstructorSlot(
-      schedule.id,
-      1,
-      new Date("1970-01-01T09:00:00Z"),
-    );
-
-    const response = await request(server)
-      .get(`/instructors/${instructor.id}/available-slots`)
-      .query({
-        start: "2024-06-01",
-        end: "2024-06-30",
-        timezone: "Asia/Tokyo",
-      })
-      .expect(200);
-
-    // Mondays in June 2024 within [2024-06-01, 2024-06-30) => 4
-    expect(response.body.data.length).toBe(4);
-  });
-});
-
 describe("GET /instructors/:id/calendar-classes", () => {
   it("succeed with valid instructor ID", async () => {
     const instructor = await createInstructor();
@@ -285,107 +207,5 @@ describe("GET /instructors/:id/profile", () => {
 
     expect(response.body.id).toBe(instructor.id);
     expect(response.body.name).toBe(instructor.name);
-  });
-});
-
-describe("GET /instructors/:id/schedules", () => {
-  it("succeed returning instructor schedules", async () => {
-    const instructor = await createInstructor();
-    await createInstructorSchedule(instructor.id, {
-      effectiveFrom: new Date("2024-01-01"),
-      effectiveTo: new Date("2024-06-30"),
-    });
-    await createInstructorSchedule(instructor.id, {
-      effectiveFrom: new Date("2024-07-01"),
-      effectiveTo: null,
-    });
-
-    const response = await request(server)
-      .get(`/instructors/${instructor.id}/schedules`)
-      .expect(200);
-
-    expect(response.body.data).toHaveLength(2);
-  });
-});
-
-describe("POST /instructors/:id/schedules", () => {
-  describe("authenticated admin", () => {
-    it("succeed creating instructor schedule", async () => {
-      const admin = await createAdmin();
-      const authCookie = await generateAuthCookie(admin.id, "admin");
-      const instructor = await createInstructor();
-
-      const scheduleData = {
-        effectiveFrom: "2024-08-01",
-        effectiveTo: "2024-12-31",
-        timezone: "Asia/Tokyo",
-        slots: [
-          { weekday: 1, startTime: "09:00" },
-          { weekday: 3, startTime: "14:00" },
-        ],
-      };
-
-      const response = await request(server)
-        .post(`/instructors/${instructor.id}/schedules`)
-        .set("Cookie", authCookie)
-        .send(scheduleData)
-        .expect(201);
-
-      // Verify schedule was created
-      const schedules = await prisma.instructorSchedule.findMany({
-        where: { instructorId: instructor.id },
-        include: { slots: true },
-      });
-      expect(schedules).toHaveLength(1);
-      expect(schedules[0].slots).toHaveLength(2);
-    });
-  });
-
-  it("fail for unauthenticated request", async () => {
-    const instructor = await createInstructor();
-
-    await request(server)
-      .post(`/instructors/${instructor.id}/schedules`)
-      .send({
-        effectiveFrom: "2024-08-01",
-        timezone: "Asia/Tokyo",
-        slots: [],
-      })
-      .expect(401);
-  });
-});
-
-describe("GET /instructors/:id/schedules/active", () => {
-  it("succeed with valid effective date", async () => {
-    const instructor = await createInstructor();
-    const schedule = await createInstructorSchedule(instructor.id, {
-      effectiveFrom: new Date("2024-01-01"),
-      effectiveTo: null,
-    });
-    await createInstructorSlot(
-      schedule.id,
-      1,
-      new Date("1970-01-01T09:00:00Z"),
-    );
-
-    const response = await request(server)
-      .get(`/instructors/${instructor.id}/schedules/active`)
-      .query({ effectiveDate: "2024-06-15" })
-      .expect(200);
-
-    expect(response.body.data.id).toBe(schedule.id);
-  });
-});
-
-describe("GET /instructors/:id/schedules/:scheduleId", () => {
-  it("succeed with valid schedule ID", async () => {
-    const instructor = await createInstructor();
-    const schedule = await createInstructorSchedule(instructor.id);
-
-    const response = await request(server)
-      .get(`/instructors/${instructor.id}/schedules/${schedule.id}`)
-      .expect(200);
-
-    expect(response.body.data.id).toBe(schedule.id);
   });
 });
