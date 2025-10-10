@@ -2072,8 +2072,11 @@ async function getPlan(name: "3,180 yen/month" | "7,980 yen/month") {
 }
 
 async function deleteAll(table: Uncapitalize<Prisma.ModelName>) {
-  // @ts-ignore
-  await prisma[table].deleteMany({});
+  // Use raw SQL TRUNCATE to reset auto-increment sequences
+  const tableName = table.charAt(0).toUpperCase() + table.slice(1);
+  await prisma.$executeRawUnsafe(
+    `TRUNCATE TABLE "${tableName}" RESTART IDENTITY CASCADE`,
+  );
 }
 
 async function main() {
@@ -2129,4 +2132,11 @@ async function main() {
   }
 }
 
-main();
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
