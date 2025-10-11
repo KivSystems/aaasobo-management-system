@@ -103,7 +103,7 @@ function createWeeklyDates(start: Date, end: Date): Date[] {
   return dates;
 }
 
-async function terminateRecurringClass(
+export async function terminateRecurringClass(
   tx: Prisma.TransactionClient,
   recurringClassId: number,
   endDate: Date,
@@ -535,6 +535,29 @@ export const getSubscriptionByRecurringClassId = async (
       },
     });
     return recurringClass?.subscription || null;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to get subscription by recurring class ID.");
+  }
+};
+
+// Delete the recurring class if it hasn't started yet.
+export const deleteRecurringClass = async (
+  tx: Prisma.TransactionClient,
+  recurringClassId: number,
+) => {
+  try {
+    const recurringClass = await tx.recurringClass.findUnique({
+      where: { id: recurringClassId },
+    });
+
+    if (recurringClass && recurringClass.startAt === null) {
+      return await tx.recurringClass.delete({
+        where: { id: recurringClassId },
+      });
+    }
+
+    return recurringClass;
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to get subscription by recurring class ID.");

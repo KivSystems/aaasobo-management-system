@@ -1,6 +1,9 @@
 import express from "express";
 import { registerRoutes } from "../../src/middlewares/validationMiddleware";
-import { getSubscriptionByIdController } from "../../src/controllers/subscriptionsController";
+import {
+  deleteSubscriptionController,
+  getSubscriptionByIdController,
+} from "../../src/controllers/subscriptionsController";
 import {
   SubscriptionIdParams,
   SubscriptionResponse,
@@ -36,8 +39,33 @@ const getSubscriptionByIdConfig = {
   },
 };
 
+const deleteSubscription = {
+  method: "delete" as const,
+  handler: deleteSubscriptionController,
+  paramsSchema: SubscriptionIdParams,
+  openapi: {
+    summary: "Delete a subscription",
+    description:
+      "Delete a subscription and the recurring classes corresponding to the subscription id",
+    responses: {
+      "200": {
+        description: "Subscription deleted successfully",
+        schema: SubscriptionResponse,
+      },
+      "404": {
+        description: "Subscription not found",
+        schema: ErrorResponse,
+      },
+      "400": {
+        description: "Invalid subscription ID",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const routeConfigs: Record<string, readonly RouteConfig[]> = {
-  "/:id": [getSubscriptionByIdConfig],
+  "/:id": [getSubscriptionByIdConfig, deleteSubscription],
 };
 
 registerRoutes(subscriptionsRouter, routeConfigs);

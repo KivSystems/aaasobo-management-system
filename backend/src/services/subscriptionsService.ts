@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 
 export const getAllSubscriptions = async () => {
@@ -59,5 +60,22 @@ export const getSubscriptionById = async (subscriptionId: number) => {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch subscription.");
+  }
+};
+
+// Delete the subscription by the subscription id
+export const deleteSubscription = async (
+  tx: Prisma.TransactionClient,
+  subscriptionId: number,
+) => {
+  try {
+    const subscription = await tx.subscription.delete({
+      where: { id: subscriptionId },
+    });
+
+    return subscription;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to delete the subscription.");
   }
 };
