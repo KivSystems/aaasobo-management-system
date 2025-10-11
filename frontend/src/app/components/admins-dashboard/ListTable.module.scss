@@ -150,3 +150,35 @@ $font_size: 0.9rem;
     color: #ef4444;
   }
 }
+
+// Pagination styles
+.pageNumbersWrapper {
+  flex-wrap: wrap;
+  overflow-x: auto;
+  max-width: 600px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pageNumber {
+  padding: 0.25rem 0.5rem;
+  margin: 0 0 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 0.375rem;
+  background-color: #f9f9f9;
+  cursor: pointer;
+
+  &.activePage {
+    background-color: $blue_primary;
+    color: white;
+    font-weight: bold;
+  }
+}
+
+.pageSelect {
+  margin: 0 0 0.5rem 0.5rem;
+  padding: 0.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}

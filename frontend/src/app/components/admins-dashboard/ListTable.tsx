@@ -7,10 +7,11 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   flexRender,
   ColumnDef,
   SortingState,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"; // Tanstack Table: https://tanstack.com/table/latest
 import Link from "next/link";
 import Modal from "@/app/components/elements/modal/Modal";
 import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
@@ -45,6 +46,10 @@ function ListTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterColumn, setFilterColumn] = useState<string>("0");
   const [filterValue, setFilterValue] = useState<string>("");
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, // Initial page index
+    pageSize: 10, // Default page size
+  });
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [width, setWidth] = useState("100%");
@@ -164,7 +169,15 @@ function ListTable({
                     linkUrl = "";
                   }
                 });
-                return <Link href={linkUrl}>{value}</Link>;
+                return (
+                  <Link
+                    href={linkUrl}
+                    rel="noopener noreferrer" // Security improvement for external links
+                    target="_blank"
+                  >
+                    {value}
+                  </Link>
+                );
               },
             }))
         : [],
@@ -195,10 +208,13 @@ function ListTable({
     columns,
     state: {
       sorting,
+      pagination,
     },
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(), // provide a core row model
-    getSortedRowModel: getSortedRowModel(), // provide a sorting row model
+    getCoreRowModel: getCoreRowModel(), // Provide a core row model
+    getSortedRowModel: getSortedRowModel(), // Provide a sorting row model
+    getPaginationRowModel: getPaginationRowModel(), // Provide a pagination row model
+    onPaginationChange: setPagination, // Update the pagination state when internal APIs mutate the pagination state
   });
 
   // Change the option color when selected
@@ -251,6 +267,36 @@ function ListTable({
               />
             ))}
         </div>
+        {/* Pagination */}
+        <div className={styles.paginationContainer}>
+          {/* Numbered page buttons */}
+          {Array.from({ length: table.getPageCount() || 1 }, (_, index) => (
+            <button
+              key={index}
+              className={`${styles.pageNumber} ${
+                table.getState().pagination.pageIndex === index
+                  ? styles.activePage
+                  : ""
+              }`}
+              onClick={() => table.setPageIndex(index)}
+            >
+              {index + 1}
+            </button>
+          ))}
+          {/* Select page size */}
+          <select
+            className={styles.pageSelect}
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+          >
+            {[10, 20, 30, 50, 100].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* Table */}
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>
             <thead className={styles.tableHeader}>
@@ -304,6 +350,7 @@ function ListTable({
           </table>
         </div>
       </div>
+      {/* Registration Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ListPageRegistrationModal
           userType={userType}
