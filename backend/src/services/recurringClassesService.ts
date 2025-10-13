@@ -560,6 +560,6 @@ export const deleteRecurringClass = async (
     return recurringClass;
   } catch (error) {
     console.error("Database Error:", error);
-    throw new Error("Failed to get subscription by recurring class ID.");
+    throw new Error("Failed to delete recurring class.");
   }
 };

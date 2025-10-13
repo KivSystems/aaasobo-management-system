@@ -39,7 +39,7 @@ export async function deleteSubscriptionAction(
     const cookie = await getCookie();
     const response = await deleteSubscription(subscriptionId, cookie);
 
-    // Refresh cached admin data for the admin list page
+    // Refresh cached subscription data for the subscription list page
     revalidateSubscriptionList();
 
     return response;
