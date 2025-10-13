@@ -4,7 +4,6 @@ export const defaultUserImageUrl = "/images/default-user-icon.jpg";
 export const defaultColor = "#000000";
 export const maskedHeadLetters = "Masked";
 export const maskedBirthdate = "1900-01-01";
-export const omitClassStatuses = ["Canceled(Customer)"]; // Omit these statuses from linking on class list page
 
 export const prefectures = [
   "海外 / Overseas",
@@ -61,3 +60,5 @@ export const FREE_TRIAL_BOOKING_HOURS = 72;
 export const REGULAR_REBOOKING_HOURS = 3;
 export const MIN_MONTHS_TO_LEAVE = 1;
 export const POLLING_INTERVAL = 60 * 60 * 1000; // 60 minutes
+export const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100];
+export const OMIT_CLASS_STATUSES = ["Canceled(Customer)"]; // Omit these statuses from linking on class list page

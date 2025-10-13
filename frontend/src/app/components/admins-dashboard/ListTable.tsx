@@ -17,7 +17,7 @@ import Modal from "@/app/components/elements/modal/Modal";
 import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import GenerateClassesForm from "./GenerateClassesForm";
-import { omitClassStatuses } from "@/app/helper/data/data";
+import { OMIT_CLASS_STATUSES, PAGE_SIZE_OPTIONS } from "@/app/helper/data/data";
 
 type ListTableProps = {
   listType: string;
@@ -164,8 +164,8 @@ function ListTable({
                     data.row.original[replaceItem],
                   );
                   // Only for Class List page
-                  // If the class status is in the omitClassStatuses list, do not set the link URL
-                  if (omitClassStatuses.includes(data.row.original.Status)) {
+                  // If the class status is in the OMIT_CLASS_STATUSES list, do not set the link URL
+                  if (OMIT_CLASS_STATUSES.includes(data.row.original.Status)) {
                     linkUrl = "";
                   }
                 });
@@ -268,34 +268,32 @@ function ListTable({
             ))}
         </div>
         {/* Pagination */}
-        <div className={styles.paginationContainer}>
-          {/* Numbered page buttons */}
-          {Array.from({ length: table.getPageCount() || 1 }, (_, index) => (
-            <button
-              key={index}
-              className={`${styles.pageNumber} ${
-                table.getState().pagination.pageIndex === index
-                  ? styles.activePage
-                  : ""
-              }`}
-              onClick={() => table.setPageIndex(index)}
-            >
-              {index + 1}
-            </button>
-          ))}
-          {/* Select page size */}
-          <select
-            className={styles.pageSelect}
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
+        {/* Numbered page buttons */}
+        {Array.from({ length: table.getPageCount() || 1 }, (_, index) => (
+          <button
+            key={index}
+            className={`${styles.pageNumber} ${
+              table.getState().pagination.pageIndex === index
+                ? styles.activePage
+                : ""
+            }`}
+            onClick={() => table.setPageIndex(index)}
           >
-            {[10, 20, 30, 50, 100].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize}
-              </option>
-            ))}
-          </select>
-        </div>
+            {index + 1}
+          </button>
+        ))}
+        {/* Select page size */}
+        <select
+          className={styles.pageSelect}
+          value={table.getState().pagination.pageSize}
+          onChange={(e) => table.setPageSize(Number(e.target.value))}
+        >
+          {PAGE_SIZE_OPTIONS.map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              {pageSize}
+            </option>
+          ))}
+        </select>
         {/* Table */}
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>
