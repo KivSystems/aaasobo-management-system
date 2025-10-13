@@ -36,6 +36,13 @@ function ClassDetails({
       label1 = "Class Schedule";
       label2 = "Class Details";
       break;
+    case "class-calendar":
+      if (userSessionType === "admin" && adminId) {
+        breadcrumbHref = `/admins/${adminId}/calendar`;
+        label1 = "Class Calendar";
+        label2 = `Class Details (Instructor ID: ${instructorId})`;
+      }
+      break;
     case "class-list":
       if (userSessionType === "admin" && adminId) {
         breadcrumbHref = `/admins/${adminId}/class-list`;
