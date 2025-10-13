@@ -80,6 +80,7 @@ function RegularClasses({
         customerId={customerId}
         userSessionType={userSessionType}
         language={language}
+        onSubscriptionDeleted={handleUpdateSubscription}
       />
     </>
   );

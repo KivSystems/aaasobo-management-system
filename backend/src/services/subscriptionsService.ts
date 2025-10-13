@@ -71,6 +71,10 @@ export const deleteSubscription = async (
   try {
     const subscription = await tx.subscription.delete({
       where: { id: subscriptionId },
+      include: {
+        plan: true,
+        customer: true,
+      },
     });
 
     return subscription;

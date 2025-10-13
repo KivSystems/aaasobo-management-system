@@ -17,16 +17,19 @@ function CurrentSubscription({
   adminId,
   customerId,
   language,
+  onSubscriptionDeleted,
 }: {
   subscriptionsData?: Subscriptions | null;
   userSessionType?: UserType;
   adminId?: number;
   customerId: number;
   language: LanguageType;
+  onSubscriptionDeleted: () => void;
 }) {
   const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
     {},
   );
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const handleDeleteSubscription = async (id: number) => {
     const confirmed = window.confirm(
@@ -34,8 +37,26 @@ function CurrentSubscription({
     );
     if (!confirmed) return;
 
-    const result = await deleteSubscriptionAction(id);
-    setDeleteResultState(result);
+    // prevent duplicate clicks
+    if (deletingId !== null) return;
+
+    try {
+      setDeletingId(id);
+      const result = await deleteSubscriptionAction(id);
+      setDeleteResultState(result);
+
+      const success = !!(result && !result.errorMessage); // adapt to your API shape
+
+      if (success) {
+        onSubscriptionDeleted?.();
+      } else {
+        console.error("Failed to delete subscription:", result);
+      }
+    } catch (error) {
+      console.error("Error deleting subscription:", error);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -73,8 +94,9 @@ function CurrentSubscription({
                   <div className={styles.buttons}>
                     <ActionButton
                       onClick={() => handleDeleteSubscription(id)}
-                      btnText="DELETE"
+                      btnText={deletingId === id ? "DELETING..." : "DELETE"}
                       className="deleteBtn"
+                      disabled={deletingId === id}
                     />
                   </div>
                 </div>

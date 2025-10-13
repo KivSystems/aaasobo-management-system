@@ -61,11 +61,9 @@ export const deleteSubscriptionController = async (
         }
       }
 
-      await deleteSubscription(tx, req.params.id);
-    });
+      const deletedSubscription = await deleteSubscription(tx, req.params.id);
 
-    res.status(200).json({
-      message: "deleted",
+      res.status(200).json(deletedSubscription);
     });
   } catch (error) {
     console.error("Error deleting recurring class:", error);
