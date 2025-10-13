@@ -96,12 +96,16 @@ function CurrentSubscription({
                     </div>
                   </div>
                   <div className={styles.buttons}>
-                    <ActionButton
-                      onClick={() => handleDeleteSubscription(id)}
-                      btnText={deletingId === id ? "DELETING..." : "DELETE"}
-                      className="deleteBtn"
-                      disabled={deletingId === id}
-                    />
+                    {userSessionType === "admin" ? (
+                      <ActionButton
+                        onClick={() => handleDeleteSubscription(id)}
+                        btnText={deletingId === id ? "DELETING..." : "DELETE"}
+                        className="deleteBtn"
+                        disabled={deletingId === id}
+                      />
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 </div>
               </div>
