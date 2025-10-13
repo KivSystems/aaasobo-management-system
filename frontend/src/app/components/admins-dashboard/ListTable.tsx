@@ -7,16 +7,17 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   flexRender,
   ColumnDef,
   SortingState,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"; // Tanstack Table: https://tanstack.com/table/latest
 import Link from "next/link";
 import Modal from "@/app/components/elements/modal/Modal";
 import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import GenerateClassesForm from "./GenerateClassesForm";
-import { omitClassStatuses } from "@/app/helper/data/data";
+import { OMIT_CLASS_STATUSES, PAGE_SIZE_OPTIONS } from "@/app/helper/data/data";
 
 type ListTableProps = {
   listType: string;
@@ -45,6 +46,10 @@ function ListTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterColumn, setFilterColumn] = useState<string>("0");
   const [filterValue, setFilterValue] = useState<string>("");
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, // Initial page index
+    pageSize: 10, // Default page size
+  });
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [width, setWidth] = useState("100%");
@@ -159,12 +164,20 @@ function ListTable({
                     data.row.original[replaceItem],
                   );
                   // Only for Class List page
-                  // If the class status is in the omitClassStatuses list, do not set the link URL
-                  if (omitClassStatuses.includes(data.row.original.Status)) {
+                  // If the class status is in the OMIT_CLASS_STATUSES list, do not set the link URL
+                  if (OMIT_CLASS_STATUSES.includes(data.row.original.Status)) {
                     linkUrl = "";
                   }
                 });
-                return <Link href={linkUrl}>{value}</Link>;
+                return (
+                  <Link
+                    href={linkUrl}
+                    rel="noopener noreferrer" // Security improvement for external links
+                    target="_blank"
+                  >
+                    {value}
+                  </Link>
+                );
               },
             }))
         : [],
@@ -195,10 +208,13 @@ function ListTable({
     columns,
     state: {
       sorting,
+      pagination,
     },
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(), // provide a core row model
-    getSortedRowModel: getSortedRowModel(), // provide a sorting row model
+    getCoreRowModel: getCoreRowModel(), // Provide a core row model
+    getSortedRowModel: getSortedRowModel(), // Provide a sorting row model
+    getPaginationRowModel: getPaginationRowModel(), // Provide a pagination row model
+    onPaginationChange: setPagination, // Update the pagination state when internal APIs mutate the pagination state
   });
 
   // Change the option color when selected
@@ -251,6 +267,34 @@ function ListTable({
               />
             ))}
         </div>
+        {/* Pagination */}
+        {/* Numbered page buttons */}
+        {Array.from({ length: table.getPageCount() || 1 }, (_, index) => (
+          <button
+            key={index}
+            className={`${styles.pageNumber} ${
+              table.getState().pagination.pageIndex === index
+                ? styles.activePage
+                : ""
+            }`}
+            onClick={() => table.setPageIndex(index)}
+          >
+            {index + 1}
+          </button>
+        ))}
+        {/* Select page size */}
+        <select
+          className={styles.pageSelect}
+          value={table.getState().pagination.pageSize}
+          onChange={(e) => table.setPageSize(Number(e.target.value))}
+        >
+          {PAGE_SIZE_OPTIONS.map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              {pageSize}
+            </option>
+          ))}
+        </select>
+        {/* Table */}
         <div className={styles.tableWrapper}>
           <table className={styles.tableContainer}>
             <thead className={styles.tableHeader}>
@@ -304,6 +348,7 @@ function ListTable({
           </table>
         </div>
       </div>
+      {/* Registration Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ListPageRegistrationModal
           userType={userType}
