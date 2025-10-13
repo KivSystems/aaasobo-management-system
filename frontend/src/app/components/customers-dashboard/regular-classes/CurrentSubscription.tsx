@@ -10,6 +10,9 @@ import {
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { deleteSubscriptionAction } from "@/app/actions/deleteContent";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function CurrentSubscription({
   subscriptionsData,
@@ -45,11 +48,13 @@ function CurrentSubscription({
       const result = await deleteSubscriptionAction(id);
       setDeleteResultState(result);
 
-      const success = !!(result && !result.errorMessage); // adapt to your API shape
+      const success = !!(result && !result.errorMessage); 
 
       if (success) {
+        toast.success("Subscription deleted successfully.");
         onSubscriptionDeleted?.();
       } else {
+        toast.error("Failed to delete subscription.");
         console.error("Failed to delete subscription:", result);
       }
     } catch (error) {
