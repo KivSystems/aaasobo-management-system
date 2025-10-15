@@ -31,30 +31,30 @@ function ClassDetails({
   let label1: string = "";
   let label2: string = "";
   switch (previousPage) {
-    case "instructor-calendar":
+    case "instructor-calendar": // Instructor dashboard calendar page
       breadcrumbHref = `/instructors/${instructorId}/class-schedule`;
       label1 = "Class Schedule";
       label2 = "Class Details";
       break;
-    case "class-calendar":
+    case "class-calendar": // Admin dashboard calendar page
       if (userSessionType === "admin" && adminId) {
         breadcrumbHref = `/admins/${adminId}/calendar`;
         label1 = "Class Calendar";
-        label2 = `Class Details (Instructor ID: ${instructorId})`;
+        label2 = `Class Details (Instructor: ${classDetails.instructorName})`;
       }
       break;
-    case "class-list":
+    case "class-list": // Admin dashboard class list page
       if (userSessionType === "admin" && adminId) {
         breadcrumbHref = `/admins/${adminId}/class-list`;
         label1 = "Class List";
-        label2 = `Class Details (Class ID: ${classId})`;
+        label2 = `Class Details (Instructor: ${classDetails.instructorName})`;
       }
       break;
-    case "instructor-list":
+    case "instructor-list": // Admin dashboard instructor list page
       if (userSessionType === "admin" && adminId) {
         breadcrumbHref = `/admins/${adminId}/instructor-list`;
         label1 = "Instructor List";
-        label2 = `Class Details (Instructor ID: ${instructorId})`;
+        label2 = `Class Details (Instructor: ${classDetails.instructorName})`;
         // Set the active tab to the instructor calendar tab.
         localStorage.setItem("activeInstructorTab", "0");
       }

@@ -182,6 +182,7 @@ type InstructorClassDetail = {
   id: number;
   dateTime: string;
   customerName: string;
+  instructorName: string;
   classURL: string;
   meetingId: string;
   passcode: string;
@@ -343,7 +344,7 @@ type CustomerCalendarProps = {
 
 type InstructorCalendarClientProps = {
   adminId?: number | null;
-  instructorId: number;
+  instructorId: number | null;
   userSessionType?: UserType;
   instructorCalendarEvents: EventType[];
   validRange: {
@@ -580,7 +581,11 @@ type ClassDetailsProps = {
   classes: InstructorClassDetail[] | [];
   adminId?: number | null;
   userSessionType?: UserType;
-  previousPage: "instructor-calendar" | "class-list" | "instructor-list";
+  previousPage:
+    | "instructor-calendar"
+    | "class-calendar"
+    | "class-list"
+    | "instructor-list";
 };
 
 type ClassItemProps = {
@@ -598,7 +603,11 @@ type ClassItemForAdminProps = {
   classId: number;
   isUpdatingData: boolean;
   setIsUpdatingData: Dispatch<SetStateAction<boolean>>;
-  previousPage: "instructor-calendar" | "class-list" | "instructor-list";
+  previousPage:
+    | "instructor-calendar"
+    | "class-calendar"
+    | "class-list"
+    | "instructor-list";
 };
 
 type HandleAttendanceUpdateParams = {
