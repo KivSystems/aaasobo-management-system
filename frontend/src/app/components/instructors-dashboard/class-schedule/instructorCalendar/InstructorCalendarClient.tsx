@@ -6,7 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
-import { DayCellMountArg, EventClickArg } from "@fullcalendar/core";
+import { EventClickArg } from "@fullcalendar/core";
 import {
   createRenderEventContent,
   getClassSlotTimesForCalendar,
@@ -31,7 +31,7 @@ const InstructorCalendarClient = ({
     const classId = clickInfo.event.extendedProps.classId;
     const redirectURL =
       userSessionType === "admin"
-        ? `/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${classId}`
+        ? `/admins/${adminId}/calendar/${instructorId}/class-schedule/${classId}`
         : `/instructors/${instructorId}/class-schedule/${classId}`;
 
     router.push(redirectURL);

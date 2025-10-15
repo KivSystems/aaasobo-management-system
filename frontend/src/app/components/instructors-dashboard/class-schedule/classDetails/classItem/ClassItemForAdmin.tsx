@@ -75,6 +75,9 @@ const ClassItemForAdmin = ({
           case "class-list":
             redirectPath = `/admins/${adminId}/class-list/${classItem.id}`;
             break;
+          case "class-calendar":
+            redirectPath = `/admins/${adminId}/calendar/${instructorId}/class-schedule/${classItem.id}`;
+            break;
           case "instructor-list":
             redirectPath = `/admins/${adminId}/instructor-list/${instructorId}/class-schedule/${classItem.id}`;
             break;

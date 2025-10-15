@@ -54,12 +54,10 @@ export const getInstructors = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result = await response.json();
-    return result.data.map(
-      (instructor: { ID: number; Instructor: string }) => ({
-        id: instructor.ID,
-        name: instructor.Instructor,
-      }),
-    );
+    return result.data.map((instructor: { ID: number; Nickname: string }) => ({
+      id: instructor.ID,
+      name: instructor.Nickname,
+    }));
   } catch (error) {
     console.error("Failed to fetch instructors:", error);
     throw error;
