@@ -86,16 +86,10 @@ function InstructorCalendarForAdmin({
 
   useEffect(() => {
     const activeInstructor = localStorage.getItem("activeInstructor");
-
-    if (activeInstructor === null) {
-      return;
-    }
-    const [id, name] = activeInstructor.split(",");
+    const [id, name] = activeInstructor?.split(",") || ["1", ""];
     setInstructorId(parseInt(id));
     setInstructorName(name);
   }, []);
-
-  if (!instructorId) return <></>;
 
   if (error) {
     return <div>{error}</div>;
