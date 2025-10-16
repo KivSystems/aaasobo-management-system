@@ -5,6 +5,7 @@ import {
   getSubscriptionByIdController,
 } from "../../src/controllers/subscriptionsController";
 import {
+  DeleteSubscriptionResponse,
   SubscriptionIdParams,
   SubscriptionResponse,
 } from "../../../shared/schemas/subscriptions";
@@ -50,7 +51,7 @@ const deleteSubscription = {
     responses: {
       "200": {
         description: "Subscription deleted successfully",
-        schema: SubscriptionResponse,
+        schema: DeleteSubscriptionResponse,
       },
       "404": {
         description: "Subscription not found",

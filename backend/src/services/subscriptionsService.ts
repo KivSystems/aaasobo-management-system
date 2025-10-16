@@ -63,23 +63,22 @@ export const getSubscriptionById = async (subscriptionId: number) => {
   }
 };
 
-// Delete the subscription by the subscription id
-export const deleteSubscription = async (
+// Terminate the subscription
+export const terminateSubscription = async (
   tx: Prisma.TransactionClient,
   subscriptionId: number,
+  endDate: Date,
 ) => {
   try {
-    const subscription = await tx.subscription.delete({
+    // Set endAt to indicate termination
+    const subscription = await tx.subscription.update({
       where: { id: subscriptionId },
-      include: {
-        plan: true,
-        customer: true,
-      },
+      data: { endAt: endDate },
     });
 
     return subscription;
   } catch (error) {
     console.error("Database Error:", error);
-    throw new Error("Failed to delete the subscription.");
+    throw new Error("Failed to terminate the subscription.");
   }
 };

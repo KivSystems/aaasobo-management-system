@@ -51,7 +51,7 @@ function CurrentSubscription({
 
       if (success) {
         toast.success("Subscription deleted successfully.");
-        onSubscriptionDeleted?.();
+        onSubscriptionDeleted();
       } else {
         toast.error("Failed to delete subscription.");
         console.error("Failed to delete subscription:", result);

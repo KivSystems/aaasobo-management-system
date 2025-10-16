@@ -2,8 +2,8 @@ import { Response } from "express";
 import { RequestWithParams } from "../middlewares/validationMiddleware";
 import type { SubscriptionIdParams } from "../../../shared/schemas/subscriptions";
 import {
-  deleteSubscription,
   getSubscriptionById,
+  terminateSubscription,
 } from "../services/subscriptionsService";
 import { prisma } from "../../prisma/prismaClient";
 import {
@@ -51,19 +51,19 @@ export const deleteSubscriptionController = async (
 
     await prisma.$transaction(async (tx) => {
       for (const recurringClass of recurringClasses) {
-        // Delete the recurring classes if the regular classes are not registered.
-        if (!recurringClass.dateTime) {
-          await deleteRecurringClass(tx, recurringClass.id);
-
-          // Terminate the current recurring classes if the regular classes are registered.
-        } else {
-          await terminateRecurringClass(tx, recurringClass.id, date);
-        }
+        await terminateRecurringClass(tx, recurringClass.id, date);
       }
 
-      const deletedSubscription = await deleteSubscription(tx, req.params.id);
+      const terminatedSubscription = await terminateSubscription(
+        tx,
+        req.params.id,
+        date,
+      );
 
-      res.status(200).json(deletedSubscription);
+      res.status(200).json({
+        message: "Subscription deleted successfully",
+        id: terminatedSubscription.id,
+      });
     });
   } catch (error) {
     console.error("Error deleting recurring class:", error);
