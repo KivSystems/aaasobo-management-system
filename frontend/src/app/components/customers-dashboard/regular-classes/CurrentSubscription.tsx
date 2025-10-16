@@ -47,7 +47,7 @@ function CurrentSubscription({
       const result = await deleteSubscriptionAction(id);
       setDeleteResultState(result);
 
-      const success = !!(result && !result.errorMessage);
+      const success = result && !result.errorMessage;
 
       if (success) {
         toast.success("Subscription deleted successfully.");

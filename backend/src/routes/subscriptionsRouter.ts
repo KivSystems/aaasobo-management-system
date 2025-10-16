@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import { registerRoutes } from "../../src/middlewares/validationMiddleware";
 import {
   deleteSubscriptionController,
@@ -11,6 +11,7 @@ import {
 } from "../../../shared/schemas/subscriptions";
 import { ErrorResponse } from "../../../shared/schemas/common";
 import { RouteConfig } from "../openapi/routerRegistry";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
 
 export const subscriptionsRouter = express.Router();
 
@@ -43,6 +44,7 @@ const getSubscriptionByIdConfig = {
 const deleteSubscription = {
   method: "delete" as const,
   handler: deleteSubscriptionController,
+  middleware: [verifyAuthentication] as RequestHandler[],
   paramsSchema: SubscriptionIdParams,
   openapi: {
     summary: "Delete a subscription",
