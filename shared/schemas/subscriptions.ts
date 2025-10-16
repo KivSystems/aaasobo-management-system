@@ -43,6 +43,15 @@ export const SubscriptionResponse = z.object({
     .describe("Associated customer details"),
 });
 
+// Delete response schemas
+export const DeleteSubscriptionResponse = z.object({
+  message: z.string(),
+  id: z.number(),
+});
+
 // Inferred TypeScript types
 export type SubscriptionIdParams = z.infer<typeof SubscriptionIdParams>;
 export type SubscriptionResponse = z.infer<typeof SubscriptionResponse>;
+export type DeleteSubscriptionResponse = z.infer<
+  typeof DeleteSubscriptionResponse
+>;

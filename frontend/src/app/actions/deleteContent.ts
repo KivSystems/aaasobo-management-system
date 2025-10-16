@@ -2,8 +2,9 @@
 
 import { deleteEvent } from "@/app/helper/api/eventsApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { revalidateEventList } from "./revalidate";
+import { revalidateEventList, revalidateSubscriptionList } from "./revalidate";
 import { getCookie } from "../../middleware";
+import { deleteSubscription } from "../helper/api/subscriptionsApi";
 
 export async function deleteEventAction(
   prevState: DeleteFormState | undefined,
@@ -21,6 +22,25 @@ export async function deleteEventAction(
 
     // Refresh cached event data for the event list page
     revalidateEventList();
+
+    return response;
+  } catch (error) {
+    console.error("Unexpected error in deleteContent server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+}
+
+export async function deleteSubscriptionAction(
+  subscriptionId: number,
+): Promise<DeleteFormState> {
+  try {
+    const cookie = await getCookie();
+    const response = await deleteSubscription(subscriptionId, cookie);
+
+    // Refresh cached subscription data for the subscription list page
+    revalidateSubscriptionList();
 
     return response;
   } catch (error) {

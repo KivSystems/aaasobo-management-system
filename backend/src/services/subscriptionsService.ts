@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 
 export const getAllSubscriptions = async () => {
@@ -64,5 +65,25 @@ export const getSubscriptionById = async (subscriptionId: number) => {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch subscription.");
+  }
+};
+
+// Terminate the subscription
+export const terminateSubscription = async (
+  tx: Prisma.TransactionClient,
+  subscriptionId: number,
+  endDate: Date,
+) => {
+  try {
+    // Set endAt to indicate termination
+    const subscription = await tx.subscription.update({
+      where: { id: subscriptionId },
+      data: { endAt: endDate },
+    });
+
+    return subscription;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to terminate the subscription.");
   }
 };

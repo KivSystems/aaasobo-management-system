@@ -67,6 +67,7 @@ function AddSubscription({
 
     try {
       await registerSubscription(customerId, subscriptionData);
+      toast.success("Subscription registered successfully.");
       updateSubscription();
       onClose();
     } catch (error) {

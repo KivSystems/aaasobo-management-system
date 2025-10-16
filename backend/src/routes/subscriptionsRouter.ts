@@ -1,12 +1,17 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import { registerRoutes } from "../../src/middlewares/validationMiddleware";
-import { getSubscriptionByIdController } from "../../src/controllers/subscriptionsController";
 import {
+  deleteSubscriptionController,
+  getSubscriptionByIdController,
+} from "../../src/controllers/subscriptionsController";
+import {
+  DeleteSubscriptionResponse,
   SubscriptionIdParams,
   SubscriptionResponse,
 } from "../../../shared/schemas/subscriptions";
 import { ErrorResponse } from "../../../shared/schemas/common";
 import { RouteConfig } from "../openapi/routerRegistry";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
 
 export const subscriptionsRouter = express.Router();
 
@@ -36,8 +41,34 @@ const getSubscriptionByIdConfig = {
   },
 };
 
+const deleteSubscription = {
+  method: "delete" as const,
+  handler: deleteSubscriptionController,
+  middleware: [verifyAuthentication] as RequestHandler[],
+  paramsSchema: SubscriptionIdParams,
+  openapi: {
+    summary: "Delete a subscription",
+    description:
+      "Delete a subscription and the recurring classes corresponding to the subscription id",
+    responses: {
+      "200": {
+        description: "Subscription deleted successfully",
+        schema: DeleteSubscriptionResponse,
+      },
+      "404": {
+        description: "Subscription not found",
+        schema: ErrorResponse,
+      },
+      "400": {
+        description: "Invalid subscription ID",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const routeConfigs: Record<string, readonly RouteConfig[]> = {
-  "/:id": [getSubscriptionByIdConfig],
+  "/:id": [getSubscriptionByIdConfig, deleteSubscription],
 };
 
 registerRoutes(subscriptionsRouter, routeConfigs);
