@@ -843,6 +843,7 @@ async function insertClassAttendance() {
       { classId: classes[0].id, childrenId: children[1].id },
       { classId: classes[1].id, childrenId: children[0].id },
       { classId: classes[2].id, childrenId: children[0].id },
+      { classId: classes[3].id, childrenId: children[0].id },
       { classId: classes[4].id, childrenId: children[0].id },
       { classId: classes[5].id, childrenId: children[0].id },
       { classId: classes[5].id, childrenId: children[1].id },
