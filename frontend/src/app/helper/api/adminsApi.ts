@@ -43,9 +43,7 @@ export const getAllAdmins = async (): Promise<AdminsListResponse["data"]> => {
   try {
     const apiUrl = `${BASE_URL}/admin-list`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["admin-list"] },
-      cache: "no-store",
+      next: { tags: ["admin-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -65,9 +63,7 @@ export const getAllInstructors = async (): Promise<
   try {
     const apiUrl = `${BASE_URL}/instructor-list`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["instructor-list"] },
-      cache: "no-store",
+      next: { tags: ["instructor-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -87,9 +83,7 @@ export const getAllCustomers = async (): Promise<
   try {
     const apiUrl = `${BASE_URL}/customer-list`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["customer-list"] },
-      cache: "no-store",
+      next: { tags: ["customer-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -109,9 +103,7 @@ export const getAllChildren = async (): Promise<
   try {
     const apiUrl = `${BASE_URL}/child-list`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["child-list"] },
-      cache: "no-store",
+      next: { tags: ["child-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -129,9 +121,7 @@ export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {
   try {
     const apiUrl = `${BASE_URL}/plan-list`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["plan-list"] },
-      cache: "no-store",
+      next: { tags: ["plan-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -151,9 +141,7 @@ export const getAllSubscriptions = async (): Promise<
   try {
     const apiUrl = `${BASE_URL}/subscription-list`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["subscription-list"] },
-      cache: "no-store",
+      next: { tags: ["subscription-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -171,9 +159,7 @@ export const getAllEvents = async (): Promise<EventsListResponse["data"]> => {
   try {
     const apiUrl = `${BASE_URL}/event-list`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["event-list"] },
-      cache: "no-store",
+      next: { tags: ["event-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -210,9 +196,7 @@ export const getAllBusinessSchedules =
     try {
       const apiUrl = `${BASE_URL}/business-schedule`;
       const response = await fetch(apiUrl, {
-        // TODO: Add cache control after completing further implementations
-        // next: { tags: ["business-schedule"] },
-        cache: "no-store",
+        next: { tags: ["business-schedule"] },
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

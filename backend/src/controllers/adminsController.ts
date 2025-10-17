@@ -40,8 +40,7 @@ import {
   deleteEvent,
 } from "../services/eventsService";
 import { getAllSubscriptions } from "../services/subscriptionsService";
-import { convertToISOString } from "../helper/dateUtils";
-import { maskedHeadLetters, maskedBirthdate } from "../helper/commonUtils";
+import { days, convertToISOString } from "../helper/dateUtils";
 import type {
   AdminIdParams,
   CustomerIdParams,
@@ -248,18 +247,16 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
 
     // Transform the data structure.
     const data = customers.map((customer, number) => {
-      let { id, name, email, prefecture, terminationAt } = customer;
+      let { id, name, email, prefecture, children } = customer;
 
-      // Mask customer info if the customer has left
-      if (terminationAt) {
-        name = `${name} (Left)`;
-        email = maskedHeadLetters;
-      }
+      // Format children names as a comma-separated string
+      const childrenNames = children.map((child) => child.name).join(", ");
 
       return {
         No: number + 1,
         ID: id,
         Customer: name,
+        Children: childrenNames,
         Email: email,
         Prefecture: prefecture,
       };
@@ -287,8 +284,8 @@ export const getAllInstructorsController = async (
       return {
         No: number + 1,
         ID: id,
-        Instructor: name,
-        Nickname: nickname,
+        Instructor: nickname,
+        "Full Name": name,
         Email: email,
       };
     });
@@ -527,12 +524,6 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
       let { id, name, customer, birthdate, personalInfo } = child;
       let displayedBirthdate = birthdate?.toISOString().slice(0, 10);
 
-      // Mask children's info if the customer has left
-      if (customer.terminationAt) {
-        name = `${name} (Left)`;
-        displayedBirthdate = maskedHeadLetters;
-      }
-
       return {
         No: number + 1,
         ID: id,
@@ -585,11 +576,6 @@ export const getAllSubscriptionsController = async (
         } else {
           comment = "Delete this subscription (plan no longer exists)";
         }
-      }
-
-      // Mask customer name if the customer has left
-      if (customer.terminationAt) {
-        customerName = `${customerName} (Left)`;
       }
 
       acc.push({
@@ -849,8 +835,15 @@ export const getClassesWithinPeriodController = async (
 
     // Transform the data structure.
     const data = classes.map((classItem, number) => {
-      const { id, instructor, customer, dateTime, status, classCode } =
-        classItem;
+      const {
+        id,
+        instructor,
+        customer,
+        dateTime,
+        status,
+        classCode,
+        classAttendance,
+      } = classItem;
 
       // If the free trial class status is "pending" or "declined" before booking, an instructor is not assigned — return "Not Set".
       const instructorName = instructor?.nickname ?? "Not Set";
@@ -869,6 +862,14 @@ export const getClassesWithinPeriodController = async (
 
         date = dateTimeJST.toISOString().slice(0, 10);
         time = dateTimeJST.toISOString().slice(11, 16);
+      }
+
+      // Calculate the day of the week in JST
+      let dayOfWeekStr = "";
+      if (date !== "Not Set") {
+        const dayOfWeekJST = new Date(date);
+        const daysOfWeek = days;
+        dayOfWeekStr = daysOfWeek[dayOfWeekJST.getDay()];
       }
 
       // Format the displayed status.
@@ -897,18 +898,18 @@ export const getClassesWithinPeriodController = async (
           break;
       }
 
-      // Mask customer's names if the customer has left
-      if (customer.terminationAt) {
-        customerName = `${customerName} (Left)`;
-      }
-
       return {
         No: number + 1,
         ID: id,
+        "Date/Time (JST)": date ? `${date} ${time}` : "Not Set",
+        Day: dayOfWeekStr,
         Instructor: instructorName,
+        InstructorID: instructor?.id ?? null,
+        Children: classAttendance
+          .map((attendance) => attendance.children.name)
+          .join(", "),
         Customer: customerName,
-        Date: date,
-        "JP Time": time,
+        CustomerID: customer.id,
         Status: statusText,
         "Class Code": classCode,
       };

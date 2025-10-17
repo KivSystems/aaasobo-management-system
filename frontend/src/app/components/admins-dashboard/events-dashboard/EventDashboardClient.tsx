@@ -3,6 +3,7 @@
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import EventProfile from "@/app/components/admins-dashboard/events-dashboard/EventProfile";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
+import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function EventTabs({
@@ -16,10 +17,12 @@ export default function EventTabs({
   event: BusinessEventType | string;
   userSessionType: UserType;
 }) {
+  const eventName =
+    typeof event !== "string" ? getLocalizedText(event.name, "en") : "Unknown";
   const breadcrumb = [
     "Event List",
     `/admins/${userId}/event-list`,
-    `ID: ${eventId}`,
+    `Event Page (${eventName})`,
   ];
   const activeTabName = "activeEventTab";
 

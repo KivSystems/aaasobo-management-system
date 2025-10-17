@@ -166,7 +166,7 @@ export const InstructorListItem = z.object({
   No: z.number(),
   ID: z.number(),
   Instructor: z.string(),
-  Nickname: z.string(),
+  "Full Name": z.string(),
   Email: z.string(),
 });
 
@@ -179,6 +179,7 @@ export const CustomerListItem = z.object({
   No: z.number(),
   ID: z.number(),
   Customer: z.string(),
+  Children: z.string().nullable(),
   Email: z.string(),
   Prefecture: z.string(),
 });
@@ -244,10 +245,13 @@ export const EventsListResponse = z.object({
 export const ClassListItem = z.object({
   No: z.number(),
   ID: z.number(),
+  "Date/Time (JST)": z.string(),
+  Day: z.string(),
   Instructor: z.string(),
+  InstructorID: z.number().nullable(),
+  Children: z.string().nullable(),
   Customer: z.string(),
-  Date: z.string(),
-  "JP Time": z.string(),
+  CustomerID: z.number(),
   Status: z.string(),
   "Class Code": z.string(),
 });

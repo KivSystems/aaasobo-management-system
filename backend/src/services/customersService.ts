@@ -98,6 +98,16 @@ export const deactivateCustomer = async (id: number) => {
 export const getAllCustomers = async () => {
   try {
     return await prisma.customer.findMany({
+      where: { terminationAt: null }, // Active customers only
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        prefecture: true,
+        children: {
+          select: { name: true },
+        },
+      },
       orderBy: {
         id: "asc",
       },
