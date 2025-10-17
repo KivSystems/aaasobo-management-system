@@ -22,11 +22,26 @@ export default function InstructorTabs({
   userSessionType: UserType;
   classScheduleComponent: React.ReactNode;
 }) {
-  const breadcrumb = [
-    "Instructor List",
-    `/admins/${adminId}/instructor-list`,
-    `ID: ${instructorId}`,
-  ];
+  const nickname = typeof instructor !== "string" ? instructor.nickname : null;
+  // Get the previous list page from local storage to set the breadcrumb.
+  const previousListPage = localStorage.getItem("previousListPage");
+  let breadcrumb: string[] = [];
+  switch (previousListPage) {
+    case "instructor-list":
+      breadcrumb = [
+        "Instructor List",
+        `/admins/${adminId}/instructor-list`,
+        `Instructor Page (${nickname || "Unknown"})`,
+      ];
+      break;
+    case "class-list":
+      breadcrumb = [
+        "Class List",
+        `/admins/${adminId}/class-list`,
+        `Instructor Page (${nickname || "Unknown"})`,
+      ];
+      break;
+  }
   const activeTabName = "activeInstructorTab";
 
   // Get the active tab from the local storage.

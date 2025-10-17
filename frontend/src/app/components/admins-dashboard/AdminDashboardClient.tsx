@@ -7,7 +7,6 @@ import Loading from "@/app/components/elements/loading/Loading";
 
 export default function AdminTabs({
   userId,
-  adminId,
   admin,
   userSessionType,
 }: {
@@ -16,10 +15,11 @@ export default function AdminTabs({
   admin: Admin | string;
   userSessionType: UserType;
 }) {
+  const adminName = typeof admin !== "string" ? admin.name : null;
   const breadcrumb = [
     "Admin List",
     `/admins/${userId}/admin-list`,
-    `ID: ${adminId}`,
+    `Admin Page (${adminName || "Unknown"})`,
   ];
   const activeTabName = "activeAdminTab";
 

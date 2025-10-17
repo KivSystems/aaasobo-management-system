@@ -65,9 +65,7 @@ export const getAllInstructors = async (): Promise<
   try {
     const apiUrl = `${BASE_URL}/instructor-list`;
     const response = await fetch(apiUrl, {
-      // TODO: Add cache control after completing further implementations
-      // next: { tags: ["instructor-list"] },
-      cache: "no-store",
+      next: { tags: ["instructor-list"] },
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

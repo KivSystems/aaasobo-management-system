@@ -60,9 +60,17 @@ function ListTable({
         let listData = fetchedData;
 
         switch (listType) {
+          case "Class List":
+            // Set the active tab to the customer calendar tab.
+            localStorage.setItem("activeCustomerTab", "0");
+            // Set the previous list page to customer list.
+            localStorage.setItem("previousListPage", "class-list");
+            break;
           case "Instructor List":
             // Set the active tab to the instructor calendar tab.
             localStorage.setItem("activeInstructorTab", "0");
+            // Set the previous list page to instructor list.
+            localStorage.setItem("previousListPage", "instructor-list");
             // Set the width of the modal registration form.
             setWidth("700px");
             break;
@@ -136,6 +144,7 @@ function ListTable({
               header: key,
               cell: (data) => {
                 const value = data.getValue() as any;
+
                 // Only for Event List page
                 // If the item is a color code, display it as a colored box
                 if (key === "Color Code" && typeof value === "string") {
@@ -151,33 +160,30 @@ function ListTable({
                     </div>
                   );
                 }
+
                 // If the item is not a link item, return the value
                 if (!linkItems.includes(key)) {
                   return value;
                 }
+
                 // Set the link URL
                 let linkUrl = linkUrls[linkItems.indexOf(key)];
+
                 // Replace the item with the value (e.g., [ID] -> 1, 2, 3...)
                 replaceItems.forEach((replaceItem) => {
                   linkUrl = linkUrl.replace(
                     `[${replaceItem}]`,
                     data.row.original[replaceItem],
                   );
-                  // Only for Class List page
-                  // If the class status is in the OMIT_CLASS_STATUSES list, do not set the link URL
-                  if (OMIT_CLASS_STATUSES.includes(data.row.original.Status)) {
-                    linkUrl = "";
-                  }
                 });
-                return (
-                  <Link
-                    href={linkUrl}
-                    rel="noopener noreferrer" // Security improvement for external links
-                    target="_blank"
-                  >
-                    {value}
-                  </Link>
-                );
+
+                // Only for Class List page
+                // If the class status is in the OMIT_CLASS_STATUSES list, do not set the link URL
+                if (OMIT_CLASS_STATUSES.includes(data.row.original.Status)) {
+                  linkUrl = "";
+                }
+
+                return <Link href={linkUrl}>{value}</Link>;
               },
             }))
         : [],

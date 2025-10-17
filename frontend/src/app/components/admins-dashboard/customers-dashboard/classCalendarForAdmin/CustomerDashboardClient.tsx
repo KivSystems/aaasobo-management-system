@@ -26,25 +26,32 @@ function CustomerDashboardClient({
   const previousListPage = localStorage.getItem("previousListPage");
   let breadcrumb: string[] = [];
   switch (previousListPage) {
+    case "class-list":
+      breadcrumb = [
+        "Class List",
+        `/admins/${adminId}/class-list`,
+        `Customer Page (${customerProfile.name})`,
+      ];
+      break;
     case "customer-list":
       breadcrumb = [
         "Customer List",
         `/admins/${adminId}/customer-list`,
-        `ID: ${customerId}`,
+        `Customer Page (${customerProfile.name})`,
       ];
       break;
     case "child-list":
       breadcrumb = [
         "Child List",
         `/admins/${adminId}/child-list`,
-        `Customer ID: ${customerId}`,
+        `Customer Page (${customerProfile.name})`,
       ];
       break;
     case "subscription-list":
       breadcrumb = [
         "Subscription List",
         `/admins/${adminId}/subscription-list`,
-        `Customer ID: ${customerId}`,
+        `Customer Page (${customerProfile.name})`,
       ];
       break;
   }
