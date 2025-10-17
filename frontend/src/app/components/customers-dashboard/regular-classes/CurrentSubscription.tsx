@@ -63,6 +63,8 @@ function CurrentSubscription({
     }
   };
 
+  const handleEditSubscription = (id: number) => {};
+
   return (
     <div className={styles.outsideContainer}>
       {subscriptionsData && subscriptionsData.subscriptions.length > 0 ? (
@@ -95,18 +97,25 @@ function CurrentSubscription({
                       </span>
                     </div>
                   </div>
-                  <div className={styles.buttons}>
-                    {userSessionType === "admin" ? (
+
+                  {userSessionType === "admin" &&
+                  subscription.endAt === null ? (
+                    <div className={styles.buttons}>
+                      <ActionButton
+                        onClick={() => handleEditSubscription(id)}
+                        btnText={"Edit"}
+                        className="editBtn"
+                      />
                       <ActionButton
                         onClick={() => handleDeleteSubscription(id)}
                         btnText={deletingId === id ? "DELETING..." : "DELETE"}
                         className="deleteBtn"
                         disabled={deletingId === id}
                       />
-                    ) : (
-                      <></>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </div>
               <div className={styles.classesContent}>
