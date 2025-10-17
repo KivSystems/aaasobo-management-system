@@ -43,7 +43,11 @@ export const getClassesWithinPeriod = async (
           lte: endDate,
         },
       },
-      include: { instructor: true, customer: true },
+      include: {
+        instructor: true,
+        customer: true,
+        classAttendance: { include: { children: true } },
+      },
       orderBy: { dateTime: "asc" },
     });
 
