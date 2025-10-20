@@ -4,13 +4,22 @@ import bcrypt from "bcrypt";
 import { head } from "@vercel/blob";
 import { randomUUID } from "crypto";
 
+// Booking and class management static values
 export const FREE_TRIAL_BOOKING_HOURS = 72;
 export const REGULAR_REBOOKING_HOURS = 3;
 export const MONTHS_TO_DELETE_CLASSES = 13;
 
+// Masked user static values
 export const maskedHeadLetters = "Masked";
 export const maskedSuffix = randomUUID().split("-")[0]; // Generate a short random string
 export const maskedBirthdate = new Date("1900-01-01");
+
+// Event registration and update static values
+export const EVENT_CONFLICT_ITEMS = [
+  "Japanese event name",
+  "English event name",
+  "color code",
+];
 
 // Standardize salt rounds for hashing passwords
 const saltRounds = 12;

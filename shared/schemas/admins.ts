@@ -109,23 +109,37 @@ export const UpdatePlanRequest = z.discriminatedUnion("isDelete", [
 
 // Event schemas
 export const RegisterEventRequest = z.object({
-  name: z
+  eventNameJpn: z
     .string()
-    .min(1, "Event name is required")
+    .min(1, "Event Name (Japanese) is required.")
     .regex(
-      /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/,
-      "Event Name must be in the format: 日本語名 / English Name",
+      /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}a-zA-Z0-9 /¥,.\-ー・々〇@!()]+$/u,
+      "Event Name (Japanese) must contain Japanese characters.",
+    ),
+  eventNameEng: z
+    .string()
+    .min(1, "Event Name (English) is required.")
+    .regex(
+      /^[a-zA-Z0-9 /¥,.\-@!_()]+$/,
+      "Event Name (English) must contain alphanumeric characters.",
     ),
   color: z.string().min(1, "Color is required"),
 });
 
 export const UpdateEventRequest = z.object({
-  name: z
+  eventNameJpn: z
     .string()
-    .min(1, "Event name is required")
+    .min(1, "Event Name (Japanese) is required.")
     .regex(
-      /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/,
-      "Event Name must be in the format: 日本語名 / English Name",
+      /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}a-zA-Z0-9 /¥,.\-ー・々〇@!()]+$/u,
+      "Event Name (Japanese) must contain Japanese characters.",
+    ),
+  eventNameEng: z
+    .string()
+    .min(1, "Event Name (English) is required.")
+    .regex(
+      /^[a-zA-Z0-9 /¥,.\-@!_()]+$/,
+      "Event Name (English) must contain only alphanumeric characters.",
     ),
   color: z.string().min(1, "Color is required"),
 });

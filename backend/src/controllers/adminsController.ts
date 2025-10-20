@@ -41,6 +41,7 @@ import {
 } from "../services/eventsService";
 import { getAllSubscriptions } from "../services/subscriptionsService";
 import { days, convertToISOString } from "../helper/dateUtils";
+import { EVENT_CONFLICT_ITEMS } from "../helper/commonUtils";
 import type {
   AdminIdParams,
   CustomerIdParams,
@@ -704,18 +705,26 @@ export const registerEventController = async (
   req: RequestWithBody<RegisterEventRequest>,
   res: Response,
 ) => {
-  const { name, color } = req.body;
+  const { eventNameJpn, eventNameEng, color } = req.body;
 
   // Normalize the event name and color code
-  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedEventNameJpn = eventNameJpn.toLowerCase().replace(/\s/g, "");
+  const normalizedEventNameEng = eventNameEng.toLowerCase().replace(/\s/g, "");
   const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
 
   try {
     // Check if the event with the same name and color already exists
     const existingEvents = await getAllEvents();
-    const eventNameExists = existingEvents.some(
+
+    const eventNameJpnExists = existingEvents.some(
       (event) =>
-        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName,
+        event.name.toLowerCase().split(" / ")[0].trim() ===
+        normalizedEventNameJpn,
+    );
+    const eventNameEngExists = existingEvents.some(
+      (event) =>
+        event.name.toLowerCase().split(" / ")[1].trim() ===
+        normalizedEventNameEng,
     );
     const eventColorExists = existingEvents.some(
       (event) =>
@@ -724,12 +733,15 @@ export const registerEventController = async (
 
     // Collect conflict reasons
     const conflictItems: string[] = [];
-    if (eventNameExists) conflictItems.push("Event name");
-    if (eventColorExists) conflictItems.push("Color code");
-
+    eventNameJpnExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[0]) : null;
+    eventNameEngExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[1]) : null;
+    eventColorExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[2]) : null;
     if (conflictItems.length > 0) {
       return res.status(409).json({ items: conflictItems });
     }
+
+    // Combine Japanese and English names into the required format
+    const name = `${eventNameJpn} / ${eventNameEng}`;
 
     // Register the new event
     await registerEvent({
@@ -750,34 +762,48 @@ export const updateEventProfileController = async (
   res: Response,
 ) => {
   const eventId = req.params.id;
-  const { name, color } = req.body;
+  const { eventNameJpn, eventNameEng, color } = req.body;
 
   // Normalize the event name and color code
-  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedEventNameJpn = eventNameJpn.toLowerCase().replace(/\s/g, "");
+  const normalizedEventNameEng = eventNameEng.toLowerCase().replace(/\s/g, "");
   const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
 
   try {
     // Check if the event with the same name and color already exists
     const existingEvents = await getAllEvents();
-    const eventNameExists = existingEvents.some(
-      (event) =>
-        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName &&
-        event.id !== eventId,
+
+    // Exclude the current event from the existing events for conflict check
+    const filteredEvents = existingEvents.filter(
+      (event) => event.id !== eventId,
     );
-    const eventColorExists = existingEvents.some(
+    const eventNameJpnExists = filteredEvents.some(
       (event) =>
-        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode &&
-        event.id !== eventId,
+        event.name.toLowerCase().split(" / ")[0].trim() ===
+        normalizedEventNameJpn,
+    );
+    const eventNameEngExists = filteredEvents.some(
+      (event) =>
+        event.name.toLowerCase().split(" / ")[1].trim() ===
+        normalizedEventNameEng,
+    );
+    const eventColorExists = filteredEvents.some(
+      (event) =>
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode,
     );
 
     // Collect conflict reasons
     const conflictItems: string[] = [];
-    if (eventNameExists) conflictItems.push("Event name");
-    if (eventColorExists) conflictItems.push("Color code");
+    eventNameJpnExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[0]) : null;
+    eventNameEngExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[1]) : null;
+    eventColorExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[2]) : null;
 
     if (conflictItems.length > 0) {
       return res.status(409).json({ items: conflictItems });
     }
+
+    // Combine Japanese and English names into the required format
+    const name = `${eventNameJpn} / ${eventNameEng}`;
 
     const event = await updateEvent(eventId, name, normalizedColorCode);
 
