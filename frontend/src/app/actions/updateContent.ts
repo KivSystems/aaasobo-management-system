@@ -31,13 +31,15 @@ export async function updateEventAction(
   formData: FormData,
 ): Promise<UpdateFormState> {
   try {
-    const name = formData.get("eventName");
+    const eventNameEng = formData.get("eventNameEng");
+    const eventNameJpn = formData.get("eventNameJpn");
     const color = formData.get("color");
     // Hidden input tag fields
-    const id = Number(formData.get("id"));
+    const eventId = Number(formData.get("eventId"));
 
     const parsedForm = eventUpdateSchema.safeParse({
-      name,
+      eventNameEng,
+      eventNameJpn,
       color,
     });
 
@@ -49,12 +51,13 @@ export async function updateEventAction(
     // Get the cookies from the request headers
     const cookie = await getCookie();
 
-    const response = await updateEvent(
-      id,
-      parsedForm.data.name,
-      parsedForm.data.color,
+    const response = await updateEvent({
+      eventId,
+      eventNameJpn: parsedForm.data.eventNameJpn,
+      eventNameEng: parsedForm.data.eventNameEng,
+      color: parsedForm.data.color,
       cookie,
-    );
+    });
 
     // Refresh cached event data for the event list page
     revalidateEventList();

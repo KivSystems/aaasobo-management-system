@@ -4,6 +4,7 @@ import {
   CONTENT_REGISTRATION_SUCCESS_MESSAGE,
 } from "../messages/formValidation";
 import { EVENT_DELETE_CONSTRAINT_MESSAGE } from "../messages/formValidation";
+import { EVENT_CONFLICT_ITEMS } from "../../helper/data/data";
 import type { EventResponse } from "@shared/schemas/events";
 
 const BACKEND_ORIGIN =
@@ -27,7 +28,8 @@ export const getEventById = async (
 
 // Register a new event
 export const registerEvent = async (eventData: {
-  name: string;
+  eventNameJpn: string;
+  eventNameEng: string;
   color: string;
   cookie: string;
 }): Promise<RegisterFormState> => {
@@ -41,21 +43,26 @@ export const registerEvent = async (eventData: {
 
     // Handle the duplicated error if the response status is 409 or 422
     if (response.status === 409 || response.status === 422) {
-      const { items } = await response.json();
+      const data = await response.json();
+      const items = data.items;
+      let errorMessage = { eventNameJpn: "", eventNameEng: "", color: "" };
+      items.includes(EVENT_CONFLICT_ITEMS[0])
+        ? (errorMessage.eventNameJpn = ITEM_ALREADY_REGISTERED_ERROR(
+            EVENT_CONFLICT_ITEMS[0],
+          ))
+        : null;
+      items.includes(EVENT_CONFLICT_ITEMS[1])
+        ? (errorMessage.eventNameEng = ITEM_ALREADY_REGISTERED_ERROR(
+            EVENT_CONFLICT_ITEMS[1],
+          ))
+        : null;
+      items.includes(EVENT_CONFLICT_ITEMS[2])
+        ? (errorMessage.color = ITEM_ALREADY_REGISTERED_ERROR(
+            EVENT_CONFLICT_ITEMS[2],
+          ))
+        : null;
 
-      if (items.length === 2) {
-        return {
-          name: ITEM_ALREADY_REGISTERED_ERROR(items[0]),
-          color: ITEM_ALREADY_REGISTERED_ERROR(items[1]),
-        };
-      }
-      if (items.some((item: string) => item.includes("name"))) {
-        return { name: ITEM_ALREADY_REGISTERED_ERROR(items) };
-      } else if (items.some((item: string) => item.includes("color"))) {
-        return { color: ITEM_ALREADY_REGISTERED_ERROR(items) };
-      } else {
-        return { name: items };
-      }
+      return errorMessage;
     }
 
     return {
@@ -70,19 +77,22 @@ export const registerEvent = async (eventData: {
 };
 
 // Update event item
-export const updateEvent = async (
-  eventId: number,
-  eventName: string,
-  eventColor: string,
-  cookie: string,
-): Promise<UpdateFormState> => {
+export const updateEvent = async (eventData: {
+  eventId: number;
+  eventNameJpn: string;
+  eventNameEng: string;
+  color: string;
+  cookie: string;
+}): Promise<UpdateFormState> => {
+  const { eventId, eventNameJpn, eventNameEng, color, cookie } = eventData;
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/event-list/update/${eventId}`;
     const headers = { "Content-Type": "application/json", Cookie: cookie };
     const body = JSON.stringify({
-      name: eventName,
-      color: eventColor,
+      eventNameJpn,
+      eventNameEng,
+      color,
     });
 
     const response = await fetch(apiURL, {
@@ -96,19 +106,21 @@ export const updateEvent = async (
     // Handle the duplicated error if the response status is 409 or 422
     if (response.status === 409 || response.status === 422) {
       const items = data.items;
-      if (items.length === 2) {
-        return {
-          name: ITEM_ALREADY_REGISTERED_ERROR(items[0]),
-          color: ITEM_ALREADY_REGISTERED_ERROR(items[1]),
-        };
-      }
-      if (items.some((item: string) => item.includes("name"))) {
-        return { name: ITEM_ALREADY_REGISTERED_ERROR(items) };
-      } else if (items.some((item: string) => item.includes("color"))) {
-        return { color: ITEM_ALREADY_REGISTERED_ERROR(items) };
-      } else {
-        return { name: items };
-      }
+      let errorMessage = { eventNameJpn: "", eventNameEng: "", color: "" };
+      items.includes("Japanese event name")
+        ? (errorMessage.eventNameJpn = ITEM_ALREADY_REGISTERED_ERROR(
+            "Japanese event name",
+          ))
+        : null;
+      items.includes("English event name")
+        ? (errorMessage.eventNameEng =
+            ITEM_ALREADY_REGISTERED_ERROR("English event name"))
+        : null;
+      items.includes("color code")
+        ? (errorMessage.color = ITEM_ALREADY_REGISTERED_ERROR("color code"))
+        : null;
+
+      return errorMessage;
     }
 
     if (response.status !== 200) {
