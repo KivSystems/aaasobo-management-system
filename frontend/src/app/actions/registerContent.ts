@@ -14,7 +14,8 @@ export async function registerContent(
 ): Promise<RegisterFormState> {
   try {
     const planName = formData.get("planName");
-    const eventName = formData.get("eventName");
+    const eventNameEng = formData.get("eventNameEng");
+    const eventNameJpn = formData.get("eventNameJpn");
     const weeklyClassTimes = Number(formData.get("weeklyClassTimes"));
     const color = formData.get("color");
     const description = formData.get("description");
@@ -53,9 +54,9 @@ export async function registerContent(
         return response;
 
       case "event":
-        name = eventName;
         parsedForm = eventRegisterSchema.safeParse({
-          name,
+          eventNameEng,
+          eventNameJpn,
           color,
         });
         if (!parsedForm.success) {
@@ -64,7 +65,8 @@ export async function registerContent(
         }
 
         response = await registerEvent({
-          name: parsedForm.data.name,
+          eventNameJpn: parsedForm.data.eventNameJpn,
+          eventNameEng: parsedForm.data.eventNameEng,
           color: parsedForm.data.color,
           cookie,
         });

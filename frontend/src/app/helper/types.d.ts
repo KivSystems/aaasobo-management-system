@@ -106,6 +106,8 @@ type Plan = {
 type BusinessEventType = {
   id: number;
   name: string;
+  eventNameJpn?: string;
+  eventNameEng?: string;
   color?: string;
 };
 
@@ -230,6 +232,8 @@ type RegisterFormState = {
   isAgreed?: string;
   weeklyClassTimes?: string;
   description?: string;
+  eventNameEng?: string;
+  eventNameJpn?: string;
   color?: string;
   errorMessage?: string;
   successMessage?: string;
@@ -252,7 +256,10 @@ type UpdateFormState = {
   admin?: Admin | null;
   instructor?: InstructorProfile | null;
   event?: BusinessEventType | null;
+  eventNameJpn?: string;
+  eventNameEng?: string;
   plan?: Plan | null;
+  items?: Item[];
   result?: string | boolean;
 };
 
