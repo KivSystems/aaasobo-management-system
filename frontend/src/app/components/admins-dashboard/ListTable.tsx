@@ -50,8 +50,8 @@ function ListTable({
   ]);
   const [width, setWidth] = useState("100%");
 
-  // Update settings based on the list type
-  const updateListPageSettings = () => {
+  useEffect(() => {
+    // Update settings based on the list type
     switch (listType) {
       case "Class List":
         // Set the active tab to the customer calendar tab.
@@ -104,11 +104,7 @@ function ListTable({
       default:
         break;
     }
-  };
-
-  useEffect(() => {
-    updateListPageSettings();
-  }, []);
+  }, [listType]);
 
   useEffect(() => {
     const listData = async () => {
