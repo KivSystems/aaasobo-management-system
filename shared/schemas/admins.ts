@@ -188,6 +188,18 @@ export const InstructorsListResponse = z.object({
   data: z.array(InstructorListItem),
 });
 
+// Past instructor list item for table display
+export const PastInstructorListItem = z.object({
+  No: z.number(),
+  ID: z.number(),
+  "Past Instructor": z.string(),
+  "End Date (JST)": z.string(),
+});
+
+export const PastInstructorsListResponse = z.object({
+  data: z.array(PastInstructorListItem),
+});
+
 // Customer list item for table display
 export const CustomerListItem = z.object({
   No: z.number(),
@@ -200,6 +212,19 @@ export const CustomerListItem = z.object({
 
 export const CustomersListResponse = z.object({
   data: z.array(CustomerListItem),
+});
+
+// Past customer list item for table display
+export const PastCustomerListItem = z.object({
+  No: z.number(),
+  ID: z.number(),
+  "Past Customer": z.string(),
+  "Past Children": z.string().nullable(),
+  "End Date (JST)": z.string(),
+});
+
+export const PastCustomersListResponse = z.object({
+  data: z.array(PastCustomerListItem),
 });
 
 // Child list item for table display
@@ -367,7 +392,13 @@ export type AdminProfile = z.infer<typeof AdminProfile>;
 export type AdminResponse = z.infer<typeof AdminResponse>;
 export type AdminsListResponse = z.infer<typeof AdminsListResponse>;
 export type InstructorsListResponse = z.infer<typeof InstructorsListResponse>;
+export type PastInstructorsListResponse = z.infer<
+  typeof PastInstructorsListResponse
+>;
 export type CustomersListResponse = z.infer<typeof CustomersListResponse>;
+export type PastCustomersListResponse = z.infer<
+  typeof PastCustomersListResponse
+>;
 export type ChildrenListResponse = z.infer<typeof ChildrenListResponse>;
 export type PlansListResponse = z.infer<typeof PlansListResponse>;
 export type SubscriptionsListResponse = z.infer<

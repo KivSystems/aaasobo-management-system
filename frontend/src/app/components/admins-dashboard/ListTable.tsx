@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, use } from "react";
 import styles from "./ListTable.module.scss";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PlusIcon } from "@heroicons/react/24/outline";
 import {
   useReactTable,
   getCoreRowModel,
@@ -15,25 +15,15 @@ import {
 import Link from "next/link";
 import Modal from "@/app/components/elements/modal/Modal";
 import ListPageRegistrationModal from "@/app/components/admins-dashboard/ListPageRegistrationModal";
+import ListPageViewPastModal from "@/app/components/admins-dashboard/ListPageViewPastModal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import GenerateClassesForm from "./GenerateClassesForm";
 import { OMIT_CLASS_STATUSES, PAGE_SIZE_OPTIONS } from "@/app/helper/data/data";
 
-type ListTableProps = {
-  listType: string;
-  fetchedData: any[];
-  omitItems: string[];
-  linkItems: string[];
-  linkUrls: string[];
-  replaceItems: string[];
-  userType: UserType;
-  categoryType?: CategoryType;
-  isAddButton: boolean;
-};
-
 function ListTable({
   listType,
   fetchedData,
+  fetchedPastData,
   omitItems,
   linkItems,
   linkUrls,
@@ -41,8 +31,11 @@ function ListTable({
   userType,
   categoryType,
   isAddButton,
+  isViewPastButton,
+  pastListTableProps,
+  linkTarget,
 }: ListTableProps) {
-  const [data, setData] = useState<any[]>([]);
+  const [currentData, setCurrentData] = useState<any[]>(fetchedData);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterColumn, setFilterColumn] = useState<string>("0");
   const [filterValue, setFilterValue] = useState<string>("");
@@ -51,66 +44,75 @@ function ListTable({
     pageSize: 10, // Default page size
   });
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<[boolean, string]>([
+    false,
+    "",
+  ]);
   const [width, setWidth] = useState("100%");
 
   useEffect(() => {
+    // Update settings based on the list type
+    switch (listType) {
+      case "Class List":
+        // Set the active tab to the customer calendar tab.
+        localStorage.setItem("activeCustomerTab", "0");
+        // Set the previous list page to customer list.
+        localStorage.setItem("previousListPage", "class-list");
+        break;
+      case "Instructor List":
+        // Set the active tab to the instructor calendar tab.
+        localStorage.setItem("activeInstructorTab", "0");
+        // Set the previous list page to instructor list.
+        localStorage.setItem("previousListPage", "instructor-list");
+        // Set the width of the modal registration form.
+        setWidth("700px");
+        break;
+      case "Past Instructor List":
+        // Set the active tab to the instructor profile tab.
+        localStorage.setItem("activeInstructorTab", "1");
+        break;
+      case "Customer List":
+        // Set the active tab to the customer calendar tab.
+        localStorage.setItem("activeCustomerTab", "0");
+        // Set the previous list page to customer list.
+        localStorage.setItem("previousListPage", "customer-list");
+        break;
+      case "Past Customer List":
+        // Set the active tab to the customer profile tab.
+        localStorage.setItem("activeCustomerTab", "1");
+        break;
+      case "Child List":
+        // Set the active tab to the children profiles tab.
+        localStorage.setItem("activeCustomerTab", "2");
+        // Set the previous list page to child list.
+        localStorage.setItem("previousListPage", "child-list");
+        break;
+      case "Admin List":
+        // Set the width of the modal registration form.
+        setWidth("500px");
+        break;
+      case "Plan List":
+        // Set the width of the modal registration form.
+        setWidth("500px");
+        break;
+      case "Subscription List":
+        // Set the active tab to the customer regular class tab.
+        localStorage.setItem("activeCustomerTab", "3");
+        // Set the previous list page to subscription list.
+        localStorage.setItem("previousListPage", "subscription-list");
+        break;
+      default:
+        break;
+    }
+  }, [listType]);
+
+  useEffect(() => {
     const listData = async () => {
-      try {
-        let listData = fetchedData;
-
-        switch (listType) {
-          case "Class List":
-            // Set the active tab to the customer calendar tab.
-            localStorage.setItem("activeCustomerTab", "0");
-            // Set the previous list page to customer list.
-            localStorage.setItem("previousListPage", "class-list");
-            break;
-          case "Instructor List":
-            // Set the active tab to the instructor calendar tab.
-            localStorage.setItem("activeInstructorTab", "0");
-            // Set the previous list page to instructor list.
-            localStorage.setItem("previousListPage", "instructor-list");
-            // Set the width of the modal registration form.
-            setWidth("700px");
-            break;
-          case "Customer List":
-            // Set the active tab to the customer calendar tab.
-            localStorage.setItem("activeCustomerTab", "0");
-            // Set the previous list page to customer list.
-            localStorage.setItem("previousListPage", "customer-list");
-            break;
-          case "Child List":
-            // Set the active tab to the children profiles tab.
-            localStorage.setItem("activeCustomerTab", "2");
-            // Set the previous list page to child list.
-            localStorage.setItem("previousListPage", "child-list");
-            break;
-          case "Admin List":
-            // Set the width of the modal registration form.
-            setWidth("500px");
-            break;
-          case "Plan List":
-            // Set the width of the modal registration form.
-            setWidth("500px");
-            break;
-          case "Subscription List":
-            // Set the active tab to the customer regular class tab.
-            localStorage.setItem("activeCustomerTab", "3");
-            // Set the previous list page to subscription list.
-            localStorage.setItem("previousListPage", "subscription-list");
-            break;
-          default:
-            break;
-        }
-        setData(listData);
-      } catch (error) {
-        console.error(error);
-      }
+      let currentData = fetchedData;
+      setCurrentData(currentData);
     };
-
     listData();
-  }, [fetchedData, listType, width]);
+  }, [fetchedData]);
 
   useEffect(() => {
     // Handle the click event on the table cell
@@ -129,13 +131,13 @@ function ListTable({
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, [data]);
+  }, [currentData]);
 
   // Define the displays of the table
   const columns = useMemo<ColumnDef<any>[]>(
     () =>
-      data.length > 0
-        ? Object.keys(data[0])
+      currentData.length > 0
+        ? Object.keys(currentData[0])
             // Omit the item from the table
             .filter((key) => !omitItems.includes(key))
             // Set the item to be a link
@@ -183,29 +185,28 @@ function ListTable({
                   linkUrl = "";
                 }
 
-                return <Link href={linkUrl}>{value}</Link>;
+                return (
+                  <Link href={linkUrl} target={linkTarget}>
+                    {value}
+                  </Link>
+                );
               },
             }))
         : [],
-    [data, omitItems, linkItems, linkUrls, replaceItems],
+    [currentData, omitItems, linkItems, linkUrls, replaceItems, linkTarget],
   );
-
-  // Handle cell click to toggle the expanded state
-  const handleCellClick = (cellId: string) => {
-    setSelectedCellId((prevId) => (prevId === cellId ? null : cellId));
-  };
 
   // Configure the filter
   const filteredData = useMemo(
     () =>
-      data.filter((eachData) =>
+      currentData.filter((eachData) =>
         filterColumn && filterValue
           ? String(eachData[filterColumn])
               .toLowerCase()
               .includes(filterValue.toLowerCase())
           : true,
       ),
-    [data, filterColumn, filterValue],
+    [currentData, filterColumn, filterValue],
   );
 
   // Define the table configuration
@@ -223,6 +224,11 @@ function ListTable({
     onPaginationChange: setPagination, // Update the pagination state when internal APIs mutate the pagination state
   });
 
+  // Handle cell click to toggle the expanded state
+  const handleCellClick = (cellId: string) => {
+    setSelectedCellId((prevId) => (prevId === cellId ? null : cellId));
+  };
+
   // Change the option color when selected
   const changeOptionColor = (optionTag: HTMLSelectElement) => {
     if (parseInt(optionTag.value) !== 0) {
@@ -236,6 +242,32 @@ function ListTable({
     changeOptionColor(event.target);
   };
 
+  // Render the modal component based on the modal type
+  const renderModal = () => {
+    if (!isModalOpen[0]) return null;
+
+    switch (isModalOpen[1]) {
+      case "add":
+        return (
+          <ListPageRegistrationModal
+            userType={userType}
+            categoryType={categoryType}
+            width={width}
+          />
+        );
+      case "viewPast":
+        if (!pastListTableProps) return null;
+        return (
+          <ListPageViewPastModal
+            fetchedData={fetchedPastData ? fetchedPastData : []}
+            pastListTableProps={pastListTableProps}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <div className={styles.container}>
@@ -245,8 +277,8 @@ function ListTable({
               <option disabled value="0">
                 Select a column
               </option>
-              {data.length > 0 &&
-                Object.keys(data[0])
+              {currentData.length > 0 &&
+                Object.keys(currentData[0])
                   .filter((key) => !omitItems.includes(key))
                   .map((key) => (
                     <option key={key} value={key}>
@@ -261,17 +293,27 @@ function ListTable({
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </div>
-          {isAddButton &&
-            (listType === "Class List" ? (
-              <GenerateClassesForm />
-            ) : (
+          <div className={`${styles.buttonsContainer}`}>
+            {isViewPastButton && (
               <ActionButton
-                btnText={`Add ${categoryType ? categoryType : userType}`}
-                className="addBtn"
-                onClick={() => setIsModalOpen(true)}
-                Icon={PlusIcon}
+                btnText={`View past ${categoryType ? categoryType : userType}s`}
+                className="viewPastBtn"
+                onClick={() => setIsModalOpen([true, "viewPast"])}
+                Icon={EyeIcon}
               />
-            ))}
+            )}
+            {isAddButton &&
+              (listType === "Class List" ? (
+                <GenerateClassesForm />
+              ) : (
+                <ActionButton
+                  btnText={`Add ${categoryType ? categoryType : userType}`}
+                  className="addBtn"
+                  onClick={() => setIsModalOpen([true, "add"])}
+                  Icon={PlusIcon}
+                />
+              ))}
+          </div>
         </div>
         {/* Pagination */}
         {/* Numbered page buttons */}
@@ -355,12 +397,11 @@ function ListTable({
         </div>
       </div>
       {/* Registration Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <ListPageRegistrationModal
-          userType={userType}
-          categoryType={categoryType}
-          width={width}
-        />
+      <Modal
+        isOpen={isModalOpen[0]}
+        onClose={() => setIsModalOpen([false, ""])}
+      >
+        {renderModal()}
       </Modal>
     </>
   );

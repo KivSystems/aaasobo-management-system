@@ -8,7 +8,9 @@ import {
   type AdminResponse,
   type AdminsListResponse,
   type InstructorsListResponse,
+  type PastInstructorsListResponse,
   type CustomersListResponse,
+  type PastCustomersListResponse,
   type ChildrenListResponse,
   type PlansListResponse,
   type SubscriptionsListResponse,
@@ -76,6 +78,26 @@ export const getAllInstructors = async (): Promise<
   }
 };
 
+// GET all instructors data for instructor list
+export const getAllPastInstructors = async (): Promise<
+  PastInstructorsListResponse["data"]
+> => {
+  try {
+    const apiUrl = `${BASE_URL}/instructor-list/past`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["instructor-list"] },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result: PastInstructorsListResponse = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Failed to fetch past instructors:", error);
+    throw error;
+  }
+};
+
 // GET all customers data
 export const getAllCustomers = async (): Promise<
   CustomersListResponse["data"]
@@ -92,6 +114,26 @@ export const getAllCustomers = async (): Promise<
     return result.data;
   } catch (error) {
     console.error("Failed to fetch customers:", error);
+    throw error;
+  }
+};
+
+// GET all past customers data
+export const getAllPastCustomers = async (): Promise<
+  PastCustomersListResponse["data"]
+> => {
+  try {
+    const apiUrl = `${BASE_URL}/customer-list/past`;
+    const response = await fetch(apiUrl, {
+      next: { tags: ["customer-list"] },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result: PastCustomersListResponse = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error("Failed to fetch past customers:", error);
     throw error;
   }
 };
