@@ -14,7 +14,9 @@ import {
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
+  getAllPastInstructorsController,
   getAllCustomersController,
+  getAllPastCustomersController,
   getAllChildrenController,
   getAllPlansController,
   getAllSubscriptionsController,
@@ -48,7 +50,9 @@ import {
   AdminResponse,
   AdminsListResponse,
   InstructorsListResponse,
+  PastInstructorsListResponse,
   CustomersListResponse,
+  PastCustomersListResponse,
   ChildrenListResponse,
   PlansListResponse,
   SubscriptionsListResponse,
@@ -354,6 +358,25 @@ const getAllInstructorsConfig = {
   },
 } as const;
 
+const getAllPastInstructorsConfig = {
+  method: "get" as const,
+  handler: getAllPastInstructorsController,
+  openapi: {
+    summary: "Get all past instructors",
+    description: "Get list of all past instructors for admin dashboard",
+    responses: {
+      200: {
+        description: "Instructors list retrieved successfully",
+        schema: PastInstructorsListResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const getAllCustomersConfig = {
   method: "get" as const,
   handler: getAllCustomersController,
@@ -364,6 +387,25 @@ const getAllCustomersConfig = {
       200: {
         description: "Customers list retrieved successfully",
         schema: CustomersListResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const getAllPastCustomersConfig = {
+  method: "get" as const,
+  handler: getAllPastCustomersController,
+  openapi: {
+    summary: "Get all past customers",
+    description: "Get list of all past customers for admin dashboard",
+    responses: {
+      200: {
+        description: "Customers list retrieved successfully",
+        schema: PastCustomersListResponse,
       },
       500: {
         description: "Internal server error",
@@ -706,12 +748,14 @@ const validatedRouteConfigs = {
   "/child-list": [getAllChildrenConfig],
   "/class-list": [getClassesWithinPeriodConfig],
   "/customer-list": [getAllCustomersConfig],
+  "/customer-list/past": [getAllPastCustomersConfig],
   "/customer-list/deactivate/:id": [deactivateCustomerConfig],
   "/event-list": [getAllEventsConfig],
   "/event-list/:id": [deleteEventConfig],
   "/event-list/register": [registerEventConfig],
   "/event-list/update/:id": [updateEventConfig],
   "/instructor-list": [getAllInstructorsConfig],
+  "/instructor-list/past": [getAllPastInstructorsConfig],
   "/instructor-list/register": [registerInstructorConfig],
   "/instructor-list/register/withIcon": [registerInstructorWithIconConfig],
   "/instructor-list/update/:id": [updateInstructorConfig],

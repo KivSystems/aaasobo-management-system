@@ -12,9 +12,9 @@ import {
   updateAdmin,
   deleteAdmin,
 } from "../services/adminsService";
-import { deactivateCustomer } from "../services/customersService";
 import {
   getAllInstructors,
+  getAllPastInstructors,
   registerInstructor,
   updateInstructor,
   getInstructorByEmail,
@@ -25,7 +25,11 @@ import {
   getInstructorByIntroductionURL,
 } from "../services/instructorsService";
 import { getClassesWithinPeriod } from "../services/classesService";
-import { getAllCustomers } from "../services/customersService";
+import {
+  getAllCustomers,
+  getAllPastCustomers,
+  deactivateCustomer,
+} from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import {
   getAllPlans,
@@ -40,7 +44,11 @@ import {
   deleteEvent,
 } from "../services/eventsService";
 import { getAllSubscriptions } from "../services/subscriptionsService";
-import { days, convertToISOString } from "../helper/dateUtils";
+import {
+  days,
+  convertToISOString,
+  convertToTimezoneDate,
+} from "../helper/dateUtils";
 import { EVENT_CONFLICT_ITEMS } from "../helper/commonUtils";
 import type {
   AdminIdParams,
@@ -269,6 +277,48 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
   }
 };
 
+// Displaying past customers' information for admin dashboard
+export const getAllPastCustomersController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    // Fetch all past customers data using the email.
+    const customers = await getAllPastCustomers();
+
+    // Transform the data structure.
+    const data = customers.map((customer, number) => {
+      let { id, name, children, terminationAt } = customer;
+
+      // Format children names as a comma-separated string
+      const childrenNames = children.map((child) => child.name).join(", ");
+
+      // Convert termination date to Japanese date format (YYYY-MM-DD)
+      let formattedTerminationDate = "";
+      if (terminationAt) {
+        formattedTerminationDate = convertToTimezoneDate(
+          terminationAt,
+          "Asia/Tokyo",
+        )
+          .toISOString()
+          .slice(0, 10);
+      }
+
+      return {
+        No: number + 1,
+        ID: id,
+        "Past Customer": name,
+        "Past Children": childrenNames,
+        "End Date (JST)": formattedTerminationDate,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
 // Displaying instructors' information for admin dashboard
 export const getAllInstructorsController = async (
   _: Request,
@@ -288,6 +338,44 @@ export const getAllInstructorsController = async (
         Instructor: nickname,
         "Full Name": name,
         Email: email,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Displaying past instructors' information for admin dashboard
+export const getAllPastInstructorsController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    // Fetch the instructors data using the email.
+    const instructors = await getAllPastInstructors();
+
+    // Transform the data structure.
+    const data = instructors.map((instructor, number) => {
+      const { id, nickname, terminationAt } = instructor;
+
+      // Convert termination date to Japanese date format (YYYY-MM-DD)
+      let formattedTerminationDate = "";
+      if (terminationAt) {
+        formattedTerminationDate = convertToTimezoneDate(
+          terminationAt,
+          "Asia/Tokyo",
+        )
+          .toISOString()
+          .slice(0, 10);
+      }
+
+      return {
+        No: number + 1,
+        ID: id,
+        "Past Instructor": nickname,
+        "End Date (JST)": formattedTerminationDate,
       };
     });
 

@@ -118,6 +118,29 @@ export const getAllCustomers = async () => {
   }
 };
 
+// Fetch all past customers information
+export const getAllPastCustomers = async () => {
+  try {
+    return await prisma.customer.findMany({
+      where: { terminationAt: { not: null } }, // Past customers only
+      select: {
+        id: true,
+        name: true,
+        children: {
+          select: { name: true },
+        },
+        terminationAt: true,
+      },
+      orderBy: {
+        terminationAt: "asc",
+      },
+    });
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch past customers.");
+  }
+};
+
 export const getCustomerByEmail = async (
   email: string,
 ): Promise<Customer | null> => {
