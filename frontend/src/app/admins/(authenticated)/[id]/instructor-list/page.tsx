@@ -1,5 +1,8 @@
 import ListTable from "@/app/components/admins-dashboard/ListTable";
-import { getAllInstructors } from "@/app/helper/api/adminsApi";
+import {
+  getAllInstructors,
+  getAllPastInstructors,
+} from "@/app/helper/api/adminsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
 export default async function Page({ params }: { params: { id: string } }) {
@@ -15,19 +18,35 @@ export default async function Page({ params }: { params: { id: string } }) {
   const linkUrls = [`/admins/${adminId}/instructor-list/[ID]`]; // Set the link URL
   const userType = "instructor"; // Set the user type for the registration form
   const isAddButton = true; // Enable the add button
-  const data = await getAllInstructors(); // Fetch all instructors data
+  const isViewPastButton = true; // Enable the view past information button
+  const currentInstructors = await getAllInstructors(); // Fetch all instructors data
+  const pastInstructors = await getAllPastInstructors(); // Fetch all past instructors data
+  // Define past list table configuration
+  const pastListTableProps = {
+    listType: "Past Instructor List",
+    omitItems: ["ID"],
+    linkItems: ["Past Instructor"],
+    replaceItems: ["ID"],
+    linkUrls: [`/admins/${adminId}/instructor-list/[ID]`],
+    userType: userType as UserType,
+    linkTarget: "_blank",
+    width: "70vh",
+  };
 
   return (
     <div>
       <ListTable
         listType={listType}
-        fetchedData={data}
+        fetchedData={currentInstructors}
+        fetchedPastData={pastInstructors}
         omitItems={omitItems}
         linkItems={linkItems}
         linkUrls={linkUrls}
         replaceItems={replaceItems}
         userType={userType}
         isAddButton={isAddButton}
+        isViewPastButton={isViewPastButton}
+        pastListTableProps={pastListTableProps}
       />
     </div>
   );
