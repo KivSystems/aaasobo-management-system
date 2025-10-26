@@ -18,8 +18,6 @@ import {
   DeleteOldClassesResponse,
 } from "../../../shared/schemas/jobs";
 import { MessageErrorResponse } from "../../../shared/schemas/common";
-import { verifyAuthentication } from "../middlewares/auth.middleware";
-import { AUTH_ROLES } from "../helper/commonUtils";
 
 export const jobsRouter = express.Router();
 
@@ -30,6 +28,7 @@ const validatedRouteConfigs = {
   "/get-system-status": [
     {
       method: "get",
+      middleware: [verifyCronJobAuthorization],
       handler: getSystemStatusController,
       openapi: {
         summary: "Get system status",
@@ -52,7 +51,7 @@ const validatedRouteConfigs = {
     {
       method: "post",
       bodySchema: UpdateSundayColorRequest,
-      // middleware: [verifyCronJobAuthorization],
+      middleware: [verifyCronJobAuthorization],
       handler: updateSundayColorController,
       openapi: {
         summary: "Update Sunday color for next year",
@@ -78,7 +77,7 @@ const validatedRouteConfigs = {
   "/update-system-status": [
     {
       method: "patch",
-      // middleware: [verifyCronJobAuthorization],
+      middleware: [verifyCronJobAuthorization],
       handler: updateSystemStatusController,
       openapi: {
         summary: "Toggle system status",
