@@ -46,10 +46,28 @@ export type InstructorScheduleWithSlots = InstructorSchedule & {
 };
 
 // GET instructors data
-export const getInstructors = async () => {
+export const getInstructors = async (cookie?: string) => {
   try {
-    // Use the admin endpoint that returns simple instructor list
-    const response = await fetch(`${BACKEND_ORIGIN}/admins/instructor-list`);
+    const apiURL = `${BACKEND_ORIGIN}/admins/instructor-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -66,24 +84,70 @@ export const getInstructors = async () => {
   }
 };
 
-export const getInstructor = async (id: number) => {
-  const apiUrl = `${BASE_URL}/${id}`;
-  const data: Response<{ instructor: CompleteInstructor }> = await fetch(
-    apiUrl,
-    {
-      cache: "no-store",
-    },
-  ).then((res) => res.json());
+export const getInstructor = async (id: number, cookie?: string) => {
+  try {
+    const apiURL = `${BASE_URL}/${id}`;
+    const method = "GET";
+    let headers;
+    let response;
 
-  return data;
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data: Response<{ instructor: CompleteInstructor }> =
+      await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch instructor:", error);
+    throw error;
+  }
 };
 
 // GET instructor id by class id
-export const getInstructorIdByClassId = async (classId: number) => {
-  const apiUrl = `${BASE_URL}/class/${classId}`;
-  const data: Response<{ instructorId: number }> = await fetch(apiUrl, {
-    cache: "no-store",
-  }).then((res) => res.json());
+export const getInstructorIdByClassId = async (
+  classId: number,
+  cookie?: string,
+) => {
+  const apiURL = `${BASE_URL}/class/${classId}`;
+  const method = "GET";
+  let headers;
+  let response;
+
+  if (cookie) {
+    headers = { "Content-Type": "application/json", Cookie: cookie };
+    response = await fetch(apiURL, {
+      method,
+      headers,
+      cache: "no-store",
+    });
+  } else {
+    headers = { "Content-Type": "application/json" };
+    response = await fetch(apiURL, {
+      method,
+      headers,
+      credentials: "include",
+    });
+  }
+
+  const data: Response<{ instructorId: number }> = await response.json();
 
   return data;
 };
@@ -95,16 +159,19 @@ export const registerInstructor = async (
 ): Promise<RegisterFormState> => {
   try {
     // Handle api based on whether an icon is included
-    let apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
+    let apiURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
     if (userData.has("icon")) {
-      apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/register/withIcon`;
+      apiURL = `${BACKEND_ORIGIN}/admins/instructor-list/register/withIcon`;
     }
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      body: userData,
-      headers: {
-        Cookie: cookie,
-      },
+    const method = "POST";
+    const headers = {
+      Cookie: cookie,
+    };
+    const body = userData;
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+      body,
     });
 
     if (response.status === 409) {
@@ -141,18 +208,21 @@ export const updateInstructor = async (
   cookie: string,
 ) => {
   // Handle api based on whether an icon is included
-  let apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}`;
+  let apiURL = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}`;
   if (userData.has("icon")) {
-    apiUrl = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}/withIcon`;
+    apiURL = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}/withIcon`;
   }
+  const method = "PATCH";
+  const headers = {
+    Cookie: cookie,
+  };
+  const body = userData;
 
   // Define the data to be sent to the server side.
-  const response = await fetch(apiUrl, {
-    method: "PATCH",
-    body: userData,
-    headers: {
-      Cookie: cookie,
-    },
+  const response = await fetch(apiURL, {
+    method,
+    headers,
+    body,
   });
 
   const data = await response.json();
@@ -164,16 +234,17 @@ export const updateInstructor = async (
   return data;
 };
 
-// Mask instructor information
+// Mask instructor information (Cron Job use only)
 export const maskInstructors = async (authorization: string): Promise<void> => {
   try {
-    const apiUrl = `${BACKEND_ORIGIN}/jobs/mask/instructors`;
+    const apiURL = `${BACKEND_ORIGIN}/jobs/mask/instructors`;
+    const method = "PATCH";
     const headers = {
       "Content-Type": "application/json",
       Authorization: authorization,
     };
-    await fetch(apiUrl, {
-      method: "PATCH",
+    await fetch(apiURL, {
+      method,
       headers,
     });
   } catch (error) {
@@ -182,12 +253,32 @@ export const maskInstructors = async (authorization: string): Promise<void> => {
   }
 };
 
-export const getInstructorProfile = async (instructorId: number) => {
+export const getInstructorProfile = async (
+  instructorId: number,
+  cookie?: string,
+) => {
   try {
-    const instructorProfileURL = `${BASE_URL}/${instructorId}/profile`;
-    const response = await fetch(instructorProfileURL, {
-      cache: "no-store",
-    });
+    const apiURL = `${BASE_URL}/${instructorId}/profile`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -201,12 +292,29 @@ export const getInstructorProfile = async (instructorId: number) => {
   }
 };
 
-export const getInstructorProfiles = async () => {
+export const getInstructorProfiles = async (cookie?: string) => {
   try {
-    const apiUrl = `${BASE_URL}/profiles`;
-    const response = await fetch(apiUrl, {
-      cache: "no-store",
-    });
+    const apiURL = `${BASE_URL}/profiles`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -224,15 +332,29 @@ export const getInstructorProfiles = async () => {
 };
 
 // GET all instructors profiles for customer dashboard
-export const getAllInstructorProfiles = async (cookie: string) => {
+export const getAllInstructorProfiles = async (cookie?: string) => {
   try {
-    const apiUrl = `${BASE_URL}/all-profiles`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["instructor-list"] },
-      headers: {
-        Cookie: cookie,
-      },
-    });
+    const apiURL = `${BASE_URL}/all-profiles`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["instructor-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -247,12 +369,30 @@ export const getAllInstructorProfiles = async (cookie: string) => {
 
 export const getCalendarClasses = async (
   instructorId: number,
+  cookie?: string,
 ): Promise<EventType[] | []> => {
   try {
-    const calendarClassesURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/calendar-classes`;
-    const response = await fetch(calendarClassesURL, {
-      cache: "no-store",
-    });
+    const apiURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/calendar-classes`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -272,15 +412,33 @@ export const getCalendarClasses = async (
 export const getSameDateClasses = async (
   instructorId: number,
   classId: number,
+  cookie?: string,
 ): Promise<{
   selectedClassDetails: InstructorClassDetail;
   sameDateClasses: InstructorClassDetail[] | [];
 }> => {
   try {
-    const apiUrl = `${BASE_URL}/${instructorId}/classes/${classId}/same-date`;
-    const response = await fetch(apiUrl, {
-      cache: "no-store",
-    });
+    const apiURL = `${BASE_URL}/${instructorId}/classes/${classId}/same-date`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -297,11 +455,32 @@ export const getSameDateClasses = async (
 };
 
 // Versioned Schedule System APIs
-export const getInstructorSchedules = async (instructorId: number) => {
+export const getInstructorSchedules = async (
+  instructorId: number,
+  cookie?: string,
+) => {
   try {
-    const response = await fetch(`${BASE_URL}/${instructorId}/schedules`, {
-      cache: "no-store",
-    });
+    const apiURL = `${BASE_URL}/${instructorId}/schedules`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -319,14 +498,30 @@ export const getInstructorSchedules = async (instructorId: number) => {
 export const getInstructorScheduleById = async (
   instructorId: number,
   scheduleId: number,
+  cookie?: string,
 ) => {
   try {
-    const response = await fetch(
-      `${BASE_URL}/${instructorId}/schedules/${scheduleId}`,
-      {
+    const apiURL = `${BASE_URL}/${instructorId}/schedules/${scheduleId}`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
         cache: "no-store",
-      },
-    );
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -350,18 +545,22 @@ export const createInstructorSchedule = async (
   cookie: string,
 ) => {
   try {
-    const response = await fetch(`${BASE_URL}/${instructorId}/schedules`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: cookie,
-      },
+    const apiURL = `${BASE_URL}/${instructorId}/schedules`;
+    const method = "POST";
+    const headers = {
+      "Content-Type": "application/json",
+      Cookie: cookie,
+    };
+    const body = JSON.stringify({
+      effectiveFrom,
+      slots,
+      timezone: "Asia/Tokyo",
+    } as CreateScheduleRequest);
+    const response = await fetch(apiURL, {
+      method,
+      headers,
       credentials: "include",
-      body: JSON.stringify({
-        effectiveFrom,
-        slots,
-        timezone: "Asia/Tokyo",
-      } as CreateScheduleRequest),
+      body,
     });
 
     if (!response.ok) {
@@ -379,17 +578,20 @@ export const createInstructorSchedule = async (
   }
 };
 
-// Create instructors post termination Schedule
+// Create instructors post termination Schedule (Cron Job use only)
 export const createInstructorPostTerminationSchedule = async (
   authorization: string,
 ) => {
   try {
-    const response = await fetch(`${BASE_URL}/schedules/post-termination`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: authorization,
-      },
+    const apiURL = `${BASE_URL}/schedules/post-termination`;
+    const method = "POST";
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: authorization,
+    };
+    const response = await fetch(apiURL, {
+      method,
+      headers,
     });
 
     if (!response.ok) {
@@ -415,6 +617,7 @@ export const getInstructorAvailableSlots = async (
   startDate: string,
   endDate: string,
   excludeBookedSlots: boolean,
+  cookie?: string,
 ) => {
   try {
     const params = new URLSearchParams({
@@ -424,12 +627,27 @@ export const getInstructorAvailableSlots = async (
       excludeBookedSlots: excludeBookedSlots.toString(),
     } as AvailableSlotsQuery & { excludeBookedSlots: string });
 
-    const response = await fetch(
-      `${BASE_URL}/${instructorId}/available-slots?${params}`,
-      {
+    const apiURL = `${BASE_URL}/${instructorId}/available-slots?${params}`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
         cache: "no-store",
-      },
-    );
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -447,6 +665,7 @@ export const getInstructorAvailableSlots = async (
 export const getAllInstructorAvailableSlots = async (
   startDate: string,
   endDate: string,
+  cookie?: string,
 ) => {
   try {
     const params = new URLSearchParams({
@@ -455,9 +674,27 @@ export const getAllInstructorAvailableSlots = async (
       timezone: "Asia/Tokyo",
     });
 
-    const response = await fetch(`${BASE_URL}/available-slots?${params}`, {
-      cache: "no-store",
-    });
+    const apiURL = `${BASE_URL}/available-slots?${params}`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.status}`);
@@ -472,11 +709,32 @@ export const getAllInstructorAvailableSlots = async (
 };
 
 // Instructor Absence APIs
-export const getInstructorAbsences = async (instructorId: number) => {
+export const getInstructorAbsences = async (
+  instructorId: number,
+  cookie?: string,
+) => {
   try {
-    const response = await fetch(`${BASE_URL}/${instructorId}/absences`, {
-      cache: "no-store",
-    });
+    const apiURL = `${BASE_URL}/${instructorId}/absences`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -497,14 +755,18 @@ export const addInstructorAbsence = async (
   cookie: string,
 ) => {
   try {
-    const response = await fetch(`${BASE_URL}/${instructorId}/absences`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: cookie,
-      },
+    const apiURL = `${BASE_URL}/${instructorId}/absences`;
+    const method = "POST";
+    const headers = {
+      "Content-Type": "application/json",
+      Cookie: cookie,
+    };
+    const body = JSON.stringify({ absentAt });
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+      body,
       credentials: "include",
-      body: JSON.stringify({ absentAt }),
     });
 
     if (!response.ok) {
@@ -527,16 +789,18 @@ export const deleteInstructorAbsence = async (
 ) => {
   try {
     const encodedAbsentAt = encodeURIComponent(absentAt);
-    const response = await fetch(
-      `${BASE_URL}/${instructorId}/absences/${encodedAbsentAt}`,
-      {
-        method: "DELETE",
-        headers: {
-          Cookie: cookie,
-        },
-        credentials: "include",
-      },
-    );
+    const apiURL = `${BASE_URL}/${instructorId}/absences/${encodedAbsentAt}`;
+    const method = "DELETE";
+    const headers = {
+      "Content-Type": "application/json",
+      Cookie: cookie,
+    };
+
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+      credentials: "include",
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -555,14 +819,31 @@ export const deleteInstructorAbsence = async (
 export const getActiveInstructorSchedule = async (
   instructorId: number,
   effectiveDate: string,
+  cookie?: string,
 ) => {
   try {
-    const url = new URL(`${BASE_URL}/${instructorId}/schedules/active`);
-    url.searchParams.append("effectiveDate", effectiveDate);
+    const apiURL = new URL(`${BASE_URL}/${instructorId}/schedules/active`);
+    apiURL.searchParams.append("effectiveDate", effectiveDate);
+    const method = "GET";
+    let headers;
+    let response;
 
-    const response = await fetch(url.toString(), {
-      cache: "no-store",
-    });
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

@@ -88,7 +88,10 @@ export async function deleteChildProfileAction(
     return { errorMessage: LOGIN_REQUIRED_MESSAGE };
   }
 
-  const resultMessage = await deleteChild(childId);
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
+  const resultMessage = await deleteChild(childId, cookie);
 
   const path =
     loggedInUserType === "admin"

@@ -4,6 +4,7 @@ import {
 } from "@/app/helper/api/adminsApi";
 import { businessCalendarValidRange } from "@/app/helper/utils/calendarUtils";
 import BusinessCalendarClient from "@/app/components/admins-dashboard/BusinessCalendarClient";
+import { getCookie } from "../../../../middleware";
 
 const Page = async ({ params }: { params: { id: string } }) => {
   const instructorId = parseInt(params.id);
@@ -11,10 +12,13 @@ const Page = async ({ params }: { params: { id: string } }) => {
     throw new Error("Invalid instructorId");
   }
 
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   // Fetch all schedule data
-  const schedule = await getAllBusinessSchedules();
+  const schedule = await getAllBusinessSchedules(cookie);
   // Fetch all events data
-  const data = await getAllEvents();
+  const data = await getAllEvents(cookie);
   // Organize the event data by id and event name
   const events: BusinessEventType[] = [
     ...data.map((item: EventColor) => ({

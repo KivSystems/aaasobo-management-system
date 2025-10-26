@@ -1,5 +1,6 @@
-import styles from "./InstructorSchedule.module.scss";
+"use client";
 
+import styles from "./InstructorSchedule.module.scss";
 import { useEffect, useState, useCallback } from "react";
 import {
   getInstructorSchedules,

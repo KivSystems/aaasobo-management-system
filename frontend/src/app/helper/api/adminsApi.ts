@@ -31,22 +31,61 @@ type Response<T> = T | { message: string };
 
 export const getAdminById = async (
   id: number,
+  cookie?: string,
 ): Promise<Response<AdminResponse>> => {
-  const apiUrl = `${BASE_URL}/admin-list/${id}`;
-  const data: Response<AdminResponse> = await fetch(apiUrl, {
-    cache: "no-store",
-  }).then((res) => res.json());
+  const apiURL = `${BASE_URL}/admin-list/${id}`;
+  const method = "GET";
+  let headers;
+  let response;
+
+  if (cookie) {
+    headers = { "Content-Type": "application/json", Cookie: cookie };
+    response = await fetch(apiURL, {
+      method,
+      headers,
+      cache: "no-store",
+    });
+  } else {
+    headers = { "Content-Type": "application/json" };
+    response = await fetch(apiURL, {
+      method,
+      headers,
+      credentials: "include",
+      cache: "no-store",
+    });
+  }
+
+  const data: Response<AdminResponse> = await response.json();
 
   return data;
 };
 
 // GET all admins data
-export const getAllAdmins = async (): Promise<AdminsListResponse["data"]> => {
+export const getAllAdmins = async (
+  cookie?: string,
+): Promise<AdminsListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/admin-list`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["admin-list"] },
-    });
+    const apiURL = `${BASE_URL}/admin-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["admin-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -59,14 +98,31 @@ export const getAllAdmins = async (): Promise<AdminsListResponse["data"]> => {
 };
 
 // GET all instructors data for instructor list
-export const getAllInstructors = async (): Promise<
-  InstructorsListResponse["data"]
-> => {
+export const getAllInstructors = async (
+  cookie?: string,
+): Promise<InstructorsListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/instructor-list`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["instructor-list"] },
-    });
+    const apiURL = `${BASE_URL}/instructor-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["instructor-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -79,14 +135,31 @@ export const getAllInstructors = async (): Promise<
 };
 
 // GET all instructors data for instructor list
-export const getAllPastInstructors = async (): Promise<
-  PastInstructorsListResponse["data"]
-> => {
+export const getAllPastInstructors = async (
+  cookie?: string,
+): Promise<PastInstructorsListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/instructor-list/past`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["instructor-list"] },
-    });
+    const apiURL = `${BASE_URL}/instructor-list/past`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["instructor-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -99,14 +172,31 @@ export const getAllPastInstructors = async (): Promise<
 };
 
 // GET all customers data
-export const getAllCustomers = async (): Promise<
-  CustomersListResponse["data"]
-> => {
+export const getAllCustomers = async (
+  cookie?: string,
+): Promise<CustomersListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/customer-list`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["customer-list"] },
-    });
+    const apiURL = `${BASE_URL}/customer-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["customer-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -119,14 +209,31 @@ export const getAllCustomers = async (): Promise<
 };
 
 // GET all past customers data
-export const getAllPastCustomers = async (): Promise<
-  PastCustomersListResponse["data"]
-> => {
+export const getAllPastCustomers = async (
+  cookie?: string,
+): Promise<PastCustomersListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/customer-list/past`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["customer-list"] },
-    });
+    const apiURL = `${BASE_URL}/customer-list/past`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["customer-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -139,14 +246,31 @@ export const getAllPastCustomers = async (): Promise<
 };
 
 // GET all children data
-export const getAllChildren = async (): Promise<
-  ChildrenListResponse["data"]
-> => {
+export const getAllChildren = async (
+  cookie?: string,
+): Promise<ChildrenListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/child-list`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["child-list"] },
-    });
+    const apiURL = `${BASE_URL}/child-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["child-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -159,12 +283,31 @@ export const getAllChildren = async (): Promise<
 };
 
 // GET all plans data
-export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {
+export const getAllPlans = async (
+  cookie?: string,
+): Promise<PlansListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/plan-list`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["plan-list"] },
-    });
+    const apiURL = `${BASE_URL}/plan-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["plan-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -177,14 +320,31 @@ export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {
 };
 
 // GET all subscriptions data
-export const getAllSubscriptions = async (): Promise<
-  SubscriptionsListResponse["data"]
-> => {
+export const getAllSubscriptions = async (
+  cookie?: string,
+): Promise<SubscriptionsListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/subscription-list`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["subscription-list"] },
-    });
+    const apiURL = `${BASE_URL}/subscription-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["subscription-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -197,12 +357,31 @@ export const getAllSubscriptions = async (): Promise<
 };
 
 // GET all events data
-export const getAllEvents = async (): Promise<EventsListResponse["data"]> => {
+export const getAllEvents = async (
+  cookie?: string,
+): Promise<EventsListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/event-list`;
-    const response = await fetch(apiUrl, {
-      next: { tags: ["event-list"] },
-    });
+    const apiURL = `${BASE_URL}/event-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["event-list"] },
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -215,12 +394,32 @@ export const getAllEvents = async (): Promise<EventsListResponse["data"]> => {
 };
 
 // GET all class data
-export const getAllClasses = async (): Promise<ClassesListResponse["data"]> => {
+export const getAllClasses = async (
+  cookie?: string,
+): Promise<ClassesListResponse["data"]> => {
   try {
-    const apiUrl = `${BASE_URL}/class-list`;
-    const response = await fetch(apiUrl, {
-      cache: "no-store",
-    });
+    const apiURL = `${BASE_URL}/class-list`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -233,24 +432,42 @@ export const getAllClasses = async (): Promise<ClassesListResponse["data"]> => {
 };
 
 // GET all schedule data
-export const getAllBusinessSchedules =
-  async (): Promise<SchedulesListResponse> => {
-    try {
-      const apiUrl = `${BASE_URL}/business-schedule`;
-      const response = await fetch(apiUrl, {
+export const getAllBusinessSchedules = async (
+  cookie?: string,
+): Promise<SchedulesListResponse> => {
+  try {
+    const apiURL = `${BASE_URL}/business-schedule`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
         next: { tags: ["business-schedule"] },
       });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: SchedulesListResponse = await response.json();
-
-      return data;
-    } catch (error) {
-      console.error("Failed to fetch schedules:", error);
-      throw error;
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
     }
-  };
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data: SchedulesListResponse = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch schedules:", error);
+    throw error;
+  }
+};
 
 export const registerAdmin = async (
   userData: RegisterAdminRequest & {
@@ -258,8 +475,8 @@ export const registerAdmin = async (
   },
 ): Promise<RegisterFormState> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/admins/admin-list/register`;
-    const response = await fetch(registerURL, {
+    const apiURL = `${BACKEND_ORIGIN}/admins/admin-list/register`;
+    const response = await fetch(apiURL, {
       method: "POST",
       headers: { "Content-Type": "application/json", Cookie: userData.cookie },
       body: JSON.stringify(userData),

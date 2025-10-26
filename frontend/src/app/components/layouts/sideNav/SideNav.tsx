@@ -7,6 +7,7 @@ import { getAdminById } from "@/app/helper/api/adminsApi";
 import { getCustomerById } from "@/app/helper/api/customersApi";
 import { getInstructorProfile } from "@/app/helper/api/instructorsApi";
 import LanguageSwitcher from "../../elements/languageSwitcher/LanguageSwitcher";
+import { getCookie } from "../../../../middleware";
 
 export default async function SideNav({
   userId,
@@ -15,10 +16,13 @@ export default async function SideNav({
   userId: number;
   userType: UserType;
 }) {
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   let userName = "Unauthenticated User";
   switch (userType) {
     case "admin":
-      const response = await getAdminById(userId);
+      const response = await getAdminById(userId, cookie);
       if ("admin" in response) {
         userName = response.admin.name;
       } else {
@@ -26,11 +30,11 @@ export default async function SideNav({
       }
       break;
     case "customer":
-      const customer = await getCustomerById(userId);
+      const customer = await getCustomerById(userId, cookie);
       userName = customer.name;
       break;
     case "instructor":
-      const instructor = await getInstructorProfile(userId);
+      const instructor = await getInstructorProfile(userId, cookie);
       userName = instructor.nickname;
       break;
   }

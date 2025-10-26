@@ -17,13 +17,36 @@ type Response<T> = T | { message: string };
 // Get event by ID
 export const getEventById = async (
   id: number,
+  cookie?: string,
 ): Promise<Response<EventResponse>> => {
-  const apiUrl = `${BASE_URL}/${id}`;
-  const data: Response<EventResponse> = await fetch(apiUrl, {
-    cache: "no-store",
-  }).then((res) => res.json());
+  try {
+    const apiURL = `${BASE_URL}/${id}`;
+    const method = "GET";
+    let headers;
+    let response;
 
-  return data;
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
+    const data: Response<EventResponse> = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch event by ID:", error);
+    return { message: GENERAL_ERROR_MESSAGE };
+  }
 };
 
 // Register a new event
@@ -34,11 +57,17 @@ export const registerEvent = async (eventData: {
   cookie: string;
 }): Promise<RegisterFormState> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/admins/event-list/register`;
-    const response = await fetch(registerURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: eventData.cookie },
-      body: JSON.stringify(eventData),
+    const apiURL = `${BACKEND_ORIGIN}/admins/event-list/register`;
+    const method = "POST";
+    const headers = {
+      "Content-Type": "application/json",
+      Cookie: eventData.cookie,
+    };
+    const body = JSON.stringify(eventData);
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+      body,
     });
 
     // Handle the duplicated error if the response status is 409 or 422
@@ -88,6 +117,7 @@ export const updateEvent = async (eventData: {
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/event-list/update/${eventId}`;
+    const method = "PATCH";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
     const body = JSON.stringify({
       eventNameJpn,
@@ -96,7 +126,7 @@ export const updateEvent = async (eventData: {
     });
 
     const response = await fetch(apiURL, {
-      method: "PATCH",
+      method,
       headers,
       body,
     });
@@ -141,9 +171,10 @@ export const deleteEvent = async (eventId: number, cookie: string) => {
   try {
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/event-list/${eventId}`;
+    const method = "DELETE";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
     const response = await fetch(apiURL, {
-      method: "DELETE",
+      method,
       headers,
     });
 

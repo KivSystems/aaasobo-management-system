@@ -22,16 +22,33 @@ export const rebookClass = async (
     customerId: number;
     childrenIds: number[];
   },
+  cookie?: string,
 ): Promise<
   { success: true } | { success: false; errorMessage: LocalizedMessage }
 > => {
-  const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/rebook`;
   try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(classData),
-    });
+    const apiURL = `${BACKEND_ORIGIN}/classes/${classId}/rebook`;
+    const method = "POST";
+    const body = JSON.stringify(classData);
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
 
     if (response.ok) {
       return { success: true };
@@ -57,14 +74,27 @@ export const rebookClass = async (
   }
 };
 
-export const cancelClass = async (classId: number) => {
-  const cancelClassUrl = `${BACKEND_ORIGIN}/classes/${classId}/cancel`;
-
+export const cancelClass = async (classId: number, cookie?: string) => {
   try {
-    const response = await fetch(cancelClassUrl, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-    });
+    const apiURL = `${BACKEND_ORIGIN}/classes/${classId}/cancel`;
+    const method = "PATCH";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
 
     if (!response.ok) {
       if (response.status === 400)
@@ -86,10 +116,15 @@ export const generateClasses = async (
   cookie: string,
 ) => {
   try {
-    const response = await fetch(`${BACKEND_ORIGIN}/classes/create-classes`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: cookie },
-      body: JSON.stringify({ year, month }),
+    const apiURL = `${BACKEND_ORIGIN}/classes/create-classes`;
+    const method = "POST";
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const body = JSON.stringify({ year, month });
+
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+      body,
     });
 
     if (!response.ok) {
@@ -108,17 +143,34 @@ export const generateClasses = async (
 export const checkDoubleBooking = async (
   customerId: number,
   dateTime: string,
+  cookie?: string,
 ): Promise<{ isDoubleBooked: boolean } | { message: LocalizedMessage }> => {
-  const apiUrl = `${BACKEND_ORIGIN}/classes/check-double-booking`;
   try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customerId,
-        dateTime,
-      }),
+    const apiURL = `${BACKEND_ORIGIN}/classes/check-double-booking`;
+    const method = "POST";
+    const body = JSON.stringify({
+      customerId,
+      dateTime,
     });
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -136,18 +188,31 @@ export const checkDoubleBooking = async (
 export const checkChildConflicts = async (
   dateTime: string,
   selectedChildrenIds: number[],
+  cookie?: string,
 ): Promise<ChildConflictResponse> => {
-  const apiUrl = `${BACKEND_ORIGIN}/classes/check-child-conflicts`;
-
   try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        dateTime,
-        selectedChildrenIds,
-      }),
-    });
+    const apiURL = `${BACKEND_ORIGIN}/classes/check-child-conflicts`;
+    const method = "POST";
+    const body = JSON.stringify({ dateTime, selectedChildrenIds });
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -161,15 +226,30 @@ export const checkChildConflicts = async (
   }
 };
 
-export const cancelClasses = async (classIds: number[]) => {
+export const cancelClasses = async (classIds: number[], cookie?: string) => {
   try {
-    const response = await fetch(`${BACKEND_ORIGIN}/classes/cancel-classes`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ classIds }),
-    });
+    const apiURL = `${BACKEND_ORIGIN}/classes/cancel-classes`;
+    const method = "POST";
+    const body = JSON.stringify({ classIds });
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
 
     if (!response.ok) {
       if (response.status === 400)
@@ -186,17 +266,31 @@ export const cancelClasses = async (classIds: number[]) => {
 export const updateAttendance = async (
   classId: number,
   childrenIds: number[],
+  cookie?: string,
 ): Promise<{ success: boolean }> => {
-  const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/attendance`;
-
   try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        childrenIds,
-      }),
-    });
+    const apiURL = `${BACKEND_ORIGIN}/classes/${classId}/attendance`;
+    const method = "POST";
+    const body = JSON.stringify({ childrenIds });
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -212,17 +306,31 @@ export const updateAttendance = async (
 export const updateClassStatus = async (
   classId: number,
   status: string,
+  cookie?: string,
 ): Promise<{ success: boolean }> => {
-  const apiUrl = `${BACKEND_ORIGIN}/classes/${classId}/status`;
-
   try {
-    const response = await fetch(apiUrl, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status,
-      }),
-    });
+    const apiURL = `${BACKEND_ORIGIN}/classes/${classId}/status`;
+    const method = "PATCH";
+    const body = JSON.stringify({ status });
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -235,16 +343,17 @@ export const updateClassStatus = async (
   }
 };
 
-// Delete classes older than 1 year (13 months)
+// Delete classes older than 1 year (13 months) (Only for Vercel Cron Job)
 export const deleteOldClasses = async (authorization: string) => {
-  const apiUrl = `${BACKEND_ORIGIN}/jobs/delete/old-classes`;
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: authorization,
-  };
   try {
+    const apiUrl = `${BACKEND_ORIGIN}/jobs/delete/old-classes`;
+    const method = "DELETE";
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: authorization,
+    };
     const response = await fetch(apiUrl, {
-      method: "DELETE",
+      method,
       headers,
     });
 

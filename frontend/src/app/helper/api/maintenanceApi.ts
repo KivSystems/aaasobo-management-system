@@ -3,7 +3,7 @@ import { revalidateSystemStatus } from "@/app/actions/revalidate";
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 
-// Get system status
+// Get system status (Only for Vercel cron job)
 export const getSystemStatus = async (): Promise<string> => {
   try {
     // Define the item to be sent to the server side.
@@ -20,19 +20,20 @@ export const getSystemStatus = async (): Promise<string> => {
   }
 };
 
-// Update system status
+// Update system status (Only for Vercel cron job)
 export const updateSystemStatus = async (
   authorization: string,
 ): Promise<string> => {
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/update-system-status`;
+    const method = "PATCH";
     const headers = {
       "Content-Type": "application/json",
       Authorization: authorization,
     };
     const response = await fetch(apiURL, {
-      method: "PATCH",
+      method,
       headers,
     });
 

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import {
   cancelClassController,
   cancelClassesController,
@@ -32,6 +32,8 @@ import {
   RebookClassErrorResponse,
   ValidationErrorResponse,
 } from "../../../shared/schemas/classes";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
+import { AUTH_ROLES } from "../helper/commonUtils";
 
 export const classesRouter = express.Router();
 
@@ -40,6 +42,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/": [
     {
       method: "get",
+      middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
       handler: getAllClassesController,
       openapi: {
         summary: "Get all classes",
@@ -60,6 +63,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id": [
     {
       method: "get",
+      middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
       handler: getClassesByCustomerIdController,
       paramsSchema: ClassIdParams,
       openapi: {
@@ -82,6 +86,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
     },
     {
       method: "delete",
+      middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
       handler: deleteClassController,
       paramsSchema: ClassIdParams,
       openapi: {
@@ -106,6 +111,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id/rebook": [
     {
       method: "post",
+      middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
       handler: rebookClassController,
       paramsSchema: ClassIdParams,
       bodySchema: RebookClassRequest,
@@ -139,6 +145,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id/attendance": [
     {
       method: "post",
+      middleware: [verifyAuthentication(AUTH_ROLES.AI)] as RequestHandler[],
       handler: updateAttendanceController,
       paramsSchema: ClassIdParams,
       bodySchema: UpdateAttendanceRequest,
@@ -163,6 +170,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id/cancel": [
     {
       method: "patch",
+      middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
       handler: cancelClassController,
       paramsSchema: ClassIdParams,
       openapi: {
@@ -186,6 +194,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id/status": [
     {
       method: "patch",
+      middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
       handler: updateClassStatusController,
       paramsSchema: ClassIdParams,
       bodySchema: UpdateClassStatusRequest,
@@ -213,6 +222,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/create-classes": [
     {
       method: "post",
+      middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
       handler: createClassesForMonthController,
       bodySchema: CreateClassesForMonthRequest,
       openapi: {
@@ -238,6 +248,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/check-double-booking": [
     {
       method: "post",
+      middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
       handler: checkDoubleBookingController,
       bodySchema: CheckDoubleBookingRequest,
       openapi: {
@@ -263,6 +274,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/check-child-conflicts": [
     {
       method: "post",
+      middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
       handler: checkChildConflictsController,
       bodySchema: CheckChildConflictsRequest,
       openapi: {
@@ -288,6 +300,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/cancel-classes": [
     {
       method: "post",
+      middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
       handler: cancelClassesController,
       bodySchema: CancelClassesRequest,
       openapi: {

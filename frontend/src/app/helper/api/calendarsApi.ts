@@ -14,6 +14,7 @@ export const updateBusinessSchedule = async (
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/business-schedule/update`;
+    const method = "POST";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
     const body = JSON.stringify({
       startDate,
@@ -22,7 +23,7 @@ export const updateBusinessSchedule = async (
     });
 
     const response = await fetch(apiURL, {
-      method: "POST",
+      method,
       headers,
       body,
     });
@@ -42,13 +43,14 @@ export const updateBusinessSchedule = async (
   }
 };
 
-// Update next year's all Sunday's color
+// Update next year's all Sunday's color (Only for Vercel cron job)
 export const updateSundayColor = async (
   authorization: string,
 ): Promise<string> => {
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/business-schedule/update-sunday-color`;
+    const method = "POST";
     const headers = {
       "Content-Type": "application/json",
       Authorization: authorization,
@@ -57,7 +59,7 @@ export const updateSundayColor = async (
       eventId: holidayEventId,
     });
     const response = await fetch(apiURL, {
-      method: "POST",
+      method,
       headers,
       body,
     });

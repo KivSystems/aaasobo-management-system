@@ -1,8 +1,10 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import { getEventController } from "../controllers/eventsController";
 import { registerRoutes } from "../middlewares/validationMiddleware";
 import { EventIdParams, EventResponse } from "../../../shared/schemas/events";
 import { MessageErrorResponse } from "../../../shared/schemas/common";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
+import { AUTH_ROLES } from "../helper/commonUtils";
 
 export const eventsRouter = express.Router();
 
@@ -11,6 +13,7 @@ export const eventsRouter = express.Router();
 // Individual route configurations
 const getEventConfig = {
   method: "get" as const,
+  middlewares: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getEventController,
   paramsSchema: EventIdParams,
   openapi: {

@@ -4,6 +4,7 @@ import {
   getChildProfiles,
   getCustomerById,
 } from "@/app/helper/api/customersApi";
+import { getCookie } from "../../../../../middleware";
 
 export default async function CustomerDashboardForAdmin({
   adminId,
@@ -14,8 +15,11 @@ export default async function CustomerDashboardForAdmin({
   customerId: number;
   userSessionType: UserType;
 }) {
-  const customerProfile = await getCustomerById(customerId);
-  const childProfiles = await getChildProfiles(customerId);
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
+  const customerProfile = await getCustomerById(customerId, cookie);
+  const childProfiles = await getChildProfiles(customerId, cookie);
 
   return (
     <CustomerDashboardClient

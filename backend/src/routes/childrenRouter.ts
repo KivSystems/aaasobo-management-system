@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import {
   deleteChildController,
   getChildrenController,
@@ -19,11 +19,14 @@ import {
   DeleteChildResponse,
   DeleteChildConflictResponse,
 } from "../../../shared/schemas/children";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
+import { AUTH_ROLES } from "../helper/commonUtils";
 
 // Route configurations
 const getChildrenConfig = {
   method: "get" as const,
   querySchema: GetChildrenQuery,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: getChildrenController,
   openapi: {
     summary: "Get children by customer ID",
@@ -48,6 +51,7 @@ const getChildrenConfig = {
 const getChildByIdConfig = {
   method: "get" as const,
   paramsSchema: ChildIdParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: getChildByIdController,
   openapi: {
     summary: "Get child by ID",
@@ -72,6 +76,7 @@ const getChildByIdConfig = {
 const registerChildConfig = {
   method: "post" as const,
   bodySchema: RegisterChildRequest,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: registerChildController,
   openapi: {
     summary: "Register new child",
@@ -96,6 +101,7 @@ const updateChildConfig = {
   method: "patch" as const,
   paramsSchema: ChildIdParams,
   bodySchema: UpdateChildRequest,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: updateChildProfileController,
   openapi: {
     summary: "Update child profile",
@@ -128,6 +134,7 @@ const updateChildConfig = {
 const deleteChildConfig = {
   method: "delete" as const,
   paramsSchema: ChildIdParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: deleteChildController,
   openapi: {
     summary: "Delete child",

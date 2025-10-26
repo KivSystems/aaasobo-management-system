@@ -31,12 +31,30 @@ const BACKEND_ORIGIN =
 
 export const getCustomerById = async (
   customerId: number,
+  cookie?: string,
 ): Promise<CustomerProfile> => {
   try {
-    const customerProfileURL = `${BACKEND_ORIGIN}/customers/${customerId}/customer`;
-    const response = await fetch(customerProfileURL, {
-      cache: "no-store",
-    });
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/customer`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       const { error } = await response.json();
@@ -57,18 +75,21 @@ export const updateCustomerProfile = async (
   name: string,
   email: string,
   prefecture: string,
+  cookie: string,
 ): Promise<LocalizedMessages> => {
-  const customerURL = `${BACKEND_ORIGIN}/customers/${id}`;
-  const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({
-    name,
-    email,
-    prefecture,
-  });
-
   try {
-    const response = await fetch(customerURL, {
-      method: "PATCH",
+    const apiURL = `${BACKEND_ORIGIN}/customers/${id}`;
+    const method = "PATCH";
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const body = JSON.stringify({
+      name,
+      email,
+      prefecture,
+    });
+    let response;
+
+    response = await fetch(apiURL, {
+      method,
       headers,
       body,
     });
@@ -114,9 +135,10 @@ export const deactivateCustomer = async (
   try {
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/customer-list/deactivate/${customerId}`;
+    const method = "PATCH";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
     const response = await fetch(apiURL, {
-      method: "PATCH",
+      method,
       headers,
     });
 
@@ -161,11 +183,15 @@ export const registerCustomer = async (
   messages?: StringMessages;
 }> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/customers/register`;
-    const response = await fetch(registerURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ customerData, childData }),
+    const apiURL = `${BACKEND_ORIGIN}/customers/register`;
+    const method = "POST";
+    const headers = { "Content-Type": "application/json" };
+    const body = JSON.stringify({ customerData, childData });
+
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+      body,
     });
 
     if (response.status === 409) {
@@ -200,12 +226,30 @@ export const registerCustomer = async (
 
 export const getRebookableClasses = async (
   customerId: number,
+  cookie?: string,
 ): Promise<RebookableClass[] | []> => {
   try {
-    const rebookableClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/rebookable-classes`;
-    const response = await fetch(rebookableClassesURL, {
-      cache: "no-store",
-    });
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/rebookable-classes`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -219,12 +263,32 @@ export const getRebookableClasses = async (
   }
 };
 
-export const getUpcomingClasses = async (customerId: number) => {
+export const getUpcomingClasses = async (
+  customerId: number,
+  cookie?: string,
+) => {
   try {
-    const upcomingClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`;
-    const response = await fetch(upcomingClassesURL, {
-      cache: "no-store",
-    });
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -238,12 +302,29 @@ export const getUpcomingClasses = async (customerId: number) => {
   }
 };
 
-export const getClasses = async (customerId: number) => {
+export const getClasses = async (customerId: number, cookie?: string) => {
   try {
-    const customerClassesURL = `${BACKEND_ORIGIN}/customers/${customerId}/classes`;
-    const response = await fetch(customerClassesURL, {
-      cache: "no-store",
-    });
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/classes`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -263,21 +344,22 @@ export const verifyCustomerEmail = async (
   success?: { ja: string; en: string };
   error?: { ja: string; en: string };
 }> => {
-  const apiUrl = `${BACKEND_ORIGIN}/customers/verify-email`;
-  const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({
-    token,
-  });
-
-  const statusErrorMessages: Record<number, { ja: string; en: string }> = {
-    400: EMAIL_VERIFICATION_FAILED_MESSAGE,
-    404: EMAIL_VERIFICATION_FAILED_MESSAGE,
-    410: EMAIL_VERIFICATION_TOKEN_EXPIRED,
-  };
-
   try {
+    const apiUrl = `${BACKEND_ORIGIN}/customers/verify-email`;
+    const method = "PATCH";
+    const headers = { "Content-Type": "application/json" };
+    const body = JSON.stringify({
+      token,
+    });
+
+    const statusErrorMessages: Record<number, { ja: string; en: string }> = {
+      400: EMAIL_VERIFICATION_FAILED_MESSAGE,
+      404: EMAIL_VERIFICATION_FAILED_MESSAGE,
+      410: EMAIL_VERIFICATION_TOKEN_EXPIRED,
+    };
+
     const response = await fetch(apiUrl, {
-      method: "PATCH",
+      method,
       headers,
       body,
     });
@@ -309,10 +391,13 @@ export const checkEmailConflicts = async (
 }> => {
   try {
     const apiUrl = `${BACKEND_ORIGIN}/customers/check-email-conflicts`;
+    const method = "POST";
+    const headers = { "Content-Type": "application/json" };
+    const body = JSON.stringify({ email });
     const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      method,
+      headers,
+      body,
     });
 
     if (response.status === 409) {
@@ -333,12 +418,30 @@ export const checkEmailConflicts = async (
 
 export const getChildProfiles = async (
   customerId: number,
+  cookie?: string,
 ): Promise<Child[]> => {
   try {
-    const apiUrl = `${BACKEND_ORIGIN}/customers/${customerId}/child-profiles`;
-    const response = await fetch(apiUrl, {
-      cache: "no-store",
-    });
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/child-profiles`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -352,15 +455,30 @@ export const getChildProfiles = async (
   }
 };
 
-export const markWelcomeSeen = async (customerId: number): Promise<void> => {
-  const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/seen-welcome`;
-  const headers = { "Content-Type": "application/json" };
-
+export const markWelcomeSeen = async (
+  customerId: number,
+  cookie?: string,
+): Promise<void> => {
   try {
-    const response = await fetch(apiURL, {
-      method: "PATCH",
-      headers,
-    });
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/seen-welcome`;
+    const method = "PATCH";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
 
     if (!response.ok) {
       console.error(
@@ -375,16 +493,31 @@ export const markWelcomeSeen = async (customerId: number): Promise<void> => {
 export const declineFreeTrialClass = async (
   customerId: number,
   classCode?: string,
+  cookie?: string,
 ): Promise<{ success: boolean; message: LocalizedMessage }> => {
-  const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/free-trial/decline`;
-  const headers = { "Content-Type": "application/json" };
-
   try {
-    const response = await fetch(apiURL, {
-      method: "PATCH",
-      headers,
-      body: JSON.stringify({ classCode }),
-    });
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/free-trial/decline`;
+    const method = "PATCH";
+    const body = JSON.stringify({ classCode });
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
 
     if (response.status === 404) {
       return { success: false, message: FREE_TRIAL_ALREADY_REMOVED_MESSAGE };

@@ -1,6 +1,5 @@
 import {
   ITEM_REQUIRED_ERROR,
-  ITEM_ALREADY_REGISTERED_ERROR,
   GENERAL_ERROR_MESSAGE,
   CONTENT_REGISTRATION_SUCCESS_MESSAGE,
 } from "../messages/formValidation";
@@ -14,9 +13,32 @@ const BASE_URL = `${BACKEND_ORIGIN}/plans`;
 type Response<T> = T | { message: string };
 
 // GET all plans data
-export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {
+export const getAllPlans = async (
+  cookie?: string,
+): Promise<PlansListResponse["data"]> => {
   try {
-    const response = await fetch(`${BASE_URL}`);
+    const apiURL = `${BASE_URL}`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+        cache: "no-store",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -31,11 +53,31 @@ export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {
 // Get plan by ID
 export const getPlanById = async (
   id: number,
+  cookie?: string,
 ): Promise<Response<PlanResponse>> => {
-  const apiUrl = `${BASE_URL}/${id}`;
-  const data: Response<PlanResponse> = await fetch(apiUrl, {
-    cache: "no-store",
-  }).then((res) => res.json());
+  const apiURL = `${BASE_URL}/${id}`;
+  const method = "GET";
+  let headers;
+  let response;
+
+  if (cookie) {
+    headers = { "Content-Type": "application/json", Cookie: cookie };
+    response = await fetch(apiURL, {
+      method,
+      headers,
+      cache: "no-store",
+    });
+  } else {
+    headers = { "Content-Type": "application/json" };
+    response = await fetch(apiURL, {
+      method,
+      headers,
+      credentials: "include",
+      cache: "no-store",
+    });
+  }
+
+  const data: Response<PlanResponse> = await response.json();
 
   return data;
 };
@@ -48,11 +90,17 @@ export const registerPlan = async (userData: {
   cookie: string;
 }): Promise<RegisterFormState> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/admins/plan-list/register`;
-    const response = await fetch(registerURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: userData.cookie },
-      body: JSON.stringify(userData),
+    const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/register`;
+    const method = "POST";
+    const headers = {
+      "Content-Type": "application/json",
+      Cookie: userData.cookie,
+    };
+    const body = JSON.stringify(userData);
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+      body,
     });
 
     if (!response.ok) {
@@ -81,6 +129,7 @@ export const updatePlan = async (
   try {
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/update/${planId}`;
+    const method = "PATCH";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
     const body = JSON.stringify(
       isDelete
@@ -93,7 +142,7 @@ export const updatePlan = async (
     );
 
     const response = await fetch(apiURL, {
-      method: "PATCH",
+      method,
       headers,
       body,
     });

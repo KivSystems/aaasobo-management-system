@@ -1,11 +1,15 @@
 import ListTable from "@/app/components/admins-dashboard/ListTable";
 import { getAllEvents } from "@/app/helper/api/adminsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import { getCookie } from "../../../../../middleware";
 
 export default async function Page({ params }: { params: { id: string } }) {
   // Authenticate user session
   const adminId = params.id;
   await authenticateUserSession("admin", adminId);
+
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
 
   // Define table configuration
   const listType = "Event List";
@@ -16,7 +20,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   const userType = "admin"; // Set the user type for the registration form
   const categoryType = "event"; // Set the category type for the registration form
   const isAddButton = true; // Enable the add button
-  const data = await getAllEvents(); // Fetch all events data
+  const data = await getAllEvents(cookie); // Fetch all events data
 
   return (
     <div>

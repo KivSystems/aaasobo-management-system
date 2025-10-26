@@ -4,6 +4,7 @@ import {
   getInstructorIdByClassId,
 } from "@/app/helper/api/instructorsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import { getCookie } from "../../../../../../middleware";
 
 const Page = async ({
   params,
@@ -14,6 +15,9 @@ const Page = async ({
   const userSessionType = await authenticateUserSession("admin", params.id);
   const adminId = parseInt(params.id);
 
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   // Get the classId from the URL parameters
   const classId = parseInt(params.classId);
   if (isNaN(classId)) {
@@ -21,7 +25,7 @@ const Page = async ({
   }
 
   // Get the instructorId from the applicable class information
-  const response = await getInstructorIdByClassId(classId);
+  const response = await getInstructorIdByClassId(classId, cookie);
 
   let instructorId: number;
   if (response && "instructorId" in response) {
@@ -33,6 +37,7 @@ const Page = async ({
   const { selectedClassDetails, sameDateClasses } = await getSameDateClasses(
     instructorId,
     classId,
+    cookie,
   );
 
   return (

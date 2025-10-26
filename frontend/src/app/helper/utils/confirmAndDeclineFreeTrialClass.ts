@@ -1,3 +1,5 @@
+"use client";
+
 import { validateSession } from "@/app/actions/validateSession";
 import {
   FREE_TRIAL_DECLINE_CONFIRMATION_MESSAGE,

@@ -1,11 +1,15 @@
 import ListTable from "@/app/components/admins-dashboard/ListTable";
 import { getAllClasses } from "@/app/helper/api/adminsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
-
+import { getCookie } from "../../../../../middleware";
+``;
 export default async function Page({ params }: { params: { id: string } }) {
   // Authenticate user session
   const adminId = params.id;
   await authenticateUserSession("admin", adminId);
+
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
 
   // Define table configuration
   const listType = "Class List";
@@ -19,7 +23,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   ]; // Set the link URL
   const userType = "admin"; // Set the user type for the registration form (It's not used in this page, but kept for consistency)
   const isAddButton = true; // Enable the add button
-  const data = await getAllClasses(); // Fetch all classes data
+  const data = await getAllClasses(cookie); // Fetch all classes data
 
   return (
     <div>

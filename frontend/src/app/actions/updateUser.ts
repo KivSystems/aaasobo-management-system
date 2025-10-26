@@ -219,11 +219,15 @@ export async function updateCustomerProfileAction(
     return extractProfileUpdateErrors(validationErrors);
   }
 
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   const updateResultMessage = await updateCustomerProfile(
     customerId,
     parsedForm.data.name,
     parsedForm.data.email,
     parsedForm.data.prefecture,
+    cookie,
   );
 
   const path = id
@@ -269,12 +273,16 @@ export async function updateChildProfileAction(
     return extractProfileUpdateErrors(validationErrors);
   }
 
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   const updateResultMessage = await updateChildProfile(
     id,
     parsedForm.data.name,
     parsedForm.data.birthdate,
     parsedForm.data.personalInfo,
     customerId,
+    cookie,
   );
 
   const path =
@@ -320,11 +328,15 @@ export async function addChildProfileAction(
     return extractProfileUpdateErrors(validationErrors);
   }
 
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   const resultMessage = await addChild(
     parsedForm.data.name,
     parsedForm.data.birthdate,
     parsedForm.data.personalInfo,
     customerId,
+    cookie,
   );
 
   const path =
