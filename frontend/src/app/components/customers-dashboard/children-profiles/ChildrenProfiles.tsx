@@ -26,7 +26,7 @@ import {
   CONFIRM_DELETE_CHILD_PROFILE_MESSAGE,
 } from "@/app/helper/messages/customerDashboard";
 import { deleteChildProfileAction } from "@/app/actions/deleteUser";
-import { maskedHeadLetters, maskedBirthdate } from "@/app/helper/data/data";
+import { MASKED_HEAD_LETTERS, MASKED_BIRTHDATE } from "@/app/helper/data/data";
 import Modal from "../../elements/modal/Modal";
 import AddChildForm from "./AddChildForm";
 
@@ -189,9 +189,9 @@ function ChildrenProfiles({
                     <div className={styles.profileInfo}>
                       <div className={styles.profileInfo__data}>
                         {formatBirthdateToISO(child.birthdate).includes(
-                          maskedBirthdate,
+                          MASKED_BIRTHDATE,
                         )
-                          ? maskedHeadLetters
+                          ? MASKED_HEAD_LETTERS
                           : formatBirthdateToISO(child.birthdate)}
                       </div>
                     </div>

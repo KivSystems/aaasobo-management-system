@@ -2,8 +2,8 @@ export const holidayEventId = 2;
 export const defaultEventIds = [1, 2, 3, 4];
 export const defaultUserImageUrl = "/images/default-user-icon.jpg";
 export const defaultColor = "#000000";
-export const maskedHeadLetters = "Masked";
-export const maskedBirthdate = "1900-01-01";
+export const MASKED_HEAD_LETTERS = "Masked";
+export const MASKED_BIRTHDATE = "1900-01-01";
 
 export const prefectures = [
   "海外 / Overseas",

@@ -16,7 +16,7 @@ import InputField from "../../elements/inputField/InputField";
 import PrefectureSelect from "../../features/registerForm/prefectureSelect/PrefectureSelect";
 import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 import { getLongMonth } from "@/app/helper/utils/dateUtils";
-import { maskedHeadLetters } from "@/app/helper/data/data";
+import { MASKED_HEAD_LETTERS } from "@/app/helper/data/data";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
 function CustomerProfile({
@@ -146,7 +146,7 @@ function CustomerProfile({
         ) : (
           <div className={styles.email__name}>
             <span title={customerProfile.email}>
-              {customerProfile.email.includes(maskedHeadLetters)
+              {customerProfile.email.includes(MASKED_HEAD_LETTERS)
                 ? customerProfile.email.split("@")[0]
                 : customerProfile.email}
             </span>
