@@ -4,6 +4,18 @@ import bcrypt from "bcrypt";
 import { head } from "@vercel/blob";
 import { randomUUID } from "crypto";
 
+// Define user roles for authentication
+export const AUTH_ROLES = {
+  A: ["admin"],
+  C: ["customer"],
+  I: ["instructor"],
+  S: ["system"],
+  AC: ["admin", "customer"],
+  AI: ["admin", "instructor"],
+  ACI: ["admin", "customer", "instructor"],
+  ALL: ["admin", "customer", "instructor", "system"],
+};
+
 // Booking and class management static values
 export const FREE_TRIAL_BOOKING_HOURS = 72;
 export const REGULAR_REBOOKING_HOURS = 3;
