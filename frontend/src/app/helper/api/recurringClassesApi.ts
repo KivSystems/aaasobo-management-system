@@ -8,6 +8,7 @@ const BASE_URL = `${BACKEND_ORIGIN}/recurring-classes`;
 export const getRecurringClassesBySubscriptionId = async (
   subscriptionId: number,
   status?: "active" | "history",
+  cookie?: string,
 ): Promise<RecurringClasses> => {
   try {
     const params = new URLSearchParams({
@@ -17,7 +18,26 @@ export const getRecurringClassesBySubscriptionId = async (
       params.append("status", status);
     }
 
-    const response = await fetch(`${BASE_URL}?${params.toString()}`);
+    const apiURL = `${BASE_URL}?${params.toString()}`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -32,19 +52,35 @@ export const getRecurringClassesBySubscriptionId = async (
 export const editRecurringClass = async (
   recurringClassId: number,
   recurringClassData: UpdateRecurringClassRequest,
+  cookie?: string,
 ): Promise<{
   message: string;
   oldRecurringClass: RecurringClass;
   newRecurringClass: RecurringClass;
 }> => {
-  const URL = `${BASE_URL}/${recurringClassId}`;
-
   try {
-    const response = await fetch(URL, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(recurringClassData),
-    });
+    const apiURL = `${BASE_URL}/${recurringClassId}`;
+    const method = "PUT";
+    const body = JSON.stringify(recurringClassData);
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
 
     if (!response.ok) {
       const errorData = await response.json();

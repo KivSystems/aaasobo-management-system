@@ -4,11 +4,15 @@ import {
   getAllPastInstructors,
 } from "@/app/helper/api/adminsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import { getCookie } from "../../../../../middleware";
 
 export default async function Page({ params }: { params: { id: string } }) {
   // Authenticate user session
   const adminId = params.id;
   await authenticateUserSession("admin", adminId);
+
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
 
   // Define table configuration
   const listType = "Instructor List";
@@ -19,8 +23,8 @@ export default async function Page({ params }: { params: { id: string } }) {
   const userType = "instructor"; // Set the user type for the registration form
   const isAddButton = true; // Enable the add button
   const isViewPastButton = true; // Enable the view past information button
-  const currentInstructors = await getAllInstructors(); // Fetch all instructors data
-  const pastInstructors = await getAllPastInstructors(); // Fetch all past instructors data
+  const currentInstructors = await getAllInstructors(cookie); // Fetch all instructors data
+  const pastInstructors = await getAllPastInstructors(cookie); // Fetch all past instructors data
   // Define past list table configuration
   const pastListTableProps = {
     listType: "Past Instructor List",

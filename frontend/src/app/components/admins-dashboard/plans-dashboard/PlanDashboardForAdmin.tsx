@@ -1,5 +1,6 @@
 import PlanTabs from "@/app/components/admins-dashboard/plans-dashboard/PlanDashboardClient";
 import { getPlanById } from "@/app/helper/api/plansApi";
+import { getCookie } from "../../../../middleware";
 
 export default async function PlanDashboardForAdmin({
   userId,
@@ -10,8 +11,11 @@ export default async function PlanDashboardForAdmin({
   planId: number;
   userSessionType: UserType;
 }) {
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   // Fetch plan data
-  const data = await getPlanById(planId);
+  const data = await getPlanById(planId, cookie);
   let plan = null;
   if ("message" in data) {
     plan = data.message;

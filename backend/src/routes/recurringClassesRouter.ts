@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import {
   createRegularClassController,
   getRegularClassByIdController,
@@ -15,6 +15,8 @@ import {
   UpdateRecurringClassRequest,
 } from "../../../shared/schemas/recurringClasses";
 import { MessageErrorResponse } from "../../../shared/schemas/common";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
+import { AUTH_ROLES } from "../helper/commonUtils";
 
 export const recurringClassesRouter = express.Router();
 
@@ -23,6 +25,7 @@ export const recurringClassesRouter = express.Router();
 // Route configurations
 const getBySubscriptionIdConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: getRegularClassesBySubscriptionIdController,
   querySchema: GetRecurringClassesBySubscriptionQuery,
   openapi: {
@@ -111,6 +114,7 @@ const createConfig = {
 
 const updateConfig = {
   method: "put" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: updateRegularClassController,
   paramsSchema: RecurringClassIdParams,
   bodySchema: UpdateRecurringClassRequest,

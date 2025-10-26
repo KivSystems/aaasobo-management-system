@@ -1,5 +1,6 @@
 import EventTabs from "@/app/components/admins-dashboard/events-dashboard/EventDashboardClient";
 import { getEventById } from "@/app/helper/api/eventsApi";
+import { getCookie } from "../../../../middleware";
 
 export default async function EventDashboardForAdmin({
   userId,
@@ -10,8 +11,11 @@ export default async function EventDashboardForAdmin({
   eventId: number;
   userSessionType: UserType;
 }) {
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   // Fetch event data
-  const data = await getEventById(eventId);
+  const data = await getEventById(eventId, cookie);
   let event = null;
   if ("message" in data) {
     event = data.message;

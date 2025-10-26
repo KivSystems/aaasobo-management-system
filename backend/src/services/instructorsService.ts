@@ -370,7 +370,7 @@ export const maskInstructors = async (instructors: Instructor[]) => {
             classURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             meetingId: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             passcode: `${maskedHeadLetters}_${suffix}${instructor.id}`,
-            introductionURL: maskedHeadLetters,
+            introductionURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
           },
         }),
       ),

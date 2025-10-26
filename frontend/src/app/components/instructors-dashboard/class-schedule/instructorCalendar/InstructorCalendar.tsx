@@ -8,6 +8,7 @@ import {
   getAllBusinessSchedules,
   getAllEvents,
 } from "@/app/helper/api/adminsApi";
+import { getCookie } from "../../../../../middleware";
 
 async function InstructorCalendar({
   adminId,
@@ -18,11 +19,14 @@ async function InstructorCalendar({
   instructorId: number;
   userSessionType?: UserType;
 }) {
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   const [classes, profile, schedule, events] = await Promise.all([
-    getCalendarClasses(instructorId),
-    getInstructorProfile(instructorId),
-    getAllBusinessSchedules(),
-    getAllEvents(),
+    getCalendarClasses(instructorId, cookie),
+    getInstructorProfile(instructorId, cookie),
+    getAllBusinessSchedules(cookie),
+    getAllEvents(cookie),
   ]);
 
   const instructorCalendarEvents = classes;

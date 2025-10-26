@@ -1,5 +1,6 @@
 import CancelClassesModalController from "./cancelClassesModalController/CancelClassesModalController";
 import { getUpcomingClasses } from "@/app/helper/api/customersApi";
+import { getCookie } from "../../../../../../middleware";
 
 export default async function CancelClassesActions({
   customerId,
@@ -10,8 +11,13 @@ export default async function CancelClassesActions({
   userSessionType: UserType;
   terminationAt: string | null;
 }) {
-  const upcomingClasses: UpcomingClass[] | [] =
-    await getUpcomingClasses(customerId);
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
+  const upcomingClasses: UpcomingClass[] | [] = await getUpcomingClasses(
+    customerId,
+    cookie,
+  );
 
   return (
     <CancelClassesModalController

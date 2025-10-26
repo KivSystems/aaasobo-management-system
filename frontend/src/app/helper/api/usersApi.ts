@@ -29,23 +29,24 @@ export const authenticateUser = async (
   userType: UserType,
   language: LanguageType,
 ): Promise<{ userId: number } | { errorMessage: string }> => {
-  const apiUrl = `${BACKEND_ORIGIN}/users/authenticate`;
-  const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({
-    email,
-    password,
-    userType,
-  } as AuthenticateRequest);
-
-  const statusErrorMessages: Record<number, string> = {
-    401: LOGIN_FAILED_MESSAGE[language],
-    503: CONFIRMATION_EMAIL_RESEND_FAILURE[language],
-    403: EMAIL_VERIFICATION_RESENT_NOTICE[language],
-  };
-
   try {
+    const apiUrl = `${BACKEND_ORIGIN}/users/authenticate`;
+    const method = "POST";
+    const headers = { "Content-Type": "application/json" };
+    const body = JSON.stringify({
+      email,
+      password,
+      userType,
+    } as AuthenticateRequest);
+
+    const statusErrorMessages: Record<number, string> = {
+      401: LOGIN_FAILED_MESSAGE[language],
+      503: CONFIRMATION_EMAIL_RESEND_FAILURE[language],
+      403: EMAIL_VERIFICATION_RESENT_NOTICE[language],
+    };
+
     const response = await fetch(apiUrl, {
-      method: "POST",
+      method,
       headers,
       body,
     });
@@ -76,10 +77,16 @@ export const sendUserResetEmail = async (
 ): Promise<ForgotPasswordFormState> => {
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/send-password-reset`;
+    const method = "POST";
+    const headers = { "Content-Type": "application/json" };
+    const body = JSON.stringify({
+      email,
+      userType,
+    } as SendPasswordResetRequest);
     const response = await fetch(apiURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, userType } as SendPasswordResetRequest),
+      method,
+      headers,
+      body,
     });
     const statusErrorMessages: Record<number, string> = {
       404: EMAIL_NOT_REGISTERED_MESSAGE[language],
@@ -115,14 +122,17 @@ export const updateUserPassword = async (
 ): Promise<StringMessages> => {
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
+    const method = "PATCH";
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const body = JSON.stringify({
+      token,
+      userType,
+      password,
+    } as UpdatePasswordRequest);
     const response = await fetch(apiURL, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json", Cookie: cookie },
-      body: JSON.stringify({
-        token,
-        userType,
-        password,
-      } as UpdatePasswordRequest),
+      method,
+      headers,
+      body,
     });
 
     if (response.status === 410) {
@@ -156,10 +166,13 @@ export const verifyResetToken = async (
 ): Promise<TokenVerificationResult> => {
   try {
     const apiURL = `${BACKEND_ORIGIN}/users/verify-reset-token`;
+    const method = "POST";
+    const headers = { "Content-Type": "application/json" };
+    const body = JSON.stringify({ token, userType } as VerifyResetTokenRequest);
     const response = await fetch(apiURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, userType } as VerifyResetTokenRequest),
+      method,
+      headers,
+      body,
     });
 
     if (response.status === 404) {

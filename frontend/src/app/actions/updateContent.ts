@@ -190,7 +190,10 @@ export async function updateAttendanceAction(
     return { success: false, message: error! };
   }
 
-  const result = await updateAttendance(classId, childrenIds);
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
+  const result = await updateAttendance(classId, childrenIds, cookie);
 
   if (!result.success)
     return {
@@ -223,7 +226,10 @@ export async function updateClassStatusAction(
     return { success: false, message: error! };
   }
 
-  const result = await updateClassStatus(classId, status);
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
+  const result = await updateClassStatus(classId, status, cookie);
 
   if (!result.success)
     return {

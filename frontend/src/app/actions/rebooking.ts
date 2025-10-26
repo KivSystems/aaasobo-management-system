@@ -3,6 +3,7 @@
 import { rebookClass } from "../helper/api/classesApi";
 import { revalidateCustomerCalendar } from "./revalidate";
 import { validateSession } from "./validateSession";
+import { getCookie } from "../../middleware";
 
 export async function rebookClassWithValidation({
   customerId,
@@ -27,12 +28,19 @@ export async function rebookClassWithValidation({
     return { error };
   }
 
-  const result = await rebookClass(classId, {
-    dateTime,
-    instructorId,
-    customerId,
-    childrenIds,
-  });
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
+  const result = await rebookClass(
+    classId,
+    {
+      dateTime,
+      instructorId,
+      customerId,
+      childrenIds,
+    },
+    cookie,
+  );
 
   if (!result.success) {
     return { error: result.errorMessage[language] };

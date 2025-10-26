@@ -25,11 +25,29 @@ const BACKEND_ORIGIN =
 // GET children data by customer id
 export const getChildrenByCustomerId = async (
   customerId: number,
+  cookie?: string,
 ): Promise<Child[]> => {
   try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/children?customerId=${customerId}`,
-    );
+    const apiURL = `${BACKEND_ORIGIN}/children?customerId=${customerId}`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -51,20 +69,22 @@ export const addChild = async (
   birthdate: string,
   personalInfo: string,
   customerId: number,
+  cookie: string,
 ): Promise<LocalizedMessages> => {
-  const childrenURL = `${BACKEND_ORIGIN}/children`;
-  const headers = { "Content-Type": "application/json" };
-  const requestData: RegisterChildRequest = {
-    name,
-    birthdate,
-    personalInfo,
-    customerId,
-  };
-  const body = JSON.stringify(requestData);
-
   try {
-    const response = await fetch(childrenURL, {
-      method: "POST",
+    const apiURL = `${BACKEND_ORIGIN}/children`;
+    const method = "POST";
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const requestData: RegisterChildRequest = {
+      name,
+      birthdate,
+      personalInfo,
+      customerId,
+    };
+    const body = JSON.stringify(requestData);
+
+    const response = await fetch(apiURL, {
+      method,
       headers,
       body,
     });
@@ -90,20 +110,22 @@ export const updateChildProfile = async (
   childBirthdate: string,
   childInfo: string,
   customerId: number,
+  cookie: string,
 ): Promise<LocalizedMessages> => {
-  const childrenURL = `${BACKEND_ORIGIN}/children/${childId}`;
-  const headers = { "Content-Type": "application/json" };
-  const requestData: UpdateChildRequest = {
-    name: childName,
-    birthdate: childBirthdate,
-    personalInfo: childInfo,
-    customerId: Number(customerId),
-  };
-  const body = JSON.stringify(requestData);
-
   try {
-    const response = await fetch(childrenURL, {
-      method: "PATCH",
+    const apiURL = `${BACKEND_ORIGIN}/children/${childId}`;
+    const method = "PATCH";
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const requestData: UpdateChildRequest = {
+      name: childName,
+      birthdate: childBirthdate,
+      personalInfo: childInfo,
+      customerId: Number(customerId),
+    };
+    const body = JSON.stringify(requestData);
+
+    const response = await fetch(apiURL, {
+      method,
       headers,
       body,
     });
@@ -133,13 +155,15 @@ export const updateChildProfile = async (
 
 export const deleteChild = async (
   childId: number,
+  cookie: string,
 ): Promise<LocalizedMessages> => {
   try {
-    const childrenURL = `${BACKEND_ORIGIN}/children/${childId}`;
-    const headers = { "Content-Type": "application/json" };
+    const apiURL = `${BACKEND_ORIGIN}/children/${childId}`;
+    const method = "DELETE";
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
 
-    const response = await fetch(childrenURL, {
-      method: "DELETE",
+    const response = await fetch(apiURL, {
+      method,
       headers,
     });
 

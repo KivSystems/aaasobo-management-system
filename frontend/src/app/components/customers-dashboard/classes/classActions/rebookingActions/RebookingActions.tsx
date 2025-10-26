@@ -5,6 +5,7 @@ import {
 import RebookingModalController from "./rebookingModalController/RebookingModalController";
 import RebookingForm from "./rebookingForm/RebookingForm";
 import { getInstructorProfiles } from "@/app/helper/api/instructorsApi";
+import { getCookie } from "../../../../../../middleware";
 
 export default async function RebookingActions({
   userSessionType,
@@ -15,11 +16,14 @@ export default async function RebookingActions({
   customerId: number;
   terminationAt: string | null;
 }) {
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   const [rebookableClasses, instructorProfiles, childProfiles] =
     await Promise.all([
-      getRebookableClasses(customerId),
-      getInstructorProfiles(),
-      getChildProfiles(customerId),
+      getRebookableClasses(customerId, cookie),
+      getInstructorProfiles(cookie),
+      getChildProfiles(customerId, cookie),
     ]);
 
   const hasChildProfile = childProfiles.length > 0;

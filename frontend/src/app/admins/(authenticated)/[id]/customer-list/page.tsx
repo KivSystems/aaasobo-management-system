@@ -4,11 +4,15 @@ import {
   getAllPastCustomers,
 } from "@/app/helper/api/adminsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import { getCookie } from "../../../../../middleware";
 
 export default async function Page({ params }: { params: { id: string } }) {
   // Authenticate user session
   const adminId = params.id;
   await authenticateUserSession("admin", adminId);
+
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
 
   // Define table configuration
   const listType = "Customer List";
@@ -19,8 +23,8 @@ export default async function Page({ params }: { params: { id: string } }) {
   const userType = "customer"; // Set the user type for the registration form (It's not used in this page, but kept for consistency)
   const isAddButton = false; // Enable the add button
   const isViewPastButton = true; // Enable the view past information button
-  const currentCustomers = await getAllCustomers(); // Fetch all customers data
-  const pastCustomers = await getAllPastCustomers(); // Fetch all past customers data
+  const currentCustomers = await getAllCustomers(cookie); // Fetch all customers data
+  const pastCustomers = await getAllPastCustomers(cookie); // Fetch all past customers data
   // Define past list table configuration
   const pastListTableProps = {
     listType: "Past Customer List",

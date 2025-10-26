@@ -12,11 +12,29 @@ const BACKEND_ORIGIN =
 // GET subscriptions by a customer id
 export const getSubscriptionsByCustomerId = async (
   customerId: number,
+  cookie?: string,
 ): Promise<SubscriptionsResponse> => {
   try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/customers/${customerId}/subscriptions`,
-    );
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/subscriptions`;
+    const method = "GET";
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -33,18 +51,32 @@ export const getSubscriptionsByCustomerId = async (
 export const registerSubscription = async (
   customerId: number,
   subscriptionData: RegisterSubscriptionRequest,
+  cookie?: string,
 ): Promise<NewSubscriptionResponse> => {
   try {
-    const response = await fetch(
-      `${BACKEND_ORIGIN}/customers/${customerId}/subscription`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(subscriptionData),
-      },
-    );
+    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/subscription`;
+    const method = "POST";
+    const body = JSON.stringify(subscriptionData);
+    let headers;
+    let response;
+
+    if (cookie) {
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      headers = { "Content-Type": "application/json" };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+        credentials: "include",
+      });
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -61,10 +93,11 @@ export const deleteSubscription = async (
   cookie: string,
 ): Promise<DeleteResponse | { errorMessage: string }> => {
   try {
-    const URL = `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}`;
+    const apiURL = `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}`;
+    const method = "DELETE";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
-    const response = await fetch(URL, {
-      method: "DELETE",
+    const response = await fetch(apiURL, {
+      method,
       headers,
     });
 

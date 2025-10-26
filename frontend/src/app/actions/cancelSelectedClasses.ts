@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cancelClass, cancelClasses } from "../helper/api/classesApi";
 import { getUserSession } from "@/app/helper/auth/sessionUtils";
+import { getCookie } from "../../middleware";
 
 export const cancelSelectedClasses = async (
   classesToCancel: number[],
@@ -36,7 +37,10 @@ export const cancelSelectedClasses = async (
       ? `/admins/${adminId}/customer-list/${customerId}`
       : `/customers/${customerId}/classes`;
 
-  const cancelationResult = await cancelClasses(classesToCancel);
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
+  const cancelationResult = await cancelClasses(classesToCancel, cookie);
 
   if (cancelationResult.success) {
     revalidatePath(path);
@@ -77,7 +81,10 @@ export const cancelClassAction = async (
       ? `/admins/${adminId}/customer-list/${customerId}`
       : `/customers/${customerId}/classes`;
 
-  const cancelationResult = await cancelClass(classId);
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
+  const cancelationResult = await cancelClass(classId, cookie);
 
   if (cancelationResult.success) {
     revalidatePath(path);

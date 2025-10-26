@@ -68,3 +68,4 @@ export const EVENT_CONFLICT_ITEMS = [
   "English event name",
   "color code",
 ];
+export const SUPER_ADMIN_ID = 1;
