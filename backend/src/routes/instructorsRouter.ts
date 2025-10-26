@@ -113,7 +113,11 @@ const allProfilesConfig = {
 const instructorByIdConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
-  middleware: [verifyAuthentication(AUTH_ROLES.AI)] as RequestHandler[],
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AI, {
+      requireIdCheck: AUTH_ROLES.I,
+    }),
+  ] as RequestHandler[],
   handler: getInstructor,
   openapi: {
     summary: "Get instructor by ID",
@@ -142,7 +146,11 @@ const instructorByIdConfig = {
 const instructorProfileConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
-  middleware: [verifyAuthentication(AUTH_ROLES.AI)] as RequestHandler[],
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AI, {
+      requireIdCheck: AUTH_ROLES.I,
+    }),
+  ] as RequestHandler[],
   handler: getInstructorProfileController,
   openapi: {
     summary: "Get simple instructor profile",
@@ -249,7 +257,11 @@ const availableSlotsConfig = {
 const sameDateClassesConfig = {
   method: "get" as const,
   paramsSchema: InstructorClassParams,
-  middleware: [verifyAuthentication(AUTH_ROLES.AI)] as RequestHandler[],
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AI, {
+      requireIdCheck: AUTH_ROLES.I,
+    }),
+  ] as RequestHandler[],
   handler: getSameDateClassesController,
   openapi: {
     summary: "Get same-date classes",
@@ -274,7 +286,11 @@ const sameDateClassesConfig = {
 const calendarClassesConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
-  middleware: [verifyAuthentication(AUTH_ROLES.AI)] as RequestHandler[],
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AI, {
+      requireIdCheck: AUTH_ROLES.I,
+    }),
+  ] as RequestHandler[],
   handler: getCalendarClassesController,
   openapi: {
     summary: "Get instructor calendar classes",

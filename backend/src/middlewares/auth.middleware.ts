@@ -10,6 +10,7 @@ interface AuthenticatedRequest extends Request {
 // Verify user authentication using JWT
 export function verifyAuthentication(
   requiredUserType: string[],
+  options?: { requireIdCheck?: string[] },
 ): RequestHandler {
   return async (
     req: AuthenticatedRequest,
@@ -64,24 +65,51 @@ export function verifyAuthentication(
         return res.status(401).json({ message: "Invalid token payload" });
       }
 
+      const userId = payload.id as string;
+      const userType = payload.userType as string;
+
       // If a specific userType is required, enforce it here
-      if (requiredUserType && !requiredUserType.includes(payload.userType)) {
+      if (requiredUserType && !requiredUserType.includes(userType)) {
         return res
           .status(403)
           .json({ message: "Forbidden: insufficient permissions" });
       }
 
-      // Attach user info to the request
-      req.user = {
-        id: payload.id as string,
-        userType: payload.userType as string,
-      };
+      // If ID check is required, enforce it here
+      if (
+        options &&
+        options.requireIdCheck &&
+        options.requireIdCheck.includes(userType)
+      ) {
+        const paramsId = req.params.id;
+
+        // The following console log is for debugging purposes only and should be removed in production
+        // Leave it commented out for now
+        // console.log("=====");
+        // console.log("Logged date & time:", new Date().toISOString());
+        // console.log("ID check requirements:", options.requireIdCheck);
+        // console.log("Required ID from params:", paramsId);
+        // console.log("Checked ID from token:", userId);
+
+        if (userId !== paramsId) {
+          return res
+            .status(403)
+            .json({ message: "Forbidden: user ID mismatch" });
+        }
+      }
 
       // The following console log is for debugging purposes only and should be removed in production
-      console.log("Required user types:", requiredUserType);
-      console.log(
-        `Authenticated user ID: ${req.user.id}, Type: ${req.user.userType}`,
-      );
+      // Leave it commented out for now
+      // console.log("=====");
+      // console.log("Logged date & time:", new Date().toISOString());
+      // console.log("Required user types:", requiredUserType);
+      // console.log(`Authenticated user ID: ${userId}, Type: ${userType}`);
+
+      // Attach user info to the request
+      req.user = {
+        id: userId,
+        userType: userType,
+      };
 
       next();
     } catch (error) {
