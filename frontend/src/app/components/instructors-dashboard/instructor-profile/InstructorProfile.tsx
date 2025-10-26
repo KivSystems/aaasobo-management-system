@@ -659,7 +659,8 @@ function InstructorProfile({
             />
 
             {/* Action buttons for only admin */}
-            {userSessionType === "admin" ? (
+            {userSessionType === "admin" &&
+            latestInstructor.name !== MASKED_HEAD_LETTERS ? (
               <>
                 {isEditing ? (
                   <div className={styles.buttons}>
