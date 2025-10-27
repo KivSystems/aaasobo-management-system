@@ -30,6 +30,7 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
+import { MASKED_HEAD_LETTERS, MASKED_BIRTHDATE } from "@/app/helper/data/data";
 import Uploader from "../../features/registerForm/uploadImages/Uploader";
 import { defaultUserImageUrl } from "@/app/helper/data/data";
 import Image from "next/image";
@@ -307,13 +308,15 @@ function InstructorProfile({
                 ) : (
                   <h4 className={styles.birthdate__text}>
                     {latestInstructor.birthdate ? (
-                      <>
-                        {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
-                        {new Date(latestInstructor.birthdate).getDate()}
-                      </>
-                    ) : (
-                      "Not specified"
-                    )}
+                      latestInstructor.birthdate.includes(MASKED_BIRTHDATE) ? (
+                        MASKED_HEAD_LETTERS
+                      ) : (
+                        <>
+                          {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
+                          {new Date(latestInstructor.birthdate).getDate()}
+                        </>
+                      )
+                    ) : null}
                   </h4>
                 )}
               </div>
@@ -475,7 +478,9 @@ function InstructorProfile({
                   ) : (
                     <h4 className={styles.email__text}>
                       {"email" in latestInstructor
-                        ? latestInstructor.email
+                        ? latestInstructor.email.includes(MASKED_HEAD_LETTERS)
+                          ? MASKED_HEAD_LETTERS
+                          : latestInstructor.email
                         : "Not available"}
                     </h4>
                   )}
@@ -515,7 +520,11 @@ function InstructorProfile({
                         className={styles.url}
                       >
                         {"classURL" in latestInstructor
-                          ? latestInstructor.classURL || "Not set"
+                          ? latestInstructor.classURL?.includes(
+                              MASKED_HEAD_LETTERS,
+                            )
+                            ? MASKED_HEAD_LETTERS
+                            : latestInstructor.classURL
                           : "Not available"}
                       </a>
                     </h4>
@@ -539,7 +548,11 @@ function InstructorProfile({
                     ) : (
                       <p>
                         {"meetingId" in latestInstructor
-                          ? latestInstructor.meetingId || "Not set"
+                          ? latestInstructor.meetingId?.includes(
+                              MASKED_HEAD_LETTERS,
+                            )
+                            ? MASKED_HEAD_LETTERS
+                            : latestInstructor.meetingId
                           : "Not available"}
                       </p>
                     )}
@@ -562,7 +575,11 @@ function InstructorProfile({
                     ) : (
                       <p>
                         {"passcode" in latestInstructor
-                          ? latestInstructor.passcode || "Not set"
+                          ? latestInstructor.passcode?.includes(
+                              MASKED_HEAD_LETTERS,
+                            )
+                            ? MASKED_HEAD_LETTERS
+                            : latestInstructor.passcode
                           : "Not available"}
                       </p>
                     )}
@@ -604,7 +621,11 @@ function InstructorProfile({
                         className={styles.url}
                       >
                         {"introductionURL" in latestInstructor
-                          ? latestInstructor.introductionURL || "Not set"
+                          ? latestInstructor.introductionURL?.includes(
+                              MASKED_HEAD_LETTERS,
+                            )
+                            ? MASKED_HEAD_LETTERS
+                            : latestInstructor.introductionURL
                           : "Not available"}
                       </a>
                     </h4>
@@ -638,7 +659,8 @@ function InstructorProfile({
             />
 
             {/* Action buttons for only admin */}
-            {userSessionType === "admin" ? (
+            {userSessionType === "admin" &&
+            latestInstructor.name !== MASKED_HEAD_LETTERS ? (
               <>
                 {isEditing ? (
                   <div className={styles.buttons}>
