@@ -23,11 +23,6 @@ export function getLinks(
       icon: CalendarDaysIcon,
     },
     {
-      name: language === "ja" ? "アーソボカレンダー" : "AaasoBo! Calendar",
-      href: `/customers/${userId}/business-calendar`,
-      icon: CalendarDaysIcon,
-    },
-    {
       name: language === "ja" ? "プロフィール" : "Customer Profile",
       href: `/customers/${userId}/profile`,
       icon: UserIcon,
@@ -50,6 +45,11 @@ export function getLinks(
       name: language === "ja" ? "レギュラークラス" : "Regular Classes",
       href: `/customers/${userId}/regular-classes`,
       icon: ClipboardDocumentListIcon,
+    },
+    {
+      name: language === "ja" ? "アーソボカレンダー" : "AaasoBo! Calendar",
+      href: `/customers/${userId}/business-calendar`,
+      icon: CalendarDaysIcon,
     },
   ];
 
@@ -114,11 +114,6 @@ export function getLinks(
       icon: CalendarIcon,
     },
     {
-      name: "AaasoBo! Calendar",
-      href: `/instructors/${userId}/business-calendar`,
-      icon: CalendarDaysIcon,
-    },
-    {
       name: "Profile",
       href: `/instructors/${userId}/profile`,
       icon: UserIcon,
@@ -127,6 +122,11 @@ export function getLinks(
       name: "Availability Schedule",
       href: `/instructors/${userId}/availability`,
       icon: ClockIcon,
+    },
+    {
+      name: "AaasoBo! Calendar",
+      href: `/instructors/${userId}/business-calendar`,
+      icon: CalendarDaysIcon,
     },
   ];
 
