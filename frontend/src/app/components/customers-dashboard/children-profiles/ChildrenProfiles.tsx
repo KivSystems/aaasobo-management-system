@@ -255,14 +255,12 @@ function ChildrenProfiles({
                     <ActionButton
                       className="cancelEditingCustomer"
                       btnText={language === "ja" ? "キャンセル" : "Cancel"}
-                      type="button"
                       onClick={(e) => {
                         e.preventDefault();
                         clearErrorMessage("all");
                         setEditingChildId(null);
                       }}
                     />
-
                     <ActionButton
                       className="saveCustomer"
                       btnText={language === "ja" ? "変更を保存" : "Save"}
@@ -283,8 +281,7 @@ function ChildrenProfiles({
                     <ActionButton
                       className="editChild"
                       btnText={language === "ja" ? "編集" : "Edit"}
-                      onClick={(e) => {
-                        e.preventDefault();
+                      onClick={() => {
                         clearErrorMessage("all");
                         setEditingChildId(child.id);
                         setEditingSuccessChildId(null);
