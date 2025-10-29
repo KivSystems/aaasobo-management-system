@@ -21,7 +21,14 @@ export async function GET(req: NextRequest) {
     next: revalidateTag ? { tags: [revalidateTag] } : undefined,
   });
 
-  return response;
+  const data = await response.json();
+  return new Response(JSON.stringify(data), {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -44,7 +51,14 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify(body),
   });
 
-  return response;
+  const data = await response.json();
+  return new Response(JSON.stringify(data), {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }
 
 export async function PATCH(req: NextRequest) {
@@ -76,7 +90,14 @@ export async function PATCH(req: NextRequest) {
       : body,
   });
 
-  return response;
+  const data = await response.json();
+  return new Response(JSON.stringify(data), {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }
 
 export async function PUT(req: NextRequest) {
@@ -108,7 +129,14 @@ export async function PUT(req: NextRequest) {
       : body,
   });
 
-  return response;
+  const data = await response.json();
+  return new Response(JSON.stringify(data), {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -127,5 +155,12 @@ export async function DELETE(req: NextRequest) {
     headers,
   });
 
-  return response;
+  const data = await response.json();
+  return new Response(JSON.stringify(data), {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }
