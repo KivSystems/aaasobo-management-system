@@ -110,7 +110,7 @@ export const cancelClass = async (classId: number, cookie?: string) => {
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       if (response.status === 400)
         return { success: false, message: FAILED_TO_CANCEL_INVALID_CLASS };
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -142,7 +142,7 @@ export const generateClasses = async (
       body,
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error. status ${response.status}`);
     }
 
@@ -194,7 +194,7 @@ export const checkDoubleBooking = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -243,7 +243,7 @@ export const checkChildConflicts = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -287,7 +287,7 @@ export const cancelClasses = async (classIds: number[], cookie?: string) => {
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       if (response.status === 400)
         return { success: false, message: FAILED_TO_CANCEL_INVALID_CLASSES };
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -335,7 +335,7 @@ export const updateAttendance = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -382,7 +382,7 @@ export const updateClassStatus = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -410,7 +410,7 @@ export const deleteOldClasses = async (authorization: string) => {
 
     const data = await response.json();
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       return data.error;
     }
   } catch (error) {

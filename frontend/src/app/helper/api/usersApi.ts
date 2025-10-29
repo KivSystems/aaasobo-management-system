@@ -56,7 +56,7 @@ export const authenticateUser = async (
       return { errorMessage };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -98,7 +98,7 @@ export const sendUserResetEmail = async (
       return { errorMessage };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -146,7 +146,7 @@ export const updateUserPassword = async (
       return { errorMessage: TOKEN_OR_USER_NOT_FOUND_ERROR[language] };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -192,7 +192,7 @@ export const verifyResetToken = async (
       };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 

@@ -44,7 +44,7 @@ export const getRecurringClassesBySubscriptionId = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const recurringClasses = await response.json();
@@ -95,7 +95,7 @@ export const editRecurringClass = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       const errorData = await response.json();
       throw new Error(
         errorData.message ||

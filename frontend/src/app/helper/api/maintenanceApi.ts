@@ -11,7 +11,7 @@ export const getSystemStatus = async (): Promise<string> => {
     const apiURL = `${BACKEND_ORIGIN}/jobs/get-system-status`;
     const response = await fetch(apiURL, { next: { tags: ["system-status"] } });
     const data = await response.json();
-    if (!response.ok) {
+    if (response.status !== 200) {
       return data.error;
     }
     return data.status;
@@ -41,7 +41,7 @@ export const updateSystemStatus = async (
 
     const data = await response.json();
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       return data.error;
     }
 
