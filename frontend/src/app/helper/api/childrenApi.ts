@@ -55,7 +55,7 @@ export const getChildrenByCustomerId = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data: ChildrenResponse = await response.json();
@@ -97,7 +97,7 @@ export const addChild = async (
       body,
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -139,7 +139,7 @@ export const updateChildProfile = async (
       body,
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -193,7 +193,7 @@ export const deleteChild = async (
       }
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 

@@ -107,7 +107,7 @@ export const getAllAdmins = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: AdminsListResponse = await response.json();
@@ -153,7 +153,7 @@ export const getAllInstructors = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: InstructorsListResponse = await response.json();
@@ -199,7 +199,7 @@ export const getAllPastInstructors = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: PastInstructorsListResponse = await response.json();
@@ -245,7 +245,7 @@ export const getAllCustomers = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: CustomersListResponse = await response.json();
@@ -291,7 +291,7 @@ export const getAllPastCustomers = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: PastCustomersListResponse = await response.json();
@@ -337,7 +337,7 @@ export const getAllChildren = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: ChildrenListResponse = await response.json();
@@ -384,7 +384,7 @@ export const getAllPlans = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: PlansListResponse = await response.json();
@@ -430,7 +430,7 @@ export const getAllSubscriptions = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: SubscriptionsListResponse = await response.json();
@@ -476,7 +476,7 @@ export const getAllEvents = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: EventsListResponse = await response.json();
@@ -521,7 +521,7 @@ export const getAllClasses = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result: ClassesListResponse = await response.json();
@@ -553,9 +553,9 @@ export const getAllBusinessSchedules = async (
       });
     } else {
       // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
       const backendEndpoint = `/admins/business-schedule`;
       const revalidateTag = "business-schedule";
-      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
       headers = {
         "Content-Type": "application/json",
         "backend-endpoint": backendEndpoint,
@@ -567,7 +567,7 @@ export const getAllBusinessSchedules = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data: SchedulesListResponse = await response.json();
@@ -598,7 +598,7 @@ export const registerAdmin = async (
       return { email: EMAIL_ALREADY_REGISTERED_ERROR.en };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 

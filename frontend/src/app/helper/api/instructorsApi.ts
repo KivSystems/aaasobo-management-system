@@ -75,7 +75,7 @@ export const getInstructors = async (cookie?: string) => {
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result = await response.json();
@@ -122,7 +122,7 @@ export const getInstructor = async (id: number, cookie?: string) => {
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data: Response<{ instructor: CompleteInstructor }> =
@@ -209,7 +209,7 @@ export const registerInstructor = async (
       }
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -312,7 +312,7 @@ export const getInstructorProfile = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -355,7 +355,7 @@ export const getInstructorProfiles = async (cookie?: string) => {
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -403,7 +403,7 @@ export const getAllInstructorProfiles = async (cookie?: string) => {
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data: { instructorProfiles: DetailedInstructorProfile[] } =
@@ -449,7 +449,7 @@ export const getCalendarClasses = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -503,7 +503,7 @@ export const getSameDateClasses = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -552,7 +552,7 @@ export const getInstructorSchedules = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -600,7 +600,7 @@ export const getInstructorScheduleById = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -641,7 +641,7 @@ export const createInstructorSchedule = async (
       body,
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -673,7 +673,7 @@ export const createInstructorPostTerminationSchedule = async (
       headers,
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -735,7 +735,7 @@ export const getInstructorAvailableSlots = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -789,7 +789,7 @@ export const getAllInstructorAvailableSlots = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`Failed to fetch: ${response.status}`);
     }
 
@@ -836,7 +836,7 @@ export const getInstructorAbsences = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -870,7 +870,7 @@ export const addInstructorAbsence = async (
       credentials: "include",
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -904,7 +904,7 @@ export const deleteInstructorAbsence = async (
       credentials: "include",
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -956,7 +956,7 @@ export const getActiveInstructorSchedule = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 

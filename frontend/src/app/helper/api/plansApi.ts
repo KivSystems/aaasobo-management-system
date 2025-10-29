@@ -46,7 +46,7 @@ export const getAllPlans = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const { data }: PlansListResponse = await response.json();
@@ -124,7 +124,7 @@ export const registerPlan = async (userData: {
       body,
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 

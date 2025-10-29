@@ -63,7 +63,7 @@ export const getCustomerById = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       const { error } = await response.json();
 
       throw new Error(`HTTP Status: ${response.status} ${error}`);
@@ -113,7 +113,7 @@ export const updateCustomerProfile = async (
       };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -218,7 +218,7 @@ export const registerCustomer = async (
       };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -268,7 +268,7 @@ export const getRebookableClasses = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -314,7 +314,7 @@ export const getUpcomingClasses = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -357,7 +357,7 @@ export const getClasses = async (customerId: number, cookie?: string) => {
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -400,7 +400,7 @@ export const verifyCustomerEmail = async (
       return { error: errorMessage };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -481,7 +481,7 @@ export const getChildProfiles = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -525,7 +525,7 @@ export const markWelcomeSeen = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       console.error(
         `Failed to update welcome status: ${response.status} ${response.statusText}`,
       );
@@ -575,7 +575,7 @@ export const declineFreeTrialClass = async (
       return { success: false, message: FREE_TRIAL_ALREADY_REMOVED_MESSAGE };
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 

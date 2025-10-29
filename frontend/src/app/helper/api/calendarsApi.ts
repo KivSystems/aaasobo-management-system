@@ -31,7 +31,7 @@ export const updateBusinessSchedule = async (
 
     const data = await response.json();
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       return { errorMessage: data.message };
     }
 
@@ -68,7 +68,7 @@ export const updateSundayColor = async (
 
     const data = await response.json();
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       return data.error;
     }
 

@@ -42,7 +42,7 @@ export const getSubscriptionsByCustomerId = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const subscriptions = await response.json();
@@ -91,7 +91,7 @@ export const registerSubscription = async (
       });
     }
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
