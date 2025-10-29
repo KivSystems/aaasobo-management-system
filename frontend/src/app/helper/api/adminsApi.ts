@@ -361,26 +361,38 @@ export const getAllEvents = async (
   cookie?: string,
 ): Promise<EventsListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/event-list`;
+    const apiURL = "/api/adminsApi";
     const method = "GET";
-    let headers;
-    let response;
+    const revalidateTag = "event-list";
+    const backendEndpoint = `/admins/event-list`;
+    const headers = {
+      "Content-Type": "application/json",
+      "backend-endpoint": backendEndpoint,
+      "revalidate-tag": revalidateTag,
+    };
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+    });
 
-    if (cookie) {
-      headers = { "Content-Type": "application/json", Cookie: cookie };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        next: { tags: ["event-list"] },
-      });
-    } else {
-      headers = { "Content-Type": "application/json" };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        credentials: "include",
-      });
-    }
+    // const apiURL = `${BASE_URL}/event-list`;
+    // let headers;
+    // let response;
+    // if (cookie) {
+    // headers = { "Content-Type": "application/json", Cookie: cookie };
+    // response = await fetch(apiURL, {
+    //   method,
+    //   headers,
+    //   next: { tags: ["event-list"] },
+    // });
+    // } else {
+    //   headers = { "Content-Type": "application/json" };
+    //   response = await fetch(apiURL, {
+    //     method,
+    //     headers,
+    //     credentials: "include",
+    //   });
+    // }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -436,26 +448,40 @@ export const getAllBusinessSchedules = async (
   cookie?: string,
 ): Promise<SchedulesListResponse> => {
   try {
-    const apiURL = `${BASE_URL}/business-schedule`;
+    const apiURL = "/api/adminsApi";
     const method = "GET";
-    let headers;
-    let response;
+    const revalidateTag = "business-schedule";
+    const backendEndpoint = `/admins/business-schedule`;
+    const headers = {
+      "Content-Type": "application/json",
+      "backend-endpoint": backendEndpoint,
+      "revalidate-tag": revalidateTag,
+    };
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+    });
 
-    if (cookie) {
-      headers = { "Content-Type": "application/json", Cookie: cookie };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        next: { tags: ["business-schedule"] },
-      });
-    } else {
-      headers = { "Content-Type": "application/json" };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        credentials: "include",
-      });
-    }
+    // const apiURL = `${BASE_URL}/business-schedule`;
+    // const method = "GET";
+    // let headers;
+    // let response;
+
+    // if (cookie) {
+    //   headers = { "Content-Type": "application/json", Cookie: cookie };
+    //   response = await fetch(apiURL, {
+    //     method,
+    //     headers,
+    //     next: { tags: ["business-schedule"] },
+    //   });
+    // } else {
+    //   headers = { "Content-Type": "application/json" };
+    //   response = await fetch(apiURL, {
+    //     method,
+    //     headers,
+    //     credentials: "include",
+    //   });
+    // }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

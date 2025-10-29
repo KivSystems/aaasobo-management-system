@@ -258,27 +258,40 @@ export const getInstructorProfile = async (
   cookie?: string,
 ) => {
   try {
-    const apiURL = `${BASE_URL}/${instructorId}/profile`;
+    const apiURL = "/api/instructorsApi";
     const method = "GET";
-    let headers;
-    let response;
+    const backendEndpoint = `/instructors/${instructorId}/profile`;
+    const headers = {
+      "Content-Type": "application/json",
+      "backend-endpoint": backendEndpoint,
+      "no-cache": "no-cache",
+    };
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+    });
 
-    if (cookie) {
-      headers = { "Content-Type": "application/json", Cookie: cookie };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        cache: "no-store",
-      });
-    } else {
-      headers = { "Content-Type": "application/json" };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        credentials: "include",
-        cache: "no-store",
-      });
-    }
+    // const apiURL = `${BASE_URL}/${instructorId}/profile`;
+    // const method = "GET";
+    // let headers;
+    // let response;
+
+    // if (cookie) {
+    //   headers = { "Content-Type": "application/json", Cookie: cookie };
+    //   response = await fetch(apiURL, {
+    //     method,
+    //     headers,
+    //     cache: "no-store",
+    //   });
+    // } else {
+    //   headers = { "Content-Type": "application/json" };
+    //   response = await fetch(apiURL, {
+    //     method,
+    //     headers,
+    //     credentials: "include",
+    //     cache: "no-store",
+    //   });
+    // }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -372,27 +385,41 @@ export const getCalendarClasses = async (
   cookie?: string,
 ): Promise<EventType[] | []> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/calendar-classes`;
+    const apiURL = "/api/instructorsApi";
     const method = "GET";
-    let headers;
-    let response;
+    const backendEndpoint = `/instructors/${instructorId}/calendar-classes`;
+    const headers = {
+      "Content-Type": "application/json",
+      "backend-endpoint": backendEndpoint,
+      "no-cache": "no-cache",
+    };
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+    });
 
-    if (cookie) {
-      headers = { "Content-Type": "application/json", Cookie: cookie };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        cache: "no-store",
-      });
-    } else {
-      headers = { "Content-Type": "application/json" };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        credentials: "include",
-        cache: "no-store",
-      });
-    }
+    // const apiURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/calendar-classes`;
+    // const apiURL = `/api/instructors/${instructorId}/calendar-classes`;
+    // const method = "GET";
+    // let headers;
+    // let response;
+
+    // if (cookie) {
+    //   headers = { "Content-Type": "application/json", Cookie: cookie };
+    //   response = await fetch(apiURL, {
+    //     method,
+    //     headers,
+    //     cache: "no-store",
+    //   });
+    // } else {
+    //   headers = { "Content-Type": "application/json" };
+    //   response = await fetch(apiURL, {
+    //     method,
+    //     headers,
+    //     credentials: "include",
+    //     cache: "no-store",
+    //   });
+    // }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
