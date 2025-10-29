@@ -28,23 +28,30 @@ export const getChildrenByCustomerId = async (
   cookie?: string,
 ): Promise<Child[]> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/children?customerId=${customerId}`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/children?customerId=${customerId}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
         headers,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/children?customerId=${customerId}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -72,6 +79,7 @@ export const addChild = async (
   cookie: string,
 ): Promise<LocalizedMessages> => {
   try {
+    // From server component
     const apiURL = `${BACKEND_ORIGIN}/children`;
     const method = "POST";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
@@ -113,6 +121,7 @@ export const updateChildProfile = async (
   cookie: string,
 ): Promise<LocalizedMessages> => {
   try {
+    // From server component
     const apiURL = `${BACKEND_ORIGIN}/children/${childId}`;
     const method = "PATCH";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
@@ -158,6 +167,7 @@ export const deleteChild = async (
   cookie: string,
 ): Promise<LocalizedMessages> => {
   try {
+    // From server component
     const apiURL = `${BACKEND_ORIGIN}/children/${childId}`;
     const method = "DELETE";
     const headers = { "Content-Type": "application/json", Cookie: cookie };

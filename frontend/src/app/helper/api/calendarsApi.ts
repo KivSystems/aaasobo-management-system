@@ -12,6 +12,7 @@ export const updateBusinessSchedule = async (
   cookie: string,
 ): Promise<UpdateFormState> => {
   try {
+    // From server component
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/business-schedule/update`;
     const method = "POST";
@@ -48,6 +49,7 @@ export const updateSundayColor = async (
   authorization: string,
 ): Promise<string> => {
   try {
+    // From server component
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/business-schedule/update-sunday-color`;
     const method = "POST";

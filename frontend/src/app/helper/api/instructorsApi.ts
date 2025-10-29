@@ -48,23 +48,30 @@ export type InstructorScheduleWithSlots = InstructorSchedule & {
 // GET instructors data
 export const getInstructors = async (cookie?: string) => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/admins/instructor-list`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/admins/instructor-list`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
         headers,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/instructor-list`;
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -86,12 +93,14 @@ export const getInstructors = async (cookie?: string) => {
 
 export const getInstructor = async (id: number, cookie?: string) => {
   try {
-    const apiURL = `${BASE_URL}/${id}`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${id}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -99,12 +108,17 @@ export const getInstructor = async (id: number, cookie?: string) => {
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${id}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -126,12 +140,14 @@ export const getInstructorIdByClassId = async (
   classId: number,
   cookie?: string,
 ) => {
-  const apiURL = `${BASE_URL}/class/${classId}`;
-  const method = "GET";
+  let apiURL;
   let headers;
   let response;
+  const method = "GET";
 
   if (cookie) {
+    // From server component
+    apiURL = `${BASE_URL}/class/${classId}`;
     headers = { "Content-Type": "application/json", Cookie: cookie };
     response = await fetch(apiURL, {
       method,
@@ -139,11 +155,17 @@ export const getInstructorIdByClassId = async (
       cache: "no-store",
     });
   } else {
-    headers = { "Content-Type": "application/json" };
+    // From client component (via proxy)
+    apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+    const backendEndpoint = `/instructors/class/${classId}`;
+    headers = {
+      "Content-Type": "application/json",
+      "backend-endpoint": backendEndpoint,
+      "no-cache": "no-cache",
+    };
     response = await fetch(apiURL, {
       method,
       headers,
-      credentials: "include",
     });
   }
 
@@ -158,6 +180,7 @@ export const registerInstructor = async (
   cookie: string,
 ): Promise<RegisterFormState> => {
   try {
+    // From server component
     // Handle api based on whether an icon is included
     let apiURL = `${BACKEND_ORIGIN}/admins/instructor-list/register`;
     if (userData.has("icon")) {
@@ -207,6 +230,7 @@ export const updateInstructor = async (
   userData: FormData,
   cookie: string,
 ) => {
+  // From server component
   // Handle api based on whether an icon is included
   let apiURL = `${BACKEND_ORIGIN}/admins/instructor-list/update/${id}`;
   if (userData.has("icon")) {
@@ -237,6 +261,7 @@ export const updateInstructor = async (
 // Mask instructor information (Cron Job use only)
 export const maskInstructors = async (authorization: string): Promise<void> => {
   try {
+    // From server component
     const apiURL = `${BACKEND_ORIGIN}/jobs/mask/instructors`;
     const method = "PATCH";
     const headers = {
@@ -258,40 +283,34 @@ export const getInstructorProfile = async (
   cookie?: string,
 ) => {
   try {
-    const apiURL = "/api/instructorsApi";
+    let apiURL;
+    let headers;
+    let response;
     const method = "GET";
-    const backendEndpoint = `/instructors/${instructorId}/profile`;
-    const headers = {
-      "Content-Type": "application/json",
-      "backend-endpoint": backendEndpoint,
-      "no-cache": "no-cache",
-    };
-    const response = await fetch(apiURL, {
-      method,
-      headers,
-    });
 
-    // const apiURL = `${BASE_URL}/${instructorId}/profile`;
-    // const method = "GET";
-    // let headers;
-    // let response;
-
-    // if (cookie) {
-    //   headers = { "Content-Type": "application/json", Cookie: cookie };
-    //   response = await fetch(apiURL, {
-    //     method,
-    //     headers,
-    //     cache: "no-store",
-    //   });
-    // } else {
-    //   headers = { "Content-Type": "application/json" };
-    //   response = await fetch(apiURL, {
-    //     method,
-    //     headers,
-    //     credentials: "include",
-    //     cache: "no-store",
-    //   });
-    // }
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${instructorId}/profile`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/profile`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
@@ -307,12 +326,14 @@ export const getInstructorProfile = async (
 
 export const getInstructorProfiles = async (cookie?: string) => {
   try {
-    const apiURL = `${BASE_URL}/profiles`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/profiles`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -320,12 +341,17 @@ export const getInstructorProfiles = async (cookie?: string) => {
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/profiles`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -347,12 +373,14 @@ export const getInstructorProfiles = async (cookie?: string) => {
 // GET all instructors profiles for customer dashboard
 export const getAllInstructorProfiles = async (cookie?: string) => {
   try {
-    const apiURL = `${BASE_URL}/all-profiles`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/all-profiles`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -360,11 +388,18 @@ export const getAllInstructorProfiles = async (cookie?: string) => {
         next: { tags: ["instructor-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/all-profiles`;
+      const revalidateTag = "instructor-list";
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -385,47 +420,41 @@ export const getCalendarClasses = async (
   cookie?: string,
 ): Promise<EventType[] | []> => {
   try {
-    const apiURL = "/api/instructorsApi";
+    let apiURL;
+    let headers;
+    let response;
     const method = "GET";
-    const backendEndpoint = `/instructors/${instructorId}/calendar-classes`;
-    const headers = {
-      "Content-Type": "application/json",
-      "backend-endpoint": backendEndpoint,
-      "no-cache": "no-cache",
-    };
-    const response = await fetch(apiURL, {
-      method,
-      headers,
-    });
 
-    // const apiURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/calendar-classes`;
-    // const apiURL = `/api/instructors/${instructorId}/calendar-classes`;
-    // const method = "GET";
-    // let headers;
-    // let response;
-
-    // if (cookie) {
-    //   headers = { "Content-Type": "application/json", Cookie: cookie };
-    //   response = await fetch(apiURL, {
-    //     method,
-    //     headers,
-    //     cache: "no-store",
-    //   });
-    // } else {
-    //   headers = { "Content-Type": "application/json" };
-    //   response = await fetch(apiURL, {
-    //     method,
-    //     headers,
-    //     credentials: "include",
-    //     cache: "no-store",
-    //   });
-    // }
+    if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/instructors/${instructorId}/calendar-classes`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/calendar-classes`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
+
     return data;
   } catch (error) {
     console.error(
@@ -445,12 +474,14 @@ export const getSameDateClasses = async (
   sameDateClasses: InstructorClassDetail[] | [];
 }> => {
   try {
-    const apiURL = `${BASE_URL}/${instructorId}/classes/${classId}/same-date`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${instructorId}/classes/${classId}/same-date`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -458,12 +489,17 @@ export const getSameDateClasses = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/classes/${classId}/same-date`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -487,12 +523,14 @@ export const getInstructorSchedules = async (
   cookie?: string,
 ) => {
   try {
-    const apiURL = `${BASE_URL}/${instructorId}/schedules`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${instructorId}/schedules`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -500,12 +538,17 @@ export const getInstructorSchedules = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/schedules`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -528,12 +571,14 @@ export const getInstructorScheduleById = async (
   cookie?: string,
 ) => {
   try {
-    const apiURL = `${BASE_URL}/${instructorId}/schedules/${scheduleId}`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${instructorId}/schedules/${scheduleId}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -541,12 +586,17 @@ export const getInstructorScheduleById = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/schedules/${scheduleId}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -572,6 +622,7 @@ export const createInstructorSchedule = async (
   cookie: string,
 ) => {
   try {
+    // From server component
     const apiURL = `${BASE_URL}/${instructorId}/schedules`;
     const method = "POST";
     const headers = {
@@ -610,6 +661,7 @@ export const createInstructorPostTerminationSchedule = async (
   authorization: string,
 ) => {
   try {
+    // From server component
     const apiURL = `${BASE_URL}/schedules/post-termination`;
     const method = "POST";
     const headers = {
@@ -654,12 +706,14 @@ export const getInstructorAvailableSlots = async (
       excludeBookedSlots: excludeBookedSlots.toString(),
     } as AvailableSlotsQuery & { excludeBookedSlots: string });
 
-    const apiURL = `${BASE_URL}/${instructorId}/available-slots?${params}`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${instructorId}/available-slots?${params}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -667,12 +721,17 @@ export const getInstructorAvailableSlots = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/available-slots?${params}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -701,12 +760,14 @@ export const getAllInstructorAvailableSlots = async (
       timezone: "Asia/Tokyo",
     });
 
-    const apiURL = `${BASE_URL}/available-slots?${params}`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/available-slots?${params}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -714,12 +775,17 @@ export const getAllInstructorAvailableSlots = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/available-slots?${params}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -741,12 +807,14 @@ export const getInstructorAbsences = async (
   cookie?: string,
 ) => {
   try {
-    const apiURL = `${BASE_URL}/${instructorId}/absences`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${instructorId}/absences`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -754,12 +822,17 @@ export const getInstructorAbsences = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/absences`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -782,6 +855,7 @@ export const addInstructorAbsence = async (
   cookie: string,
 ) => {
   try {
+    // From server component
     const apiURL = `${BASE_URL}/${instructorId}/absences`;
     const method = "POST";
     const headers = {
@@ -815,6 +889,7 @@ export const deleteInstructorAbsence = async (
   cookie: string,
 ) => {
   try {
+    // From server component
     const encodedAbsentAt = encodeURIComponent(absentAt);
     const apiURL = `${BASE_URL}/${instructorId}/absences/${encodedAbsentAt}`;
     const method = "DELETE";
@@ -849,13 +924,15 @@ export const getActiveInstructorSchedule = async (
   cookie?: string,
 ) => {
   try {
-    const apiURL = new URL(`${BASE_URL}/${instructorId}/schedules/active`);
-    apiURL.searchParams.append("effectiveDate", effectiveDate);
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = new URL(`${BASE_URL}/${instructorId}/schedules/active`);
+      apiURL.searchParams.append("effectiveDate", effectiveDate);
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -863,12 +940,19 @@ export const getActiveInstructorSchedule = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/schedules/active?effectiveDate=${encodeURIComponent(
+        effectiveDate,
+      )}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 

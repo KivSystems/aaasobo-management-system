@@ -33,31 +33,43 @@ export const getAdminById = async (
   id: number,
   cookie?: string,
 ): Promise<Response<AdminResponse>> => {
-  const apiURL = `${BASE_URL}/admin-list/${id}`;
-  const method = "GET";
-  let headers;
-  let response;
+  try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
 
-  if (cookie) {
-    headers = { "Content-Type": "application/json", Cookie: cookie };
-    response = await fetch(apiURL, {
-      method,
-      headers,
-      cache: "no-store",
-    });
-  } else {
-    headers = { "Content-Type": "application/json" };
-    response = await fetch(apiURL, {
-      method,
-      headers,
-      credentials: "include",
-      cache: "no-store",
-    });
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/admin-list/${id}`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/admin-list/${id}`;
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    const data: Response<AdminResponse> = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch admin by ID:", error);
+    throw error;
   }
-
-  const data: Response<AdminResponse> = await response.json();
-
-  return data;
 };
 
 // GET all admins data
@@ -65,12 +77,14 @@ export const getAllAdmins = async (
   cookie?: string,
 ): Promise<AdminsListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/admin-list`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/admin-list`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -78,11 +92,18 @@ export const getAllAdmins = async (
         next: { tags: ["admin-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/admin-list`;
+      const revalidateTag = "admin-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -102,12 +123,14 @@ export const getAllInstructors = async (
   cookie?: string,
 ): Promise<InstructorsListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/instructor-list`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/instructor-list`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -115,11 +138,18 @@ export const getAllInstructors = async (
         next: { tags: ["instructor-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/instructor-list`;
+      const revalidateTag = "instructor-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -139,12 +169,14 @@ export const getAllPastInstructors = async (
   cookie?: string,
 ): Promise<PastInstructorsListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/instructor-list/past`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/instructor-list/past`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -152,11 +184,18 @@ export const getAllPastInstructors = async (
         next: { tags: ["instructor-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/instructor-list/past`;
+      const revalidateTag = "instructor-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -176,12 +215,14 @@ export const getAllCustomers = async (
   cookie?: string,
 ): Promise<CustomersListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/customer-list`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/customer-list`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -189,11 +230,18 @@ export const getAllCustomers = async (
         next: { tags: ["customer-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/customer-list`;
+      const revalidateTag = "customer-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -213,12 +261,14 @@ export const getAllPastCustomers = async (
   cookie?: string,
 ): Promise<PastCustomersListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/customer-list/past`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/customer-list/past`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -226,11 +276,18 @@ export const getAllPastCustomers = async (
         next: { tags: ["customer-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/customer-list/past`;
+      const revalidateTag = "customer-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -250,12 +307,14 @@ export const getAllChildren = async (
   cookie?: string,
 ): Promise<ChildrenListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/child-list`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/child-list`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -263,11 +322,18 @@ export const getAllChildren = async (
         next: { tags: ["child-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/child-list`;
+      const revalidateTag = "child-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -287,12 +353,14 @@ export const getAllPlans = async (
   cookie?: string,
 ): Promise<PlansListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/plan-list`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/plan-list`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -300,7 +368,15 @@ export const getAllPlans = async (
         next: { tags: ["plan-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/plan-list`;
+      const revalidateTag = "plan-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
@@ -324,12 +400,14 @@ export const getAllSubscriptions = async (
   cookie?: string,
 ): Promise<SubscriptionsListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/subscription-list`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/subscription-list`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -337,11 +415,18 @@ export const getAllSubscriptions = async (
         next: { tags: ["subscription-list"] },
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/subscription-list`;
+      const revalidateTag = "subscription-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -361,38 +446,35 @@ export const getAllEvents = async (
   cookie?: string,
 ): Promise<EventsListResponse["data"]> => {
   try {
-    const apiURL = "/api/adminsApi";
+    let apiURL;
+    let headers;
+    let response;
     const method = "GET";
-    const revalidateTag = "event-list";
-    const backendEndpoint = `/admins/event-list`;
-    const headers = {
-      "Content-Type": "application/json",
-      "backend-endpoint": backendEndpoint,
-      "revalidate-tag": revalidateTag,
-    };
-    const response = await fetch(apiURL, {
-      method,
-      headers,
-    });
 
-    // const apiURL = `${BASE_URL}/event-list`;
-    // let headers;
-    // let response;
-    // if (cookie) {
-    // headers = { "Content-Type": "application/json", Cookie: cookie };
-    // response = await fetch(apiURL, {
-    //   method,
-    //   headers,
-    //   next: { tags: ["event-list"] },
-    // });
-    // } else {
-    //   headers = { "Content-Type": "application/json" };
-    //   response = await fetch(apiURL, {
-    //     method,
-    //     headers,
-    //     credentials: "include",
-    //   });
-    // }
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/event-list`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["event-list"] },
+      });
+    } else {
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/event-list`;
+      const revalidateTag = "event-list";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -410,12 +492,14 @@ export const getAllClasses = async (
   cookie?: string,
 ): Promise<ClassesListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}/class-list`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/class-list`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -423,12 +507,17 @@ export const getAllClasses = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/class-list`;
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -448,40 +537,35 @@ export const getAllBusinessSchedules = async (
   cookie?: string,
 ): Promise<SchedulesListResponse> => {
   try {
-    const apiURL = "/api/adminsApi";
+    let apiURL;
+    let headers;
+    let response;
     const method = "GET";
-    const revalidateTag = "business-schedule";
-    const backendEndpoint = `/admins/business-schedule`;
-    const headers = {
-      "Content-Type": "application/json",
-      "backend-endpoint": backendEndpoint,
-      "revalidate-tag": revalidateTag,
-    };
-    const response = await fetch(apiURL, {
-      method,
-      headers,
-    });
 
-    // const apiURL = `${BASE_URL}/business-schedule`;
-    // const method = "GET";
-    // let headers;
-    // let response;
-
-    // if (cookie) {
-    //   headers = { "Content-Type": "application/json", Cookie: cookie };
-    //   response = await fetch(apiURL, {
-    //     method,
-    //     headers,
-    //     next: { tags: ["business-schedule"] },
-    //   });
-    // } else {
-    //   headers = { "Content-Type": "application/json" };
-    //   response = await fetch(apiURL, {
-    //     method,
-    //     headers,
-    //     credentials: "include",
-    //   });
-    // }
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/business-schedule`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        next: { tags: ["business-schedule"] },
+      });
+    } else {
+      // From client component (via proxy)
+      const backendEndpoint = `/admins/business-schedule`;
+      const revalidateTag = "business-schedule";
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "revalidate-tag": revalidateTag,
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -501,6 +585,8 @@ export const registerAdmin = async (
   },
 ): Promise<RegisterFormState> => {
   try {
+    // From server component
+    // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/admin-list/register`;
     const response = await fetch(apiURL, {
       method: "POST",
@@ -534,6 +620,7 @@ export const updateAdmin = async (
   cookie: string,
 ): Promise<UpdateFormState> => {
   try {
+    // From server component
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/${adminId}`;
     const headers = { "Content-Type": "application/json", Cookie: cookie };
@@ -570,6 +657,7 @@ export const deleteAdmin = async (
   cookie: string,
 ): Promise<DeleteResponse | { errorMessage: string }> => {
   try {
+    // From server component
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/admin-list/${adminId}`;
     const headers = { "Content-Type": "application/json", Cookie: cookie };

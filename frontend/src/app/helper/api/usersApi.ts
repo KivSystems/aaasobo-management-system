@@ -121,6 +121,7 @@ export const updateUserPassword = async (
   cookie: string,
 ): Promise<StringMessages> => {
   try {
+    // From server component
     const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
     const method = "PATCH";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
