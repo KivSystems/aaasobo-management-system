@@ -30,7 +30,6 @@ export function verifyAuthentication(
     }
 
     // Debugging logs for cookies
-    console.log("=====");
     console.log("Logged date & time:", new Date().toISOString());
     console.log("[Server Component] Request cookies:", req.headers.cookie);
     console.log("[Client Component] Parsed cookies:", req.cookies);
