@@ -20,23 +20,30 @@ export const getEventById = async (
   cookie?: string,
 ): Promise<Response<EventResponse>> => {
   try {
-    const apiURL = `${BASE_URL}/${id}`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${id}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
         headers,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/events/${id}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -57,6 +64,8 @@ export const registerEvent = async (eventData: {
   cookie: string;
 }): Promise<RegisterFormState> => {
   try {
+    // From server component
+    // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/event-list/register`;
     const method = "POST";
     const headers = {
@@ -115,6 +124,7 @@ export const updateEvent = async (eventData: {
 }): Promise<UpdateFormState> => {
   const { eventId, eventNameJpn, eventNameEng, color, cookie } = eventData;
   try {
+    // From server component
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/event-list/update/${eventId}`;
     const method = "PATCH";
@@ -169,6 +179,7 @@ export const updateEvent = async (eventData: {
 // DELETE event data
 export const deleteEvent = async (eventId: number, cookie: string) => {
   try {
+    // From server component
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/event-list/${eventId}`;
     const method = "DELETE";

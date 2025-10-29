@@ -34,12 +34,14 @@ export const getCustomerById = async (
   cookie?: string,
 ): Promise<CustomerProfile> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/customer`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/customer`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -47,12 +49,17 @@ export const getCustomerById = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/customer`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -78,6 +85,8 @@ export const updateCustomerProfile = async (
   cookie: string,
 ): Promise<LocalizedMessages> => {
   try {
+    // From server component
+    // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/customers/${id}`;
     const method = "PATCH";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
@@ -133,6 +142,7 @@ export const deactivateCustomer = async (
   cookie: string,
 ): Promise<DeleteResponse | { errorMessage: string }> => {
   try {
+    // From server component
     // Define the data to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/customer-list/deactivate/${customerId}`;
     const method = "PATCH";
@@ -229,12 +239,14 @@ export const getRebookableClasses = async (
   cookie?: string,
 ): Promise<RebookableClass[] | []> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/rebookable-classes`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/rebookable-classes`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -242,12 +254,17 @@ export const getRebookableClasses = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/rebookable-classes`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -268,12 +285,14 @@ export const getUpcomingClasses = async (
   cookie?: string,
 ) => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/upcoming-classes`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -281,12 +300,17 @@ export const getUpcomingClasses = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/upcoming-classes`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -304,12 +328,14 @@ export const getUpcomingClasses = async (
 
 export const getClasses = async (customerId: number, cookie?: string) => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/classes`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/classes`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -317,12 +343,17 @@ export const getClasses = async (customerId: number, cookie?: string) => {
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/classes`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -421,12 +452,14 @@ export const getChildProfiles = async (
   cookie?: string,
 ): Promise<Child[]> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/child-profiles`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/child-profiles`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -434,12 +467,17 @@ export const getChildProfiles = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/child-profiles`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -460,23 +498,30 @@ export const markWelcomeSeen = async (
   cookie?: string,
 ): Promise<void> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/seen-welcome`;
-    const method = "PATCH";
+    let apiURL;
     let headers;
     let response;
+    const method = "PATCH";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/seen-welcome`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
         headers,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/seen-welcome`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -496,13 +541,15 @@ export const declineFreeTrialClass = async (
   cookie?: string,
 ): Promise<{ success: boolean; message: LocalizedMessage }> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/free-trial/decline`;
-    const method = "PATCH";
-    const body = JSON.stringify({ classCode });
+    let apiURL;
     let headers;
     let response;
+    const method = "PATCH";
+    const body = JSON.stringify({ classCode });
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/free-trial/decline`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -510,12 +557,17 @@ export const declineFreeTrialClass = async (
         body,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/free-trial/decline`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
         body,
-        credentials: "include",
       });
     }
 

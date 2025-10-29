@@ -11,6 +11,10 @@ export const getRecurringClassesBySubscriptionId = async (
   cookie?: string,
 ): Promise<RecurringClasses> => {
   try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
     const params = new URLSearchParams({
       subscriptionId: subscriptionId.toString(),
     });
@@ -18,23 +22,25 @@ export const getRecurringClassesBySubscriptionId = async (
       params.append("status", status);
     }
 
-    const apiURL = `${BASE_URL}?${params.toString()}`;
-    const method = "GET";
-    let headers;
-    let response;
-
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}?${params.toString()}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
         headers,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/recurring-classes?${params.toString()}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -59,13 +65,15 @@ export const editRecurringClass = async (
   newRecurringClass: RecurringClass;
 }> => {
   try {
-    const apiURL = `${BASE_URL}/${recurringClassId}`;
-    const method = "PUT";
-    const body = JSON.stringify(recurringClassData);
+    let apiURL;
     let headers;
     let response;
+    const method = "PUT";
+    const body = JSON.stringify(recurringClassData);
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${recurringClassId}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -73,12 +81,17 @@ export const editRecurringClass = async (
         body,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/recurring-classes/${recurringClassId}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
         body,
-        credentials: "include",
       });
     }
 

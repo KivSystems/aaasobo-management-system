@@ -15,23 +15,30 @@ export const getSubscriptionsByCustomerId = async (
   cookie?: string,
 ): Promise<SubscriptionsResponse> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/subscriptions`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/subscriptions`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
         headers,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/subscriptions`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
       });
     }
 
@@ -54,13 +61,15 @@ export const registerSubscription = async (
   cookie?: string,
 ): Promise<NewSubscriptionResponse> => {
   try {
-    const apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/subscription`;
-    const method = "POST";
-    const body = JSON.stringify(subscriptionData);
+    let apiURL;
     let headers;
     let response;
+    const method = "POST";
+    const body = JSON.stringify(subscriptionData);
 
     if (cookie) {
+      // From server component
+      apiURL = `${BACKEND_ORIGIN}/customers/${customerId}/subscription`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -68,12 +77,17 @@ export const registerSubscription = async (
         body,
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/customers/${customerId}/subscription`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
       response = await fetch(apiURL, {
         method,
         headers,
         body,
-        credentials: "include",
       });
     }
 
@@ -93,6 +107,7 @@ export const deleteSubscription = async (
   cookie: string,
 ): Promise<DeleteResponse | { errorMessage: string }> => {
   try {
+    // From server component
     const apiURL = `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}`;
     const method = "DELETE";
     const headers = { "Content-Type": "application/json", Cookie: cookie };

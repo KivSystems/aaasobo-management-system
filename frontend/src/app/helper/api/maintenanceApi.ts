@@ -6,6 +6,7 @@ const BACKEND_ORIGIN =
 // Get system status (Only for Vercel cron job)
 export const getSystemStatus = async (): Promise<string> => {
   try {
+    // From server component
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/get-system-status`;
     const response = await fetch(apiURL, { next: { tags: ["system-status"] } });
@@ -25,6 +26,7 @@ export const updateSystemStatus = async (
   authorization: string,
 ): Promise<string> => {
   try {
+    // From server component
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/jobs/update-system-status`;
     const method = "PATCH";

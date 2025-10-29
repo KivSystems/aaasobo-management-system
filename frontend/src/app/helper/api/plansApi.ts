@@ -17,12 +17,14 @@ export const getAllPlans = async (
   cookie?: string,
 ): Promise<PlansListResponse["data"]> => {
   try {
-    const apiURL = `${BASE_URL}`;
-    const method = "GET";
+    let apiURL;
     let headers;
     let response;
+    const method = "GET";
 
     if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}`;
       headers = { "Content-Type": "application/json", Cookie: cookie };
       response = await fetch(apiURL, {
         method,
@@ -30,12 +32,17 @@ export const getAllPlans = async (
         cache: "no-store",
       });
     } else {
-      headers = { "Content-Type": "application/json" };
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/plans`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
         headers,
-        credentials: "include",
-        cache: "no-store",
       });
     }
 
@@ -55,31 +62,43 @@ export const getPlanById = async (
   id: number,
   cookie?: string,
 ): Promise<Response<PlanResponse>> => {
-  const apiURL = `${BASE_URL}/${id}`;
-  const method = "GET";
-  let headers;
-  let response;
+  try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
 
-  if (cookie) {
-    headers = { "Content-Type": "application/json", Cookie: cookie };
-    response = await fetch(apiURL, {
-      method,
-      headers,
-      cache: "no-store",
-    });
-  } else {
-    headers = { "Content-Type": "application/json" };
-    response = await fetch(apiURL, {
-      method,
-      headers,
-      credentials: "include",
-      cache: "no-store",
-    });
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${id}`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/plans/${id}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    const data: Response<PlanResponse> = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch plan by ID:", error);
+    return { message: GENERAL_ERROR_MESSAGE };
   }
-
-  const data: Response<PlanResponse> = await response.json();
-
-  return data;
 };
 
 // Register a new plan
@@ -90,6 +109,8 @@ export const registerPlan = async (userData: {
   cookie: string;
 }): Promise<RegisterFormState> => {
   try {
+    // From server component
+    // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/register`;
     const method = "POST";
     const headers = {
@@ -127,6 +148,7 @@ export const updatePlan = async (
   cookie: string,
 ): Promise<UpdateFormState> => {
   try {
+    // From server component
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/update/${planId}`;
     const method = "PATCH";
