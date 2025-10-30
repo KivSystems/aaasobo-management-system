@@ -21,7 +21,14 @@ export async function GET(req: NextRequest) {
     next: revalidateTag ? { tags: [revalidateTag] } : undefined,
   });
 
-  const data = await response.json();
+  let data: any;
+  const resContentType = response.headers.get("content-type") || "";
+  if (resContentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    data = await response.text();
+  }
+
   return new Response(JSON.stringify(data), {
     status: response.status,
     headers: {
@@ -36,22 +43,40 @@ export async function POST(req: NextRequest) {
   const backendEndpoint = req.headers.get("backend-endpoint");
   const cookie = await getCookie();
 
-  // Get body from the request
-  const body = await req.json();
-
   // Set fetch options
   const method = "POST";
   const backendApiURL = `${process.env.BACKEND_ORIGIN}${backendEndpoint}`;
-  const headers = { "Content-Type": "application/json", Cookie: cookie };
+
+  // Set up body and headers based on content type
+  let body: any;
+  let headers: Record<string, string> = { Cookie: cookie };
+  const contentType = req.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    body = await req.json();
+    headers["Content-Type"] = "application/json";
+  } else {
+    body = await req.formData();
+  }
 
   // Send fetch request to backend API
   const response = await fetch(backendApiURL, {
     method,
     headers,
-    body: JSON.stringify(body),
+    body: contentType.includes("application/json")
+      ? JSON.stringify(body)
+      : body,
   });
 
-  const data = await response.json();
+  let data: any;
+  const resContentType = response.headers.get("content-type") || "";
+  if (resContentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    data = await response.text();
+  }
+
+  console.log("Response data:", data);
+
   return new Response(JSON.stringify(data), {
     status: response.status,
     headers: {
@@ -90,7 +115,14 @@ export async function PATCH(req: NextRequest) {
       : body,
   });
 
-  const data = await response.json();
+  let data: any;
+  const resContentType = response.headers.get("content-type") || "";
+  if (resContentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    data = await response.text();
+  }
+
   return new Response(JSON.stringify(data), {
     status: response.status,
     headers: {
@@ -129,7 +161,14 @@ export async function PUT(req: NextRequest) {
       : body,
   });
 
-  const data = await response.json();
+  let data: any;
+  const resContentType = response.headers.get("content-type") || "";
+  if (resContentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    data = await response.text();
+  }
+
   return new Response(JSON.stringify(data), {
     status: response.status,
     headers: {
@@ -155,7 +194,14 @@ export async function DELETE(req: NextRequest) {
     headers,
   });
 
-  const data = await response.json();
+  let data: any;
+  const resContentType = response.headers.get("content-type") || "";
+  if (resContentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    data = await response.text();
+  }
+
   return new Response(JSON.stringify(data), {
     status: response.status,
     headers: {
