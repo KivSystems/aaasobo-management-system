@@ -12,6 +12,7 @@ import { deleteSubscriptionAction } from "@/app/actions/deleteContent";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EditSubscriptionModal from "../../admins-dashboard/EditSubscriptionModal";
 
 function CurrentSubscription({
   subscriptionsData,
@@ -32,6 +33,9 @@ function CurrentSubscription({
     {},
   );
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<Subscription | null>(null);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
   const handleDeleteSubscription = async (id: number) => {
     const confirmed = window.confirm(
@@ -63,7 +67,18 @@ function CurrentSubscription({
     }
   };
 
-  const handleEditSubscription = (id: number) => {};
+  const handleEditSubscription = (id: number) => {
+    const subscription = subscriptionsData?.subscriptions.find(
+      (s) => s.id === id,
+    );
+    if (!subscription) return;
+    setSelectedSubscription(subscription);
+    setIsOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsOpenModal(false);
+  };
 
   return (
     <div className={styles.outsideContainer}>
@@ -139,6 +154,18 @@ function CurrentSubscription({
       ) : (
         <p>{NO_SUBSCRIPTION_MESSAGE[language]}</p>
       )}
+
+      {/* Edit Subscription Modal */}
+      <EditSubscriptionModal
+        isOpen={isOpenModal}
+        onClose={handleCloseModal}
+        subscription={selectedSubscription}
+        userSessionType={userSessionType}
+        adminId={adminId}
+        customerId={customerId}
+        customerTerminationAt={selectedSubscription?.customerTerminationAt}
+        language={language}
+      />
     </div>
   );
 }

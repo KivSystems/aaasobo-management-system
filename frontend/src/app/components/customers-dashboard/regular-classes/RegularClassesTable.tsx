@@ -20,6 +20,9 @@ function RegularClassesTable({
   customerId,
   customerTerminationAt,
   language,
+  isSelectable,
+  selectedRecurringIds,
+  onToggleRecurring,
 }: {
   subscriptionId: number;
   userSessionType?: UserType;
@@ -27,6 +30,9 @@ function RegularClassesTable({
   customerId: number;
   customerTerminationAt?: string | null;
   language: LanguageType;
+  isSelectable?: boolean;
+  selectedRecurringIds?: number[];
+  onToggleRecurring?: (id: number) => void;
 }) {
   const [activeRecurringClasses, setActiveRecurringClasses] = useState<
     RecurringClass[]
@@ -144,12 +150,17 @@ function RegularClassesTable({
               language={language}
               userSessionType={userSessionType}
               customerTerminationAt={customerTerminationAt}
+              isSelectable={isSelectable}
+              selected={
+                selectedRecurringIds?.includes(recurringClass.id) ?? false
+              }
+              onToggle={() => onToggleRecurring?.(recurringClass.id)}
             />
           ))}
         </div>
       )}
 
-      {historyCount > 0 && (
+      {!isSelectable && historyCount > 0 && (
         <div style={{ marginTop: "2rem" }}>
           <div
             className={styles.subheading}

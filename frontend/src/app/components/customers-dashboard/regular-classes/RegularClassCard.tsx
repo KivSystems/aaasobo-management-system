@@ -17,6 +17,7 @@ import {
   NO_DATE_SELECTED,
   EDIT_CLASS_ARIA_LABEL,
 } from "@/app/helper/messages/customerDashboard";
+import { MouseEvent } from "react";
 
 interface RegularClassCardProps {
   recurringClass: RecurringClass;
@@ -24,6 +25,9 @@ interface RegularClassCardProps {
   language: LanguageType;
   userSessionType?: UserType;
   customerTerminationAt?: string | null;
+  isSelectable?: boolean;
+  selected?: boolean;
+  onToggle?: () => void;
 }
 
 function RegularClassCard({
@@ -32,6 +36,9 @@ function RegularClassCard({
   language,
   userSessionType,
   customerTerminationAt,
+  isSelectable,
+  selected,
+  onToggle,
 }: RegularClassCardProps) {
   const timeZone = "Asia/Tokyo"; // Use JST for consistency
 
@@ -40,14 +47,26 @@ function RegularClassCard({
   const endTime = formatTime(getEndTime(classDateTime), timeZone);
   const day = getWeekday(classDateTime, timeZone);
 
-  const handleEdit = () => {
+  const handleEdit = (e: MouseEvent) => {
+    e.stopPropagation();
     if (onEdit) {
       onEdit(recurringClass.id);
     }
   };
 
+  const handleToggle = () => {
+    if (isSelectable) {
+      onToggle?.();
+    }
+  };
+
   return (
-    <div className={styles.card}>
+    <div
+      className={`${styles.card} ${selected ? styles.selected : ""} ${isSelectable ? styles.clickable : ""}`}
+      onClick={handleToggle}
+      aria-pressed={isSelectable ? selected : undefined}
+      aria-label={`Recurring class ${recurringClass.id}`}
+    >
       {/* Option 1: Edit button in top-right corner */}
       <div className={styles.cardHeader}>
         <div className={styles.instructorSection}>
@@ -61,15 +80,17 @@ function RegularClassCard({
             </div>
           </div>
         </div>
-        {onEdit && (userSessionType === "admin" || !customerTerminationAt) && (
-          <button
-            onClick={handleEdit}
-            className={styles.editButtonTopRight}
-            aria-label={EDIT_CLASS_ARIA_LABEL[language]}
-          >
-            <PencilIcon className={styles.editIcon} />
-          </button>
-        )}
+        {!isSelectable &&
+          onEdit &&
+          (userSessionType === "admin" || !customerTerminationAt) && (
+            <button
+              onClick={handleEdit}
+              className={styles.editButtonTopRight}
+              aria-label={EDIT_CLASS_ARIA_LABEL[language]}
+            >
+              <PencilIcon className={styles.editIcon} />
+            </button>
+          )}
       </div>
 
       <div className={styles.divider}></div>
@@ -92,6 +113,7 @@ function RegularClassCard({
               target="_blank"
               rel="noopener noreferrer"
               className={styles.link}
+              onClick={(e) => e.stopPropagation()}
             >
               {recurringClass.instructor?.classURL
                 ? (() => {
@@ -141,6 +163,13 @@ function RegularClassCard({
           </div>
         )}
       </div>
+
+      {/* selection overlay / badge */}
+      {isSelectable && (
+        <div className={styles.selectionBadge}>
+          {selected ? "Selected" : "Select"}
+        </div>
+      )}
     </div>
   );
 }
