@@ -3,11 +3,13 @@ import { registerRoutes } from "../../src/middlewares/validationMiddleware";
 import {
   deleteSubscriptionController,
   getSubscriptionByIdController,
+  updateSubscriptionToAddClassController,
 } from "../../src/controllers/subscriptionsController";
 import {
   DeleteSubscriptionResponse,
   SubscriptionIdParams,
   SubscriptionResponse,
+  UpdateSubscriptionResponse,
 } from "../../../shared/schemas/subscriptions";
 import { ErrorResponse } from "../../../shared/schemas/common";
 import { RouteConfig } from "../openapi/routerRegistry";
@@ -67,8 +69,36 @@ const deleteSubscription = {
   },
 } as const;
 
+const updateSubscriptionToAddClass = {
+  method: "put" as const,
+  handler: updateSubscriptionToAddClassController,
+  paramsSchema: SubscriptionIdParams,
+  openapi: {
+    summary: "Update a subscription to add recurring classes",
+    description: "Update a subscription to add recurring classes",
+    responses: {
+      "200": {
+        description: "Subscription updated successfully",
+        schema: UpdateSubscriptionResponse,
+      },
+      "404": {
+        description: "Subscription not found",
+        schema: ErrorResponse,
+      },
+      "400": {
+        description: "Invalid subscription ID",
+        schema: ErrorResponse,
+      },
+    },
+  },
+};
+
 const routeConfigs: Record<string, readonly RouteConfig[]> = {
-  "/:id": [getSubscriptionByIdConfig, deleteSubscription],
+  "/:id": [
+    getSubscriptionByIdConfig,
+    deleteSubscription,
+    updateSubscriptionToAddClass,
+  ],
 };
 
 registerRoutes(subscriptionsRouter, routeConfigs);

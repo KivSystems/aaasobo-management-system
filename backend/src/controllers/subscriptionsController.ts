@@ -4,10 +4,11 @@ import type { SubscriptionIdParams } from "../../../shared/schemas/subscriptions
 import {
   getSubscriptionById,
   terminateSubscription,
+  updatePlanIdOfSubscription,
 } from "../services/subscriptionsService";
 import { prisma } from "../../prisma/prismaClient";
 import {
-  deleteRecurringClass,
+  createNewRecurringClass,
   getRegularClassesBySubscriptionId,
   terminateRecurringClass,
 } from "../services/recurringClassesService";
@@ -67,6 +68,42 @@ export const deleteSubscriptionController = async (
     });
   } catch (error) {
     console.error("Error deleting recurring class:", error);
+    res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.",
+    });
+  }
+};
+
+export const updateSubscriptionToAddClassController = async (
+  req: RequestWithParams<SubscriptionIdParams>,
+  res: Response,
+) => {
+  try {
+    const subscriptionId = req.params.id;
+    if (!subscriptionId) {
+      return res.status(404).json({ error: "Subscription not found." });
+    }
+    const { planId, times } = req.body;
+
+    await prisma.$transaction(async (tx) => {
+      // Updata the plan id of the subscription.
+      await updatePlanIdOfSubscription(tx, Number(subscriptionId), planId);
+
+      // Add new recurring classes
+      for (let i = 0; i < times; i++) {
+        await createNewRecurringClass(Number(subscriptionId));
+      }
+
+      res.status(200).json({
+        message: "Subscription updated successfully",
+        id: subscriptionId,
+      });
+    });
+  } catch (error) {
+    console.error("Error updating subscription:", error);
     res.status(500).json({
       error:
         error instanceof Error
