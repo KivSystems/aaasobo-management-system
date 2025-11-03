@@ -11,6 +11,7 @@ export const sweetAlert: (settings: AlertOptions) => Promise<boolean> = (
     cancelButtonText: settings.cancelButtonText,
     showCancelButton: settings.showCancelButton,
     showConfirmButton: settings.showConfirmButton,
+    position: settings.position || "center",
   }).then((result) => {
     if (result.isConfirmed) {
       return true;
