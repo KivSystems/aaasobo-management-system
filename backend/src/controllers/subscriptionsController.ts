@@ -9,9 +9,11 @@ import {
 import { prisma } from "../../prisma/prismaClient";
 import {
   createNewRecurringClass,
+  getRegularClassById,
   getRegularClassesBySubscriptionId,
   terminateRecurringClass,
 } from "../services/recurringClassesService";
+import { getPlanById } from "../services/plansService";
 
 export const getSubscriptionByIdController = async (
   req: RequestWithParams<SubscriptionIdParams>,
@@ -82,25 +84,91 @@ export const updateSubscriptionToAddClassController = async (
   res: Response,
 ) => {
   try {
-    const subscriptionId = req.params.id;
-    if (!subscriptionId) {
+    const subscription = await getSubscriptionById(req.params.id);
+    if (!subscription) {
       return res.status(404).json({ error: "Subscription not found." });
     }
     const { planId, times } = req.body;
 
+    // validate
+    const plan = await getPlanById(planId);
+    if (!plan) {
+      return res.status(400).json({ error: "Plan not found." });
+    }
+
+    if (times !== plan.weeklyClassTimes - subscription.plan.weeklyClassTimes) {
+      return res
+        .status(400)
+        .json({ error: "Number of weekly classes is invalid." });
+    }
+
     await prisma.$transaction(async (tx) => {
       // Updata the plan id of the subscription.
-      await updatePlanIdOfSubscription(tx, Number(subscriptionId), planId);
+      await updatePlanIdOfSubscription(tx, subscription.id, planId);
 
       // Add new recurring classes
       for (let i = 0; i < times; i++) {
-        await createNewRecurringClass(Number(subscriptionId));
+        await createNewRecurringClass(subscription.id);
       }
 
       res.status(200).json({
         message: "Subscription updated successfully",
-        id: subscriptionId,
+        id: subscription.id,
       });
+    });
+  } catch (error) {
+    console.error("Error updating subscription:", error);
+    res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.",
+    });
+  }
+};
+
+export const updateSubscriptionToTerminateClassController = async (
+  req: RequestWithParams<SubscriptionIdParams>,
+  res: Response,
+) => {
+  try {
+    const subscriptionId = req.params.id;
+    if (!subscriptionId) {
+      return res.status(404).json({ error: "Subscription not found." });
+    }
+    const { planId, recurringIds } = req.body;
+    const today = new Date();
+
+    // validate
+    const plan = await getPlanById(planId);
+    if (!plan) {
+      return res.status(400).json({ error: "Plan not found." });
+    }
+
+    if (!Array.isArray(recurringIds)) {
+      return res.status(400).json({ error: "recurringIds must be an array" });
+    }
+
+    for (const recurringId of recurringIds) {
+      const recurringClass = await getRegularClassById(recurringId);
+      if (!recurringClass) {
+        return res.status(404).json({ error: "Recurring class not found." });
+      }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // Updata the plan id of the subscription.
+      await updatePlanIdOfSubscription(tx, subscriptionId, planId);
+
+      // Terminate recurring classes
+      for (const recurringId of recurringIds) {
+        await terminateRecurringClass(tx, recurringId, today);
+      }
+    });
+
+    res.status(200).json({
+      message: "Subscription updated successfully",
+      id: subscriptionId,
     });
   } catch (error) {
     console.error("Error updating subscription:", error);

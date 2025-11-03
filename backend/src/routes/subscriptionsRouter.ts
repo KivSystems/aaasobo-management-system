@@ -4,6 +4,7 @@ import {
   deleteSubscriptionController,
   getSubscriptionByIdController,
   updateSubscriptionToAddClassController,
+  updateSubscriptionToTerminateClassController,
 } from "../../src/controllers/subscriptionsController";
 import {
   DeleteSubscriptionResponse,
@@ -70,7 +71,7 @@ const deleteSubscription = {
 } as const;
 
 const updateSubscriptionToAddClass = {
-  method: "put" as const,
+  method: "patch" as const,
   handler: updateSubscriptionToAddClassController,
   paramsSchema: SubscriptionIdParams,
   openapi: {
@@ -93,11 +94,42 @@ const updateSubscriptionToAddClass = {
   },
 };
 
+const updateSubscriptionToTerminateClass = {
+  method: "patch" as const,
+  handler: updateSubscriptionToTerminateClassController,
+  paramsSchema: SubscriptionIdParams,
+  openapi: {
+    summary: "Update a subscription to terminate recurring classes",
+    description: "Update a subscription to terminate recurring classes",
+    responses: {
+      "200": {
+        description: "Subscription updated successfully",
+        schema: UpdateSubscriptionResponse,
+      },
+      "404": {
+        description: "Subscription not found",
+        schema: ErrorResponse,
+      },
+      "400": {
+        description: "Invalid subscription ID",
+        schema: ErrorResponse,
+      },
+    },
+  },
+};
+
 const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id": [
     getSubscriptionByIdConfig,
     deleteSubscription,
     updateSubscriptionToAddClass,
+    updateSubscriptionToTerminateClass,
+  ],  
+  "/:id/increase-recurring-class": [
+    updateSubscriptionToAddClass,
+  ],
+  "/:id/decrease-recurring-class": [
+    updateSubscriptionToTerminateClass,
   ],
 };
 
