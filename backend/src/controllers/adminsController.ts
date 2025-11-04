@@ -714,7 +714,10 @@ export const registerPlanController = async (
   req: RequestWithBody<RegisterPlanRequest>,
   res: Response,
 ) => {
-  const { name, weeklyClassTimes, description } = req.body;
+  const { planNameEng, planNameJpn, weeklyClassTimes, description } = req.body;
+
+  // Combine Japanese and English names into the required format
+  const name = `${planNameJpn} / ${planNameEng}`;
 
   try {
     await registerPlan({
@@ -748,12 +751,16 @@ export const updatePlanController = async (
     }
 
     // When updating (not deleting), validation ensures both name and description are present
-    if (!body.name || !body.description) {
+    if (!body.planNameEng || !body.planNameJpn || !body.description) {
       return res
         .status(400)
         .json({ message: "Name and description are required for update" });
     }
-    const { name, description } = body;
+    const { planNameEng, planNameJpn, description } = body;
+
+    // Combine Japanese and English names into the required format
+    const name = `${planNameJpn} / ${planNameEng}`;
+
     const updatedPlan = await updatePlan(planId, name, description);
     return res.status(200).json({
       message: "Plan is updated successfully",
