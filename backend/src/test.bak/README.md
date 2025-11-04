@@ -25,7 +25,7 @@ Or temporarily remove `**/test.bak/**` from the exclude list in `vitest.config.m
 - [x] instructorSchedule (migrated to `src/test/instructors/schedules.test.ts`)
 - [x] instructorAbsence (migrated to `src/test/instructors/absences.test.ts`)
 - [x] children (migrated to `src/test/children.test.ts`)
-- [ ] classes
+- [x] classes
 - [ ] events
 - [ ] plans
 - [ ] recurringClass
