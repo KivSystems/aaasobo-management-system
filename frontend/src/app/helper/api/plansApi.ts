@@ -103,7 +103,8 @@ export const getPlanById = async (
 
 // Register a new plan
 export const registerPlan = async (userData: {
-  name: string;
+  planNameEng: string;
+  planNameJpn: string;
   weeklyClassTimes: number;
   description: string;
   cookie: string;
@@ -124,7 +125,7 @@ export const registerPlan = async (userData: {
       body,
     });
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -142,7 +143,8 @@ export const registerPlan = async (userData: {
 // Update plan information
 export const updatePlan = async (
   planId: number,
-  planName: string | null,
+  planNameEng: string | null,
+  planNameJpn: string | null,
   planDescription: string | null,
   isDelete: boolean,
   cookie: string,
@@ -158,7 +160,8 @@ export const updatePlan = async (
         ? { isDelete: true }
         : {
             isDelete: false,
-            name: planName,
+            planNameEng,
+            planNameJpn,
             description: planDescription,
           },
     );

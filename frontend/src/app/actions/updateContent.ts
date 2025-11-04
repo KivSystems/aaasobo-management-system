@@ -76,10 +76,11 @@ export async function updatePlanAction(
   formData: FormData,
 ): Promise<UpdateFormState> {
   try {
-    const name = formData.get("planName");
+    const planNameEng = formData.get("planNameEng");
+    const planNameJpn = formData.get("planNameJpn");
     const description = formData.get("description");
     // Hidden input tag fields
-    const id = Number(formData.get("id"));
+    const planId = Number(formData.get("planId"));
     const confirmDelete = formData.get("confirmDelete") as string | null;
 
     let isDelete = false;
@@ -94,12 +95,14 @@ export async function updatePlanAction(
       default:
     }
 
-    let requestName: string | null = null;
+    let requestNameEng: string | null = null;
+    let requestNameJpn: string | null = null;
     let requestDescription: string | null = null;
 
     if (!isDelete) {
       const parsedForm = planUpdateSchema.safeParse({
-        name,
+        planNameEng,
+        planNameJpn,
         description,
       });
 
@@ -108,7 +111,8 @@ export async function updatePlanAction(
         return extractUpdateValidationErrors(validationErrors);
       }
 
-      requestName = parsedForm.data.name;
+      requestNameEng = parsedForm.data.planNameEng;
+      requestNameJpn = parsedForm.data.planNameJpn;
       requestDescription = parsedForm.data.description;
     }
 
@@ -116,8 +120,9 @@ export async function updatePlanAction(
     const cookie = await getCookie();
 
     const response = await updatePlan(
-      id,
-      requestName,
+      planId,
+      requestNameEng,
+      requestNameJpn,
       requestDescription,
       isDelete,
       cookie,

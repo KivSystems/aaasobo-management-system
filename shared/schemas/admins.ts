@@ -86,7 +86,8 @@ export const UpdateInstructorRequest = z.object({
 
 // Plan schemas
 export const RegisterPlanRequest = z.object({
-  name: z.string().min(1, "Plan name is required"),
+  planNameEng: z.string().min(1, "Plan name (English) is required"),
+  planNameJpn: z.string().min(1, "Plan name (Japanese) is required"),
   weeklyClassTimes: z
     .number()
     .int()
@@ -102,7 +103,8 @@ export const UpdatePlanRequest = z.discriminatedUnion("isDelete", [
   // Update request: both fields required
   z.object({
     isDelete: z.literal(false),
-    name: z.string().min(1, "Plan name is required"),
+    planNameEng: z.string().min(1, "Plan name (English) is required"),
+    planNameJpn: z.string().min(1, "Plan name (Japanese) is required"),
     description: z.string().min(1, "Description is required"),
   }),
 ]);
