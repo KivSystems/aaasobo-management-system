@@ -23,6 +23,11 @@ import { rebookClassWithValidation } from "@/app/actions/rebooking";
 import ClassInstructor from "@/app/components/features/classDetail/classInstructor/ClassInstructor";
 import { CalendarDaysIcon, UsersIcon } from "@heroicons/react/24/solid";
 import StepIndicator from "@/app/components/elements/stepIndicator/StepIndicator";
+import {
+  errorAlert,
+  warningAlert,
+  confirmAlert,
+} from "@/app/helper/utils/alertUtils";
 
 export default function ConfirmRebooking({
   instructorToRebook,
@@ -66,7 +71,7 @@ export default function ConfirmRebooking({
     const currentRebookableClassesNumber = rebookableClasses.length;
 
     if (selectedChildrenIds.length === 0) {
-      alert(SELECT_AT_LEAST_ONE_CHILD_MESSAGE[language]);
+      warningAlert(SELECT_AT_LEAST_ONE_CHILD_MESSAGE[language]);
       setIsLoading(false);
       return;
     }
@@ -79,16 +84,18 @@ export default function ConfirmRebooking({
 
     if ("message" in conflictsResult) {
       setIsLoading(false);
-      return alert(conflictsResult.message[language]);
+      return errorAlert(conflictsResult.message[language]);
     }
 
     if (conflictsResult.conflictingChildren.length > 0) {
       const conflictingChildren =
         conflictsResult.conflictingChildren.join(", ");
-      const userConfirmed = window.confirm(
+
+      const confirmed = await confirmAlert(
         `${CONFIRM_BOOKING_WITH_CONFLICT_MESSAGE[language]}\n${conflictingChildren}`,
       );
-      if (!userConfirmed) {
+
+      if (!confirmed) {
         setIsLoading(false);
         return;
       }
@@ -102,14 +109,15 @@ export default function ConfirmRebooking({
 
     if ("message" in doubleBookingResult) {
       setIsLoading(false);
-      return alert(doubleBookingResult.message[language]);
+      return errorAlert(doubleBookingResult.message[language]);
     }
 
     if (doubleBookingResult.isDoubleBooked) {
-      const userConfirmed = window.confirm(
+      const confirmed = await confirmAlert(
         DOUBLE_BOOKING_CONFIRMATION_MESSAGE[language],
       );
-      if (!userConfirmed) {
+
+      if (!confirmed) {
         setIsLoading(false);
         return;
       }
@@ -126,7 +134,7 @@ export default function ConfirmRebooking({
     });
 
     if (result.error) {
-      alert(
+      errorAlert(
         result.error === "unauthorized"
           ? LOGIN_REQUIRED_MESSAGE[language]
           : result.error,

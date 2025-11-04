@@ -18,6 +18,7 @@ import {
   REGULAR_REBOOKING_HOURS,
 } from "@/app/helper/data/data";
 import BookingModal from "../../bookingActions/BookingModal";
+import { errorAlert } from "@/app/helper/utils/alertUtils";
 
 export default function RebookableClassList({
   customerId,
@@ -45,7 +46,7 @@ export default function RebookableClassList({
     ).getTime();
 
     if (now > rebookingDeadline) {
-      return alert(
+      return errorAlert(
         isFreeTrial
           ? FREE_TRIAL_BOOKING_TOO_LATE_NOTICE[language]
           : REBOOKING_TOO_LATE_NOTICE[language],

@@ -34,6 +34,7 @@ import { MASKED_HEAD_LETTERS, MASKED_BIRTHDATE } from "@/app/helper/data/data";
 import Uploader from "../../features/registerForm/uploadImages/Uploader";
 import { defaultUserImageUrl } from "@/app/helper/data/data";
 import Image from "next/image";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
 
 // Define the specific string fields that are editable in this component
 type EditableInstructorFields =
@@ -142,14 +143,14 @@ function InstructorProfile({
     }
   };
 
-  const submissionConfirm = () => {
+  const submissionConfirm = async () => {
     if (leavingDate && !leavingDate.includes("T") && status === "leaving") {
       const updatedDate = leavingDate.replace(/-/g, "/");
-      setConfirmResult(
-        window.confirm(
-          `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
-        ),
+
+      const confirmed = await confirmAlert(
+        `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
       );
+      setConfirmResult(confirmed);
     } else {
       setConfirmResult(true);
     }

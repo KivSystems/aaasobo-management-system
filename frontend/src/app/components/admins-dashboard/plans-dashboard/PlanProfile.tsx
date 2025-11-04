@@ -18,6 +18,7 @@ import {
   CONTENT_UPDATE_SUCCESS_MESSAGE,
   CONTENT_DELETE_SUCCESS_MESSAGE,
 } from "@/app/helper/messages/formValidation";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
 
 function PlanProfile({
   plan,
@@ -41,8 +42,8 @@ function PlanProfile({
   };
 
   const handleDeleteClick = () => {
-    setConfirmDelete(
-      window.confirm(`Are you sure you want to delete this plan?`),
+    const confirmed = confirmAlert(
+      "Are you sure you want to delete this plan?",
     );
   };
 

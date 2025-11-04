@@ -18,6 +18,7 @@ import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 import { getLongMonth } from "@/app/helper/utils/dateUtils";
 import { MASKED_HEAD_LETTERS } from "@/app/helper/data/data";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
 
 function CustomerProfile({
   customerProfile,
@@ -61,9 +62,10 @@ function CustomerProfile({
   const isSuccess = !!localMessages.successMessage;
 
   const handleDeactivateClick = async () => {
-    const confirmed = window.confirm(
-      `Are you sure to deactivate this customer? This action cannot be undone.`,
+    const confirmed = await confirmAlert(
+      "Are you sure to deactivate this customer? This action cannot be undone.",
     );
+
     if (confirmed && customerProfile) {
       const formData = new FormData();
       formData.append("id", String(customerProfile.id));

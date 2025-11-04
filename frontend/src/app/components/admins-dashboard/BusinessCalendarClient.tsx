@@ -17,6 +17,7 @@ import { CONTENT_UPDATE_SUCCESS_MESSAGE } from "@/app/helper/messages/formValida
 import { getAllBusinessSchedules } from "@/app/helper/api/adminsApi";
 import { getDayCellColorHandler } from "@/app/helper/utils/calendarUtils";
 import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLegend";
+import { warningAlert } from "@/app/helper/utils/alertUtils";
 
 const BusinessCalendarClient = ({
   businessSchedule: initialSchedule,
@@ -90,7 +91,11 @@ const BusinessCalendarClient = ({
 
     // If the start date is the current date or before, do not allow selection
     if (startDate < new Date()) {
-      alert("Cannot select past dates.");
+      warningAlert(
+        language === "ja"
+          ? "過去の日付は選択できません。"
+          : "Cannot select past dates.",
+      );
       return;
     }
 

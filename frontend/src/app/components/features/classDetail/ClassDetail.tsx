@@ -19,6 +19,7 @@ import {
   NO_CLASS_DETAILS,
 } from "@/app/helper/messages/customerDashboard";
 import { cancelClassAction } from "@/app/actions/cancelSelectedClasses";
+import { confirmAlert, errorAlert } from "@/app/helper/utils/alertUtils";
 
 const ClassDetail = ({
   customerId,
@@ -49,11 +50,13 @@ const ClassDetail = ({
   ) => {
     const isAfterPreviousDayDeadline = isPastPreviousDayDeadline(classDateTime);
 
-    const confirmed = window.confirm(CANCEL_CLASS_CONFIRM_MESSAGE[language]);
+    const confirmed = await confirmAlert(
+      CANCEL_CLASS_CONFIRM_MESSAGE[language],
+    );
     if (!confirmed) return;
 
     if (isAfterPreviousDayDeadline)
-      return alert(CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY[language]);
+      return errorAlert(CANNOT_CANCEL_ON_OR_AFTER_CLASS_DAY[language]);
 
     const cancelationResult = await cancelClassAction(
       classId,
@@ -62,7 +65,7 @@ const ClassDetail = ({
     );
 
     if (!cancelationResult.success)
-      return alert(cancelationResult.message[language]);
+      return errorAlert(cancelationResult.message[language]);
 
     handleModalClose();
     toast.success(cancelationResult.message[language]);

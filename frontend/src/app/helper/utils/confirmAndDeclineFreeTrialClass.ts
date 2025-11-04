@@ -7,6 +7,7 @@ import {
 } from "../messages/customerDashboard";
 import { declineFreeTrialClass } from "../api/customersApi";
 import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
+import { errorAlert, confirmAlert } from "@/app/helper/utils/alertUtils";
 
 export const confirmAndDeclineFreeTrialClass = async ({
   customerId,
@@ -22,12 +23,14 @@ export const confirmAndDeclineFreeTrialClass = async ({
   const { isValid, error } = await validateSession(customerId);
 
   if (!isValid) {
-    return alert(
-      error === "unauthorized" ? LOGIN_REQUIRED_MESSAGE[language] : error,
+    return errorAlert(
+      error === "unauthorized"
+        ? LOGIN_REQUIRED_MESSAGE[language]
+        : (error as string),
     );
   }
 
-  const confirmed = window.confirm(
+  const confirmed = await confirmAlert(
     FREE_TRIAL_DECLINE_CONFIRMATION_MESSAGE[language],
   );
   if (!confirmed) return;
@@ -41,5 +44,5 @@ export const confirmAndDeclineFreeTrialClass = async ({
     revalidateCustomerCalendar(customerId, userSessionType);
   }
 
-  return alert(message[language]);
+  return errorAlert(message[language]);
 };
