@@ -14,6 +14,7 @@ import ScheduleCalendar from "./ScheduleCalendar";
 import AddScheduleModal from "./AddScheduleModal";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import { toast } from "react-toastify";
+import { errorAlert } from "@/app/helper/utils/alertUtils";
 
 export default function InstructorSchedule({
   instructorId,
@@ -36,7 +37,7 @@ export default function InstructorSchedule({
     try {
       const response = await getInstructorSchedules(instructorId);
       if ("message" in response) {
-        alert(response.message);
+        errorAlert(response.message as string);
         return;
       }
       setSchedules(response.schedules);
@@ -62,7 +63,7 @@ export default function InstructorSchedule({
           scheduleId,
         );
         if ("message" in response) {
-          alert(response.message);
+          errorAlert(response.message as string);
           return;
         }
         setSelectedSchedule(response.schedule);
@@ -106,7 +107,7 @@ export default function InstructorSchedule({
       );
 
       if ("message" in response) {
-        alert(response.message);
+        errorAlert(response.message as string);
         return;
       }
 
@@ -118,7 +119,7 @@ export default function InstructorSchedule({
       console.error("Failed to create schedule:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      alert(`Failed to create schedule: ${errorMessage}`);
+      errorAlert(`Failed to create schedule: ${errorMessage}`);
     }
   };
 

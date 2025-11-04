@@ -29,6 +29,11 @@ import { deleteChildProfileAction } from "@/app/actions/deleteUser";
 import { MASKED_HEAD_LETTERS, MASKED_BIRTHDATE } from "@/app/helper/data/data";
 import Modal from "../../elements/modal/Modal";
 import AddChildForm from "./AddChildForm";
+import {
+  errorAlert,
+  warningAlert,
+  confirmAlert,
+} from "@/app/helper/utils/alertUtils";
 
 function ChildrenProfiles({
   customerId,
@@ -80,10 +85,11 @@ function ChildrenProfiles({
     clearErrorMessage("all");
     const hasOnlyOneChild = childProfiles.length === 1;
 
-    if (hasOnlyOneChild)
-      return alert(CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE[language]);
+    if (hasOnlyOneChild) {
+      await warningAlert(CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE[language]);
+    }
 
-    const confirmed = window.confirm(
+    const confirmed = await confirmAlert(
       CONFIRM_DELETE_CHILD_PROFILE_MESSAGE[language],
     );
     if (!confirmed) return;
@@ -93,7 +99,7 @@ function ChildrenProfiles({
     if (resultMessage.successMessage) {
       toast.success(resultMessage.successMessage[language]);
     } else if (resultMessage.errorMessage) {
-      alert(resultMessage.errorMessage[language]);
+      errorAlert(resultMessage.errorMessage[language]);
     }
   };
 

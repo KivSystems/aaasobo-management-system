@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "@/app/components/elements/loading/Loading";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
 
 function EventProfile({
   event,
@@ -105,9 +106,10 @@ function EventProfile({
   };
 
   const handleDeleteClick = async () => {
-    const confirmed = window.confirm(
+    const confirmed = await confirmAlert(
       "Are you sure you want to delete this event?",
     );
+
     if (confirmed && latestEvent) {
       const formData = new FormData();
       formData.append("id", String(latestEvent.id));

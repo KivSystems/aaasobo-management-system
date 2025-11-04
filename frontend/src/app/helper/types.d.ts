@@ -1,3 +1,24 @@
+// SweetAlert2 Toast configuration
+type AlertOptions = {
+  title?: string;
+  text?: string;
+  icon: "success" | "error" | "warning" | "info" | "question";
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+  showConfirmButton?: boolean;
+  showCancelButton?: boolean;
+  position?:
+    | "top"
+    | "top-start"
+    | "top-end"
+    | "center"
+    | "center-start"
+    | "center-end"
+    | "bottom"
+    | "bottom-start"
+    | "bottom-end";
+};
+
 type Events = {
   id: string;
   start: string;

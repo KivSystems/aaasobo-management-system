@@ -15,6 +15,7 @@ import { useState } from "react";
 import { validateCancelableClasses } from "@/app/helper/utils/validationUtils";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import SameDayCancellationNotice from "@/app/components/features/classDetail/sameDayCancellationNotice/SameDayCancellationNotice";
+import { errorAlert, confirmAlert } from "@/app/helper/utils/alertUtils";
 
 export default function CancelClassesModal({
   upcomingClasses,
@@ -37,7 +38,7 @@ export default function CancelClassesModal({
     )
       return;
 
-    const confirmed = window.confirm(CONFIRM_CLASS_CANCELLATION[language]);
+    const confirmed = await confirmAlert(CONFIRM_CLASS_CANCELLATION[language]);
     if (!confirmed) return setIsCancelingModalOpen(false);
 
     const classesToCancel = selectedClasses.map(
@@ -51,7 +52,7 @@ export default function CancelClassesModal({
     );
 
     if (!cancelationResult.success)
-      return alert(cancelationResult.message[language]);
+      return errorAlert(cancelationResult.message[language]);
 
     setIsCancelingModalOpen(false);
 

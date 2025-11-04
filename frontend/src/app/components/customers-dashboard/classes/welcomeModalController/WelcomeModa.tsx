@@ -11,6 +11,7 @@ import {
 } from "@/app/helper/messages/customerDashboard";
 import { validateSession } from "@/app/actions/validateSession";
 import { confirmAndDeclineFreeTrialClass } from "@/app/helper/utils/confirmAndDeclineFreeTrialClass";
+import { errorAlert } from "@/app/helper/utils/alertUtils";
 
 export default function WelcomeModal({
   customerId,
@@ -22,8 +23,10 @@ export default function WelcomeModal({
     const { isValid, error } = await validateSession(customerId);
 
     if (!isValid) {
-      return alert(
-        error === "unauthorized" ? LOGIN_REQUIRED_MESSAGE[language] : error,
+      return errorAlert(
+        error === "unauthorized"
+          ? LOGIN_REQUIRED_MESSAGE[language]
+          : (error as string),
       );
     }
 

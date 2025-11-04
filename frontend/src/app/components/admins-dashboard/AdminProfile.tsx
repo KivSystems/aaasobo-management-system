@@ -16,6 +16,7 @@ import { CheckIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "@/app/components/elements/loading/Loading";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
 
 function AdminProfile({
   userId,
@@ -90,7 +91,7 @@ function AdminProfile({
   };
 
   const handleDeleteClick = async () => {
-    const confirmed = window.confirm(
+    const confirmed = await confirmAlert(
       "Are you sure you want to delete this admin's profile?",
     );
     if (confirmed && latestAdmin) {
