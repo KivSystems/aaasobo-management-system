@@ -181,7 +181,7 @@ export const deleteEvent = async (eventId: number, cookie: string) => {
   try {
     // From server component
     // Define the data to be sent to the server side.
-    const apiURL = `${BACKEND_ORIGIN}/admins/event-list/${eventId}`;
+    const apiURL = `${BACKEND_ORIGIN}/admins/event-list/delete/${eventId}`;
     const method = "DELETE";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
     const response = await fetch(apiURL, {

@@ -81,40 +81,25 @@ export async function updatePlanAction(
     const description = formData.get("description");
     // Hidden input tag fields
     const planId = Number(formData.get("planId"));
-    const confirmDelete = formData.get("confirmDelete") as string | null;
-
-    let isDelete = false;
-    switch (confirmDelete) {
-      case "true":
-        isDelete = true;
-        break;
-      case "false":
-        return {
-          skipProcessing: "Skipping update due to confirmation failure",
-        };
-      default:
-    }
 
     let requestNameEng: string | null = null;
     let requestNameJpn: string | null = null;
     let requestDescription: string | null = null;
 
-    if (!isDelete) {
-      const parsedForm = planUpdateSchema.safeParse({
-        planNameEng,
-        planNameJpn,
-        description,
-      });
+    const parsedForm = planUpdateSchema.safeParse({
+      planNameEng,
+      planNameJpn,
+      description,
+    });
 
-      if (!parsedForm.success) {
-        const validationErrors = parsedForm.error.issues;
-        return extractUpdateValidationErrors(validationErrors);
-      }
-
-      requestNameEng = parsedForm.data.planNameEng;
-      requestNameJpn = parsedForm.data.planNameJpn;
-      requestDescription = parsedForm.data.description;
+    if (!parsedForm.success) {
+      const validationErrors = parsedForm.error.issues;
+      return extractUpdateValidationErrors(validationErrors);
     }
+
+    requestNameEng = parsedForm.data.planNameEng;
+    requestNameJpn = parsedForm.data.planNameJpn;
+    requestDescription = parsedForm.data.description;
 
     // Get the cookies from the request headers
     const cookie = await getCookie();
@@ -124,7 +109,6 @@ export async function updatePlanAction(
       requestNameEng,
       requestNameJpn,
       requestDescription,
-      isDelete,
       cookie,
     );
 

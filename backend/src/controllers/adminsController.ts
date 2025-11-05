@@ -693,11 +693,13 @@ export const getAllPlansController = async (_: Request, res: Response) => {
     // Transform the data structure.
     const data = plans.map((plan, number) => {
       const { id, name, weeklyClassTimes, description } = plan;
+      const [planNameJpn, planNameEng] = name.split(" / ");
 
       return {
         No: number + 1,
         ID: id,
-        Plan: name,
+        "Plan (Japanese)": planNameJpn,
+        "Plan (English)": planNameEng,
         "Weekly Class Times": weeklyClassTimes,
         Description: description,
       };
@@ -733,6 +735,26 @@ export const registerPlanController = async (
   }
 };
 
+// Delete the selected plan
+export const deletePlanController = async (
+  req: RequestWithParams<PlanIdParams>,
+  res: Response,
+) => {
+  const planId = req.params.id;
+
+  try {
+    const deletedPlan = await deletePlan(planId);
+
+    res.status(200).json({
+      message: "The plan was deleted successfully",
+      id: deletedPlan.id,
+    });
+  } catch (error) {
+    console.error("Failed to delete the plan:", error);
+    res.status(500).json({ error: "Failed to delete the plan." });
+  }
+};
+
 // Update the applicable plan data
 export const updatePlanController = async (
   req: RequestWith<PlanIdParams, UpdatePlanRequest>,
@@ -742,15 +764,6 @@ export const updatePlanController = async (
   const body = req.body;
 
   try {
-    // If the plan is marked for deletion, proceed with deletion process
-    if (body.isDelete) {
-      const deletedPlan = await deletePlan(planId);
-      return res
-        .status(200)
-        .json({ message: "Plan deleted successfully", plan: deletedPlan });
-    }
-
-    // When updating (not deleting), validation ensures both name and description are present
     if (!body.planNameEng || !body.planNameJpn || !body.description) {
       return res
         .status(400)
@@ -780,11 +793,14 @@ export const getAllEventsController = async (_: Request, res: Response) => {
     // Transform the data structure.
     const data = events.map((event, number) => {
       const { id, name, color } = event;
+      const [eventNameJpn, eventNameEng] = name.split(" / ");
 
       return {
         No: number + 1,
         ID: id,
         Event: name,
+        "Event (Japanese)": eventNameJpn,
+        "Event (English)": eventNameEng,
         "Color Code": color,
       };
     });

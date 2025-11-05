@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useState, useEffect, useCallback } from "react";
 import { useFormState } from "react-dom";
 import { updatePlanAction } from "@/app/actions/updateContent";
+import { deletePlanAction } from "@/app/actions/deleteContent";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
@@ -28,7 +29,12 @@ function PlanProfile({
   plan: Plan | string;
   userSessionType?: UserType;
 }) {
+  // Use `useFormState` hook for updating an plan profile
   const [updateResultState, formAction] = useFormState(updatePlanAction, {});
+  // Use `useState` hook and FormData for deleting an plan profile
+  const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
+    {},
+  );
   const [previousPlan, setPreviousPlan] = useState<Plan | null>(
     typeof plan !== "string"
       ? {
@@ -48,7 +54,6 @@ function PlanProfile({
       : null,
   );
   const [isEditing, setIsEditing] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState<boolean | null>(null);
   // Handle form messages manually for UpdateFormState
   const [localMessages, setLocalMessages] = useState<Record<string, string>>(
     {},
@@ -62,7 +67,14 @@ function PlanProfile({
     const confirmed = await confirmAlert(
       "Are you sure you want to delete this plan?",
     );
-    setConfirmDelete(confirmed);
+
+    if (confirmed && latestPlan) {
+      const formData = new FormData();
+      formData.append("id", String(latestPlan.id));
+
+      const result = await deletePlanAction(deleteResultState, formData);
+      setDeleteResultState(result);
+    }
   };
 
   const handleInputChange = (
@@ -100,32 +112,28 @@ function PlanProfile({
     if (updateResultState !== undefined) {
       if ("plan" in updateResultState) {
         const result = updateResultState as { plan: Plan };
-
-        if (result.plan.terminationAt) {
-          // Deletion case
-          toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("plan"));
-          setPreviousPlan(null);
-          setLatestPlan(null);
-        } else {
-          // Update case
-          toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("plan"));
-          setIsEditing(false);
-          setPreviousPlan({
-            ...result.plan,
-            planNameEng: getLocalizedText(result.plan.name, "en"),
-            planNameJpn: getLocalizedText(result.plan.name, "ja"),
-          });
-          setLatestPlan({
-            ...result.plan,
-            planNameEng: getLocalizedText(result.plan.name, "en"),
-            planNameJpn: getLocalizedText(result.plan.name, "ja"),
-          });
-        }
-
-        // Clear updateResultState to avoid re-rendering
-        updateResultState.plan = null;
+        toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("plan"));
+        setIsEditing(false);
+        setPreviousPlan({
+          ...result.plan,
+          planNameEng: getLocalizedText(result.plan.name, "en"),
+          planNameJpn: getLocalizedText(result.plan.name, "ja"),
+        });
+        setLatestPlan({
+          ...result.plan,
+          planNameEng: getLocalizedText(result.plan.name, "en"),
+          planNameJpn: getLocalizedText(result.plan.name, "ja"),
+        });
         return;
-      } else if ("skipProcessing" in updateResultState) {
+
+        // Check if the deleteResultState has changed
+      } else if ("id" in deleteResultState && deleteResultState.id) {
+        toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("plan"));
+        setIsEditing(false);
+        setPreviousPlan(null);
+        setLatestPlan(null);
+        // Clear deleteResultState to avoid re-rendering
+        deleteResultState.id = null;
         return;
       } else {
         const newMessages: Record<string, string> = {};
@@ -139,7 +147,7 @@ function PlanProfile({
         return;
       }
     }
-  }, [updateResultState]);
+  }, [updateResultState, deleteResultState]);
 
   if (typeof plan === "string") {
     return <p>{plan}</p>;
@@ -240,11 +248,6 @@ function PlanProfile({
 
               {/* Hidden input field */}
               <input type="hidden" name="planId" value={latestPlan.id} />
-              <input
-                type="hidden"
-                name="confirmDelete"
-                value={confirmDelete ? confirmDelete.toString() : ""}
-              />
 
               {/* Action buttons for only admin */}
               {userSessionType === "admin" ? (
@@ -273,7 +276,7 @@ function PlanProfile({
                         <ActionButton
                           className="deletePlan"
                           btnText="Delete"
-                          type="submit"
+                          type="button"
                           onClick={handleDeleteClick}
                         />
                       </div>

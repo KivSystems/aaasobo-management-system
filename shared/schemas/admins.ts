@@ -95,19 +95,11 @@ export const RegisterPlanRequest = z.object({
   description: z.string().min(1, "Description is required"),
 });
 
-export const UpdatePlanRequest = z.discriminatedUnion("isDelete", [
-  // Deletion request
-  z.object({
-    isDelete: z.literal(true),
-  }),
-  // Update request: both fields required
-  z.object({
-    isDelete: z.literal(false),
-    planNameEng: z.string().min(1, "Plan name (English) is required"),
-    planNameJpn: z.string().min(1, "Plan name (Japanese) is required"),
-    description: z.string().min(1, "Description is required"),
-  }),
-]);
+export const UpdatePlanRequest = z.object({
+  planNameEng: z.string().min(1, "Plan name (English) is required"),
+  planNameJpn: z.string().min(1, "Plan name (Japanese) is required"),
+  description: z.string().min(1, "Description is required"),
+});
 
 // Event schemas
 export const RegisterEventRequest = z.object({
@@ -248,7 +240,8 @@ export const ChildrenListResponse = z.object({
 export const PlanListItem = z.object({
   No: z.number(),
   ID: z.number(),
-  Plan: z.string(),
+  "Plan (Japanese)": z.string(),
+  "Plan (English)": z.string(),
   "Weekly Class Times": z.number(),
   Description: z.string(),
 });
@@ -275,6 +268,8 @@ export const EventListItem = z.object({
   No: z.number(),
   ID: z.number(),
   Event: z.string(),
+  "Event (Japanese)": z.string(),
+  "Event (English)": z.string(),
   "Color Code": z.string(),
 });
 

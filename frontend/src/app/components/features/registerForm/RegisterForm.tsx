@@ -347,17 +347,6 @@ const RegisterForm = ({
           <p className={styles.required}>*Required</p>
           <TextInput
             id="name"
-            label="Plan Name (English)"
-            type="text"
-            name="planNameEng"
-            placeholder="e.g., 3,180 yen/month Plan"
-            icon={<AcademicCapIcon className={styles.icon} />}
-            inputRequired
-            error={localMessages.planNameEng}
-            onChange={() => clearErrorMessage("planNameEng")}
-          />
-          <TextInput
-            id="name"
             label="Plan Name (Japanese)"
             type="text"
             name="planNameJpn"
@@ -366,6 +355,17 @@ const RegisterForm = ({
             inputRequired
             error={localMessages.planNameJpn}
             onChange={() => clearErrorMessage("planNameJpn")}
+          />
+          <TextInput
+            id="name"
+            label="Plan Name (English)"
+            type="text"
+            name="planNameEng"
+            placeholder="e.g., 3,180 yen/month Plan"
+            icon={<AcademicCapIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.planNameEng}
+            onChange={() => clearErrorMessage("planNameEng")}
           />
           <TextInput
             id="weeklyClassTimes"

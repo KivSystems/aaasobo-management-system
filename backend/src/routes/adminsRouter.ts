@@ -11,6 +11,7 @@ import {
   deleteAdminController,
   deactivateCustomerController,
   deleteEventController,
+  deletePlanController,
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
@@ -502,6 +503,35 @@ const registerPlanConfig = {
   },
 } as const;
 
+const deletePlanConfig = {
+  method: "delete" as const,
+  paramsSchema: PlanIdParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  handler: deletePlanController,
+  openapi: {
+    summary: "Delete plan",
+    description: "Delete a subscription plan",
+    responses: {
+      200: {
+        description: "Plan deleted successfully",
+        schema: DeleteResponse,
+      },
+      400: {
+        description: "Invalid plan ID",
+        schema: ErrorResponse,
+      },
+      401: {
+        description: "Unauthorized",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const updatePlanConfig = {
   method: "patch" as const,
   paramsSchema: PlanIdParams,
@@ -776,7 +806,7 @@ const validatedRouteConfigs = {
   "/customer-list/past": [getAllPastCustomersConfig],
   "/customer-list/deactivate/:id": [deactivateCustomerConfig],
   "/event-list": [getAllEventsConfig],
-  "/event-list/:id": [deleteEventConfig],
+  "/event-list/delete/:id": [deleteEventConfig],
   "/event-list/register": [registerEventConfig],
   "/event-list/update/:id": [updateEventConfig],
   "/instructor-list": [getAllInstructorsConfig],
@@ -786,6 +816,7 @@ const validatedRouteConfigs = {
   "/instructor-list/update/:id": [updateInstructorConfig],
   "/instructor-list/update/:id/withIcon": [updateInstructorWithIconConfig],
   "/plan-list": [getAllPlansConfig],
+  "/plan-list/delete/:id": [deletePlanConfig],
   "/plan-list/register": [registerPlanConfig],
   "/plan-list/update/:id": [updatePlanConfig],
   "/subscription-list": [getAllSubscriptionsConfig],

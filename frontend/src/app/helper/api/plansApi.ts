@@ -146,7 +146,6 @@ export const updatePlan = async (
   planNameEng: string | null,
   planNameJpn: string | null,
   planDescription: string | null,
-  isDelete: boolean,
   cookie: string,
 ): Promise<UpdateFormState> => {
   try {
@@ -155,16 +154,11 @@ export const updatePlan = async (
     const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/update/${planId}`;
     const method = "PATCH";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
-    const body = JSON.stringify(
-      isDelete
-        ? { isDelete: true }
-        : {
-            isDelete: false,
-            planNameEng,
-            planNameJpn,
-            description: planDescription,
-          },
-    );
+    const body = JSON.stringify({
+      planNameEng,
+      planNameJpn,
+      description: planDescription,
+    });
 
     const response = await fetch(apiURL, {
       method,
@@ -186,6 +180,33 @@ export const updatePlan = async (
     return data;
   } catch (error) {
     console.error("API error while updating plan:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+// DELETE plan data
+export const deletePlan = async (planId: number, cookie: string) => {
+  try {
+    // From server component
+    // Define the data to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/delete/${planId}`;
+    const method = "DELETE";
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+    const result = await response.json();
+
+    return result;
+  } catch (error) {
+    console.error("Failed to delete the plan:", error);
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
     };
