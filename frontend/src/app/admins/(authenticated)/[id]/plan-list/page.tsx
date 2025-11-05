@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   // Define table configuration
   const listType = "Plan List";
   const omitItems = ["ID"]; // Omit the item from the table
-  const linkItems = ["Plan"]; // Set the item to be a link
+  const linkItems = ["Plan (Japanese)"]; // Set the item to be a link
   const replaceItems = ["ID"]; // Replace the item with the value(e.g., ID -> 1,2,3...)
   const linkUrls = [`/admins/${adminId}/plan-list/[ID]`]; // Set the link URL
   const userType = "admin"; // Set the user type for the registration form

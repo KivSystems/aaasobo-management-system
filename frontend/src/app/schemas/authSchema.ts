@@ -136,7 +136,18 @@ export const adminRegisterSchema = z
   });
 
 export const planRegisterSchema = z.object({
-  name: z.string().min(1, "Plan Name is required."),
+  planNameEng: z
+    .string()
+    .min(1, "Plan Name (English) is required.")
+    .refine((name) => /^[\p{ASCII}]+$/u.test(name), {
+      message: "Plan Name (English) must not contain Japanese characters.",
+    }),
+  planNameJpn: z
+    .string()
+    .min(1, "Plan Name (Japanese) is required.")
+    .refine((name) => /[^\x00-\x7F]+/.test(name), {
+      message: "Plan Name (Japanese) must contain Japanese characters.",
+    }),
   weeklyClassTimes: z.number(),
   description: z.string().min(1, "Description is required."),
 });
@@ -174,7 +185,18 @@ export const eventUpdateSchema = z.object({
 });
 
 export const planUpdateSchema = z.object({
-  name: z.string().min(1, "Plan Name is required."),
+  planNameEng: z
+    .string()
+    .min(1, "Plan Name (English) is required.")
+    .refine((name) => /^[\p{ASCII}]+$/u.test(name), {
+      message: "Plan Name (English) must not contain Japanese characters.",
+    }),
+  planNameJpn: z
+    .string()
+    .min(1, "Plan Name (Japanese) is required.")
+    .refine((name) => /[^\x00-\x7F]+/.test(name), {
+      message: "Plan Name (Japanese) must contain Japanese characters.",
+    }),
   description: z.string().min(1, "Description is required."),
 });
 

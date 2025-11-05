@@ -2106,12 +2106,12 @@ async function insertPlans() {
   await prisma.plan.createMany({
     data: [
       {
-        name: "3,180 yen/month",
+        name: "月3,180円プラン / 3,180 yen/month Plan",
         description: "2 classes per week",
         weeklyClassTimes: 2,
       },
       {
-        name: "7,980 yen/month",
+        name: "月7,980円プラン / 7,980 yen/month Plan",
         description: "5 classes per week",
         weeklyClassTimes: 5,
       },
@@ -2123,8 +2123,8 @@ async function insertSubscriptions() {
   const alice = await getCustomer("Alice");
   const bob = await getCustomer("Bob");
   const hana = await getCustomer("山田 花");
-  const plan1 = await getPlan("3,180 yen/month");
-  const plan2 = await getPlan("7,980 yen/month");
+  const plan1 = await getPlan("月3,180円プラン / 3,180 yen/month Plan");
+  const plan2 = await getPlan("月7,980円プラン / 7,980 yen/month Plan");
 
   await prisma.subscription.createMany({
     data: [
@@ -3290,7 +3290,11 @@ async function getInstructor(nickname: "Helen" | "Elian") {
   return customer;
 }
 
-async function getPlan(name: "3,180 yen/month" | "7,980 yen/month") {
+async function getPlan(
+  name:
+    | "月3,180円プラン / 3,180 yen/month Plan"
+    | "月7,980円プラン / 7,980 yen/month Plan",
+) {
   const plan = await prisma.plan.findFirst({ where: { name } });
   if (!plan) {
     throw new Error(`Plan ${name} not found`);

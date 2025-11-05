@@ -76,50 +76,39 @@ export async function updatePlanAction(
   formData: FormData,
 ): Promise<UpdateFormState> {
   try {
-    const name = formData.get("planName");
+    const planNameEng = formData.get("planNameEng");
+    const planNameJpn = formData.get("planNameJpn");
     const description = formData.get("description");
     // Hidden input tag fields
-    const id = Number(formData.get("id"));
-    const confirmDelete = formData.get("confirmDelete") as string | null;
+    const planId = Number(formData.get("planId"));
 
-    let isDelete = false;
-    switch (confirmDelete) {
-      case "true":
-        isDelete = true;
-        break;
-      case "false":
-        return {
-          skipProcessing: "Skipping update due to confirmation failure",
-        };
-      default:
-    }
-
-    let requestName: string | null = null;
+    let requestNameEng: string | null = null;
+    let requestNameJpn: string | null = null;
     let requestDescription: string | null = null;
 
-    if (!isDelete) {
-      const parsedForm = planUpdateSchema.safeParse({
-        name,
-        description,
-      });
+    const parsedForm = planUpdateSchema.safeParse({
+      planNameEng,
+      planNameJpn,
+      description,
+    });
 
-      if (!parsedForm.success) {
-        const validationErrors = parsedForm.error.issues;
-        return extractUpdateValidationErrors(validationErrors);
-      }
-
-      requestName = parsedForm.data.name;
-      requestDescription = parsedForm.data.description;
+    if (!parsedForm.success) {
+      const validationErrors = parsedForm.error.issues;
+      return extractUpdateValidationErrors(validationErrors);
     }
+
+    requestNameEng = parsedForm.data.planNameEng;
+    requestNameJpn = parsedForm.data.planNameJpn;
+    requestDescription = parsedForm.data.description;
 
     // Get the cookies from the request headers
     const cookie = await getCookie();
 
     const response = await updatePlan(
-      id,
-      requestName,
+      planId,
+      requestNameEng,
+      requestNameJpn,
       requestDescription,
-      isDelete,
       cookie,
     );
 

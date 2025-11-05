@@ -1,24 +1,3 @@
-// SweetAlert2 Toast configuration
-type AlertOptions = {
-  title?: string;
-  text?: string;
-  icon: "success" | "error" | "warning" | "info" | "question";
-  confirmButtonText?: string;
-  cancelButtonText?: string;
-  showConfirmButton?: boolean;
-  showCancelButton?: boolean;
-  position?:
-    | "top"
-    | "top-start"
-    | "top-end"
-    | "center"
-    | "center-start"
-    | "center-end"
-    | "bottom"
-    | "bottom-start"
-    | "bottom-end";
-};
-
 type Events = {
   id: string;
   start: string;
@@ -119,6 +98,8 @@ type Plans = Plan[];
 type Plan = {
   id: number;
   name: string;
+  planNameJpn?: string;
+  planNameEng?: string;
   description: string;
   weeklyClassTimes?: number;
   terminationAt?: string | null;
@@ -256,6 +237,8 @@ type RegisterFormState = {
   eventNameEng?: string;
   eventNameJpn?: string;
   color?: string;
+  planNameEng?: string;
+  planNameJpn?: string;
   errorMessage?: string;
   successMessage?: string;
   language?: LanguageType;
@@ -280,6 +263,8 @@ type UpdateFormState = {
   eventNameJpn?: string;
   eventNameEng?: string;
   plan?: Plan | null;
+  planNameJpn?: string;
+  planNameEng?: string;
   items?: Item[];
   result?: string | boolean;
 };
