@@ -118,6 +118,7 @@ function InstructorProfile({
   const [leavingDate, setLeavingDate] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -143,16 +144,27 @@ function InstructorProfile({
     }
   };
 
-  const submissionConfirm = async () => {
+  const submissionConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (leavingDate && !leavingDate.includes("T") && status === "leaving") {
       const updatedDate = leavingDate.replace(/-/g, "/");
-
       const confirmed = await confirmAlert(
         `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
       );
-      setConfirmResult(confirmed);
+      if (!confirmed) return;
     } else {
       setConfirmResult(true);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    if (formRef.current) {
+      const formData = new FormData(formRef.current);
+      formData.set("confirmResult", confirmResult.toString());
+      formAction(formData);
+    } else {
+      console.error("formRef is null");
     }
   };
 
@@ -196,7 +208,12 @@ function InstructorProfile({
     <>
       <div className={styles.container}>
         {latestInstructor ? (
-          <form action={formAction} className={styles.profileCard}>
+          <form
+            ref={formRef}
+            action={formAction}
+            className={styles.profileCard}
+            onSubmit={submissionConfirm}
+          >
             <Image
               src={
                 latestInstructor.icon.url === defaultUserImageUrl
@@ -653,11 +670,6 @@ function InstructorProfile({
               name="icon"
               value={latestInstructor.icon.url}
             />
-            <input
-              type="hidden"
-              name="confirmResult"
-              value={confirmResult.toString()}
-            />
 
             {/* Action buttons for only admin */}
             {userSessionType === "admin" &&
@@ -680,7 +692,6 @@ function InstructorProfile({
                       btnText="Save"
                       type="submit"
                       Icon={CheckIcon}
-                      onClick={submissionConfirm}
                     />
                   </div>
                 ) : (
