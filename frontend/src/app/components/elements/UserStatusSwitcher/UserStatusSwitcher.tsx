@@ -3,10 +3,10 @@
 import styles from "./UserStatusSwitcher.module.scss";
 import { useState, useEffect } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
-import { getLongMonth, nMonthsLater } from "@/app/helper/utils/dateUtils";
+import { getLongMonth, nDaysLater } from "@/app/helper/utils/dateUtils";
 import InputField from "@/app/components/elements/inputField/InputField";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import { MIN_MONTHS_TO_LEAVE } from "@/app/helper/data/data";
+import { TWO_WEEKS_TO_LEAVE } from "@/app/helper/data/data";
 
 const UserStatusSwitcher = ({
   isEditing,
@@ -100,9 +100,7 @@ const UserStatusSwitcher = ({
                       : ""
                   }
                   min={
-                    nMonthsLater(MIN_MONTHS_TO_LEAVE)
-                      .toISOString()
-                      .split("T")[0]
+                    nDaysLater(TWO_WEEKS_TO_LEAVE).toISOString().split("T")[0]
                   }
                   onChange={(e) =>
                     setUpdatedLeavingDate(e.target.value || null)
