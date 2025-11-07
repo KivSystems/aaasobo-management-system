@@ -20,14 +20,16 @@ function CurrentSubscription({
   adminId,
   customerId,
   language,
-  onSubscriptionDeleted,
+  onSubscriptionUpdated,
+  refreshKey,
 }: {
   subscriptionsData?: Subscriptions | null;
   userSessionType?: UserType;
   adminId?: number;
   customerId: number;
   language: LanguageType;
-  onSubscriptionDeleted: () => void;
+  onSubscriptionUpdated: () => void;
+  refreshKey?: number;
 }) {
   const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
     {},
@@ -55,7 +57,7 @@ function CurrentSubscription({
 
       if (success) {
         toast.success("Subscription deleted successfully.");
-        onSubscriptionDeleted();
+        onSubscriptionUpdated();
       } else {
         toast.error("Failed to delete subscription.");
         console.error("Failed to delete subscription:", result);
@@ -78,6 +80,12 @@ function CurrentSubscription({
 
   const handleCloseModal = () => {
     setIsOpenModal(false);
+  };
+
+  const handleEditSuccess = () => {
+    onSubscriptionUpdated();
+    setIsOpenModal(false);
+    toast.success("Subscription updated successfully.");
   };
 
   return (
@@ -141,6 +149,7 @@ function CurrentSubscription({
                   customerId={customerId}
                   customerTerminationAt={customerTerminationAt}
                   language={language}
+                  refreshKey={refreshKey}  
                 />
               </div>
 
@@ -159,6 +168,7 @@ function CurrentSubscription({
       <EditSubscriptionModal
         isOpen={isOpenModal}
         onClose={handleCloseModal}
+        onSuccess={handleEditSuccess}
         subscription={selectedSubscription}
         userSessionType={userSessionType}
         adminId={adminId}

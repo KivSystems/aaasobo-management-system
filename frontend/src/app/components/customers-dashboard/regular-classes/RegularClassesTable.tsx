@@ -23,6 +23,7 @@ function RegularClassesTable({
   isSelectable,
   selectedRecurringIds,
   onToggleRecurring,
+  refreshKey,
 }: {
   subscriptionId: number;
   userSessionType?: UserType;
@@ -33,6 +34,7 @@ function RegularClassesTable({
   isSelectable?: boolean;
   selectedRecurringIds?: number[];
   onToggleRecurring?: (id: number) => void;
+  refreshKey?: number;
 }) {
   const [activeRecurringClasses, setActiveRecurringClasses] = useState<
     RecurringClass[]
@@ -96,7 +98,7 @@ function RegularClassesTable({
     fetchActiveClasses();
     fetchHistoryCount();
     fetchChildren();
-  }, [subscriptionId, customerId, updateCount]);
+  }, [subscriptionId, customerId, updateCount, refreshKey]);
 
   // Fetch history classes when user expands the section
   const handleToggleHistory = async () => {

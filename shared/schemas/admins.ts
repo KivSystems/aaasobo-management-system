@@ -314,6 +314,21 @@ export const DeleteResponse = z.object({
   id: z.number(),
 });
 
+export const UpdateSubscriptionResponse = z.object({
+  message: z.string(),
+  id: z.number(),
+});
+
+export const UpdateSubscriptionToAddClassRequest = z.object({
+  planId: z.number(),
+  times: z.number(),
+});
+
+export const UpdateSubscriptionToTerminateClassRequest = z.object({
+  planId: z.number(),
+  recurringClassIds: z.array(z.number()),
+});
+
 // Error response schemas
 export const ValidationErrorResponse = z.object({
   items: z.array(z.string()),
@@ -364,3 +379,12 @@ export type UpdateInstructorResponse = z.infer<typeof UpdateInstructorResponse>;
 export type UpdatePlanResponse = z.infer<typeof UpdatePlanResponse>;
 export type UpdateEventResponse = z.infer<typeof UpdateEventResponse>;
 export type DeleteResponse = z.infer<typeof DeleteResponse>;
+export type UpdateSubscriptionResponse = z.infer<
+  typeof UpdateSubscriptionResponse
+>;
+export type UpdateSubscriptionToAddClassRequest = z.infer<
+  typeof UpdateSubscriptionToAddClassRequest
+>;
+export type UpdateSubscriptionToTerminateClassRequest = z.infer<
+  typeof UpdateSubscriptionToTerminateClassRequest
+>;

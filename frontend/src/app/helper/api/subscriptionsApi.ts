@@ -4,7 +4,12 @@ import type {
   NewSubscriptionResponse,
 } from "@shared/schemas/customers";
 import { ERROR_PAGE_MESSAGE_EN } from "../messages/generalMessages";
-import { DeleteResponse } from "@shared/schemas/admins";
+import {
+  DeleteResponse,
+  UpdateSubscriptionResponse,
+  UpdateSubscriptionToAddClassRequest,
+  UpdateSubscriptionToTerminateClassRequest,
+} from "@shared/schemas/admins";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
@@ -76,6 +81,56 @@ export const deleteSubscription = async (
     return result;
   } catch (error) {
     console.error("Failed to delete the subscription:", error);
+    throw error;
+  }
+};
+
+export const updateSubscriptionToAddClass = async (
+  subscriptionId: number,
+  updateSubscriptionData: UpdateSubscriptionToAddClassRequest,
+): Promise<UpdateSubscriptionResponse | { errorMessage: string }> => {
+  try {
+    const URL = `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}/increase-recurring-class`;
+    const headers = { "Content-Type": "application/json" };
+    const response = await fetch(URL, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(updateSubscriptionData),
+    });
+
+    if (response.status !== 200) {
+      return { errorMessage: ERROR_PAGE_MESSAGE_EN };
+    }
+    const result: UpdateSubscriptionResponse = await response.json();
+
+    return result;
+  } catch (error) {
+    console.error("Failed to update subscription:", error);
+    throw error;
+  }
+};
+
+export const updateSubscriptionToTerminateClass = async (
+  subscriptionId: number,
+  updateSubscriptionData: UpdateSubscriptionToTerminateClassRequest,
+): Promise<UpdateSubscriptionResponse | { errorMessage: string }> => {
+  try {
+    const URL = `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}/decrease-recurring-class`;
+    const headers = { "Content-Type": "application/json" };
+    const response = await fetch(URL, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(updateSubscriptionData),
+    });
+
+    if (response.status !== 200) {
+      return { errorMessage: ERROR_PAGE_MESSAGE_EN };
+    }
+    const result: UpdateSubscriptionResponse = await response.json();
+
+    return result;
+  } catch (error) {
+    console.error("Failed to update subscription:", error);
     throw error;
   }
 };

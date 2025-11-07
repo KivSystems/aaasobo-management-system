@@ -4,16 +4,20 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import Modal from "../elements/modal/Modal";
 import styles from "./EditSubscriptionModal.module.scss";
 import {
-  CalendarIcon,
-  UserGroupIcon,
   AcademicCapIcon,
+  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/solid";
 import { getAllPlans } from "@/app/helper/api/plansApi";
 import RegularClassesTable from "../customers-dashboard/regular-classes/RegularClassesTable";
+import {
+  updateSubscriptionToAddClass,
+  updateSubscriptionToTerminateClass,
+} from "@/app/helper/api/subscriptionsApi";
 
 type EditSubscriptionModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   subscription: Subscription | null;
   userSessionType?: UserType;
   adminId?: number;
@@ -25,6 +29,7 @@ type EditSubscriptionModalProps = {
 function EditSubscriptionModal({
   isOpen,
   onClose,
+  onSuccess,
   subscription,
   userSessionType,
   adminId,
@@ -34,8 +39,6 @@ function EditSubscriptionModal({
 }: EditSubscriptionModalProps) {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-  //   const { localMessages, clearErrorMessage } =
-  //     useFormMessages<LocalizedMessages>(profileUpdateResult);
   const [selectedRecurringIds, setSelectedRecurringIds] = useState<number[]>(
     [],
   );
@@ -73,30 +76,68 @@ function EditSubscriptionModal({
   };
 
   const resetAndClose = () => {
-    // setEditingInstructor(false);
-    // setEditingChildren(false);
-    // setModalStep("instructor");
-    // setError("");
+    setError("");
+    setSelectedRecurringIds([]);
+    setSelectedPlan(null);
+    setLoading(false);
     onClose();
   };
 
   const handleSubmit = async () => {
+    if (!subscription) return;
+    if (!subscription.plan.weeklyClassTimes) return;
     if (subscription?.planId === selectedPlan?.id) {
       setError("Select a different plan from the current one.");
+      setLoading(false);
       return;
     }
 
-    if (selectedRecurringIds.length !== selectedWeeklyTimes) {
-      setError(
-        "Select the number of regular classes you want to terminate based on the plan you selected.",
-      );
+    if (!selectedPlan) {
+      setError("Please select a plan.");
+      setLoading(false);
       return;
     }
 
     setLoading(true);
     setError("");
 
-    // TODO: Add calling API
+    try {
+      if (currentWeeklyTimes < selectedWeeklyTimes) {
+        const updateData = {
+          planId: selectedPlan?.id,
+          times: selectedWeeklyTimes - currentWeeklyTimes,
+        };
+
+        await updateSubscriptionToAddClass(subscription.id, updateData);
+      } else if (selectedWeeklyTimes < currentWeeklyTimes) {
+        if (
+          subscription.plan.weeklyClassTimes - selectedWeeklyTimes !==
+          selectedRecurringIds.length
+        ) {
+          setError(
+            "Select the number of regular classes you want to terminate based on the plan you selected.",
+          );
+          setLoading(false);
+          return;
+        }
+
+        const updateData = {
+          planId: selectedPlan?.id,
+          recurringClassIds: selectedRecurringIds,
+        };
+
+        await updateSubscriptionToTerminateClass(subscription.id, updateData);
+      } else {
+        setError("Something went wrong. Please try again later.");
+      }
+      onSuccess?.();
+      onClose();
+    } catch (error: any) {
+      console.error("Failed to update subscription:", error);
+      setError(error.message || "Failed to update subscription");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -141,7 +182,7 @@ function EditSubscriptionModal({
           {selectedPlan && selectedWeeklyTimes < currentWeeklyTimes ? (
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
-                <AcademicCapIcon className={styles.sectionIcon} />
+                <ClipboardDocumentListIcon className={styles.sectionIcon} />
                 <h3>Select the ones you want to terminate</h3>
               </div>
               <div className={styles.sectionContent}>
@@ -174,7 +215,6 @@ function EditSubscriptionModal({
             <button
               onClick={handleSubmit}
               className={styles.confirmButton}
-              // disabled={loading || selectedChildrenIds.length === 0}
             >
               {loading ? "Applying..." : "Apply Changes"}
             </button>

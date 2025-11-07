@@ -132,11 +132,11 @@ export const updateSubscriptionToTerminateClassController = async (
   res: Response,
 ) => {
   try {
-    const subscriptionId = req.params.id;
-    if (!subscriptionId) {
+    const subscription = await getSubscriptionById(req.params.id);
+    if (!subscription) {
       return res.status(404).json({ error: "Subscription not found." });
     }
-    const { planId, recurringIds } = req.body;
+    const { planId, recurringClassIds } = req.body;
     const today = new Date();
 
     // validate
@@ -145,12 +145,21 @@ export const updateSubscriptionToTerminateClassController = async (
       return res.status(400).json({ error: "Plan not found." });
     }
 
-    if (!Array.isArray(recurringIds)) {
-      return res.status(400).json({ error: "recurringIds must be an array" });
+    if (!Array.isArray(recurringClassIds)) {
+      return res.status(400).json({ error: "Recurring Ids must be an array." });
     }
 
-    for (const recurringId of recurringIds) {
-      const recurringClass = await getRegularClassById(recurringId);
+    if (
+      recurringClassIds.length !==
+      subscription.plan.weeklyClassTimes - plan.weeklyClassTimes
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Invalid number of recurring classes." });
+    }
+
+    for (const recurringClassId of recurringClassIds) {
+      const recurringClass = await getRegularClassById(recurringClassId);
       if (!recurringClass) {
         return res.status(404).json({ error: "Recurring class not found." });
       }
@@ -158,17 +167,17 @@ export const updateSubscriptionToTerminateClassController = async (
 
     await prisma.$transaction(async (tx) => {
       // Updata the plan id of the subscription.
-      await updatePlanIdOfSubscription(tx, subscriptionId, planId);
+      await updatePlanIdOfSubscription(tx, subscription.id, planId);
 
       // Terminate recurring classes
-      for (const recurringId of recurringIds) {
-        await terminateRecurringClass(tx, recurringId, today);
+      for (const recurringClassId of recurringClassIds) {
+        await terminateRecurringClass(tx, recurringClassId, today);
       }
     });
 
     res.status(200).json({
       message: "Subscription updated successfully",
-      id: subscriptionId,
+      id: subscription.id,
     });
   } catch (error) {
     console.error("Error updating subscription:", error);
