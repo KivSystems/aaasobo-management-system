@@ -212,10 +212,7 @@ function EditSubscriptionModal({
             <button onClick={resetAndClose} className={styles.cancelButton}>
               Cancel
             </button>
-            <button
-              onClick={handleSubmit}
-              className={styles.confirmButton}
-            >
+            <button onClick={handleSubmit} className={styles.confirmButton}>
               {loading ? "Applying..." : "Apply Changes"}
             </button>
           </div>

@@ -124,13 +124,9 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
     deleteSubscription,
     updateSubscriptionToAddClass,
     updateSubscriptionToTerminateClass,
-  ],  
-  "/:id/increase-recurring-class": [
-    updateSubscriptionToAddClass,
   ],
-  "/:id/decrease-recurring-class": [
-    updateSubscriptionToTerminateClass,
-  ],
+  "/:id/increase-recurring-class": [updateSubscriptionToAddClass],
+  "/:id/decrease-recurring-class": [updateSubscriptionToTerminateClass],
 };
 
 registerRoutes(subscriptionsRouter, routeConfigs);

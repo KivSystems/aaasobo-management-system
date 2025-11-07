@@ -81,7 +81,7 @@ function RegularClasses({
         userSessionType={userSessionType}
         language={language}
         onSubscriptionUpdated={handleUpdateSubscription}
-        refreshKey={updateCount} 
+        refreshKey={updateCount}
       />
     </>
   );
