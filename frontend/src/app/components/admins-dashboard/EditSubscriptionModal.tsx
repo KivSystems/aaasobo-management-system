@@ -161,7 +161,7 @@ function EditSubscriptionModal({
             </div>
             <div className={styles.sectionContent}>
               <select
-                className={styles.dateInput}
+                className={styles.planInput}
                 name="plan"
                 defaultValue={subscription.planId}
                 onChange={handleSelectPlan}

@@ -76,21 +76,6 @@
   font-size: 0.9rem;
 }
 
-.changeButton {
-  background: $text-medium;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background: $text-dark;
-  }
-}
-
 .sectionContent {
   padding: 1rem;
   background: white;
@@ -98,7 +83,7 @@
   border-bottom-right-radius: 5px;
 }
 
-.dateInput {
+.planInput {
   padding: 0.75rem;
   border: 1px solid $border-light;
   border-radius: 6px;
@@ -112,49 +97,6 @@
     border-color: $blue_primary;
     box-shadow: 0 0 0 3px rgba(65, 66, 152, 0.1);
   }
-}
-
-.childrenGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-
-.childCheckbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border: 1px solid $border-light;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover {
-    background: $background-light;
-    border-color: $border-medium;
-  }
-
-  input[type="checkbox"] {
-    margin: 0;
-    transform: scale(1.1);
-  }
-}
-
-.childName {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $text-dark;
-}
-
-.childrenActions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid $border-light;
 }
 
 .confirmationActions {
@@ -235,10 +177,6 @@
   .selectedValue {
     margin: 0;
     width: 100%;
-  }
-
-  .changeButton {
-    align-self: flex-end;
   }
 
   .confirmationActions {
