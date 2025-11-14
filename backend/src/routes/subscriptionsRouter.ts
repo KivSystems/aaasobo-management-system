@@ -40,6 +40,10 @@ const getSubscriptionByIdConfig = {
         description: "Invalid subscription ID",
         schema: ErrorResponse,
       },
+      "500": {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
     },
   },
 };
@@ -66,6 +70,10 @@ const deleteSubscription = {
         description: "Invalid subscription ID",
         schema: ErrorResponse,
       },
+      "500": {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
     },
   },
 } as const;
@@ -90,6 +98,10 @@ const updateSubscriptionToAddClass = {
         description: "Invalid subscription ID",
         schema: ErrorResponse,
       },
+      "500": {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
     },
   },
 };
@@ -112,6 +124,10 @@ const updateSubscriptionToTerminateClass = {
       },
       "400": {
         description: "Invalid subscription ID",
+        schema: ErrorResponse,
+      },
+      "500": {
+        description: "Internal server error",
         schema: ErrorResponse,
       },
     },
