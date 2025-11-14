@@ -93,7 +93,7 @@ export const updateSubscriptionToAddClassController = async (
     // validate
     const plan = await getPlanById(planId);
     if (!plan) {
-      return res.status(400).json({ error: "Plan not found." });
+      return res.status(404).json({ error: "Plan not found." });
     }
 
     if (times !== plan.weeklyClassTimes - subscription.plan.weeklyClassTimes) {
@@ -132,21 +132,21 @@ export const updateSubscriptionToTerminateClassController = async (
   res: Response,
 ) => {
   try {
+    const { planId, recurringClassIds } = req.body;
+
+    // validate
+    if (!Array.isArray(recurringClassIds)) {
+      return res.status(400).json({ error: "Recurring Ids must be an array." });
+    }
+
     const subscription = await getSubscriptionById(req.params.id);
     if (!subscription) {
       return res.status(404).json({ error: "Subscription not found." });
     }
-    const { planId, recurringClassIds } = req.body;
-    const today = new Date();
 
-    // validate
     const plan = await getPlanById(planId);
     if (!plan) {
-      return res.status(400).json({ error: "Plan not found." });
-    }
-
-    if (!Array.isArray(recurringClassIds)) {
-      return res.status(400).json({ error: "Recurring Ids must be an array." });
+      return res.status(404).json({ error: "Plan not found." });
     }
 
     if (
@@ -164,6 +164,8 @@ export const updateSubscriptionToTerminateClassController = async (
         return res.status(404).json({ error: "Recurring class not found." });
       }
     }
+    
+    const today = new Date();
 
     await prisma.$transaction(async (tx) => {
       // Updata the plan id of the subscription.
