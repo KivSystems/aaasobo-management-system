@@ -23,11 +23,6 @@ export function getLinks(
       icon: CalendarDaysIcon,
     },
     {
-      name: language === "ja" ? "アーソボカレンダー" : "AaasoBo! Calendar",
-      href: `/customers/${userId}/business-calendar`,
-      icon: CalendarDaysIcon,
-    },
-    {
       name: language === "ja" ? "プロフィール" : "Customer Profile",
       href: `/customers/${userId}/profile`,
       icon: UserIcon,
@@ -51,33 +46,23 @@ export function getLinks(
       href: `/customers/${userId}/regular-classes`,
       icon: ClipboardDocumentListIcon,
     },
+    {
+      name: language === "ja" ? "アーソボカレンダー" : "AaasoBo! Calendar",
+      href: `/customers/${userId}/business-calendar`,
+      icon: CalendarDaysIcon,
+    },
   ];
 
   const adminLinks: LinkType[] = [
-    {
-      name: "Class Calendar",
-      href: `/admins/${userId}/calendar`,
-      icon: CalendarDaysIcon,
-    },
-    {
-      name: "AaasoBo! Calendar",
-      href: `/admins/${userId}/business-calendar`,
-      icon: CalendarDaysIcon,
-    },
     {
       name: "Class List",
       href: `/admins/${userId}/class-list`,
       icon: ClipboardDocumentListIcon,
     },
     {
-      name: "Admin List",
-      href: `/admins/${userId}/admin-list`,
-      icon: UserIcon,
-    },
-    {
-      name: "Instructor List",
-      href: `/admins/${userId}/instructor-list`,
-      icon: UsersIcon,
+      name: "Class Calendar",
+      href: `/admins/${userId}/calendar`,
+      icon: CalendarDaysIcon,
     },
     {
       name: "Customer List",
@@ -85,9 +70,9 @@ export function getLinks(
       icon: UsersIcon,
     },
     {
-      name: "Child List",
-      href: `/admins/${userId}/child-list`,
-      icon: UserGroupIcon,
+      name: "Instructor List",
+      href: `/admins/${userId}/instructor-list`,
+      icon: UsersIcon,
     },
     {
       name: "Plan List",
@@ -95,15 +80,31 @@ export function getLinks(
       icon: AcademicCapIcon,
     },
     {
-      name: "Subscription List",
-      href: `/admins/${userId}/subscription-list`,
-      icon: ClipboardDocumentCheckIcon,
-    },
-    {
       name: "Event List",
       href: `/admins/${userId}/event-list`,
       icon: BellIcon,
     },
+    {
+      name: "Admin List",
+      href: `/admins/${userId}/admin-list`,
+      icon: UserIcon,
+    },
+    {
+      name: "AaasoBo! Calendar",
+      href: `/admins/${userId}/business-calendar`,
+      icon: CalendarDaysIcon,
+    },
+    // Not in use for now
+    // {
+    //   name: "Child List",
+    //   href: `/admins/${userId}/child-list`,
+    //   icon: UserGroupIcon,
+    // },
+    // {
+    //   name: "Subscription List",
+    //   href: `/admins/${userId}/subscription-list`,
+    //   icon: ClipboardDocumentCheckIcon,
+    // },
   ];
 
   const instructorLinks: LinkType[] = [
@@ -111,11 +112,6 @@ export function getLinks(
       name: "Class Schedule",
       href: `/instructors/${userId}/class-schedule`,
       icon: CalendarIcon,
-    },
-    {
-      name: "AaasoBo! Calendar",
-      href: `/instructors/${userId}/business-calendar`,
-      icon: CalendarDaysIcon,
     },
     {
       name: "Profile",
@@ -126,6 +122,11 @@ export function getLinks(
       name: "Availability Schedule",
       href: `/instructors/${userId}/availability`,
       icon: ClockIcon,
+    },
+    {
+      name: "AaasoBo! Calendar",
+      href: `/instructors/${userId}/business-calendar`,
+      icon: CalendarDaysIcon,
     },
   ];
 

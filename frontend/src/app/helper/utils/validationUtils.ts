@@ -1,5 +1,6 @@
 import { CANCELATION_NOT_ALLOWED_MESSAGE } from "../messages/customerDashboard";
 import { isPastPreviousDayDeadline } from "./dateUtils";
+import { errorAlert } from "@/app/helper/utils/alertUtils";
 
 type RegisterProps = {
   name: string;
@@ -23,7 +24,7 @@ export const validateCancelableClasses = (
   );
 
   if (pastPrevDayClasses.length > 0) {
-    alert(CANCELATION_NOT_ALLOWED_MESSAGE[language]);
+    errorAlert(CANCELATION_NOT_ALLOWED_MESSAGE[language]);
 
     const updatedSelectedClasses = selectedClasses.filter(
       (eachClass) =>

@@ -8,6 +8,7 @@ import {
   getAllBusinessSchedules,
   getAllEvents,
 } from "@/app/helper/api/adminsApi";
+import { getCookie } from "../../../../middleware";
 
 export default async function ClassCalendar({
   customerId,
@@ -16,11 +17,14 @@ export default async function ClassCalendar({
   customerId: number;
   userSessionType: UserType;
 }) {
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   const [classes, customer, schedule, events] = await Promise.all([
-    getClasses(customerId),
-    getCustomerById(customerId),
-    getAllBusinessSchedules(),
-    getAllEvents(),
+    getClasses(customerId, cookie),
+    getCustomerById(customerId, cookie),
+    getAllBusinessSchedules(cookie),
+    getAllEvents(cookie),
   ]);
 
   const createdAt = customer.createdAt;

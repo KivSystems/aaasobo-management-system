@@ -20,7 +20,7 @@ export const UpdateSystemStatusResponse = z.object({
 });
 
 export const UpdateSundayColorResponse = z.object({
-  result: z.boolean().describe("Whether the operation was successful"),
+  message: z.string().describe("Whether the operation was successful"),
 });
 
 export const MaskInstructorsResponse = z.array(

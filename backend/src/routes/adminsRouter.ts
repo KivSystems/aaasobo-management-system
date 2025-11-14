@@ -11,10 +11,13 @@ import {
   deleteAdminController,
   deactivateCustomerController,
   deleteEventController,
+  deletePlanController,
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
+  getAllPastInstructorsController,
   getAllCustomersController,
+  getAllPastCustomersController,
   getAllChildrenController,
   getAllPlansController,
   getAllSubscriptionsController,
@@ -48,7 +51,9 @@ import {
   AdminResponse,
   AdminsListResponse,
   InstructorsListResponse,
+  PastInstructorsListResponse,
   CustomersListResponse,
+  PastCustomersListResponse,
   ChildrenListResponse,
   PlansListResponse,
   SubscriptionsListResponse,
@@ -65,6 +70,7 @@ import {
   InstructorUpdateErrorResponse,
 } from "../../../shared/schemas/admins";
 
+import { AUTH_ROLES } from "../helper/commonUtils";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
 import upload from "../middlewares/upload.middleware";
 
@@ -72,7 +78,7 @@ import upload from "../middlewares/upload.middleware";
 const registerAdminConfig = {
   method: "post" as const,
   bodySchema: RegisterAdminRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: registerAdminController,
   openapi: {
     summary: "Register new admin",
@@ -105,7 +111,7 @@ const updateAdminConfig = {
   method: "patch" as const,
   paramsSchema: AdminIdParams,
   bodySchema: UpdateAdminRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updateAdminProfileController,
   openapi: {
     summary: "Update admin profile",
@@ -138,7 +144,7 @@ const updateAdminConfig = {
 const deleteAdminConfig = {
   method: "delete" as const,
   paramsSchema: AdminIdParams,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: deleteAdminController,
   openapi: {
     summary: "Delete admin",
@@ -167,6 +173,7 @@ const deleteAdminConfig = {
 const getAdminConfig = {
   method: "get" as const,
   paramsSchema: AdminIdParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getAdminController,
   openapi: {
     summary: "Get admin by ID",
@@ -195,6 +202,7 @@ const getAdminConfig = {
 const getAllAdminsConfig = {
   method: "get" as const,
   handler: getAllAdminsController,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   openapi: {
     summary: "Get all admins",
     description: "Get list of all admin users",
@@ -214,7 +222,10 @@ const getAllAdminsConfig = {
 const registerInstructorConfig = {
   method: "post" as const,
   bodySchema: RegisterInstructorRequest,
-  middleware: [verifyAuthentication, upload.none()] as RequestHandler[],
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.A),
+    upload.none(),
+  ] as RequestHandler[],
   handler: registerInstructorController,
   openapi: {
     summary: "Register new instructor",
@@ -246,7 +257,10 @@ const registerInstructorConfig = {
 const registerInstructorWithIconConfig = {
   method: "post" as const,
   bodySchema: RegisterInstructorRequest,
-  middleware: [verifyAuthentication, upload.single("icon")] as RequestHandler[],
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.A),
+    upload.single("icon"),
+  ] as RequestHandler[],
   handler: registerInstructorController,
   openapi: {
     summary: "Register new instructor with icon",
@@ -279,7 +293,10 @@ const updateInstructorConfig = {
   method: "patch" as const,
   paramsSchema: InstructorIdParams,
   bodySchema: UpdateInstructorRequest,
-  middleware: [verifyAuthentication, upload.none()] as RequestHandler[],
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.A),
+    upload.none(),
+  ] as RequestHandler[],
   handler: updateInstructorProfileController,
   openapi: {
     summary: "Update instructor profile",
@@ -309,7 +326,10 @@ const updateInstructorWithIconConfig = {
   method: "patch" as const,
   paramsSchema: InstructorIdParams,
   bodySchema: UpdateInstructorRequest,
-  middleware: [verifyAuthentication, upload.single("icon")] as RequestHandler[],
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.A),
+    upload.single("icon"),
+  ] as RequestHandler[],
   handler: updateInstructorProfileController,
   openapi: {
     summary: "Update instructor profile with icon",
@@ -337,6 +357,7 @@ const updateInstructorWithIconConfig = {
 
 const getAllInstructorsConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getAllInstructorsController,
   openapi: {
     summary: "Get all instructors",
@@ -354,8 +375,29 @@ const getAllInstructorsConfig = {
   },
 } as const;
 
+const getAllPastInstructorsConfig = {
+  method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  handler: getAllPastInstructorsController,
+  openapi: {
+    summary: "Get all past instructors",
+    description: "Get list of all past instructors for admin dashboard",
+    responses: {
+      200: {
+        description: "Instructors list retrieved successfully",
+        schema: PastInstructorsListResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const getAllCustomersConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getAllCustomersController,
   openapi: {
     summary: "Get all customers",
@@ -373,10 +415,30 @@ const getAllCustomersConfig = {
   },
 } as const;
 
+const getAllPastCustomersConfig = {
+  method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  handler: getAllPastCustomersController,
+  openapi: {
+    summary: "Get all past customers",
+    description: "Get list of all past customers for admin dashboard",
+    responses: {
+      200: {
+        description: "Customers list retrieved successfully",
+        schema: PastCustomersListResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const deactivateCustomerConfig = {
   method: "patch" as const,
   paramsSchema: CustomerIdParams,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: deactivateCustomerController,
   openapi: {
     summary: "Deactivate customer",
@@ -395,6 +457,7 @@ const deactivateCustomerConfig = {
 
 const getAllChildrenConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getAllChildrenController,
   openapi: {
     summary: "Get all children",
@@ -415,7 +478,7 @@ const getAllChildrenConfig = {
 const registerPlanConfig = {
   method: "post" as const,
   bodySchema: RegisterPlanRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: registerPlanController,
   openapi: {
     summary: "Register new plan",
@@ -440,11 +503,40 @@ const registerPlanConfig = {
   },
 } as const;
 
+const deletePlanConfig = {
+  method: "delete" as const,
+  paramsSchema: PlanIdParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  handler: deletePlanController,
+  openapi: {
+    summary: "Delete plan",
+    description: "Delete a subscription plan",
+    responses: {
+      200: {
+        description: "Plan deleted successfully",
+        schema: DeleteResponse,
+      },
+      400: {
+        description: "Invalid plan ID",
+        schema: ErrorResponse,
+      },
+      401: {
+        description: "Unauthorized",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: ErrorResponse,
+      },
+    },
+  },
+} as const;
+
 const updatePlanConfig = {
   method: "patch" as const,
   paramsSchema: PlanIdParams,
   bodySchema: UpdatePlanRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updatePlanController,
   openapi: {
     summary: "Update or delete plan",
@@ -472,6 +564,7 @@ const updatePlanConfig = {
 
 const getAllPlansConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getAllPlansController,
   openapi: {
     summary: "Get all plans",
@@ -491,6 +584,7 @@ const getAllPlansConfig = {
 
 const getAllSubscriptionsConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getAllSubscriptionsController,
   openapi: {
     summary: "Get all subscriptions",
@@ -511,7 +605,7 @@ const getAllSubscriptionsConfig = {
 const registerEventConfig = {
   method: "post" as const,
   bodySchema: RegisterEventRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: registerEventController,
   openapi: {
     summary: "Register new event",
@@ -548,7 +642,7 @@ const updateEventConfig = {
   method: "patch" as const,
   paramsSchema: EventIdParams,
   bodySchema: UpdateEventRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updateEventProfileController,
   openapi: {
     summary: "Update event",
@@ -585,7 +679,7 @@ const updateEventConfig = {
 const deleteEventConfig = {
   method: "delete" as const,
   paramsSchema: EventIdParams,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: deleteEventController,
   openapi: {
     summary: "Delete event",
@@ -614,6 +708,7 @@ const deleteEventConfig = {
 const getAllEventsConfig = {
   method: "get" as const,
   handler: getAllEventsController,
+  middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
   openapi: {
     summary: "Get all events",
     description: "Get list of all calendar events",
@@ -632,6 +727,7 @@ const getAllEventsConfig = {
 
 const getClassesWithinPeriodConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getClassesWithinPeriodController,
   openapi: {
     summary: "Get classes within period",
@@ -652,7 +748,7 @@ const getClassesWithinPeriodConfig = {
 const updateBusinessScheduleConfig = {
   method: "post" as const,
   bodySchema: UpdateBusinessScheduleRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updateBusinessScheduleController,
   openapi: {
     summary: "Update business schedule",
@@ -679,6 +775,7 @@ const updateBusinessScheduleConfig = {
 
 const getAllSchedulesConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
   handler: getAllSchedulesController,
   openapi: {
     summary: "Get all schedules",
@@ -706,17 +803,20 @@ const validatedRouteConfigs = {
   "/child-list": [getAllChildrenConfig],
   "/class-list": [getClassesWithinPeriodConfig],
   "/customer-list": [getAllCustomersConfig],
+  "/customer-list/past": [getAllPastCustomersConfig],
   "/customer-list/deactivate/:id": [deactivateCustomerConfig],
   "/event-list": [getAllEventsConfig],
-  "/event-list/:id": [deleteEventConfig],
+  "/event-list/delete/:id": [deleteEventConfig],
   "/event-list/register": [registerEventConfig],
   "/event-list/update/:id": [updateEventConfig],
   "/instructor-list": [getAllInstructorsConfig],
+  "/instructor-list/past": [getAllPastInstructorsConfig],
   "/instructor-list/register": [registerInstructorConfig],
   "/instructor-list/register/withIcon": [registerInstructorWithIconConfig],
   "/instructor-list/update/:id": [updateInstructorConfig],
   "/instructor-list/update/:id/withIcon": [updateInstructorWithIconConfig],
   "/plan-list": [getAllPlansConfig],
+  "/plan-list/delete/:id": [deletePlanConfig],
   "/plan-list/register": [registerPlanConfig],
   "/plan-list/update/:id": [updatePlanConfig],
   "/subscription-list": [getAllSubscriptionsConfig],

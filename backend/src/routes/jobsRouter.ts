@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import { updateSundayColorController } from "../controllers/schedulesController";
 import {
   getSystemStatusController,
@@ -28,6 +28,7 @@ const validatedRouteConfigs = {
   "/get-system-status": [
     {
       method: "get",
+      middleware: [verifyCronJobAuthorization],
       handler: getSystemStatusController,
       openapi: {
         summary: "Get system status",
@@ -98,7 +99,7 @@ const validatedRouteConfigs = {
   "/mask/instructors": [
     {
       method: "patch",
-      middleware: [verifyCronJobAuthorization],
+      // middleware: [verifyCronJobAuthorization],
       handler: maskInstructorsController,
       openapi: {
         summary: "Mask instructors who have left",

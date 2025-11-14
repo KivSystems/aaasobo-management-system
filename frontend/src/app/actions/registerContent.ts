@@ -13,8 +13,10 @@ export async function registerContent(
   formData: FormData,
 ): Promise<RegisterFormState> {
   try {
-    const planName = formData.get("planName");
-    const eventName = formData.get("eventName");
+    const planNameEng = formData.get("planNameEng");
+    const planNameJpn = formData.get("planNameJpn");
+    const eventNameEng = formData.get("eventNameEng");
+    const eventNameJpn = formData.get("eventNameJpn");
     const weeklyClassTimes = Number(formData.get("weeklyClassTimes"));
     const color = formData.get("color");
     const description = formData.get("description");
@@ -23,15 +25,14 @@ export async function registerContent(
     // Get the cookies from the request headers
     const cookie = await getCookie();
 
-    let name;
     let parsedForm;
     let response;
 
     switch (categoryType) {
       case "plan":
-        name = planName;
         parsedForm = planRegisterSchema.safeParse({
-          name,
+          planNameEng,
+          planNameJpn,
           weeklyClassTimes,
           description,
         });
@@ -41,7 +42,8 @@ export async function registerContent(
         }
 
         response = await registerPlan({
-          name: parsedForm.data.name,
+          planNameEng: parsedForm.data.planNameEng,
+          planNameJpn: parsedForm.data.planNameJpn,
           weeklyClassTimes: parsedForm.data.weeklyClassTimes,
           description: parsedForm.data.description,
           cookie,
@@ -53,9 +55,9 @@ export async function registerContent(
         return response;
 
       case "event":
-        name = eventName;
         parsedForm = eventRegisterSchema.safeParse({
-          name,
+          eventNameEng,
+          eventNameJpn,
           color,
         });
         if (!parsedForm.success) {
@@ -64,7 +66,8 @@ export async function registerContent(
         }
 
         response = await registerEvent({
-          name: parsedForm.data.name,
+          eventNameJpn: parsedForm.data.eventNameJpn,
+          eventNameEng: parsedForm.data.eventNameEng,
           color: parsedForm.data.color,
           cookie,
         });

@@ -43,7 +43,11 @@ export const getClassesWithinPeriod = async (
           lte: endDate,
         },
       },
-      include: { instructor: true, customer: true },
+      include: {
+        instructor: true,
+        customer: true,
+        classAttendance: { include: { children: true } },
+      },
       orderBy: { dateTime: "asc" },
     });
 
@@ -132,9 +136,10 @@ export const updateClass = async (
         },
       });
 
-      await tx.classAttendance.deleteMany({
-        where: { classId: id },
-      });
+      // Commented out as we want to keep attendance records for classes canceled by instructor
+      // await tx.classAttendance.deleteMany({
+      //   where: { classId: id },
+      // });
     });
   } else {
     await prisma.class.update({

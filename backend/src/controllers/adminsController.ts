@@ -12,9 +12,9 @@ import {
   updateAdmin,
   deleteAdmin,
 } from "../services/adminsService";
-import { deactivateCustomer } from "../services/customersService";
 import {
   getAllInstructors,
+  getAllPastInstructors,
   registerInstructor,
   updateInstructor,
   getInstructorByEmail,
@@ -25,7 +25,11 @@ import {
   getInstructorByIntroductionURL,
 } from "../services/instructorsService";
 import { getClassesWithinPeriod } from "../services/classesService";
-import { getAllCustomers } from "../services/customersService";
+import {
+  getAllCustomers,
+  getAllPastCustomers,
+  deactivateCustomer,
+} from "../services/customersService";
 import { getAllChildren } from "../services/childrenService";
 import {
   getAllPlans,
@@ -40,8 +44,12 @@ import {
   deleteEvent,
 } from "../services/eventsService";
 import { getAllSubscriptions } from "../services/subscriptionsService";
-import { convertToISOString } from "../helper/dateUtils";
-import { maskedHeadLetters, maskedBirthdate } from "../helper/commonUtils";
+import {
+  days,
+  convertToISOString,
+  convertToTimezoneDate,
+} from "../helper/dateUtils";
+import { EVENT_CONFLICT_ITEMS } from "../helper/commonUtils";
 import type {
   AdminIdParams,
   CustomerIdParams,
@@ -248,20 +256,60 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
 
     // Transform the data structure.
     const data = customers.map((customer, number) => {
-      let { id, name, email, prefecture, terminationAt } = customer;
+      let { id, name, email, prefecture, children } = customer;
 
-      // Mask customer info if the customer has left
-      if (terminationAt) {
-        name = `${name} (Left)`;
-        email = maskedHeadLetters;
-      }
+      // Format children names as a comma-separated string
+      const childrenNames = children.map((child) => child.name).join(", ");
 
       return {
         No: number + 1,
         ID: id,
         Customer: name,
+        Children: childrenNames,
         Email: email,
         Prefecture: prefecture,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Displaying past customers' information for admin dashboard
+export const getAllPastCustomersController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    // Fetch all past customers data using the email.
+    const customers = await getAllPastCustomers();
+
+    // Transform the data structure.
+    const data = customers.map((customer, number) => {
+      let { id, name, children, terminationAt } = customer;
+
+      // Format children names as a comma-separated string
+      const childrenNames = children.map((child) => child.name).join(", ");
+
+      // Convert termination date to Japanese date format (YYYY-MM-DD)
+      let formattedTerminationDate = "";
+      if (terminationAt) {
+        formattedTerminationDate = convertToTimezoneDate(
+          terminationAt,
+          "Asia/Tokyo",
+        )
+          .toISOString()
+          .slice(0, 10);
+      }
+
+      return {
+        No: number + 1,
+        ID: id,
+        "Past Customer": name,
+        "Past Children": childrenNames,
+        "End Date (JST)": formattedTerminationDate,
       };
     });
 
@@ -287,9 +335,47 @@ export const getAllInstructorsController = async (
       return {
         No: number + 1,
         ID: id,
-        Instructor: name,
-        Nickname: nickname,
+        Instructor: nickname,
+        "Full Name": name,
         Email: email,
+      };
+    });
+
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Displaying past instructors' information for admin dashboard
+export const getAllPastInstructorsController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    // Fetch the instructors data using the email.
+    const instructors = await getAllPastInstructors();
+
+    // Transform the data structure.
+    const data = instructors.map((instructor, number) => {
+      const { id, nickname, terminationAt } = instructor;
+
+      // Convert termination date to Japanese date format (YYYY-MM-DD)
+      let formattedTerminationDate = "";
+      if (terminationAt) {
+        formattedTerminationDate = convertToTimezoneDate(
+          terminationAt,
+          "Asia/Tokyo",
+        )
+          .toISOString()
+          .slice(0, 10);
+      }
+
+      return {
+        No: number + 1,
+        ID: id,
+        "Past Instructor": nickname,
+        "End Date (JST)": formattedTerminationDate,
       };
     });
 
@@ -527,12 +613,6 @@ export const getAllChildrenController = async (_: Request, res: Response) => {
       let { id, name, customer, birthdate, personalInfo } = child;
       let displayedBirthdate = birthdate?.toISOString().slice(0, 10);
 
-      // Mask children's info if the customer has left
-      if (customer.terminationAt) {
-        name = `${name} (Left)`;
-        displayedBirthdate = maskedHeadLetters;
-      }
-
       return {
         No: number + 1,
         ID: id,
@@ -587,11 +667,6 @@ export const getAllSubscriptionsController = async (
         }
       }
 
-      // Mask customer name if the customer has left
-      if (customer.terminationAt) {
-        customerName = `${customerName} (Left)`;
-      }
-
       acc.push({
         No: acc.length + 1,
         ID: customerId,
@@ -618,11 +693,13 @@ export const getAllPlansController = async (_: Request, res: Response) => {
     // Transform the data structure.
     const data = plans.map((plan, number) => {
       const { id, name, weeklyClassTimes, description } = plan;
+      const [planNameJpn, planNameEng] = name.split(" / ");
 
       return {
         No: number + 1,
         ID: id,
-        Plan: name,
+        "Plan (Japanese)": planNameJpn,
+        "Plan (English)": planNameEng,
         "Weekly Class Times": weeklyClassTimes,
         Description: description,
       };
@@ -639,7 +716,10 @@ export const registerPlanController = async (
   req: RequestWithBody<RegisterPlanRequest>,
   res: Response,
 ) => {
-  const { name, weeklyClassTimes, description } = req.body;
+  const { planNameEng, planNameJpn, weeklyClassTimes, description } = req.body;
+
+  // Combine Japanese and English names into the required format
+  const name = `${planNameJpn} / ${planNameEng}`;
 
   try {
     await registerPlan({
@@ -655,6 +735,26 @@ export const registerPlanController = async (
   }
 };
 
+// Delete the selected plan
+export const deletePlanController = async (
+  req: RequestWithParams<PlanIdParams>,
+  res: Response,
+) => {
+  const planId = req.params.id;
+
+  try {
+    const deletedPlan = await deletePlan(planId);
+
+    res.status(200).json({
+      message: "The plan was deleted successfully",
+      id: deletedPlan.id,
+    });
+  } catch (error) {
+    console.error("Failed to delete the plan:", error);
+    res.status(500).json({ error: "Failed to delete the plan." });
+  }
+};
+
 // Update the applicable plan data
 export const updatePlanController = async (
   req: RequestWith<PlanIdParams, UpdatePlanRequest>,
@@ -664,21 +764,16 @@ export const updatePlanController = async (
   const body = req.body;
 
   try {
-    // If the plan is marked for deletion, proceed with deletion process
-    if (body.isDelete) {
-      const deletedPlan = await deletePlan(planId);
-      return res
-        .status(200)
-        .json({ message: "Plan deleted successfully", plan: deletedPlan });
-    }
-
-    // When updating (not deleting), validation ensures both name and description are present
-    if (!body.name || !body.description) {
+    if (!body.planNameEng || !body.planNameJpn || !body.description) {
       return res
         .status(400)
         .json({ message: "Name and description are required for update" });
     }
-    const { name, description } = body;
+    const { planNameEng, planNameJpn, description } = body;
+
+    // Combine Japanese and English names into the required format
+    const name = `${planNameJpn} / ${planNameEng}`;
+
     const updatedPlan = await updatePlan(planId, name, description);
     return res.status(200).json({
       message: "Plan is updated successfully",
@@ -698,11 +793,14 @@ export const getAllEventsController = async (_: Request, res: Response) => {
     // Transform the data structure.
     const data = events.map((event, number) => {
       const { id, name, color } = event;
+      const [eventNameJpn, eventNameEng] = name.split(" / ");
 
       return {
         No: number + 1,
         ID: id,
         Event: name,
+        "Event (Japanese)": eventNameJpn,
+        "Event (English)": eventNameEng,
         "Color Code": color,
       };
     });
@@ -718,18 +816,26 @@ export const registerEventController = async (
   req: RequestWithBody<RegisterEventRequest>,
   res: Response,
 ) => {
-  const { name, color } = req.body;
+  const { eventNameJpn, eventNameEng, color } = req.body;
 
   // Normalize the event name and color code
-  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedEventNameJpn = eventNameJpn.toLowerCase().replace(/\s/g, "");
+  const normalizedEventNameEng = eventNameEng.toLowerCase().replace(/\s/g, "");
   const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
 
   try {
     // Check if the event with the same name and color already exists
     const existingEvents = await getAllEvents();
-    const eventNameExists = existingEvents.some(
+
+    const eventNameJpnExists = existingEvents.some(
       (event) =>
-        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName,
+        event.name.toLowerCase().split(" / ")[0].trim() ===
+        normalizedEventNameJpn,
+    );
+    const eventNameEngExists = existingEvents.some(
+      (event) =>
+        event.name.toLowerCase().split(" / ")[1].trim() ===
+        normalizedEventNameEng,
     );
     const eventColorExists = existingEvents.some(
       (event) =>
@@ -738,12 +844,15 @@ export const registerEventController = async (
 
     // Collect conflict reasons
     const conflictItems: string[] = [];
-    if (eventNameExists) conflictItems.push("Event name");
-    if (eventColorExists) conflictItems.push("Color code");
-
+    eventNameJpnExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[0]) : null;
+    eventNameEngExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[1]) : null;
+    eventColorExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[2]) : null;
     if (conflictItems.length > 0) {
       return res.status(409).json({ items: conflictItems });
     }
+
+    // Combine Japanese and English names into the required format
+    const name = `${eventNameJpn} / ${eventNameEng}`;
 
     // Register the new event
     await registerEvent({
@@ -764,34 +873,48 @@ export const updateEventProfileController = async (
   res: Response,
 ) => {
   const eventId = req.params.id;
-  const { name, color } = req.body;
+  const { eventNameJpn, eventNameEng, color } = req.body;
 
   // Normalize the event name and color code
-  const normalizedEventName = name.toLowerCase().replace(/\s/g, "");
+  const normalizedEventNameJpn = eventNameJpn.toLowerCase().replace(/\s/g, "");
+  const normalizedEventNameEng = eventNameEng.toLowerCase().replace(/\s/g, "");
   const normalizedColorCode = color.toLowerCase().replace(/\s/g, "");
 
   try {
     // Check if the event with the same name and color already exists
     const existingEvents = await getAllEvents();
-    const eventNameExists = existingEvents.some(
-      (event) =>
-        event.name.toLowerCase().replace(/\s/g, "") === normalizedEventName &&
-        event.id !== eventId,
+
+    // Exclude the current event from the existing events for conflict check
+    const filteredEvents = existingEvents.filter(
+      (event) => event.id !== eventId,
     );
-    const eventColorExists = existingEvents.some(
+    const eventNameJpnExists = filteredEvents.some(
       (event) =>
-        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode &&
-        event.id !== eventId,
+        event.name.toLowerCase().split(" / ")[0].trim() ===
+        normalizedEventNameJpn,
+    );
+    const eventNameEngExists = filteredEvents.some(
+      (event) =>
+        event.name.toLowerCase().split(" / ")[1].trim() ===
+        normalizedEventNameEng,
+    );
+    const eventColorExists = filteredEvents.some(
+      (event) =>
+        event.color.toLowerCase().replace(/\s/g, "") === normalizedColorCode,
     );
 
     // Collect conflict reasons
     const conflictItems: string[] = [];
-    if (eventNameExists) conflictItems.push("Event name");
-    if (eventColorExists) conflictItems.push("Color code");
+    eventNameJpnExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[0]) : null;
+    eventNameEngExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[1]) : null;
+    eventColorExists ? conflictItems.push(EVENT_CONFLICT_ITEMS[2]) : null;
 
     if (conflictItems.length > 0) {
       return res.status(409).json({ items: conflictItems });
     }
+
+    // Combine Japanese and English names into the required format
+    const name = `${eventNameJpn} / ${eventNameEng}`;
 
     const event = await updateEvent(eventId, name, normalizedColorCode);
 
@@ -849,8 +972,15 @@ export const getClassesWithinPeriodController = async (
 
     // Transform the data structure.
     const data = classes.map((classItem, number) => {
-      const { id, instructor, customer, dateTime, status, classCode } =
-        classItem;
+      const {
+        id,
+        instructor,
+        customer,
+        dateTime,
+        status,
+        classCode,
+        classAttendance,
+      } = classItem;
 
       // If the free trial class status is "pending" or "declined" before booking, an instructor is not assigned — return "Not Set".
       const instructorName = instructor?.nickname ?? "Not Set";
@@ -869,6 +999,14 @@ export const getClassesWithinPeriodController = async (
 
         date = dateTimeJST.toISOString().slice(0, 10);
         time = dateTimeJST.toISOString().slice(11, 16);
+      }
+
+      // Calculate the day of the week in JST
+      let dayOfWeekStr = "";
+      if (date !== "Not Set") {
+        const dayOfWeekJST = new Date(date);
+        const daysOfWeek = days;
+        dayOfWeekStr = daysOfWeek[dayOfWeekJST.getDay()];
       }
 
       // Format the displayed status.
@@ -897,18 +1035,18 @@ export const getClassesWithinPeriodController = async (
           break;
       }
 
-      // Mask customer's names if the customer has left
-      if (customer.terminationAt) {
-        customerName = `${customerName} (Left)`;
-      }
-
       return {
         No: number + 1,
         ID: id,
+        "Date/Time (JST)": date ? `${date} ${time}` : "Not Set",
+        Day: dayOfWeekStr,
         Instructor: instructorName,
+        InstructorID: instructor?.id ?? null,
+        Children: classAttendance
+          .map((attendance) => attendance.children.name)
+          .join(", "),
         Customer: customerName,
-        Date: date,
-        "JP Time": time,
+        CustomerID: customer.id,
         Status: statusText,
         "Class Code": classCode,
       };

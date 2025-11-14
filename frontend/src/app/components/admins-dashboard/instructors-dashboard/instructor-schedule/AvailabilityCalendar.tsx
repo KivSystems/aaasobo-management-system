@@ -16,6 +16,7 @@ import ActionButton from "@/app/components/elements/buttons/actionButton/ActionB
 import { EventSourceFuncArg, EventClickArg } from "@fullcalendar/core";
 import { toast } from "react-toastify";
 import styles from "./AvailabilityCalendar.module.scss";
+import { errorAlert } from "@/app/helper/utils/alertUtils";
 
 // Define proper event type for FullCalendar events
 interface CalendarEvent {
@@ -173,18 +174,23 @@ export default function AvailabilityCalendar({
         setPendingChanges(new Map());
         refreshCalendars();
         setIsEditModalOpen(false);
-        alert(`${result.message}\n\nErrors:\n${result.errors.join("\n")}`);
+
+        await errorAlert(
+          `${result.message}\n\nErrors:\n${result.errors.join("\n")}`,
+        );
       } else {
         // All failed - only show alert for actual errors
         if (result.errors.length > 0) {
-          alert(`${result.message}\n\nErrors:\n${result.errors.join("\n")}`);
+          await errorAlert(
+            `${result.message}\n\nErrors:\n${result.errors.join("\n")}`,
+          );
         } else {
           toast.info(result.message || "No changes were made.");
         }
       }
     } catch (error) {
       console.error("Batch submission failed:", error);
-      alert(
+      errorAlert(
         `Failed to submit changes: ${error instanceof Error ? error.message : String(error)}`,
       );
     } finally {

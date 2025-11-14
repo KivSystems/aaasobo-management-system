@@ -26,9 +26,14 @@ import {
   CONFIRM_DELETE_CHILD_PROFILE_MESSAGE,
 } from "@/app/helper/messages/customerDashboard";
 import { deleteChildProfileAction } from "@/app/actions/deleteUser";
-import { maskedHeadLetters, maskedBirthdate } from "@/app/helper/data/data";
+import { MASKED_HEAD_LETTERS, MASKED_BIRTHDATE } from "@/app/helper/data/data";
 import Modal from "../../elements/modal/Modal";
 import AddChildForm from "./AddChildForm";
+import {
+  errorAlert,
+  warningAlert,
+  confirmAlert,
+} from "@/app/helper/utils/alertUtils";
 
 function ChildrenProfiles({
   customerId,
@@ -80,10 +85,11 @@ function ChildrenProfiles({
     clearErrorMessage("all");
     const hasOnlyOneChild = childProfiles.length === 1;
 
-    if (hasOnlyOneChild)
-      return alert(CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE[language]);
+    if (hasOnlyOneChild) {
+      await warningAlert(CANNOT_DELETE_LAST_CHILD_PROFILE_MESSAGE[language]);
+    }
 
-    const confirmed = window.confirm(
+    const confirmed = await confirmAlert(
       CONFIRM_DELETE_CHILD_PROFILE_MESSAGE[language],
     );
     if (!confirmed) return;
@@ -93,7 +99,7 @@ function ChildrenProfiles({
     if (resultMessage.successMessage) {
       toast.success(resultMessage.successMessage[language]);
     } else if (resultMessage.errorMessage) {
-      alert(resultMessage.errorMessage[language]);
+      errorAlert(resultMessage.errorMessage[language]);
     }
   };
 
@@ -189,9 +195,9 @@ function ChildrenProfiles({
                     <div className={styles.profileInfo}>
                       <div className={styles.profileInfo__data}>
                         {formatBirthdateToISO(child.birthdate).includes(
-                          maskedBirthdate,
+                          MASKED_BIRTHDATE,
                         )
-                          ? maskedHeadLetters
+                          ? MASKED_HEAD_LETTERS
                           : formatBirthdateToISO(child.birthdate)}
                       </div>
                     </div>
@@ -255,14 +261,12 @@ function ChildrenProfiles({
                     <ActionButton
                       className="cancelEditingCustomer"
                       btnText={language === "ja" ? "キャンセル" : "Cancel"}
-                      type="button"
                       onClick={(e) => {
                         e.preventDefault();
                         clearErrorMessage("all");
                         setEditingChildId(null);
                       }}
                     />
-
                     <ActionButton
                       className="saveCustomer"
                       btnText={language === "ja" ? "変更を保存" : "Save"}
@@ -283,8 +287,7 @@ function ChildrenProfiles({
                     <ActionButton
                       className="editChild"
                       btnText={language === "ja" ? "編集" : "Edit"}
-                      onClick={(e) => {
-                        e.preventDefault();
+                      onClick={() => {
                         clearErrorMessage("all");
                         setEditingChildId(child.id);
                         setEditingSuccessChildId(null);

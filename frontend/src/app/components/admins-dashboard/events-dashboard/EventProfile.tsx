@@ -14,8 +14,10 @@ import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
+import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "@/app/components/elements/loading/Loading";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
 
 function EventProfile({
   event,
@@ -38,7 +40,10 @@ function EventProfile({
   useEffect(() => {
     if (updateResultState) {
       const newMessages: Record<string, string> = {};
-      if (updateResultState.name) newMessages.name = updateResultState.name;
+      if (updateResultState.eventNameJpn)
+        newMessages.eventNameJpn = updateResultState.eventNameJpn;
+      if (updateResultState.eventNameEng)
+        newMessages.eventNameEng = updateResultState.eventNameEng;
       if (updateResultState.color) newMessages.color = updateResultState.color;
       if (updateResultState.errorMessage)
         newMessages.errorMessage = updateResultState.errorMessage;
@@ -58,10 +63,22 @@ function EventProfile({
     });
   }, []);
   const [previousEvent, setPreviousEvent] = useState<BusinessEventType | null>(
-    typeof event !== "string" ? event : null,
+    typeof event !== "string"
+      ? {
+          ...event,
+          eventNameEng: getLocalizedText(event.name, "en"),
+          eventNameJpn: getLocalizedText(event.name, "ja"),
+        }
+      : null,
   );
   const [latestEvent, setLatestEvent] = useState<BusinessEventType | null>(
-    typeof event !== "string" ? event : null,
+    typeof event !== "string"
+      ? {
+          ...event,
+          eventNameEng: getLocalizedText(event.name, "en"),
+          eventNameJpn: getLocalizedText(event.name, "ja"),
+        }
+      : null,
   );
   const [isEditing, setIsEditing] = useState(false);
 
@@ -82,15 +99,17 @@ function EventProfile({
     if (latestEvent) {
       setLatestEvent(previousEvent);
       setIsEditing(false);
-      clearErrorMessage("name");
+      clearErrorMessage("eventNameJpn");
+      clearErrorMessage("eventNameEng");
       clearErrorMessage("color");
     }
   };
 
   const handleDeleteClick = async () => {
-    const confirmed = window.confirm(
+    const confirmed = await confirmAlert(
       "Are you sure you want to delete this event?",
     );
+
     if (confirmed && latestEvent) {
       const formData = new FormData();
       formData.append("id", String(latestEvent.id));
@@ -106,8 +125,16 @@ function EventProfile({
         const event = updateResultState.event as BusinessEventType;
         toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("event"));
         setIsEditing(false);
-        setPreviousEvent(event);
-        setLatestEvent(event);
+        setPreviousEvent({
+          ...event,
+          eventNameEng: getLocalizedText(event.name, "en"),
+          eventNameJpn: getLocalizedText(event.name, "ja"),
+        });
+        setLatestEvent({
+          ...event,
+          eventNameEng: getLocalizedText(event.name, "en"),
+          eventNameJpn: getLocalizedText(event.name, "ja"),
+        });
         // Clear updateResultState to avoid re-rendering
         updateResultState.event = null;
         return;
@@ -148,15 +175,29 @@ function EventProfile({
             <div className={styles.profileCard}>
               {/* Event name */}
               <div className={styles.eventName__nameSection}>
-                <p className={styles.eventName__text}>Event</p>
                 {isEditing ? (
-                  <InputField
-                    name="eventName"
-                    value={latestEvent.name}
-                    error={localMessages.name}
-                    onChange={(e) => handleInputChange(e, "name")}
-                    className={`${styles.eventName__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
+                  <div>
+                    <p className={styles.eventName__text}>
+                      Event Name (Japanese)
+                    </p>
+                    <InputField
+                      name="eventNameJpn"
+                      value={latestEvent.eventNameJpn}
+                      error={localMessages.eventNameJpn}
+                      onChange={(e) => handleInputChange(e, "eventNameJpn")}
+                      className={`${styles.eventName__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                    <p className={styles.eventName__text}>
+                      Event Name (English)
+                    </p>
+                    <InputField
+                      name="eventNameEng"
+                      value={latestEvent.eventNameEng}
+                      error={localMessages.eventNameEng}
+                      onChange={(e) => handleInputChange(e, "eventNameEng")}
+                      className={`${styles.eventName__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  </div>
                 ) : (
                   <h3 className={styles.eventName__name}>{latestEvent.name}</h3>
                 )}
@@ -198,7 +239,7 @@ function EventProfile({
               </div>
 
               {/* Hidden input field */}
-              <input type="hidden" name="id" value={latestEvent.id} />
+              <input type="hidden" name="eventId" value={latestEvent.id} />
 
               {/* Action buttons for only admin */}
               {userSessionType === "admin" ? (

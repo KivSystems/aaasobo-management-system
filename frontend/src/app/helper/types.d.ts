@@ -98,6 +98,8 @@ type Plans = Plan[];
 type Plan = {
   id: number;
   name: string;
+  planNameJpn?: string;
+  planNameEng?: string;
   description: string;
   weeklyClassTimes?: number;
   terminationAt?: string | null;
@@ -106,6 +108,8 @@ type Plan = {
 type BusinessEventType = {
   id: number;
   name: string;
+  eventNameJpn?: string;
+  eventNameEng?: string;
   color?: string;
 };
 
@@ -230,7 +234,11 @@ type RegisterFormState = {
   isAgreed?: string;
   weeklyClassTimes?: string;
   description?: string;
+  eventNameEng?: string;
+  eventNameJpn?: string;
   color?: string;
+  planNameEng?: string;
+  planNameJpn?: string;
   errorMessage?: string;
   successMessage?: string;
   language?: LanguageType;
@@ -252,7 +260,12 @@ type UpdateFormState = {
   admin?: Admin | null;
   instructor?: InstructorProfile | null;
   event?: BusinessEventType | null;
+  eventNameJpn?: string;
+  eventNameEng?: string;
   plan?: Plan | null;
+  planNameJpn?: string;
+  planNameEng?: string;
+  items?: Item[];
   result?: string | boolean;
 };
 
@@ -629,4 +642,35 @@ type HandleClassStatusUpdateParams = {
   adminId?: number;
   setIsUpdatingData: (updating: boolean) => void;
   setIsEditingStatus?: (editing: boolean) => void;
+};
+
+type CurrentListTableProps = {
+  listType: string;
+  fetchedData: any[];
+  fetchedPastData?: any[];
+  omitItems: string[];
+  linkItems: string[];
+  linkUrls: string[];
+  replaceItems: string[];
+  userType: UserType;
+  categoryType?: CategoryType;
+  isAddButton?: boolean;
+  isViewPastButton?: boolean;
+  linkTarget?: string;
+};
+
+type PastListTableProps = {
+  listType: string;
+  omitItems: string[];
+  linkItems: string[];
+  linkUrls: string[];
+  replaceItems: string[];
+  userType: UserType;
+  categoryType?: CategoryType;
+  linkTarget?: string;
+  width?: string;
+} | null;
+
+type ListTableProps = CurrentListTableProps & {
+  pastListTableProps?: PastListTableProps;
 };

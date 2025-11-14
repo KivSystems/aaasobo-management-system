@@ -8,8 +8,13 @@ const BASE_URL = `${BACKEND_ORIGIN}/recurring-classes`;
 export const getRecurringClassesBySubscriptionId = async (
   subscriptionId: number,
   status?: "active" | "history",
+  cookie?: string,
 ): Promise<RecurringClasses> => {
   try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
     const params = new URLSearchParams({
       subscriptionId: subscriptionId.toString(),
     });
@@ -17,8 +22,29 @@ export const getRecurringClassesBySubscriptionId = async (
       params.append("status", status);
     }
 
-    const response = await fetch(`${BASE_URL}?${params.toString()}`);
-    if (!response.ok) {
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}?${params.toString()}`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/recurring-classes?${params.toString()}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const recurringClasses = await response.json();
@@ -32,21 +58,44 @@ export const getRecurringClassesBySubscriptionId = async (
 export const editRecurringClass = async (
   recurringClassId: number,
   recurringClassData: UpdateRecurringClassRequest,
+  cookie?: string,
 ): Promise<{
   message: string;
   oldRecurringClass: RecurringClass;
   newRecurringClass: RecurringClass;
 }> => {
-  const URL = `${BASE_URL}/${recurringClassId}`;
-
   try {
-    const response = await fetch(URL, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(recurringClassData),
-    });
+    let apiURL;
+    let headers;
+    let response;
+    const method = "PUT";
+    const body = JSON.stringify(recurringClassData);
 
-    if (!response.ok) {
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${recurringClassId}`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/recurring-classes/${recurringClassId}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    }
+
+    if (response.status !== 200) {
       const errorData = await response.json();
       throw new Error(
         errorData.message ||

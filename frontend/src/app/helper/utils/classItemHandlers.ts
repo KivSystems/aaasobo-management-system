@@ -6,6 +6,11 @@ import {
 } from "@/app/actions/updateContent";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  errorAlert,
+  warningAlert,
+  confirmAlert,
+} from "@/app/helper/utils/alertUtils";
 
 export const handleChildChange = (
   event: React.ChangeEvent<HTMLInputElement>,
@@ -34,7 +39,9 @@ export const handleAttendanceUpdate = async ({
   setIsEditingAttendance,
 }: HandleAttendanceUpdateParams) => {
   if (!hasTimePassed(classEndTime)) {
-    return alert("You can only edit attendance after the class has ended.");
+    return warningAlert(
+      "You can only edit attendance after the class has ended.",
+    );
   }
 
   const removedIds = initialAttendedChildrenIds.filter(
@@ -45,7 +52,7 @@ export const handleAttendanceUpdate = async ({
   );
 
   if (removedIds.length === 0 && addedIds.length === 0) {
-    return alert("No updates were made.");
+    return errorAlert("No updates were made.");
   }
 
   setIsUpdatingData(true);
@@ -59,7 +66,7 @@ export const handleAttendanceUpdate = async ({
 
   if (!result.success) {
     setIsUpdatingData(false);
-    return alert(result.message);
+    return errorAlert(result.message);
   }
 
   toast.success(result.message);
@@ -78,15 +85,17 @@ export const handleClassStatusUpdate = async ({
   setIsEditingStatus,
 }: HandleClassStatusUpdateParams) => {
   if (!selectedStatus) {
-    return alert("No updates were made.");
+    return errorAlert("No updates were made.");
   }
 
   if (selectedStatus === "completed" && !hasTimePassed(classEndTime)) {
-    return alert("You can only complete a class after the class has ended.");
+    return warningAlert(
+      "You can only complete a class after the class has ended.",
+    );
   }
 
   if (adminId && selectedStatus) {
-    const confirmed = window.confirm(
+    const confirmed = await confirmAlert(
       "Are you sure you want to change the class status?",
     );
     if (!confirmed) return;
@@ -103,7 +112,7 @@ export const handleClassStatusUpdate = async ({
 
   setIsUpdatingData(false);
 
-  if (!result.success) return alert(result.message);
+  if (!result.success) return errorAlert(result.message);
 
   toast.success(result.message);
 

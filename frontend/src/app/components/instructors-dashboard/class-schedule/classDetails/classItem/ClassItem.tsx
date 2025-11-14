@@ -15,6 +15,7 @@ import {
   handleChildChange,
   handleClassStatusUpdate,
 } from "@/app/helper/utils/classItemHandlers";
+import { warningAlert } from "@/app/helper/utils/alertUtils";
 
 const ClassItem = ({
   instructorId,
@@ -152,7 +153,7 @@ const ClassItem = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   if (!hasTimePassed(classEndTime)) {
-                    return alert(
+                    return warningAlert(
                       "You can only edit attendance after the class has ended.",
                     );
                   }

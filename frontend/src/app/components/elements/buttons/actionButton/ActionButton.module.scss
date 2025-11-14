@@ -93,7 +93,8 @@
 .bookBtn,
 .addBtn,
 .submitBtn,
-.startBtn {
+.startBtn,
+.viewPastBtn {
   background-color: $blue_primary;
   transition:
     background-color 0.3s ease,
@@ -264,7 +265,7 @@
 .cancelEditingChild,
 .cancelEditingInstructor,
 .cancelEditingCustomer,
-.cancelEditingEven,
+.cancelEditingEvent,
 .cancelEditingPlan {
   background-color: #d9d9d9;
   transition:

@@ -1,6 +1,7 @@
 import { getInstructor } from "@/app/helper/api/instructorsApi";
 import InstructorCalendar from "../../instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendar";
 import InstructorDashboardClient from "@/app/components/admins-dashboard/instructors-dashboard/InstructorDashboardClient";
+import { getCookie } from "../../../../middleware";
 
 export default async function InstructorDashboardForAdmin({
   adminId,
@@ -11,9 +12,12 @@ export default async function InstructorDashboardForAdmin({
   instructorId: number;
   userSessionType: UserType;
 }) {
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   // Fetch instructor's data
   // [For InstructorProfile]
-  const data = await getInstructor(instructorId);
+  const data = await getInstructor(instructorId, cookie);
   let instructor = null;
   if ("message" in data) {
     instructor = data.message;

@@ -30,9 +30,11 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
+import { MASKED_HEAD_LETTERS, MASKED_BIRTHDATE } from "@/app/helper/data/data";
 import Uploader from "../../features/registerForm/uploadImages/Uploader";
 import { defaultUserImageUrl } from "@/app/helper/data/data";
 import Image from "next/image";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
 
 // Define the specific string fields that are editable in this component
 type EditableInstructorFields =
@@ -116,6 +118,7 @@ function InstructorProfile({
   const [leavingDate, setLeavingDate] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -141,16 +144,27 @@ function InstructorProfile({
     }
   };
 
-  const submissionConfirm = () => {
+  const submissionConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (leavingDate && !leavingDate.includes("T") && status === "leaving") {
       const updatedDate = leavingDate.replace(/-/g, "/");
-      setConfirmResult(
-        window.confirm(
-          `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
-        ),
+      const confirmed = await confirmAlert(
+        `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
       );
+      if (!confirmed) return;
     } else {
       setConfirmResult(true);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    if (formRef.current) {
+      const formData = new FormData(formRef.current);
+      formData.set("confirmResult", confirmResult.toString());
+      formAction(formData);
+    } else {
+      console.error("formRef is null");
     }
   };
 
@@ -194,7 +208,12 @@ function InstructorProfile({
     <>
       <div className={styles.container}>
         {latestInstructor ? (
-          <form action={formAction} className={styles.profileCard}>
+          <form
+            ref={formRef}
+            action={formAction}
+            className={styles.profileCard}
+            onSubmit={submissionConfirm}
+          >
             <Image
               src={
                 latestInstructor.icon.url === defaultUserImageUrl
@@ -307,13 +326,15 @@ function InstructorProfile({
                 ) : (
                   <h4 className={styles.birthdate__text}>
                     {latestInstructor.birthdate ? (
-                      <>
-                        {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
-                        {new Date(latestInstructor.birthdate).getDate()}
-                      </>
-                    ) : (
-                      "Not specified"
-                    )}
+                      latestInstructor.birthdate.includes(MASKED_BIRTHDATE) ? (
+                        MASKED_HEAD_LETTERS
+                      ) : (
+                        <>
+                          {getLongMonth(new Date(latestInstructor.birthdate))}{" "}
+                          {new Date(latestInstructor.birthdate).getDate()}
+                        </>
+                      )
+                    ) : null}
                   </h4>
                 )}
               </div>
@@ -475,7 +496,9 @@ function InstructorProfile({
                   ) : (
                     <h4 className={styles.email__text}>
                       {"email" in latestInstructor
-                        ? latestInstructor.email
+                        ? latestInstructor.email.includes(MASKED_HEAD_LETTERS)
+                          ? MASKED_HEAD_LETTERS
+                          : latestInstructor.email
                         : "Not available"}
                     </h4>
                   )}
@@ -515,7 +538,11 @@ function InstructorProfile({
                         className={styles.url}
                       >
                         {"classURL" in latestInstructor
-                          ? latestInstructor.classURL || "Not set"
+                          ? latestInstructor.classURL?.includes(
+                              MASKED_HEAD_LETTERS,
+                            )
+                            ? MASKED_HEAD_LETTERS
+                            : latestInstructor.classURL
                           : "Not available"}
                       </a>
                     </h4>
@@ -539,7 +566,11 @@ function InstructorProfile({
                     ) : (
                       <p>
                         {"meetingId" in latestInstructor
-                          ? latestInstructor.meetingId || "Not set"
+                          ? latestInstructor.meetingId?.includes(
+                              MASKED_HEAD_LETTERS,
+                            )
+                            ? MASKED_HEAD_LETTERS
+                            : latestInstructor.meetingId
                           : "Not available"}
                       </p>
                     )}
@@ -562,7 +593,11 @@ function InstructorProfile({
                     ) : (
                       <p>
                         {"passcode" in latestInstructor
-                          ? latestInstructor.passcode || "Not set"
+                          ? latestInstructor.passcode?.includes(
+                              MASKED_HEAD_LETTERS,
+                            )
+                            ? MASKED_HEAD_LETTERS
+                            : latestInstructor.passcode
                           : "Not available"}
                       </p>
                     )}
@@ -604,7 +639,11 @@ function InstructorProfile({
                         className={styles.url}
                       >
                         {"introductionURL" in latestInstructor
-                          ? latestInstructor.introductionURL || "Not set"
+                          ? latestInstructor.introductionURL?.includes(
+                              MASKED_HEAD_LETTERS,
+                            )
+                            ? MASKED_HEAD_LETTERS
+                            : latestInstructor.introductionURL
                           : "Not available"}
                       </a>
                     </h4>
@@ -631,14 +670,10 @@ function InstructorProfile({
               name="icon"
               value={latestInstructor.icon.url}
             />
-            <input
-              type="hidden"
-              name="confirmResult"
-              value={confirmResult.toString()}
-            />
 
             {/* Action buttons for only admin */}
-            {userSessionType === "admin" ? (
+            {userSessionType === "admin" &&
+            latestInstructor.name !== MASKED_HEAD_LETTERS ? (
               <>
                 {isEditing ? (
                   <div className={styles.buttons}>
@@ -657,7 +692,6 @@ function InstructorProfile({
                       btnText="Save"
                       type="submit"
                       Icon={CheckIcon}
-                      onClick={submissionConfirm}
                     />
                   </div>
                 ) : (

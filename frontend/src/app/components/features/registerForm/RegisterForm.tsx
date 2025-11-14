@@ -347,14 +347,25 @@ const RegisterForm = ({
           <p className={styles.required}>*Required</p>
           <TextInput
             id="name"
-            label="Plan Name"
+            label="Plan Name (Japanese)"
             type="text"
-            name="planName"
-            placeholder="e.g., 3,180 yen/month"
+            name="planNameJpn"
+            placeholder="e.g., 月3,180円プラン"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.name}
-            onChange={() => clearErrorMessage("name")}
+            error={localMessages.planNameJpn}
+            onChange={() => clearErrorMessage("planNameJpn")}
+          />
+          <TextInput
+            id="name"
+            label="Plan Name (English)"
+            type="text"
+            name="planNameEng"
+            placeholder="e.g., 3,180 yen/month Plan"
+            icon={<AcademicCapIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.planNameEng}
+            onChange={() => clearErrorMessage("planNameEng")}
           />
           <TextInput
             id="weeklyClassTimes"
@@ -386,15 +397,26 @@ const RegisterForm = ({
         <>
           <p className={styles.required}>*Required</p>
           <TextInput
-            id="name"
-            label="Event Name"
+            id="eventNameJpn"
+            label="Event Name (Japanese)"
             type="text"
-            name="eventName"
-            placeholder="e.g., アーソボイベント / AaasoBo! Event"
+            name="eventNameJpn"
+            placeholder="e.g., アーソボイベント"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
-            error={localMessages.name}
-            onChange={() => clearErrorMessage("name")}
+            error={localMessages.eventNameJpn}
+            onChange={() => clearErrorMessage("eventNameJpn")}
+          />
+          <TextInput
+            id="eventNameEng"
+            label="Event Name (English)"
+            type="text"
+            name="eventNameEng"
+            placeholder="e.g., AaasoBo! Event"
+            icon={<AcademicCapIcon className={styles.icon} />}
+            inputRequired
+            error={localMessages.eventNameEng}
+            onChange={() => clearErrorMessage("eventNameEng")}
           />
           <div className={styles.eventColor}>
             <TextInput

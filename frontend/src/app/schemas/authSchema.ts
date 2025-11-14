@@ -136,33 +136,67 @@ export const adminRegisterSchema = z
   });
 
 export const planRegisterSchema = z.object({
-  name: z.string().min(1, "Plan Name is required."),
+  planNameEng: z
+    .string()
+    .min(1, "Plan Name (English) is required.")
+    .refine((name) => /^[\p{ASCII}]+$/u.test(name), {
+      message: "Plan Name (English) must not contain Japanese characters.",
+    }),
+  planNameJpn: z
+    .string()
+    .min(1, "Plan Name (Japanese) is required.")
+    .refine((name) => /[^\x00-\x7F]+/.test(name), {
+      message: "Plan Name (Japanese) must contain Japanese characters.",
+    }),
   weeklyClassTimes: z.number(),
   description: z.string().min(1, "Description is required."),
 });
 
 export const eventRegisterSchema = z.object({
-  name: z
+  eventNameEng: z
     .string()
-    .min(1, "Event Name is required.")
-    .refine((name) => /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name), {
-      message: "Event Name must be in the format: 日本語名 / English Name",
+    .min(1, "Event Name (English) is required.")
+    .refine((name) => /^[a-zA-Z0-9 ]+$/.test(name), {
+      message: "Event Name (English) must contain only alphabetic characters.",
+    }),
+  eventNameJpn: z
+    .string()
+    .min(1, "Event Name (Japanese) is required.")
+    .refine((name) => /[^\x00-\x7F]+/.test(name), {
+      message: "Event Name (Japanese) must contain Japanese characters.",
     }),
   color: z.string().min(1, "Color Code is required."),
 });
 
 export const eventUpdateSchema = z.object({
-  name: z
+  eventNameEng: z
     .string()
-    .min(1, "Event Name is required.")
-    .refine((name) => /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/.test(name), {
-      message: "Event Name must be in the format: 日本語名 / English Name",
+    .min(1, "Event Name (English) is required.")
+    .refine((name) => /^[a-zA-Z0-9 ]+$/.test(name), {
+      message: "Event Name (English) must contain only alphabetic characters.",
+    }),
+  eventNameJpn: z
+    .string()
+    .min(1, "Event Name (Japanese) is required.")
+    .refine((name) => /[^\x00-\x7F]+/.test(name), {
+      message: "Event Name (Japanese) must contain Japanese characters.",
     }),
   color: z.string().min(1, "Color Code is required."),
 });
 
 export const planUpdateSchema = z.object({
-  name: z.string().min(1, "Plan Name is required."),
+  planNameEng: z
+    .string()
+    .min(1, "Plan Name (English) is required.")
+    .refine((name) => /^[\p{ASCII}]+$/u.test(name), {
+      message: "Plan Name (English) must not contain Japanese characters.",
+    }),
+  planNameJpn: z
+    .string()
+    .min(1, "Plan Name (Japanese) is required.")
+    .refine((name) => /[^\x00-\x7F]+/.test(name), {
+      message: "Plan Name (Japanese) must contain Japanese characters.",
+    }),
   description: z.string().min(1, "Description is required."),
 });
 

@@ -5,6 +5,7 @@ import { useState } from "react";
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { CHILD_PROFILE_REQUIRED_MESSAGE } from "@/app/helper/messages/customerDashboard";
+import { errorAlert } from "@/app/helper/utils/alertUtils";
 
 export default function RebookingModalController({
   rebookableClasses,
@@ -23,7 +24,7 @@ export default function RebookingModalController({
 
   const handleRebookingClick = () => {
     if (!hasChildProfile)
-      return alert(CHILD_PROFILE_REQUIRED_MESSAGE[language]);
+      return errorAlert(CHILD_PROFILE_REQUIRED_MESSAGE[language]);
     setIsRebookingModalOpen(true);
   };
 

@@ -1,8 +1,13 @@
 "use server";
 
 import { deleteEvent } from "@/app/helper/api/eventsApi";
+import { deletePlan } from "@/app/helper/api/plansApi";
 import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { revalidateEventList, revalidateSubscriptionList } from "./revalidate";
+import {
+  revalidateEventList,
+  revalidatePlanList,
+  revalidateSubscriptionList,
+} from "./revalidate";
 import { getCookie } from "../../middleware";
 import { deleteSubscription } from "../helper/api/subscriptionsApi";
 
@@ -22,6 +27,32 @@ export async function deleteEventAction(
 
     // Refresh cached event data for the event list page
     revalidateEventList();
+
+    return response;
+  } catch (error) {
+    console.error("Unexpected error in deleteContent server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+}
+
+export async function deletePlanAction(
+  prevState: DeleteFormState | undefined,
+  formData: FormData,
+): Promise<DeleteFormState> {
+  try {
+    // Hidden input tag field
+    const id = Number(formData.get("id"));
+
+    // Get the cookies from the request headers
+    const cookie = await getCookie();
+
+    // Delete the plan using the API
+    const response = await deletePlan(id, cookie);
+
+    // Refresh cached plan data for the plan list page
+    revalidatePlanList();
 
     return response;
   } catch (error) {

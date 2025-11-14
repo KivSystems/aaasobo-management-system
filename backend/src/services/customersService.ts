@@ -98,6 +98,16 @@ export const deactivateCustomer = async (id: number) => {
 export const getAllCustomers = async () => {
   try {
     return await prisma.customer.findMany({
+      where: { terminationAt: null }, // Active customers only
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        prefecture: true,
+        children: {
+          select: { name: true },
+        },
+      },
       orderBy: {
         id: "asc",
       },
@@ -105,6 +115,29 @@ export const getAllCustomers = async () => {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch customers.");
+  }
+};
+
+// Fetch all past customers information
+export const getAllPastCustomers = async () => {
+  try {
+    return await prisma.customer.findMany({
+      where: { terminationAt: { not: null } }, // Past customers only
+      select: {
+        id: true,
+        name: true,
+        children: {
+          select: { name: true },
+        },
+        terminationAt: true,
+      },
+      orderBy: {
+        terminationAt: "asc",
+      },
+    });
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch past customers.");
   }
 };
 

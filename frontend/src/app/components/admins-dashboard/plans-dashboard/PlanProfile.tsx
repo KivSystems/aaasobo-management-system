@@ -2,9 +2,10 @@
 
 import styles from "./PlanProfile.module.scss";
 import { toast } from "react-toastify";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useFormState } from "react-dom";
 import { updatePlanAction } from "@/app/actions/updateContent";
+import { deletePlanAction } from "@/app/actions/deleteContent";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
@@ -18,6 +19,8 @@ import {
   CONTENT_UPDATE_SUCCESS_MESSAGE,
   CONTENT_DELETE_SUCCESS_MESSAGE,
 } from "@/app/helper/messages/formValidation";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
+import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 
 function PlanProfile({
   plan,
@@ -26,24 +29,52 @@ function PlanProfile({
   plan: Plan | string;
   userSessionType?: UserType;
 }) {
+  // Use `useFormState` hook for updating an plan profile
   const [updateResultState, formAction] = useFormState(updatePlanAction, {});
+  // Use `useState` hook and FormData for deleting an plan profile
+  const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
+    {},
+  );
   const [previousPlan, setPreviousPlan] = useState<Plan | null>(
-    typeof plan !== "string" ? plan : null,
+    typeof plan !== "string"
+      ? {
+          ...plan,
+          planNameEng: getLocalizedText(plan.name, "en"),
+          planNameJpn: getLocalizedText(plan.name, "ja"),
+        }
+      : null,
   );
   const [latestPlan, setLatestPlan] = useState<Plan | null>(
-    typeof plan !== "string" ? plan : null,
+    typeof plan !== "string"
+      ? {
+          ...plan,
+          planNameEng: getLocalizedText(plan.name, "en"),
+          planNameJpn: getLocalizedText(plan.name, "ja"),
+        }
+      : null,
   );
   const [isEditing, setIsEditing] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState<boolean | null>(null);
+  // Handle form messages manually for UpdateFormState
+  const [localMessages, setLocalMessages] = useState<Record<string, string>>(
+    {},
+  );
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
-  const handleDeleteClick = () => {
-    setConfirmDelete(
-      window.confirm(`Are you sure you want to delete this plan?`),
+  const handleDeleteClick = async () => {
+    const confirmed = await confirmAlert(
+      "Are you sure you want to delete this plan?",
     );
+
+    if (confirmed && latestPlan) {
+      const formData = new FormData();
+      formData.append("id", String(latestPlan.id));
+
+      const result = await deletePlanAction(deleteResultState, formData);
+      setDeleteResultState(result);
+    }
   };
 
   const handleInputChange = (
@@ -55,10 +86,25 @@ function PlanProfile({
     }
   };
 
+  const clearErrorMessage = useCallback((field: string) => {
+    setLocalMessages((prev) => {
+      if (field === "all") {
+        return {};
+      }
+      const updatedMessages = { ...prev };
+      delete updatedMessages[field];
+      delete updatedMessages.errorMessage;
+      return updatedMessages;
+    });
+  }, []);
+
   const handleCancelClick = () => {
     if (latestPlan) {
       setLatestPlan(previousPlan);
       setIsEditing(false);
+      clearErrorMessage("planNameJpn");
+      clearErrorMessage("planNameEng");
+      clearErrorMessage("description");
     }
   };
 
@@ -66,30 +112,42 @@ function PlanProfile({
     if (updateResultState !== undefined) {
       if ("plan" in updateResultState) {
         const result = updateResultState as { plan: Plan };
-
-        if (result.plan.terminationAt) {
-          toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("plan"));
-          setPreviousPlan(null);
-          setLatestPlan(null);
-        } else {
-          toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("plan"));
-          setIsEditing(false);
-          setPreviousPlan(result.plan);
-          setLatestPlan(result.plan);
-        }
-
-        // Clear updateResultState to avoid re-rendering
-        updateResultState.plan = null;
+        toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("plan"));
+        setIsEditing(false);
+        setPreviousPlan({
+          ...result.plan,
+          planNameEng: getLocalizedText(result.plan.name, "en"),
+          planNameJpn: getLocalizedText(result.plan.name, "ja"),
+        });
+        setLatestPlan({
+          ...result.plan,
+          planNameEng: getLocalizedText(result.plan.name, "en"),
+          planNameJpn: getLocalizedText(result.plan.name, "ja"),
+        });
         return;
-      } else if ("skipProcessing" in updateResultState) {
+
+        // Check if the deleteResultState has changed
+      } else if ("id" in deleteResultState && deleteResultState.id) {
+        toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("plan"));
+        setIsEditing(false);
+        setPreviousPlan(null);
+        setLatestPlan(null);
+        // Clear deleteResultState to avoid re-rendering
+        deleteResultState.id = null;
         return;
       } else {
-        const result = updateResultState as { errorMessage: string };
-        toast.error(result.errorMessage);
+        const newMessages: Record<string, string> = {};
+        if (updateResultState.planNameJpn)
+          newMessages.planNameJpn = updateResultState.planNameJpn;
+        if (updateResultState.planNameEng)
+          newMessages.planNameEng = updateResultState.planNameEng;
+        if (updateResultState.errorMessage)
+          newMessages.errorMessage = updateResultState.errorMessage;
+        setLocalMessages(newMessages);
         return;
       }
     }
-  }, [updateResultState]);
+  }, [updateResultState, deleteResultState]);
 
   if (typeof plan === "string") {
     return <p>{plan}</p>;
@@ -107,14 +165,27 @@ function PlanProfile({
             <div className={styles.profileCard}>
               {/* Plan name */}
               <div className={styles.planName__nameSection}>
-                <p className={styles.planName__text}>Plan</p>
                 {isEditing ? (
-                  <InputField
-                    name="planName"
-                    value={latestPlan.name}
-                    onChange={(e) => handleInputChange(e, "name")}
-                    className={`${styles.planName__inputField} ${isEditing ? styles.editable : ""}`}
-                  />
+                  <div>
+                    <p className={styles.planName__text}>
+                      Plan Name (Japanese)
+                    </p>
+                    <InputField
+                      name="planNameJpn"
+                      value={latestPlan.planNameJpn}
+                      onChange={(e) => handleInputChange(e, "planNameJpn")}
+                      error={localMessages.planNameJpn}
+                      className={`${styles.planName__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                    <p className={styles.planName__text}>Plan Name (English)</p>
+                    <InputField
+                      name="planNameEng"
+                      value={latestPlan.planNameEng}
+                      onChange={(e) => handleInputChange(e, "planNameEng")}
+                      error={localMessages.planNameEng}
+                      className={`${styles.planName__inputField} ${isEditing ? styles.editable : ""}`}
+                    />
+                  </div>
                 ) : (
                   <h3 className={styles.planName__name}>{latestPlan.name}</h3>
                 )}
@@ -164,6 +235,7 @@ function PlanProfile({
                       name="description"
                       value={latestPlan.description}
                       onChange={(e) => handleInputChange(e, "description")}
+                      error={localMessages.description}
                       className={`${styles.planDescription__inputField} ${isEditing ? styles.editable : ""}`}
                     />
                   ) : (
@@ -175,12 +247,7 @@ function PlanProfile({
               </div>
 
               {/* Hidden input field */}
-              <input type="hidden" name="id" value={latestPlan.id} />
-              <input
-                type="hidden"
-                name="confirmDelete"
-                value={confirmDelete ? confirmDelete.toString() : ""}
-              />
+              <input type="hidden" name="planId" value={latestPlan.id} />
 
               {/* Action buttons for only admin */}
               {userSessionType === "admin" ? (
@@ -209,7 +276,7 @@ function PlanProfile({
                         <ActionButton
                           className="deletePlan"
                           btnText="Delete"
-                          type="submit"
+                          type="button"
                           onClick={handleDeleteClick}
                         />
                       </div>

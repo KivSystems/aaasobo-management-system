@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import {
   getAllPlansController,
   getPlanController,
@@ -10,6 +10,8 @@ import {
   PlansListResponse,
 } from "../../../shared/schemas/plans";
 import { MessageErrorResponse } from "../../../shared/schemas/common";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
+import { AUTH_ROLES } from "../helper/commonUtils";
 
 export const plansRouter = express.Router();
 
@@ -18,6 +20,7 @@ export const plansRouter = express.Router();
 // Route configurations with Zod validation
 const getAllPlansConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getAllPlansController,
   openapi: {
     summary: "Get all active plans",
@@ -37,6 +40,7 @@ const getAllPlansConfig = {
 
 const getPlanConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getPlanController,
   paramsSchema: PlanIdParams,
   openapi: {

@@ -3,6 +3,7 @@
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import PlanProfile from "@/app/components/admins-dashboard/plans-dashboard/PlanProfile";
 import { useTabSelect } from "@/app/hooks/useTabSelect";
+import { getLocalizedText } from "@/app/helper/utils/stringUtils";
 import Loading from "@/app/components/elements/loading/Loading";
 
 export default function PlanTabs({
@@ -16,10 +17,12 @@ export default function PlanTabs({
   plan: Plan | string;
   userSessionType: UserType;
 }) {
+  const planName =
+    typeof plan !== "string" ? getLocalizedText(plan.name, "en") : "Unknown";
   const breadcrumb = [
     "Plan List",
     `/admins/${userId}/plan-list`,
-    `ID: ${planId}`,
+    `Plan Page (${planName})`,
   ];
   const activeTabName = "activePlanTab";
 

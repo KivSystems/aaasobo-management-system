@@ -5,6 +5,7 @@ import {
 import { businessCalendarValidRange } from "@/app/helper/utils/calendarUtils";
 import BusinessCalendarClient from "@/app/components/admins-dashboard/BusinessCalendarClient";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import { getCookie } from "../../../../../middleware";
 
 const Page = async ({ params }: { params: { id: string } }) => {
   // Authenticate user session
@@ -14,10 +15,13 @@ const Page = async ({ params }: { params: { id: string } }) => {
     adminId,
   );
 
+  // Get the cookies from the request headers
+  const cookie = await getCookie();
+
   // Fetch all schedule data
-  const schedule = await getAllBusinessSchedules();
+  const schedule = await getAllBusinessSchedules(cookie);
   // Fetch all events data
-  const data = await getAllEvents();
+  const data = await getAllEvents(cookie);
   // Organize the event data by id and event name
   const events: BusinessEventType[] = [
     ...data.map((item: EventColor) => ({

@@ -10,6 +10,7 @@ import { UsersIcon } from "@heroicons/react/24/solid";
 import { rebookClass } from "@/app/helper/api/classesApi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { errorAlert, warningAlert } from "@/app/helper/utils/alertUtils";
 
 interface ProgressiveBookingFlowProps {
   classId: number;
@@ -215,7 +216,7 @@ export default function ProgressiveBookingFlow({
       !selectedDateTime ||
       selectedChildrenIds.length === 0
     ) {
-      alert(
+      warningAlert(
         language === "ja"
           ? "必要な項目をすべて選択してください"
           : "Please select all required items",
@@ -225,7 +226,7 @@ export default function ProgressiveBookingFlow({
 
     // Validate that we have child profiles and customerId
     if (childProfiles.length === 0) {
-      alert(
+      errorAlert(
         language === "ja"
           ? "子供のプロフィールが見つかりません"
           : "No child profiles found",
@@ -234,7 +235,7 @@ export default function ProgressiveBookingFlow({
     }
 
     if (!customerId) {
-      alert(
+      errorAlert(
         language === "ja" ? "顧客IDが見つかりません" : "Customer ID not found",
       );
       return;
@@ -262,13 +263,13 @@ export default function ProgressiveBookingFlow({
         window.location.reload();
       } else {
         // Show error message with alert
-        alert(
+        errorAlert(
           result.errorMessage.en || result.errorMessage.ja || "Booking failed",
         );
       }
     } catch (error) {
       console.error("Booking failed:", error);
-      alert(language === "ja" ? "予約に失敗しました" : "Booking failed");
+      errorAlert(language === "ja" ? "予約に失敗しました" : "Booking failed");
     } finally {
       setIsBooking(false);
     }

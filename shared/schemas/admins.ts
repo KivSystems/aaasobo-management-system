@@ -86,7 +86,8 @@ export const UpdateInstructorRequest = z.object({
 
 // Plan schemas
 export const RegisterPlanRequest = z.object({
-  name: z.string().min(1, "Plan name is required"),
+  planNameEng: z.string().min(1, "Plan name (English) is required"),
+  planNameJpn: z.string().min(1, "Plan name (Japanese) is required"),
   weeklyClassTimes: z
     .number()
     .int()
@@ -94,38 +95,45 @@ export const RegisterPlanRequest = z.object({
   description: z.string().min(1, "Description is required"),
 });
 
-export const UpdatePlanRequest = z.discriminatedUnion("isDelete", [
-  // Deletion request
-  z.object({
-    isDelete: z.literal(true),
-  }),
-  // Update request: both fields required
-  z.object({
-    isDelete: z.literal(false),
-    name: z.string().min(1, "Plan name is required"),
-    description: z.string().min(1, "Description is required"),
-  }),
-]);
+export const UpdatePlanRequest = z.object({
+  planNameEng: z.string().min(1, "Plan name (English) is required"),
+  planNameJpn: z.string().min(1, "Plan name (Japanese) is required"),
+  description: z.string().min(1, "Description is required"),
+});
 
 // Event schemas
 export const RegisterEventRequest = z.object({
-  name: z
+  eventNameJpn: z
     .string()
-    .min(1, "Event name is required")
+    .min(1, "Event Name (Japanese) is required.")
     .regex(
-      /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/,
-      "Event Name must be in the format: 日本語名 / English Name",
+      /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}a-zA-Z0-9 /¥,.\-ー・々〇@!()]+$/u,
+      "Event Name (Japanese) must contain Japanese characters.",
+    ),
+  eventNameEng: z
+    .string()
+    .min(1, "Event Name (English) is required.")
+    .regex(
+      /^[a-zA-Z0-9 /¥,.\-@!_()]+$/,
+      "Event Name (English) must contain alphanumeric characters.",
     ),
   color: z.string().min(1, "Color is required"),
 });
 
 export const UpdateEventRequest = z.object({
-  name: z
+  eventNameJpn: z
     .string()
-    .min(1, "Event name is required")
+    .min(1, "Event Name (Japanese) is required.")
     .regex(
-      /^([^\x00-\x7F]+) \/ ([a-zA-Z0-9 ]+)$/,
-      "Event Name must be in the format: 日本語名 / English Name",
+      /^[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}a-zA-Z0-9 /¥,.\-ー・々〇@!()]+$/u,
+      "Event Name (Japanese) must contain Japanese characters.",
+    ),
+  eventNameEng: z
+    .string()
+    .min(1, "Event Name (English) is required.")
+    .regex(
+      /^[a-zA-Z0-9 /¥,.\-@!_()]+$/,
+      "Event Name (English) must contain only alphanumeric characters.",
     ),
   color: z.string().min(1, "Color is required"),
 });
@@ -166,7 +174,7 @@ export const InstructorListItem = z.object({
   No: z.number(),
   ID: z.number(),
   Instructor: z.string(),
-  Nickname: z.string(),
+  "Full Name": z.string(),
   Email: z.string(),
 });
 
@@ -174,17 +182,43 @@ export const InstructorsListResponse = z.object({
   data: z.array(InstructorListItem),
 });
 
+// Past instructor list item for table display
+export const PastInstructorListItem = z.object({
+  No: z.number(),
+  ID: z.number(),
+  "Past Instructor": z.string(),
+  "End Date (JST)": z.string(),
+});
+
+export const PastInstructorsListResponse = z.object({
+  data: z.array(PastInstructorListItem),
+});
+
 // Customer list item for table display
 export const CustomerListItem = z.object({
   No: z.number(),
   ID: z.number(),
   Customer: z.string(),
+  Children: z.string().nullable(),
   Email: z.string(),
   Prefecture: z.string(),
 });
 
 export const CustomersListResponse = z.object({
   data: z.array(CustomerListItem),
+});
+
+// Past customer list item for table display
+export const PastCustomerListItem = z.object({
+  No: z.number(),
+  ID: z.number(),
+  "Past Customer": z.string(),
+  "Past Children": z.string().nullable(),
+  "End Date (JST)": z.string(),
+});
+
+export const PastCustomersListResponse = z.object({
+  data: z.array(PastCustomerListItem),
 });
 
 // Child list item for table display
@@ -206,7 +240,8 @@ export const ChildrenListResponse = z.object({
 export const PlanListItem = z.object({
   No: z.number(),
   ID: z.number(),
-  Plan: z.string(),
+  "Plan (Japanese)": z.string(),
+  "Plan (English)": z.string(),
   "Weekly Class Times": z.number(),
   Description: z.string(),
 });
@@ -233,6 +268,8 @@ export const EventListItem = z.object({
   No: z.number(),
   ID: z.number(),
   Event: z.string(),
+  "Event (Japanese)": z.string(),
+  "Event (English)": z.string(),
   "Color Code": z.string(),
 });
 
@@ -244,10 +281,13 @@ export const EventsListResponse = z.object({
 export const ClassListItem = z.object({
   No: z.number(),
   ID: z.number(),
+  "Date/Time (JST)": z.string(),
+  Day: z.string(),
   Instructor: z.string(),
+  InstructorID: z.number().nullable(),
+  Children: z.string().nullable(),
   Customer: z.string(),
-  Date: z.string(),
-  "JP Time": z.string(),
+  CustomerID: z.number(),
   Status: z.string(),
   "Class Code": z.string(),
 });
@@ -364,7 +404,13 @@ export type AdminProfile = z.infer<typeof AdminProfile>;
 export type AdminResponse = z.infer<typeof AdminResponse>;
 export type AdminsListResponse = z.infer<typeof AdminsListResponse>;
 export type InstructorsListResponse = z.infer<typeof InstructorsListResponse>;
+export type PastInstructorsListResponse = z.infer<
+  typeof PastInstructorsListResponse
+>;
 export type CustomersListResponse = z.infer<typeof CustomersListResponse>;
+export type PastCustomersListResponse = z.infer<
+  typeof PastCustomersListResponse
+>;
 export type ChildrenListResponse = z.infer<typeof ChildrenListResponse>;
 export type PlansListResponse = z.infer<typeof PlansListResponse>;
 export type SubscriptionsListResponse = z.infer<

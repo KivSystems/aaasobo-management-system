@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import {
   getSubscriptionsByIdController,
   registerCustomerController,
@@ -34,6 +34,8 @@ import {
   ChildProfilesResponse,
 } from "../../../shared/schemas/customers";
 import { ErrorResponse } from "../../../shared/schemas/common";
+import { verifyAuthentication } from "../middlewares/auth.middleware";
+import { AUTH_ROLES } from "../helper/commonUtils";
 
 export const customersRouter = express.Router();
 
@@ -90,6 +92,11 @@ const verifyEmailConfig = {
 
 const getSubscriptionsConfig = {
   method: "get" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: getSubscriptionsByIdController,
   paramsSchema: CustomerIdParams,
   openapi: {
@@ -108,6 +115,11 @@ const getSubscriptionsConfig = {
 
 const getCustomerProfileConfig = {
   method: "get" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: getCustomerByIdController,
   paramsSchema: CustomerIdParams,
   openapi: {
@@ -127,6 +139,11 @@ const getCustomerProfileConfig = {
 
 const updateCustomerProfileConfig = {
   method: "patch" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: updateCustomerProfileController,
   paramsSchema: CustomerIdParams,
   bodySchema: UpdateCustomerProfileRequest,
@@ -146,6 +163,11 @@ const updateCustomerProfileConfig = {
 
 const getRebookableClassesConfig = {
   method: "get" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: getRebookableClassesController,
   paramsSchema: CustomerIdParams,
   openapi: {
@@ -164,6 +186,11 @@ const getRebookableClassesConfig = {
 
 const getUpcomingClassesConfig = {
   method: "get" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: getUpcomingClassesController,
   paramsSchema: CustomerIdParams,
   openapi: {
@@ -182,6 +209,11 @@ const getUpcomingClassesConfig = {
 
 const getCustomerClassesConfig = {
   method: "get" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: getClassesController,
   paramsSchema: CustomerIdParams,
   openapi: {
@@ -200,6 +232,11 @@ const getCustomerClassesConfig = {
 
 const getChildProfilesConfig = {
   method: "get" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: getChildProfilesController,
   paramsSchema: CustomerIdParams,
   openapi: {
@@ -215,6 +252,11 @@ const getChildProfilesConfig = {
 
 const markWelcomeSeenConfig = {
   method: "patch" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: markWelcomeSeenController,
   paramsSchema: CustomerIdParams,
   openapi: {
@@ -230,6 +272,11 @@ const markWelcomeSeenConfig = {
 
 const declineFreeTrialConfig = {
   method: "patch" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AC, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: declineFreeTrialClassController,
   paramsSchema: CustomerIdParams,
   bodySchema: DeclineFreeTrialRequest,
@@ -247,6 +294,11 @@ const declineFreeTrialConfig = {
 
 const registerSubscriptionConfig = {
   method: "post" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.A, {
+      requireIdCheck: AUTH_ROLES.C,
+    }),
+  ] as RequestHandler[],
   handler: registerSubscriptionController,
   paramsSchema: CustomerIdParams,
   bodySchema: RegisterSubscriptionRequest,

@@ -15,6 +15,7 @@ import {
 import { ErrorResponse } from "../../../shared/schemas/common";
 import { RouteConfig } from "../openapi/routerRegistry";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
+import { AUTH_ROLES } from "../helper/commonUtils";
 
 export const subscriptionsRouter = express.Router();
 
@@ -22,6 +23,7 @@ export const subscriptionsRouter = express.Router();
 
 const getSubscriptionByIdConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: getSubscriptionByIdController,
   paramsSchema: SubscriptionIdParams,
   openapi: {
@@ -50,8 +52,8 @@ const getSubscriptionByIdConfig = {
 
 const deleteSubscription = {
   method: "delete" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: deleteSubscriptionController,
-  middleware: [verifyAuthentication] as RequestHandler[],
   paramsSchema: SubscriptionIdParams,
   openapi: {
     summary: "Delete a subscription",

@@ -1,5 +1,6 @@
 "use client";
 
+import styles from "./BusinessCalendarClient.module.scss";
 import FullCalendar from "@fullcalendar/react";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -16,6 +17,7 @@ import { CONTENT_UPDATE_SUCCESS_MESSAGE } from "@/app/helper/messages/formValida
 import { getAllBusinessSchedules } from "@/app/helper/api/adminsApi";
 import { getDayCellColorHandler } from "@/app/helper/utils/calendarUtils";
 import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLegend";
+import { warningAlert } from "@/app/helper/utils/alertUtils";
 
 const BusinessCalendarClient = ({
   businessSchedule: initialSchedule,
@@ -89,7 +91,11 @@ const BusinessCalendarClient = ({
 
     // If the start date is the current date or before, do not allow selection
     if (startDate < new Date()) {
-      alert("Cannot select past dates.");
+      warningAlert(
+        language === "ja"
+          ? "過去の日付は選択できません。"
+          : "Cannot select past dates.",
+      );
       return;
     }
 
@@ -173,45 +179,55 @@ const BusinessCalendarClient = ({
 
   return (
     <>
-      <FullCalendar
-        key={scheduleVersion}
-        ref={calendarRef}
-        plugins={[interactionPlugin, multiMonthPlugin]}
-        initialView="multiMonthYear"
-        initialDate={getInitialDate()}
-        headerToolbar={{ left: "prev,next today", center: "title", right: "" }}
-        timeZone="Asia/Tokyo"
-        locale={language === "ja" ? "ja" : "en"}
-        dayCellContent={(arg) => {
-          return { html: String(arg.date.getDate()) };
-        }}
-        contentHeight="auto"
-        selectable
-        multiMonthMinWidth={300}
-        showNonCurrentDates={false}
-        validRange={validRange}
-        dayCellDidMount={dayCellColors}
-        select={handleDateSelect}
-      />
-      {events.length > 0 && (
-        <CalendarLegend colorsForEvents={colorsForEvents} language={language} />
-      )}
-      {userSessionType === "admin" && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          className="businessCalendarModal"
-        >
-          <form action={formAction}>
-            <BusinessCalendarModal
-              selectedDates={selectedDates}
-              events={events}
-              localMessages={localMessages}
-              clearErrorMessage={clearErrorMessage}
-            />
-          </form>
-        </Modal>
-      )}
+      <div className={styles.calendarContainer}>
+        <FullCalendar
+          key={scheduleVersion}
+          ref={calendarRef}
+          plugins={[interactionPlugin, multiMonthPlugin]}
+          initialView="multiMonthYear"
+          initialDate={getInitialDate()}
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "",
+          }}
+          timeZone="Asia/Tokyo"
+          locale={language === "ja" ? "ja" : "en"}
+          dayCellContent={(arg) => {
+            return { html: String(arg.date.getDate()) };
+          }}
+          contentHeight="auto"
+          selectable={userSessionType === "admin"}
+          multiMonthMinWidth={100}
+          multiMonthMaxColumns={4}
+          showNonCurrentDates={false}
+          validRange={validRange}
+          dayCellDidMount={dayCellColors}
+          select={handleDateSelect}
+        />
+        {events.length > 0 && (
+          <CalendarLegend
+            colorsForEvents={colorsForEvents}
+            language={language}
+          />
+        )}
+        {userSessionType === "admin" && (
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            className="businessCalendarModal"
+          >
+            <form action={formAction}>
+              <BusinessCalendarModal
+                selectedDates={selectedDates}
+                events={events}
+                localMessages={localMessages}
+                clearErrorMessage={clearErrorMessage}
+              />
+            </form>
+          </Modal>
+        )}
+      </div>
     </>
   );
 };

@@ -59,9 +59,11 @@ import {
   addInstructorAbsenceController,
   removeInstructorAbsenceController,
 } from "../../src/controllers/instructorAbsenceController";
+import { AUTH_ROLES } from "../helper/commonUtils";
 
 const profilesConfig = {
   method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
   handler: getInstructorProfilesController,
   openapi: {
     summary: "Get instructor profiles",
@@ -81,7 +83,7 @@ const profilesConfig = {
 
 const allProfilesConfig = {
   method: "get" as const,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.C)] as RequestHandler[],
   handler: getAllInstructorProfilesController,
   openapi: {
     summary: "Get all instructor profiles",
@@ -111,6 +113,11 @@ const allProfilesConfig = {
 const instructorByIdConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AI, {
+      requireIdCheck: AUTH_ROLES.I,
+    }),
+  ] as RequestHandler[],
   handler: getInstructor,
   openapi: {
     summary: "Get instructor by ID",
@@ -139,6 +146,11 @@ const instructorByIdConfig = {
 const instructorProfileConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AI, {
+      requireIdCheck: AUTH_ROLES.I,
+    }),
+  ] as RequestHandler[],
   handler: getInstructorProfileController,
   openapi: {
     summary: "Get simple instructor profile",
@@ -165,6 +177,7 @@ const instructorProfileConfig = {
 const instructorSchedulesConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getInstructorSchedulesController,
   openapi: {
     summary: "Get instructor schedules",
@@ -189,6 +202,7 @@ const instructorSchedulesConfig = {
 const classInstructorConfig = {
   method: "get" as const,
   paramsSchema: ClassIdParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getInstructorIdByClassIdController,
   openapi: {
     summary: "Get instructor ID by class ID",
@@ -217,6 +231,7 @@ const classInstructorConfig = {
 const availableSlotsConfig = {
   method: "get" as const,
   querySchema: AvailableSlotsQuery,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: getAllAvailableSlotsController,
   openapi: {
     summary: "Get all available instructor slots",
@@ -242,6 +257,11 @@ const availableSlotsConfig = {
 const sameDateClassesConfig = {
   method: "get" as const,
   paramsSchema: InstructorClassParams,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AI, {
+      requireIdCheck: AUTH_ROLES.I,
+    }),
+  ] as RequestHandler[],
   handler: getSameDateClassesController,
   openapi: {
     summary: "Get same-date classes",
@@ -266,6 +286,11 @@ const sameDateClassesConfig = {
 const calendarClassesConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.AI, {
+      requireIdCheck: AUTH_ROLES.I,
+    }),
+  ] as RequestHandler[],
   handler: getCalendarClassesController,
   openapi: {
     summary: "Get instructor calendar classes",
@@ -290,6 +315,7 @@ const activeScheduleConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
   querySchema: ActiveScheduleQuery,
+  middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
   handler: getActiveInstructorScheduleController,
   openapi: {
     summary: "Get active instructor schedule",
@@ -318,6 +344,7 @@ const activeScheduleConfig = {
 const scheduleByIdConfig = {
   method: "get" as const,
   paramsSchema: InstructorScheduleParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getInstructorScheduleController,
   openapi: {
     summary: "Get instructor schedule by ID",
@@ -348,7 +375,7 @@ const createScheduleConfig = {
   method: "post" as const,
   paramsSchema: InstructorIdParams,
   bodySchema: CreateScheduleRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: createInstructorScheduleController,
   openapi: {
     summary: "Create instructor schedule",
@@ -378,6 +405,7 @@ const instructorAvailableSlotsConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
   querySchema: InstructorAvailableSlotsQuery,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: getInstructorAvailableSlotsController,
   openapi: {
     summary: "Get instructor available slots",
@@ -406,6 +434,7 @@ const instructorAvailableSlotsConfig = {
 const instructorAbsencesConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getInstructorAbsencesController,
   openapi: {
     summary: "Get instructor absences",
@@ -431,7 +460,7 @@ const createAbsenceConfig = {
   method: "post" as const,
   paramsSchema: InstructorIdParams,
   bodySchema: CreateAbsenceRequest,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: addInstructorAbsenceController,
   openapi: {
     summary: "Add instructor absence",
@@ -460,7 +489,7 @@ const createAbsenceConfig = {
 const deleteAbsenceConfig = {
   method: "delete" as const,
   paramsSchema: InstructorAbsenceParams,
-  middleware: [verifyAuthentication] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: removeInstructorAbsenceController,
   openapi: {
     summary: "Remove instructor absence",
@@ -486,6 +515,7 @@ const deleteAbsenceConfig = {
   },
 } as const;
 
+// Only for cron job use
 const postTerminationScheduleConfig = {
   method: "post" as const,
   handler: createInstructorPostTerminationScheduleController,

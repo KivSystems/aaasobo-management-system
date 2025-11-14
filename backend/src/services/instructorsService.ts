@@ -89,6 +89,24 @@ export const getAllInstructors = async () => {
   }
 };
 
+// Fetch all instructors information
+export const getAllPastInstructors = async () => {
+  try {
+    const now = new Date();
+    return await prisma.instructor.findMany({
+      where: {
+        OR: [
+          { terminationAt: { lte: now } }, // Past termination
+        ],
+      },
+      orderBy: { terminationAt: "asc" },
+    });
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch past instructors.");
+  }
+};
+
 export async function getInstructorById(id: number) {
   try {
     return prisma.instructor.findUnique({
@@ -352,7 +370,7 @@ export const maskInstructors = async (instructors: Instructor[]) => {
             classURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             meetingId: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             passcode: `${maskedHeadLetters}_${suffix}${instructor.id}`,
-            introductionURL: maskedHeadLetters,
+            introductionURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
           },
         }),
       ),

@@ -1,6 +1,5 @@
 import {
   ITEM_REQUIRED_ERROR,
-  ITEM_ALREADY_REGISTERED_ERROR,
   GENERAL_ERROR_MESSAGE,
   CONTENT_REGISTRATION_SUCCESS_MESSAGE,
 } from "../messages/formValidation";
@@ -14,10 +13,40 @@ const BASE_URL = `${BACKEND_ORIGIN}/plans`;
 type Response<T> = T | { message: string };
 
 // GET all plans data
-export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {
+export const getAllPlans = async (
+  cookie?: string,
+): Promise<PlansListResponse["data"]> => {
   try {
-    const response = await fetch(`${BASE_URL}`);
-    if (!response.ok) {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
+
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/plans`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const { data }: PlansListResponse = await response.json();
@@ -31,31 +60,72 @@ export const getAllPlans = async (): Promise<PlansListResponse["data"]> => {
 // Get plan by ID
 export const getPlanById = async (
   id: number,
+  cookie?: string,
 ): Promise<Response<PlanResponse>> => {
-  const apiUrl = `${BASE_URL}/${id}`;
-  const data: Response<PlanResponse> = await fetch(apiUrl, {
-    cache: "no-store",
-  }).then((res) => res.json());
+  try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
 
-  return data;
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/${id}`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/plans/${id}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    const data: Response<PlanResponse> = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch plan by ID:", error);
+    return { message: GENERAL_ERROR_MESSAGE };
+  }
 };
 
 // Register a new plan
 export const registerPlan = async (userData: {
-  name: string;
+  planNameEng: string;
+  planNameJpn: string;
   weeklyClassTimes: number;
   description: string;
   cookie: string;
 }): Promise<RegisterFormState> => {
   try {
-    const registerURL = `${BACKEND_ORIGIN}/admins/plan-list/register`;
-    const response = await fetch(registerURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: userData.cookie },
-      body: JSON.stringify(userData),
+    // From server component
+    // Define the item to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/register`;
+    const method = "POST";
+    const headers = {
+      "Content-Type": "application/json",
+      Cookie: userData.cookie,
+    };
+    const body = JSON.stringify(userData);
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+      body,
     });
 
-    if (!response.ok) {
+    if (response.status !== 201) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -73,27 +143,25 @@ export const registerPlan = async (userData: {
 // Update plan information
 export const updatePlan = async (
   planId: number,
-  planName: string | null,
+  planNameEng: string | null,
+  planNameJpn: string | null,
   planDescription: string | null,
-  isDelete: boolean,
   cookie: string,
 ): Promise<UpdateFormState> => {
   try {
+    // From server component
     // Define the item to be sent to the server side.
     const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/update/${planId}`;
+    const method = "PATCH";
     const headers = { "Content-Type": "application/json", Cookie: cookie };
-    const body = JSON.stringify(
-      isDelete
-        ? { isDelete: true }
-        : {
-            isDelete: false,
-            name: planName,
-            description: planDescription,
-          },
-    );
+    const body = JSON.stringify({
+      planNameEng,
+      planNameJpn,
+      description: planDescription,
+    });
 
     const response = await fetch(apiURL, {
-      method: "PATCH",
+      method,
       headers,
       body,
     });
@@ -112,6 +180,33 @@ export const updatePlan = async (
     return data;
   } catch (error) {
     console.error("API error while updating plan:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+// DELETE plan data
+export const deletePlan = async (planId: number, cookie: string) => {
+  try {
+    // From server component
+    // Define the data to be sent to the server side.
+    const apiURL = `${BACKEND_ORIGIN}/admins/plan-list/delete/${planId}`;
+    const method = "DELETE";
+    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const response = await fetch(apiURL, {
+      method,
+      headers,
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+    const result = await response.json();
+
+    return result;
+  } catch (error) {
+    console.error("Failed to delete the plan:", error);
     return {
       errorMessage: GENERAL_ERROR_MESSAGE,
     };

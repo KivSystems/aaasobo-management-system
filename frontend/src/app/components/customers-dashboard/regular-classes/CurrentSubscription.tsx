@@ -12,6 +12,7 @@ import { deleteSubscriptionAction } from "@/app/actions/deleteContent";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { confirmAlert } from "@/app/helper/utils/alertUtils";
 import EditSubscriptionModal from "../../admins-dashboard/EditSubscriptionModal";
 
 function CurrentSubscription({
@@ -40,9 +41,10 @@ function CurrentSubscription({
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
   const handleDeleteSubscription = async (id: number) => {
-    const confirmed = window.confirm(
+    const confirmed = await confirmAlert(
       "Are you sure you want to delete this subscription?",
     );
+
     if (!confirmed) return;
 
     // prevent duplicate clicks
