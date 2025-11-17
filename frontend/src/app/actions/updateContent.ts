@@ -16,6 +16,7 @@ import {
   revalidateBusinessSchedule,
   revalidateClassList,
   revalidatePlanList,
+  revalidateSubscriptionList,
 } from "./revalidate";
 import { getCookie } from "../../middleware";
 import { validateSession } from "./validateSession";
@@ -25,6 +26,14 @@ import {
   updateClassStatus,
 } from "../helper/api/classesApi";
 import { revalidatePath } from "next/cache";
+import {
+  updateSubscriptionToAddClass,
+  updateSubscriptionToTerminateClass,
+} from "../helper/api/subscriptionsApi";
+import {
+  UpdateSubscriptionToAddClassRequest,
+  UpdateSubscriptionToTerminateClassRequest,
+} from "@shared/schemas/admins";
 
 export async function updateEventAction(
   prevState: UpdateFormState | undefined,
@@ -278,6 +287,54 @@ export async function generateClassesAction(
     return {
       successMessage: "Classes generated successfully!",
     };
+  } catch (error) {
+    console.error("Unexpected error in updateContent server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+}
+
+export async function updateSubscriptionToAddClassAction(
+  subscriptionId: number,
+  updateDate: UpdateSubscriptionToAddClassRequest,
+): Promise<DeleteFormState> {
+  try {
+    const cookie = await getCookie();
+    const response = await updateSubscriptionToAddClass(
+      subscriptionId,
+      updateDate,
+      cookie,
+    );
+
+    // Refresh cached subscription data for the subscription list page
+    revalidateSubscriptionList();
+
+    return response;
+  } catch (error) {
+    console.error("Unexpected error in updateContent server action:", error);
+    return {
+      errorMessage: GENERAL_ERROR_MESSAGE,
+    };
+  }
+}
+
+export async function updateSubscriptionToTerminateClassAction(
+  subscriptionId: number,
+  updateDate: UpdateSubscriptionToTerminateClassRequest,
+): Promise<DeleteFormState> {
+  try {
+    const cookie = await getCookie();
+    const response = await updateSubscriptionToTerminateClass(
+      subscriptionId,
+      updateDate,
+      cookie,
+    );
+
+    // Refresh cached subscription data for the subscription list page
+    revalidateSubscriptionList();
+
+    return response;
   } catch (error) {
     console.error("Unexpected error in updateContent server action:", error);
     return {

@@ -49,9 +49,18 @@ export const DeleteSubscriptionResponse = z.object({
   id: z.number(),
 });
 
+// Update response schemas
+export const UpdateSubscriptionResponse = z.object({
+  message: z.string(),
+  id: z.number(),
+});
+
 // Inferred TypeScript types
 export type SubscriptionIdParams = z.infer<typeof SubscriptionIdParams>;
 export type SubscriptionResponse = z.infer<typeof SubscriptionResponse>;
 export type DeleteSubscriptionResponse = z.infer<
   typeof DeleteSubscriptionResponse
+>;
+export type UpdateSubscriptionResponse = z.infer<
+  typeof UpdateSubscriptionResponse
 >;

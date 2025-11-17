@@ -13,6 +13,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { confirmAlert } from "@/app/helper/utils/alertUtils";
+import EditSubscriptionModal from "../../admins-dashboard/EditSubscriptionModal";
 
 function CurrentSubscription({
   subscriptionsData,
@@ -20,19 +21,24 @@ function CurrentSubscription({
   adminId,
   customerId,
   language,
-  onSubscriptionDeleted,
+  onSubscriptionUpdated,
+  refreshKey,
 }: {
   subscriptionsData?: Subscriptions | null;
   userSessionType?: UserType;
   adminId?: number;
   customerId: number;
   language: LanguageType;
-  onSubscriptionDeleted: () => void;
+  onSubscriptionUpdated: () => void;
+  refreshKey?: number;
 }) {
   const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
     {},
   );
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<Subscription | null>(null);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
   const handleDeleteSubscription = async (id: number) => {
     const confirmed = await confirmAlert(
@@ -53,7 +59,7 @@ function CurrentSubscription({
 
       if (success) {
         toast.success("Subscription deleted successfully.");
-        onSubscriptionDeleted();
+        onSubscriptionUpdated();
       } else {
         toast.error("Failed to delete subscription.");
         console.error("Failed to delete subscription:", result);
@@ -63,6 +69,25 @@ function CurrentSubscription({
     } finally {
       setDeletingId(null);
     }
+  };
+
+  const handleEditSubscription = (id: number) => {
+    const subscription = subscriptionsData?.subscriptions.find(
+      (s) => s.id === id,
+    );
+    if (!subscription) return;
+    setSelectedSubscription(subscription);
+    setIsOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsOpenModal(false);
+  };
+
+  const handleEditSuccess = () => {
+    onSubscriptionUpdated();
+    setIsOpenModal(false);
+    toast.success("Subscription updated successfully.");
   };
 
   return (
@@ -97,18 +122,25 @@ function CurrentSubscription({
                       </span>
                     </div>
                   </div>
-                  <div className={styles.buttons}>
-                    {userSessionType === "admin" ? (
+
+                  {userSessionType === "admin" &&
+                  subscription.endAt === null ? (
+                    <div className={styles.buttons}>
+                      <ActionButton
+                        onClick={() => handleEditSubscription(id)}
+                        btnText={"Edit"}
+                        className="editBtn"
+                      />
                       <ActionButton
                         onClick={() => handleDeleteSubscription(id)}
                         btnText={deletingId === id ? "DELETING..." : "DELETE"}
                         className="deleteBtn"
                         disabled={deletingId === id}
                       />
-                    ) : (
-                      <></>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </div>
               <div className={styles.classesContent}>
@@ -119,6 +151,7 @@ function CurrentSubscription({
                   customerId={customerId}
                   customerTerminationAt={customerTerminationAt}
                   language={language}
+                  refreshKey={refreshKey}
                 />
               </div>
 
@@ -132,6 +165,19 @@ function CurrentSubscription({
       ) : (
         <p>{NO_SUBSCRIPTION_MESSAGE[language]}</p>
       )}
+
+      {/* Edit Subscription Modal */}
+      <EditSubscriptionModal
+        isOpen={isOpenModal}
+        onClose={handleCloseModal}
+        onSuccess={handleEditSuccess}
+        subscription={selectedSubscription}
+        userSessionType={userSessionType}
+        adminId={adminId}
+        customerId={customerId}
+        customerTerminationAt={selectedSubscription?.customerTerminationAt}
+        language={language}
+      />
     </div>
   );
 }

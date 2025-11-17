@@ -87,3 +87,22 @@ export const terminateSubscription = async (
     throw new Error("Failed to terminate the subscription.");
   }
 };
+
+// Update the plan id of the subscription
+export const updatePlanIdOfSubscription = async (
+  tx: Prisma.TransactionClient,
+  subscriptionId: number,
+  planId: number,
+) => {
+  try {
+    const subscription = await tx.subscription.update({
+      where: { id: subscriptionId },
+      data: { planId: planId },
+    });
+
+    return subscription;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to update the subscription.");
+  }
+};
