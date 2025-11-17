@@ -60,7 +60,7 @@ function EditSubscriptionModal({
       }
     };
     fetchPlans();
-  }, []);
+  }, [subscription?.planId]);
 
   const handleSelectPlan = (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedPlanId = Number(e.target.value);
