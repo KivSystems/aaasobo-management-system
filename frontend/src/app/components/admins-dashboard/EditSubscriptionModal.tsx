@@ -10,9 +10,9 @@ import {
 import { getAllPlans } from "@/app/helper/api/plansApi";
 import RegularClassesTable from "../customers-dashboard/regular-classes/RegularClassesTable";
 import {
-  updateSubscriptionToAddClass,
-  updateSubscriptionToTerminateClass,
-} from "@/app/helper/api/subscriptionsApi";
+  updateSubscriptionToAddClassAction,
+  updateSubscriptionToTerminateClassAction,
+} from "@/app/actions/updateContent";
 
 type EditSubscriptionModalProps = {
   isOpen: boolean;
@@ -108,7 +108,7 @@ function EditSubscriptionModal({
           times: selectedWeeklyTimes - currentWeeklyTimes,
         };
 
-        await updateSubscriptionToAddClass(subscription.id, updateData);
+        await updateSubscriptionToAddClassAction(subscription.id, updateData);
       } else if (selectedWeeklyTimes < currentWeeklyTimes) {
         if (
           subscription.plan.weeklyClassTimes - selectedWeeklyTimes !==
@@ -126,7 +126,10 @@ function EditSubscriptionModal({
           recurringClassIds: selectedRecurringIds,
         };
 
-        await updateSubscriptionToTerminateClass(subscription.id, updateData);
+        await updateSubscriptionToTerminateClassAction(
+          subscription.id,
+          updateData,
+        );
       } else {
         setError("Something went wrong. Please try again later.");
       }

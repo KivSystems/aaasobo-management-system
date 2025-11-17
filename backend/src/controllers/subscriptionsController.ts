@@ -88,7 +88,10 @@ export const updateSubscriptionToAddClassController = async (
     if (!subscription) {
       return res.status(404).json({ error: "Subscription not found." });
     }
-    const { planId, times } = req.body;
+    const { updateSubscriptionData } = req.body;
+
+    const planId = updateSubscriptionData.planId;
+    const times = updateSubscriptionData.times;
 
     // validate
     const plan = await getPlanById(planId);
@@ -132,7 +135,10 @@ export const updateSubscriptionToTerminateClassController = async (
   res: Response,
 ) => {
   try {
-    const { planId, recurringClassIds } = req.body;
+    const { updateSubscriptionData } = req.body;
+
+    const planId = updateSubscriptionData.planId;
+    const recurringClassIds = updateSubscriptionData.recurringClassIds;
 
     // validate
     if (!Array.isArray(recurringClassIds)) {
@@ -164,7 +170,6 @@ export const updateSubscriptionToTerminateClassController = async (
         return res.status(404).json({ error: "Recurring class not found." });
       }
     }
-    
     const today = new Date();
 
     await prisma.$transaction(async (tx) => {
