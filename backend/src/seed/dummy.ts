@@ -27,6 +27,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=129259",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "elian@example.com",
@@ -48,6 +49,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=127929",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "lori@example.com",
@@ -69,6 +71,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=404241&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "kaori@example.com",
@@ -90,6 +93,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=399447&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "winnie@example.com",
@@ -111,6 +115,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=401099&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "claude@example.com",
@@ -132,6 +137,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=326768&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "jdy@example.com",
@@ -153,6 +159,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=384411&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "mae@example.com",
@@ -174,6 +181,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=383552&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "eiyd@example.com",
@@ -195,6 +203,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=383555&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "kechia@example.com",
@@ -216,6 +225,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=317400&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "yasmin@example.com",
@@ -237,6 +247,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=384405&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "dani@example.com",
@@ -258,6 +269,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=372623&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "angela@example.com",
@@ -279,6 +291,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=359230&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "ronilo@example.com",
@@ -300,6 +313,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=359243&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "sheryll@example.com",
@@ -321,6 +335,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=350273&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "rina@example.com",
@@ -341,6 +356,7 @@ async function insertInstructors() {
         password: "$2b$12$WzRinaExampleHash0000000000000000000000000000000000",
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400001",
         createdAt: "2024-08-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "tina@example.com",
@@ -362,6 +378,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400002",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-08-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "mark@example.com",
@@ -382,6 +399,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400003",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-08-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "liza@example.com",
@@ -402,6 +420,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400004",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-09-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "paolo@example.com",
@@ -422,6 +441,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400005",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-04-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "marie@example.com",
@@ -442,6 +462,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400006",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-06-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "justin@example.com",
@@ -463,6 +484,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400007",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2024-08-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "carla@example.com",
@@ -483,6 +505,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400008",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-08-31T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "gem@example.com",
@@ -503,6 +526,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400009",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-08-07T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "aileen@example.com",
@@ -524,6 +548,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400010",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-04-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "niko@example.com",
@@ -545,6 +570,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400011",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-06-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "jonah@example.com",
@@ -565,6 +591,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400012",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-03-11T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "grace@example.com",
@@ -585,6 +612,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=500013",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-01-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "andy@example.com",
@@ -605,6 +633,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400013",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-02-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "fame@example.com",
@@ -625,6 +654,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400015",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2024-12-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "faith@example.com",
@@ -645,6 +675,7 @@ async function insertInstructors() {
         introductionURL: "https://select-type.com/rsv/?id=example&c_id=400014",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2024-12-27T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "yuki.nakamura@example.com",
@@ -666,6 +697,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500001",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "alex.thompson@example.com",
@@ -688,6 +720,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500002",
         createdAt: "2024-08-02T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "mina.sato@example.com",
@@ -710,6 +743,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500003",
         createdAt: "2024-08-03T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "daniel.green@example.com",
@@ -732,6 +766,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500004",
         createdAt: "2024-08-04T00:00:00.000Z",
         terminationAt: "2025-03-30T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "haruka.fujimoto@example.com",
@@ -755,6 +790,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500005",
         createdAt: "2024-08-05T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "ryan.chen@example.com",
@@ -777,6 +813,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500006",
         createdAt: "2024-08-06T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "kana.watanabe@example.com",
@@ -799,6 +836,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500007",
         createdAt: "2024-08-07T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "thomas.walker@example.com",
@@ -822,6 +860,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500008",
         createdAt: "2024-08-08T00:00:00.000Z",
         terminationAt: "2025-02-14T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "miyu.takahashi@example.com",
@@ -843,6 +882,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500009",
         createdAt: "2024-08-09T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "ethan.rivera@example.com",
@@ -864,6 +904,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500010",
         createdAt: "2024-08-10T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "aoi.suzuki@example.com",
@@ -886,6 +927,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500011",
         createdAt: "2024-08-11T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "logan.wright@example.com",
@@ -908,6 +950,7 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500012",
         createdAt: "2024-08-12T00:00:00.000Z",
         terminationAt: "2025-06-01T00:00:00.000Z",
+        isNative: false,
       },
       {
         email: "sayaka.kobayashi@example.com",
@@ -930,11 +973,12 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500013",
         createdAt: "2024-08-13T00:00:00.000Z",
         terminationAt: null,
+        isNative: false,
       },
       {
         email: "george.adams@example.com",
         name: "George Adams",
-        nickname: "George",
+        nickname: "George (Native)",
         birthdate: new Date("1986-08-08"),
         lifeHistory:
           "Instructor specializing in data visualization and storytelling.",
@@ -953,11 +997,12 @@ async function insertInstructors() {
           "https://select-type.com/rsv/?id=instructor&c_id=500014",
         createdAt: "2024-08-14T00:00:00.000Z",
         terminationAt: null,
+        isNative: true,
       },
       {
         email: "emi.nakagawa@example.com",
         name: "Emi Nakagawa",
-        nickname: "Emi",
+        nickname: "Emi (Native)",
         birthdate: new Date("1990-12-12"),
         lifeHistory:
           "Web instructor focused on building inclusive and responsive UI.",
@@ -974,12 +1019,12 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=instructor&c_id=500015",
         createdAt: "2024-08-15T00:00:00.000Z",
-        terminationAt: "2025-01-15T00:00:00.000Z",
+        isNative: true,
       },
       {
         email: "niki.alvarez@example.com",
         name: "Niki Alvarez",
-        nickname: "Niki",
+        nickname: "Niki (Native)",
         birthdate: new Date("1990-10-20"),
         lifeHistory: "Enjoys language exchange sessions with students.",
         favoriteFood: "Grilled fish",
@@ -996,7 +1041,7 @@ async function insertInstructors() {
         introductionURL:
           "https://select-type.com/rsv/?id=instructor&c_id=500022",
         createdAt: "2024-08-22T00:00:00.000Z",
-        terminationAt: "2025-06-27T00:00:00.000Z",
+        isNative: true,
       },
     ],
   });
@@ -2109,11 +2154,25 @@ async function insertPlans() {
         name: "月3,180円プラン / 3,180 yen/month Plan",
         description: "2 classes per week",
         weeklyClassTimes: 2,
+        isNative: false,
       },
       {
         name: "月7,980円プラン / 7,980 yen/month Plan",
         description: "5 classes per week",
         weeklyClassTimes: 5,
+        isNative: false,
+      },
+      {
+        name: "月5,980円プラン / 5,980 yen/month Plan",
+        description: "1 classes per week",
+        weeklyClassTimes: 1,
+        isNative: true,
+      },
+      {
+        name: "月10,800円プラン / 10,800 yen/month Plan",
+        description: "2 classes per week",
+        weeklyClassTimes: 2,
+        isNative: true,
       },
     ],
   });
@@ -2125,6 +2184,8 @@ async function insertSubscriptions() {
   const hana = await getCustomer("山田 花");
   const plan1 = await getPlan("月3,180円プラン / 3,180 yen/month Plan");
   const plan2 = await getPlan("月7,980円プラン / 7,980 yen/month Plan");
+  const plan3 = await getPlan("月5,980円プラン / 5,980 yen/month Plan");
+  const plan4 = await getPlan("月10,800円プラン / 10,800 yen/month Plan");
 
   await prisma.subscription.createMany({
     data: [
@@ -2147,8 +2208,20 @@ async function insertSubscriptions() {
         endAt: null,
       },
       {
+        customerId: bob.id,
+        planId: plan3.id,
+        startAt: new Date("2024-06-01"),
+        endAt: null,
+      },
+      {
         customerId: hana.id,
         planId: plan1.id,
+        startAt: new Date("2025-04-04"),
+        endAt: null,
+      },
+      {
+        customerId: hana.id,
+        planId: plan4.id,
         startAt: new Date("2025-04-04"),
         endAt: null,
       },
@@ -2308,6 +2381,8 @@ async function insertRecurringClasses() {
 async function insertInstructorSchedules() {
   const helen = await getInstructor("Helen");
   const elian = await getInstructor("Elian");
+  const niki = await getInstructor("Niki");
+  const emi = await getInstructor("Emi");
 
   // Helen's first schedule (historical - 2024-06-01 to 2024-07-31)
   const helenSchedule1 = await prisma.instructorSchedule.create({
@@ -2547,6 +2622,82 @@ async function insertInstructorSchedules() {
   });
 
   // Elian's weekly slots
+  await prisma.instructorSlot.createMany({
+    data: [
+      // Monday (1)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T16:00:00Z"),
+      },
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T16:30:00Z"),
+      },
+      // Tuesday (2)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 2,
+        startTime: new Date("1970-01-01T16:00:00Z"),
+      },
+      // Wednesday (3)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T16:00:00Z"),
+      },
+    ],
+  });
+
+  // Niki's current schedule
+  const nikiSchedule = await prisma.instructorSchedule.create({
+    data: {
+      instructorId: niki.id,
+      effectiveFrom: new Date("2024-09-01"),
+      effectiveTo: null,
+      timezone: "Asia/Tokyo",
+    },
+  });
+
+  await prisma.instructorSlot.createMany({
+    data: [
+      // Monday (1)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T16:00:00Z"),
+      },
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 1,
+        startTime: new Date("1970-01-01T16:30:00Z"),
+      },
+      // Tuesday (2)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 2,
+        startTime: new Date("1970-01-01T16:00:00Z"),
+      },
+      // Wednesday (3)
+      {
+        scheduleId: elianSchedule.id,
+        weekday: 3,
+        startTime: new Date("1970-01-01T16:00:00Z"),
+      },
+    ],
+  });
+
+  // Emi's current schedule
+  const emiSchedule = await prisma.instructorSchedule.create({
+    data: {
+      instructorId: emi.id,
+      effectiveFrom: new Date("2024-09-01"),
+      effectiveTo: null,
+      timezone: "Asia/Tokyo",
+    },
+  });
+
   await prisma.instructorSlot.createMany({
     data: [
       // Monday (1)
@@ -3282,18 +3433,20 @@ async function getCustomer(name: "Alice" | "Bob" | "山田 花") {
   return customer;
 }
 
-async function getInstructor(nickname: "Helen" | "Elian") {
-  const customer = await prisma.instructor.findFirst({ where: { nickname } });
-  if (!customer) {
-    throw new Error(`Customer ${nickname} not found`);
+async function getInstructor(nickname: "Helen" | "Elian" | "Niki" | "Emi") {
+  const instructor = await prisma.instructor.findFirst({ where: { nickname } });
+  if (!instructor) {
+    throw new Error(`Instructor ${nickname} not found`);
   }
-  return customer;
+  return instructor;
 }
 
 async function getPlan(
   name:
     | "月3,180円プラン / 3,180 yen/month Plan"
-    | "月7,980円プラン / 7,980 yen/month Plan",
+    | "月7,980円プラン / 7,980 yen/month Plan"
+    | "月5,980円プラン / 5,980 yen/month Plan"
+    | "月10,800円プラン / 10,800 yen/month Plan",
 ) {
   const plan = await prisma.plan.findFirst({ where: { name } });
   if (!plan) {

@@ -37,6 +37,7 @@ model Instructor {
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @default(now()) @updatedAt
   terminationAt       DateTime?
+  isNative            Boolean
   instructorSchedules InstructorSchedule[]
   instructorAbsences  InstructorAbsence[]
 }
@@ -128,6 +129,7 @@ model Plan {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @default(now()) @updatedAt
   terminationAt    DateTime?
+  isNative         Boolean
   subscription     Subscription[]
 }
 
