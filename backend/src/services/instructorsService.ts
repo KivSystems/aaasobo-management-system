@@ -31,6 +31,7 @@ export const registerInstructor = async (data: {
   meetingId: string;
   passcode: string;
   introductionURL: string;
+  isNative: boolean;
 }) => {
   const hashedPassword = await hashPassword(data.password);
   const icon = data.icon;
@@ -64,6 +65,7 @@ export const registerInstructor = async (data: {
       meetingId: data.meetingId,
       passcode: data.passcode,
       introductionURL: data.introductionURL,
+      isNative: data.isNative,
     },
   });
 
@@ -371,6 +373,7 @@ export const maskInstructors = async (instructors: Instructor[]) => {
             meetingId: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             passcode: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             introductionURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
+            isNative: false,
           },
         }),
       ),

@@ -49,6 +49,7 @@ export const DetailedInstructorProfile = z.object({
     .datetime()
     .nullable()
     .describe("Termination timestamp (ISO string)"),
+  isNative: z.boolean().describe("If it's native or not"),
 });
 
 export const AllInstructorProfilesResponse = z
@@ -80,6 +81,7 @@ export const CompleteInstructor = z.object({
   passcode: z.string().nullable().describe("Meeting passcode"),
   introductionURL: z.string().nullable().describe("Introduction video URL"),
   terminationAt: z.string().nullable().describe("Termination timestamp (JST)"),
+  isNative: z.boolean().describe("If it's native or not"),
 });
 
 export const InstructorResponse = z

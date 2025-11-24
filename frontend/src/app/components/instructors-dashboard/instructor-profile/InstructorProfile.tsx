@@ -267,9 +267,18 @@ function InstructorProfile({
 
             {/* Name */}
             <div className={styles.instructorName__nameSection}>
-              <p className={styles.instructorName__text}>
-                {language === "en" ? "Name" : "名前"}
-              </p>
+              <div className={styles.instructorName__nameLabel}>
+                <p className={styles.instructorName__text}>
+                  {language === "en" ? "Name" : "名前"}
+                </p>
+                {latestInstructor.isNative ? (
+                  <div className={styles.instructorName__isNativeFlag}>
+                    Native
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
               {isEditing ? (
                 <InputField
                   name="name"

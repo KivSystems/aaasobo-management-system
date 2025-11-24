@@ -5,6 +5,7 @@ export const registerPlan = async (data: {
   name: string;
   weeklyClassTimes: number;
   description: string;
+  isNative: boolean;
 }) => {
   await prisma.plan.create({ data });
 

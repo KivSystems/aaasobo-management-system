@@ -407,6 +407,7 @@ export const registerInstructorController = async (
     meetingId,
     passcode,
     introductionURL,
+    isNative
   } = req.body;
 
   // Normalize email
@@ -475,6 +476,7 @@ export const registerInstructorController = async (
       meetingId,
       passcode,
       introductionURL,
+      isNative,
     });
 
     res.sendStatus(201);
@@ -716,7 +718,8 @@ export const registerPlanController = async (
   req: RequestWithBody<RegisterPlanRequest>,
   res: Response,
 ) => {
-  const { planNameEng, planNameJpn, weeklyClassTimes, description } = req.body;
+  const { planNameEng, planNameJpn, weeklyClassTimes, description, isNative } =
+    req.body;
 
   // Combine Japanese and English names into the required format
   const name = `${planNameJpn} / ${planNameEng}`;
@@ -726,6 +729,7 @@ export const registerPlanController = async (
       name,
       weeklyClassTimes,
       description,
+      isNative,
     });
 
     res.sendStatus(201);

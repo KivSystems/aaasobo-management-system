@@ -87,6 +87,7 @@ export const getInstructor = async (
         passcode: instructor.passcode,
         introductionURL: instructor.introductionURL,
         terminationAt: terminationAt,
+        isNative: instructor.isNative,
       },
     });
   } catch (error) {
