@@ -101,6 +101,7 @@ export const UpdatePlanRequest = z.object({
   planNameEng: z.string().min(1, "Plan name (English) is required"),
   planNameJpn: z.string().min(1, "Plan name (Japanese) is required"),
   description: z.string().min(1, "Description is required"),
+  isNative: z.string("true") || z.string("false"),
 });
 
 // Event schemas

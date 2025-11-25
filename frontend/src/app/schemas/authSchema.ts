@@ -200,6 +200,7 @@ export const planUpdateSchema = z.object({
       message: "Plan Name (Japanese) must contain Japanese characters.",
     }),
   description: z.string().min(1, "Description is required."),
+  isNative: z.string("on").nullable(),
 });
 
 export const scheduleUpdateSchema = z.object({

@@ -774,17 +774,30 @@ export const updatePlanController = async (
   const body = req.body;
 
   try {
-    if (!body.planNameEng || !body.planNameJpn || !body.description) {
+    if (
+      !body.planNameEng ||
+      !body.planNameJpn ||
+      !body.description ||
+      !body.isNative
+    ) {
       return res
         .status(400)
         .json({ message: "Name and description are required for update" });
     }
-    const { planNameEng, planNameJpn, description } = body;
+    const { planNameEng, planNameJpn, description, isNative } = body;
 
     // Combine Japanese and English names into the required format
     const name = `${planNameJpn} / ${planNameEng}`;
 
-    const updatedPlan = await updatePlan(planId, name, description);
+    // Parse string isNative value into boolean
+    const isNativeBool = isNative === "true";
+
+    const updatedPlan = await updatePlan(
+      planId,
+      name,
+      description,
+      isNativeBool,
+    );
     return res.status(200).json({
       message: "Plan is updated successfully",
       plan: updatedPlan,

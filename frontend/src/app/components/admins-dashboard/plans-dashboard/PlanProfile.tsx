@@ -259,12 +259,10 @@ function PlanProfile({
                   <p className={styles.planName__text}>Plan Type</p>
                   {isEditing ? (
                     <>
-                      <input type="hidden" name="isNative" value="false" />
                       <label className={styles.toggleSwitch}>
                         <input
                           name="isNative"
                           type="checkbox"
-                          value="true"
                           checked={latestPlan.isNative}
                           onChange={handleToggleChange}
                         />

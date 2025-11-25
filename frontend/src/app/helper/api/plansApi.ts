@@ -147,6 +147,7 @@ export const updatePlan = async (
   planNameEng: string | null,
   planNameJpn: string | null,
   planDescription: string | null,
+  isNative: string | null,
   cookie: string,
 ): Promise<UpdateFormState> => {
   try {
@@ -159,6 +160,7 @@ export const updatePlan = async (
       planNameEng,
       planNameJpn,
       description: planDescription,
+      isNative,
     });
 
     const response = await fetch(apiURL, {
