@@ -10,6 +10,10 @@ export const confirmAlert: (text: string) => Promise<boolean> = (
     cancelButtonText: "Cancel",
     showCancelButton: true,
     showConfirmButton: true,
+    didOpen: () => {
+      const container = Swal.getContainer()!;
+      container.style.zIndex = "99999";
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       return true;
@@ -28,6 +32,10 @@ export const errorAlert: (text: string) => Promise<void> = async (
     icon: "error",
     confirmButtonText: "OK",
     showConfirmButton: true,
+    didOpen: () => {
+      const container = Swal.getContainer()!;
+      container.style.zIndex = "99999";
+    },
   });
 };
 
@@ -39,5 +47,9 @@ export const warningAlert: (text: string) => Promise<void> = async (
     icon: "warning",
     confirmButtonText: "OK",
     showConfirmButton: true,
+    didOpen: () => {
+      const container = Swal.getContainer()!;
+      container.style.zIndex = "99999";
+    },
   });
 };
