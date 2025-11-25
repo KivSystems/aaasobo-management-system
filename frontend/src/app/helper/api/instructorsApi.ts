@@ -628,7 +628,7 @@ export const createInstructorSchedule = async (
     const method = "POST";
     const body = JSON.stringify({
       effectiveFrom,
-      slots: slots,
+      slots,
       timezone: "Asia/Tokyo",
     } as CreateScheduleRequest);
 
