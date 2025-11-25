@@ -97,13 +97,10 @@ export default function InstructorSchedule({
     slots: Omit<InstructorSlot, "scheduleId">[],
   ) => {
     try {
-      const cookie = document.cookie;
-
       const response = await createInstructorSchedule(
         instructorId,
         effectiveFrom,
         slots,
-        cookie,
       );
 
       if ("message" in response) {
