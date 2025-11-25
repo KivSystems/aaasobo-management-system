@@ -151,6 +151,7 @@ export const planRegisterSchema = z.object({
     }),
   weeklyClassTimes: z.number(),
   description: z.string().min(1, "Description is required."),
+  isNative: z.string("on").nullable(),
 });
 
 export const eventRegisterSchema = z.object({

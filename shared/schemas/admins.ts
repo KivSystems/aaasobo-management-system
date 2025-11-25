@@ -94,7 +94,7 @@ export const RegisterPlanRequest = z.object({
     .int()
     .positive("Weekly class times must be a positive integer"),
   description: z.string().min(1, "Description is required"),
-  isNative: z.boolean(),
+  isNative: z.string("true") || z.string("false"),
 });
 
 export const UpdatePlanRequest = z.object({

@@ -727,12 +727,15 @@ export const registerPlanController = async (
   // Combine Japanese and English names into the required format
   const name = `${planNameJpn} / ${planNameEng}`;
 
+  // Parse string isNative value into boolean
+  const isNativeBool = isNative === "true";
+
   try {
     await registerPlan({
       name,
       weeklyClassTimes,
       description,
-      isNative,
+      isNative: isNativeBool,
     });
 
     res.sendStatus(201);

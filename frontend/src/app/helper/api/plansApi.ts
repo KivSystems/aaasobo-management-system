@@ -107,6 +107,7 @@ export const registerPlan = async (userData: {
   planNameJpn: string;
   weeklyClassTimes: number;
   description: string;
+  isNative: string;
   cookie: string;
 }): Promise<RegisterFormState> => {
   try {
