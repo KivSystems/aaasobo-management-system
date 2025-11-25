@@ -97,13 +97,10 @@ export default function InstructorSchedule({
     slots: Omit<InstructorSlot, "scheduleId">[],
   ) => {
     try {
-      const cookie = document.cookie;
-
       const response = await createInstructorSchedule(
         instructorId,
         effectiveFrom,
         slots,
-        cookie,
       );
 
       if ("message" in response) {
@@ -145,9 +142,9 @@ export default function InstructorSchedule({
                   {schedule.effectiveTo
                     ? new Date(
                         new Date(schedule.effectiveTo).getTime() -
-                          24 * 60 * 60 * 1000,
+                          +24 * 60 * 60 * 1000,
                       ).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" })
-                    : "Current"}
+                    : "Onwards"}
                 </option>
               ))}
             </select>

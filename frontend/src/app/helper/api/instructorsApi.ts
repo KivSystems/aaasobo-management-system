@@ -619,29 +619,47 @@ export const createInstructorSchedule = async (
   instructorId: number,
   effectiveFrom: string,
   slots: Omit<InstructorSlot, "scheduleId">[],
-  cookie: string,
+  cookie?: string,
 ) => {
   try {
-    // From server component
-    const apiURL = `${BASE_URL}/${instructorId}/schedules`;
+    let apiURL;
+    let headers;
+    let response;
     const method = "POST";
-    const headers = {
-      "Content-Type": "application/json",
-      Cookie: cookie,
-    };
     const body = JSON.stringify({
       effectiveFrom,
       slots,
       timezone: "Asia/Tokyo",
     } as CreateScheduleRequest);
-    const response = await fetch(apiURL, {
-      method,
-      headers,
-      credentials: "include",
-      body,
-    });
 
-    if (response.status !== 200) {
+    if (cookie) {
+      // From server component
+      const apiURL = `${BASE_URL}/${instructorId}/schedules`;
+      const headers = {
+        "Content-Type": "application/json",
+        Cookie: cookie,
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/${instructorId}/schedules`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        body,
+      });
+    }
+
+    if (response.status !== 201) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -870,7 +888,7 @@ export const addInstructorAbsence = async (
       credentials: "include",
     });
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 

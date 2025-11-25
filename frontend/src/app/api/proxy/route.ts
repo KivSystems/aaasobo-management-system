@@ -75,8 +75,6 @@ export async function POST(req: NextRequest) {
     data = await response.text();
   }
 
-  console.log("Response data:", data);
-
   return new Response(JSON.stringify(data), {
     status: response.status,
     headers: {
