@@ -39,6 +39,7 @@ export async function registerUser(
       10,
     );
     const userType = formData.get("userType");
+    const isNative = formData.get("isNative");
 
     // Get the cookies from the request headers
     const cookie = await getCookie();
@@ -64,6 +65,7 @@ export async function registerUser(
           passcode,
           introductionURL,
           userType,
+          isNative,
         });
         if (!parsedForm1.success) {
           const validationErrors = parsedForm1.error.issues;
@@ -86,6 +88,10 @@ export async function registerUser(
         userData.append("meetingId", parsedForm1.data.meetingId);
         userData.append("passcode", parsedForm1.data.passcode);
         userData.append("introductionURL", parsedForm1.data.introductionURL);
+        userData.append(
+          "isNative",
+          parsedForm1.data.isNative ? "true" : "false",
+        );
 
         // Append the icon file if it exists
         if (icon.name && icon.size > 0) {

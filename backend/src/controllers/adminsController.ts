@@ -407,7 +407,7 @@ export const registerInstructorController = async (
     meetingId,
     passcode,
     introductionURL,
-    isNative
+    isNative,
   } = req.body;
 
   // Normalize email
@@ -425,6 +425,9 @@ export const registerInstructorController = async (
     { fn: getInstructorByIntroductionURL, value: introductionURL },
   ];
   let errorItems = "";
+
+  // Parse string isNative value into boolean
+  const isNativeBool = isNative === "true";
 
   try {
     const results = await Promise.all(
@@ -476,7 +479,7 @@ export const registerInstructorController = async (
       meetingId,
       passcode,
       introductionURL,
-      isNative,
+      isNative: isNativeBool,
     });
 
     res.sendStatus(201);

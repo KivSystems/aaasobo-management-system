@@ -86,6 +86,7 @@ export const instructorRegisterSchema = z
     userType: z.enum(["admin", "customer", "instructor"], {
       message: "Invalid user type.",
     }),
+    isNative: z.string("on").nullable(),
   })
   .refine((data) => data.password === data.passConfirmation, {
     message: "Passwords do not match.",
