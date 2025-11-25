@@ -21,6 +21,7 @@ export const InstructorProfile = z.object({
   nickname: z.string().min(1).describe("Instructor nickname"),
   icon: z.string().describe("Instructor profile icon URL from database"),
   introductionURL: z.string().describe("Instructor introduction video URL"),
+  isNative: z.boolean().describe("If it's native or not"),
 });
 
 export const InstructorProfilesResponse = z

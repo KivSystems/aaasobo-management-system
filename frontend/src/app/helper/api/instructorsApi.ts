@@ -370,6 +370,98 @@ export const getInstructorProfiles = async (cookie?: string) => {
   }
 };
 
+export const getNativeInstructorProfiles = async (cookie?: string) => {
+  try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
+
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/profiles/native`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/profiles/native`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const instructorProfiles: InstructorProfile[] = await response.json();
+    return instructorProfiles;
+  } catch (error) {
+    console.error(
+      "API error while fetching native instructor profiles for rebooking page:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILES);
+  }
+};
+
+export const getNonNativeInstructorProfiles = async (cookie?: string) => {
+  try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
+
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/profiles/non-native`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/profiles/non-native`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const instructorProfiles: InstructorProfile[] = await response.json();
+    return instructorProfiles;
+  } catch (error) {
+    console.error(
+      "API error while fetching non native instructor profiles for rebooking page:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILES);
+  }
+};
+
 // GET all instructors profiles for customer dashboard
 export const getAllInstructorProfiles = async (cookie?: string) => {
   try {

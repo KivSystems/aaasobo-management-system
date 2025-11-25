@@ -29,6 +29,7 @@ export const PlansListResponse = z.object({
         .datetime()
         .nullable()
         .describe("Termination timestamp"),
+      isNative: z.boolean().describe("If it's a native plan or not"),
     }),
   ),
 });

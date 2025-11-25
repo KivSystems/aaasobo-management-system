@@ -300,6 +300,52 @@ export const getInstructorProfiles = async () => {
   return instructorProfiles;
 };
 
+export const getNativeInstructorProfiles = async () => {
+  const instructors = await prisma.instructor.findMany({
+    where: {
+      OR: [
+        { terminationAt: null }, // Active
+        { terminationAt: { gt: now } }, // Active (Future termination)
+      ],
+      isNative: true,
+    },
+  });
+
+  const instructorProfiles = instructors.map((instructor) => ({
+    id: instructor.id,
+    name: instructor.name,
+    nickname: instructor.nickname,
+    icon: instructor.icon,
+    introductionURL: instructor.introductionURL,
+    isNative: instructor.isNative,
+  }));
+
+  return instructorProfiles;
+};
+
+export const getNonNativeInstructorProfiles = async () => {
+  const instructors = await prisma.instructor.findMany({
+    where: {
+      OR: [
+        { terminationAt: null }, // Active
+        { terminationAt: { gt: now } }, // Active (Future termination)
+      ],
+      isNative: false,
+    },
+  });
+
+  const instructorProfiles = instructors.map((instructor) => ({
+    id: instructor.id,
+    name: instructor.name,
+    nickname: instructor.nickname,
+    icon: instructor.icon,
+    introductionURL: instructor.introductionURL,
+    isNative: instructor.isNative,
+  }));
+
+  return instructorProfiles;
+};
+
 export const getInstructorContactById = async (id: number) => {
   return prisma.instructor.findUnique({
     where: { id },

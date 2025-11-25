@@ -69,6 +69,7 @@ export const SubscriptionsResponse = z.object({
               .datetime()
               .nullable()
               .describe("Plan termination date"),
+            isNative: z.boolean().describe("If it's a native plan or not"),
           })
           .describe("Associated plan details"),
       }),

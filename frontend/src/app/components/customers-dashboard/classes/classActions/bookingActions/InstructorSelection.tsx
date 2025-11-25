@@ -3,16 +3,21 @@
 import { useState, useEffect } from "react";
 import styles from "./InstructorSelection.module.scss";
 import InstructorItem from "./InstructorItem";
-import { getInstructorProfiles } from "@/app/helper/api/instructorsApi";
+import {
+  getNativeInstructorProfiles,
+  getNonNativeInstructorProfiles,
+} from "@/app/helper/api/instructorsApi";
 
 interface InstructorSelectionProps {
   onInstructorSelect: (instructor: InstructorRebookingProfile) => void;
+  plan?: Plan;
   language: LanguageType;
   availableInstructors?: InstructorRebookingProfile[]; // Pre-filtered instructors for date-first flow
 }
 
 export default function InstructorSelection({
   onInstructorSelect,
+  plan,
   language,
   availableInstructors,
 }: InstructorSelectionProps) {
@@ -32,12 +37,18 @@ export default function InstructorSelection({
         return;
       }
 
-      // Otherwise fetch all instructors (instructor-first flow)
+      // Otherwise fetch native or non native instructors according to the plan (instructor-first flow)
       try {
         setLoading(true);
         setError(null);
-        const instructorProfiles = await getInstructorProfiles();
-        setInstructors(instructorProfiles);
+
+        if (plan?.isNative) {
+          const instructorProfiles = await getNativeInstructorProfiles();
+          setInstructors(instructorProfiles);
+        } else {
+          const instructorProfiles = await getNonNativeInstructorProfiles();
+          setInstructors(instructorProfiles);
+        }
       } catch (err) {
         console.error("Failed to fetch instructors:", err);
         setError(

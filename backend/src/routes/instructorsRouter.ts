@@ -8,6 +8,8 @@ import {
   getCalendarClassesController,
   getInstructorProfilesController,
   getSameDateClassesController,
+  getNativeInstructorProfilesController,
+  getNonNativeInstructorProfilesController,
 } from "../../src/controllers/instructorsController";
 import { registerRoutes } from "../middlewares/validationMiddleware";
 import {
@@ -71,6 +73,46 @@ const profilesConfig = {
     responses: {
       200: {
         description: "Successfully retrieved instructor profiles",
+        schema: InstructorProfilesResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const nativeProfilesConfig = {
+  method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
+  handler: getNativeInstructorProfilesController,
+  openapi: {
+    summary: "Get Native instructor profiles",
+    description: "Get public instructor profiles for customer dashboard",
+    responses: {
+      200: {
+        description: "Successfully retrieved native instructor profiles",
+        schema: InstructorProfilesResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const nonNativeProfilesConfig = {
+  method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
+  handler: getNonNativeInstructorProfilesController,
+  openapi: {
+    summary: "Get Non Native instructor profiles",
+    description: "Get public instructor profiles for customer dashboard",
+    responses: {
+      200: {
+        description: "Successfully retrieved non native instructor profiles",
         schema: InstructorProfilesResponse,
       },
       500: {
@@ -541,6 +583,8 @@ const validatedRouteConfigs = {
   "/available-slots": [availableSlotsConfig],
   "/class/:id": [classInstructorConfig],
   "/profiles": [profilesConfig],
+  "/profiles/native": [nativeProfilesConfig],
+  "/profiles/non-native": [nonNativeProfilesConfig],
   "/schedules/post-termination": [postTerminationScheduleConfig],
   "/:id": [instructorByIdConfig],
   "/:id/absences": [instructorAbsencesConfig, createAbsenceConfig],

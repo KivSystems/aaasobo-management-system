@@ -21,6 +21,7 @@ interface EditRegularClassModalProps {
   userSessionType?: UserType;
   adminId?: number;
   onSuccess?: () => void;
+  plan?: Plan;
 }
 
 export default function EditRegularClassModal({
@@ -32,6 +33,7 @@ export default function EditRegularClassModal({
   userSessionType,
   adminId,
   onSuccess,
+  plan,
 }: EditRegularClassModalProps) {
   // Form state
   const [startDate, setStartDate] = useState("");
@@ -79,6 +81,7 @@ export default function EditRegularClassModal({
         meetingId: recurringClass.instructor.meetingId || "",
         passcode: recurringClass.instructor.passcode || "",
         introductionURL: "",
+        isNative: recurringClass.instructor.isNative || false,
       };
       setSelectedInstructor(currentInstructor);
     }
@@ -156,6 +159,7 @@ export default function EditRegularClassModal({
       meetingId: recurringClass.instructor!.meetingId || "",
       passcode: recurringClass.instructor!.passcode || "",
       introductionURL: "",
+      isNative: recurringClass.instructor!.isNative || false,
     };
 
     let finalWeekday = selectedWeekday;
@@ -293,6 +297,7 @@ export default function EditRegularClassModal({
                 {modalStep === "instructor" && (
                   <InstructorSelection
                     onInstructorSelect={handleInstructorSelect}
+                    plan={plan}
                     language="en"
                   />
                 )}

@@ -13,6 +13,8 @@ import {
   getInstructorProfiles,
   getInstructorsToMask,
   maskInstructors,
+  getNonNativeInstructorProfiles,
+  getNativeInstructorProfiles,
 } from "../services/instructorsService";
 import { type RequestWithId } from "../middlewares/parseId.middleware";
 import {
@@ -200,6 +202,50 @@ export const getInstructorProfilesController = async (
     res.status(200).json(instructorProfiles);
   } catch (error) {
     console.error("Error fetching instructor profiles", {
+      error,
+      context: {
+        time: new Date().toISOString(),
+      },
+    });
+    return setErrorResponse(res, error);
+  }
+};
+
+export const getNativeInstructorProfilesController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    const instructorProfiles = await getNativeInstructorProfiles();
+    if (!instructorProfiles) {
+      res.sendStatus(404);
+    }
+
+    res.status(200).json(instructorProfiles);
+  } catch (error) {
+    console.error("Error fetching native instructor profiles", {
+      error,
+      context: {
+        time: new Date().toISOString(),
+      },
+    });
+    return setErrorResponse(res, error);
+  }
+};
+
+export const getNonNativeInstructorProfilesController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    const instructorProfiles = await getNonNativeInstructorProfiles();
+    if (!instructorProfiles) {
+      res.sendStatus(404);
+    }
+
+    res.status(200).json(instructorProfiles);
+  } catch (error) {
+    console.error("Error fetching non native instructor profiles", {
       error,
       context: {
         time: new Date().toISOString(),
