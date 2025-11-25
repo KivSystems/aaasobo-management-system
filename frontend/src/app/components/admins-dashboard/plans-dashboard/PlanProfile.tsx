@@ -12,6 +12,7 @@ import {
   CalendarIcon,
   PencilIcon,
   CheckIcon,
+  AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "@/app/components/elements/loading/Loading";
@@ -84,6 +85,11 @@ function PlanProfile({
     if (latestPlan) {
       setLatestPlan({ ...latestPlan, [field]: e.target.value });
     }
+  };
+
+  // handle the isNative toggle
+  const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLatestPlan({ ...latestPlan, isNative: e.target.checked } as Plan);
   };
 
   const clearErrorMessage = useCallback((field: string) => {
@@ -241,6 +247,38 @@ function PlanProfile({
                   ) : (
                     <h4 className={styles.planDescription__text}>
                       {latestPlan.description}
+                    </h4>
+                  )}
+                </div>
+              </div>
+
+              {/* Plan Type */}
+              <div className={styles.insideContainer}>
+                <AcademicCapIcon className={styles.icon} />
+                <div>
+                  <p className={styles.planName__text}>Plan Type</p>
+                  {isEditing ? (
+                    <>
+                      <input type="hidden" name="isNative" value="false" />
+                      <label className={styles.toggleSwitch}>
+                        <input
+                          name="isNative"
+                          type="checkbox"
+                          value="true"
+                          checked={latestPlan.isNative}
+                          onChange={handleToggleChange}
+                        />
+                        <span className={styles.toggleSlider} />
+                        <span className={styles.toggleLabel}>
+                          {latestPlan.isNative
+                            ? "Native Plan"
+                            : "Non Native Plan"}
+                        </span>
+                      </label>
+                    </>
+                  ) : (
+                    <h4 className={styles.planDescription__text}>
+                      {latestPlan.isNative ? "Native Plan" : "Non Native Plan"}
                     </h4>
                   )}
                 </div>

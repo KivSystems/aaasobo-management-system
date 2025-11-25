@@ -12,6 +12,7 @@ export const PlanResponse = z.object({
     name: z.string().describe("Plan name"),
     weeklyClassTimes: z.number().describe("Number of weekly class times"),
     description: z.string().describe("Plan description"),
+    isNative: z.boolean().describe("If it's a native plan or not"),
   }),
 });
 

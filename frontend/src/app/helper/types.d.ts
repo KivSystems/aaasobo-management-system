@@ -103,6 +103,7 @@ type Plan = {
   description: string;
   weeklyClassTimes?: number;
   terminationAt?: string | null;
+  isNative: boolean;
 };
 
 type BusinessEventType = {
