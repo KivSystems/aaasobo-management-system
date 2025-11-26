@@ -295,6 +295,7 @@ export const getInstructorProfiles = async () => {
     nickname: instructor.nickname,
     icon: instructor.icon,
     introductionURL: instructor.introductionURL,
+    isNative: instructor.isNative,
   }));
 
   return instructorProfiles;

@@ -2381,8 +2381,8 @@ async function insertRecurringClasses() {
 async function insertInstructorSchedules() {
   const helen = await getInstructor("Helen");
   const elian = await getInstructor("Elian");
-  const niki = await getInstructor("Niki");
-  const emi = await getInstructor("Emi");
+  const niki = await getInstructor("Niki (Native)");
+  const emi = await getInstructor("Emi (Native)");
 
   // Helen's first schedule (historical - 2024-06-01 to 2024-07-31)
   const helenSchedule1 = await prisma.instructorSchedule.create({
@@ -2664,24 +2664,24 @@ async function insertInstructorSchedules() {
     data: [
       // Monday (1)
       {
-        scheduleId: elianSchedule.id,
+        scheduleId: nikiSchedule.id,
         weekday: 1,
         startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
-        scheduleId: elianSchedule.id,
+        scheduleId: nikiSchedule.id,
         weekday: 1,
         startTime: new Date("1970-01-01T16:30:00Z"),
       },
       // Tuesday (2)
       {
-        scheduleId: elianSchedule.id,
+        scheduleId: nikiSchedule.id,
         weekday: 2,
         startTime: new Date("1970-01-01T16:00:00Z"),
       },
       // Wednesday (3)
       {
-        scheduleId: elianSchedule.id,
+        scheduleId: nikiSchedule.id,
         weekday: 3,
         startTime: new Date("1970-01-01T16:00:00Z"),
       },
@@ -2702,24 +2702,24 @@ async function insertInstructorSchedules() {
     data: [
       // Monday (1)
       {
-        scheduleId: elianSchedule.id,
+        scheduleId: emiSchedule.id,
         weekday: 1,
         startTime: new Date("1970-01-01T16:00:00Z"),
       },
       {
-        scheduleId: elianSchedule.id,
+        scheduleId: emiSchedule.id,
         weekday: 1,
         startTime: new Date("1970-01-01T16:30:00Z"),
       },
       // Tuesday (2)
       {
-        scheduleId: elianSchedule.id,
+        scheduleId: emiSchedule.id,
         weekday: 2,
         startTime: new Date("1970-01-01T16:00:00Z"),
       },
       // Wednesday (3)
       {
-        scheduleId: elianSchedule.id,
+        scheduleId: emiSchedule.id,
         weekday: 3,
         startTime: new Date("1970-01-01T16:00:00Z"),
       },
@@ -3433,7 +3433,9 @@ async function getCustomer(name: "Alice" | "Bob" | "山田 花") {
   return customer;
 }
 
-async function getInstructor(nickname: "Helen" | "Elian" | "Niki" | "Emi") {
+async function getInstructor(
+  nickname: "Helen" | "Elian" | "Niki (Native)" | "Emi (Native)",
+) {
   const instructor = await prisma.instructor.findFirst({ where: { nickname } });
   if (!instructor) {
     throw new Error(`Instructor ${nickname} not found`);
