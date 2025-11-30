@@ -381,6 +381,7 @@ export default function ProgressiveBookingFlow({
                   onSlotSelect={handleSlotSelect}
                   language={language}
                   selectedInstructor={null}
+                  isNative={plan?.isNative}
                 />
               </div>
             )}

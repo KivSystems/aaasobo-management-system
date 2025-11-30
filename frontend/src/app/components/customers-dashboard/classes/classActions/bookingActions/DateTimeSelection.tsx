@@ -11,12 +11,14 @@ interface DateTimeSelectionProps {
   ) => void;
   language: LanguageType;
   selectedInstructor?: InstructorRebookingProfile | null; // For instructor-first flow
+  isNative?: boolean;
 }
 
 export default function DateTimeSelection({
   onSlotSelect,
   language,
   selectedInstructor,
+  isNative,
 }: DateTimeSelectionProps) {
   const handleSlotSelect = (
     dateTime: string,
@@ -46,6 +48,7 @@ export default function DateTimeSelection({
         /* For date-first flow, show full calendar with all instructor availability */
         <AllInstructorAvailabilityCalendar
           onSlotSelect={handleSlotSelect}
+          isNative={isNative}
           language={language}
         />
       )}

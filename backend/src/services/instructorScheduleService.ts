@@ -232,6 +232,57 @@ export const getAllAvailableSlots = async (
   }
 };
 
+export const getAvailableSlotsByType = async (
+  startDate: string, // YYYY-MM-DD format
+  endDate: string, // YYYY-MM-DD format
+  timezone: string,
+  isNative: boolean,
+): Promise<AvailableSlotWithInstructors[]> => {
+  try {
+    if (timezone !== "Asia/Tokyo") {
+      throw new Error("Only Asia/Tokyo timezone is supported");
+    }
+
+    const { schedulesByInstructor, excludeSlots } =
+      await getInstructorsConstraintsByType(startDate, endDate, isNative);
+
+    const slotToInstructorIds = new Map<string, Set<number>>();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    for (const [instructorId, instructorSchedules] of schedulesByInstructor) {
+      const instructorSlots = generateInstructorSlots(
+        instructorId,
+        instructorSchedules,
+        start,
+        end,
+        excludeSlots,
+      );
+
+      for (const slot of instructorSlots) {
+        if (!slotToInstructorIds.has(slot.dateTime)) {
+          slotToInstructorIds.set(slot.dateTime, new Set());
+        }
+        slotToInstructorIds.get(slot.dateTime)!.add(instructorId);
+      }
+    }
+
+    const result: AvailableSlotWithInstructors[] = Array.from(
+      slotToInstructorIds.entries(),
+    )
+      .map(([dateTime, instructorSet]) => ({
+        dateTime,
+        availableInstructors: Array.from(instructorSet).sort((a, b) => a - b),
+      }))
+      .sort((a, b) => a.dateTime.localeCompare(b.dateTime));
+
+    return result;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch native or non native available slots.");
+  }
+};
+
 type InstructorSchedule = Prisma.InstructorScheduleGetPayload<{
   include: { slots: true };
 }>;
@@ -343,6 +394,76 @@ const getAllInstructorsConstraints = async (
           { effectiveTo: null },
           { effectiveTo: { gt: new Date(startDate) } },
         ],
+      },
+      include: {
+        slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
+      },
+      orderBy: { effectiveFrom: "asc" },
+    }),
+    prisma.instructorAbsence.findMany({
+      where: {
+        absentAt: {
+          gte: jst(startDate),
+          lt: jst(endDate),
+        },
+      },
+    }),
+    prisma.class.findMany({
+      where: {
+        dateTime: {
+          gte: jst(startDate),
+          lt: jst(endDate),
+        },
+        status: { in: ["booked", "rebooked"] },
+      },
+      select: {
+        instructorId: true,
+        dateTime: true,
+      },
+    }),
+  ]);
+
+  const absentDateTimes = new Set(
+    absences.map(
+      (absence) => `${absence.instructorId}-${absence.absentAt.toISOString()}`,
+    ),
+  );
+  const bookedDateTimes = new Set(
+    bookings.map(
+      (booking) => `${booking.instructorId}-${booking.dateTime?.toISOString()}`,
+    ),
+  );
+
+  const excludeSlots = new Set([...absentDateTimes, ...bookedDateTimes]);
+
+  // Group schedules by instructor ID
+  const schedulesByInstructor = new Map<number, InstructorSchedule[]>();
+  for (const schedule of schedules) {
+    if (!schedulesByInstructor.has(schedule.instructorId)) {
+      schedulesByInstructor.set(schedule.instructorId, []);
+    }
+    schedulesByInstructor.get(schedule.instructorId)!.push(schedule);
+  }
+
+  return { schedulesByInstructor, excludeSlots };
+};
+
+const getInstructorsConstraintsByType = async (
+  startDate: string,
+  endDate: string,
+  isNative: boolean,
+): Promise<AllInstructorsConstraints> => {
+  const [schedules, absences, bookings] = await Promise.all([
+    prisma.instructorSchedule.findMany({
+      where: {
+        timezone: "Asia/Tokyo",
+        // Interval overlap: schedule overlaps with [start, end)
+        effectiveFrom: { lt: new Date(endDate) },
+        OR: [
+          { effectiveTo: null },
+          { effectiveTo: { gt: new Date(startDate) } },
+        ],
+        instructor: { isNative: isNative },
       },
       include: {
         slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },

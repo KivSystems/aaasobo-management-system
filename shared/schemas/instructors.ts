@@ -184,6 +184,7 @@ export const AvailableSlotsQuery = z
     timezone: z
       .literal("Asia/Tokyo")
       .describe("Timezone (currently only Asia/Tokyo is supported)"),
+    isNative: z.string("true") || z.string("false"),
   })
   .refine(
     (data) => new Date(data.start) < new Date(data.end),

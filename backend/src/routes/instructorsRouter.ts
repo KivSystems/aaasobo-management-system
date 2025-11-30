@@ -55,6 +55,7 @@ import {
   getInstructorAvailableSlotsController,
   getAllAvailableSlotsController,
   getActiveInstructorScheduleController,
+  getAvailableSlotsByTypeController,
 } from "../../src/controllers/instructorScheduleController";
 import {
   getInstructorAbsencesController,
@@ -279,6 +280,32 @@ const availableSlotsConfig = {
     summary: "Get all available instructor slots",
     description:
       "Get available time slots across all instructors for a date range",
+    responses: {
+      200: {
+        description: "Successfully retrieved available slots",
+        schema: AvailableSlotsResponse,
+      },
+      400: {
+        description: "Invalid query parameters",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const availableSlotsByTypeConfig = {
+  method: "get" as const,
+  querySchema: AvailableSlotsQuery,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
+  handler: getAvailableSlotsByTypeController,
+  openapi: {
+    summary: "Get native or non native available instructor slots",
+    description:
+      "Get available time slots across native or non native instructors for a date range",
     responses: {
       200: {
         description: "Successfully retrieved available slots",
@@ -581,6 +608,7 @@ const postTerminationScheduleConfig = {
 const validatedRouteConfigs = {
   "/all-profiles": [allProfilesConfig],
   "/available-slots": [availableSlotsConfig],
+  "/available-slots/by-type": [availableSlotsByTypeConfig],
   "/class/:id": [classInstructorConfig],
   "/profiles": [profilesConfig],
   "/profiles/native": [nativeProfilesConfig],

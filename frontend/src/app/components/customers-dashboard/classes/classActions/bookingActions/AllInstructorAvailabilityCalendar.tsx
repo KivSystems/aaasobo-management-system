@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import {
-  getAllInstructorAvailableSlots,
+  getInstructorAvailableSlotsByType,
   getInstructorProfiles,
 } from "@/app/helper/api/instructorsApi";
 import type { AvailableSlot } from "@shared/schemas/instructors";
@@ -31,6 +31,7 @@ interface AllInstructorAvailabilityCalendarProps {
     availableInstructors: InstructorRebookingProfile[],
   ) => void;
   language: "ja" | "en";
+  isNative?: boolean;
 }
 
 // Helper function to format date for API calls
@@ -77,12 +78,14 @@ const getErrorMessage = (language: "ja" | "en"): string => {
 export default function AllInstructorAvailabilityCalendar({
   onSlotSelect,
   language,
+  isNative,
 }: AllInstructorAvailabilityCalendarProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fetchCalendarEvents = useCallback(
     async (info: EventSourceFuncArg) => {
+      if (isNative === undefined) return;
       const startStr = formatJSTDate(info.start);
       const exclusiveEnd = new Date(info.end);
       exclusiveEnd.setDate(exclusiveEnd.getDate() + 1);
@@ -90,7 +93,11 @@ export default function AllInstructorAvailabilityCalendar({
 
       try {
         setErrorMessage(null);
-        const response = await getAllInstructorAvailableSlots(startStr, endStr);
+        const response = await getInstructorAvailableSlotsByType(
+          startStr,
+          endStr,
+          isNative,
+        );
 
         if ("data" in response) {
           return response.data.map((slot: AvailableSlot) =>
