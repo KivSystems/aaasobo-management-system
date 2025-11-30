@@ -1,3 +1,4 @@
+import { Prisma, Instructor } from "../../generated/prisma";
 import { Request, Response } from "express";
 import { RequestWithParams } from "../middlewares/validationMiddleware";
 import {
@@ -107,7 +108,7 @@ export const getAllInstructorProfilesController = async (
 
     // Map the instructors to include only the necessary fields for the profile.
     const instructorProfiles = await Promise.all(
-      instructors.map(async (instructor) => {
+      instructors.map(async (instructor: Instructor) => {
         // Validate the instructor's icon URL
         const instructorId = instructor.id;
         const instructorIcon = instructor.icon;

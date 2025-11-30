@@ -1,3 +1,4 @@
+import { Prisma } from "../../generated/prisma";
 import { Request, Response } from "express";
 import {
   cancelClassById,
@@ -406,117 +407,119 @@ export const createClassesForMonthController = async (
   const { year, month } = req.body;
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      // First date of a giving month.
-      const monthNum = getMonthNumber(month);
-      if (monthNum === -1) throw new Error("Invalid month");
-      const firstDateOfMonth = new Date(Date.UTC(year, monthNum, 1));
+    const result = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        // First date of a giving month.
+        const monthNum = getMonthNumber(month);
+        if (monthNum === -1) throw new Error("Invalid month");
+        const firstDateOfMonth = new Date(Date.UTC(year, monthNum, 1));
 
-      // Get valid recurring classes.
-      const recurringClasses = await getValidRecurringClasses(
-        tx,
-        firstDateOfMonth,
-      );
+        // Get valid recurring classes.
+        const recurringClasses = await getValidRecurringClasses(
+          tx,
+          firstDateOfMonth,
+        );
 
-      // Get excluded classes.
-      const recurringClassIds = recurringClasses.map(
-        (recurringClass) => recurringClass.id,
-      );
-      const excludedClasses = await getExcludedClasses(
-        tx,
-        recurringClassIds,
-        firstDateOfMonth,
-      );
+        // Get excluded classes.
+        const recurringClassIds = recurringClasses.map(
+          (recurringClass) => recurringClass.id,
+        );
+        const excludedClasses = await getExcludedClasses(
+          tx,
+          recurringClassIds,
+          firstDateOfMonth,
+        );
 
-      // TODO: Get the instructors' unavailability and exclude it.
-      // TODO: Get the holiday and exclude it.
+        // TODO: Get the instructors' unavailability and exclude it.
+        // TODO: Get the holiday and exclude it.
 
-      // Define until when schedule should be created.
-      const until = getFirstDateInMonths(firstDateOfMonth, 1);
-      until.setUTCDate(until.getUTCDate() - 1);
+        // Define until when schedule should be created.
+        const until = getFirstDateInMonths(firstDateOfMonth, 1);
+        until.setUTCDate(until.getUTCDate() - 1);
 
-      // Repeat the number of recurring classes.
-      await Promise.all(
-        recurringClasses.map(async (recurringClass) => {
-          const {
-            id,
-            instructorId,
-            startAt,
-            endAt,
-            subscriptionId,
-            subscription,
-            recurringClassAttendance,
-          } = recurringClass;
+        // Repeat the number of recurring classes.
+        await Promise.all(
+          recurringClasses.map(async (recurringClass) => {
+            const {
+              id,
+              instructorId,
+              startAt,
+              endAt,
+              subscriptionId,
+              subscription,
+              recurringClassAttendance,
+            } = recurringClass;
 
-          // If the applicable property is null, skip it.
-          if (
-            instructorId === null ||
-            startAt === null ||
-            subscriptionId == null ||
-            subscription === null
-          ) {
-            return;
-          }
+            // If the applicable property is null, skip it.
+            if (
+              instructorId === null ||
+              startAt === null ||
+              subscriptionId == null ||
+              subscription === null
+            ) {
+              return;
+            }
 
-          // If startAt is earlier than firstDateOfMonth, skip it.
-          if (startAt && firstDateOfMonth < new Date(startAt)) {
-            return;
-          }
+            // If startAt is earlier than firstDateOfMonth, skip it.
+            if (startAt && firstDateOfMonth < new Date(startAt)) {
+              return;
+            }
 
-          // Extract time from startAt
-          const hours = startAt.getHours().toString().padStart(2, "0");
-          const minutes = startAt.getMinutes().toString().padStart(2, "0");
-          const time = `${hours}:${minutes}`;
+            // Extract time from startAt
+            const hours = startAt.getHours().toString().padStart(2, "0");
+            const minutes = startAt.getMinutes().toString().padStart(2, "0");
+            const time = `${hours}:${minutes}`;
 
-          // Get the first date of the class of the month
-          const firstDate = calculateFirstDate(
-            firstDateOfMonth,
-            days[startAt.getDay()],
-            time,
-          );
-
-          // Create the range of dates.
-          const dateTimes = createDatesBetween(
-            firstDate,
-            endAt && endAt < until ? endAt : until,
-          );
-
-          // if you find the same dateTime and instructor id as in the excludedClass, skip it.
-          const isExistingClass = excludedClasses.some((excludedClass) => {
-            const excludedClassDateTimesStr = new Date(
-              excludedClass.dateTime!, // All "excludedClasses" are selected by dateTime, so dateTime is guaranteed to exist.
-            ).toISOString();
-            const dateTimesStr = dateTimes.map((date) =>
-              new Date(date).toISOString(),
+            // Get the first date of the class of the month
+            const firstDate = calculateFirstDate(
+              firstDateOfMonth,
+              days[startAt.getDay()],
+              time,
             );
-            return (
-              dateTimesStr.includes(excludedClassDateTimesStr) &&
-              excludedClass.instructorId === instructorId
+
+            // Create the range of dates.
+            const dateTimes = createDatesBetween(
+              firstDate,
+              endAt && endAt < until ? endAt : until,
             );
-          });
-          if (isExistingClass) {
-            return;
-          }
 
-          const childrenIds = recurringClassAttendance.map(
-            (attendee) => attendee.childrenId,
-          );
+            // if you find the same dateTime and instructor id as in the excludedClass, skip it.
+            const isExistingClass = excludedClasses.some((excludedClass) => {
+              const excludedClassDateTimesStr = new Date(
+                excludedClass.dateTime!, // All "excludedClasses" are selected by dateTime, so dateTime is guaranteed to exist.
+              ).toISOString();
+              const dateTimesStr = dateTimes.map((date) =>
+                new Date(date).toISOString(),
+              );
+              return (
+                dateTimesStr.includes(excludedClassDateTimesStr) &&
+                excludedClass.instructorId === instructorId
+              );
+            });
+            if (isExistingClass) {
+              return;
+            }
 
-          // Create the classes and its attendance based on the recurring id.
-          await createClassesUsingRecurringClassId(
-            tx,
-            id,
-            instructorId,
-            subscription.customerId,
-            subscriptionId,
-            childrenIds,
-            dateTimes,
-          );
-        }),
-      );
+            const childrenIds = recurringClassAttendance.map(
+              (attendee) => attendee.childrenId,
+            );
 
-      return recurringClasses;
-    });
+            // Create the classes and its attendance based on the recurring id.
+            await createClassesUsingRecurringClassId(
+              tx,
+              id,
+              instructorId,
+              subscription.customerId,
+              subscriptionId,
+              childrenIds,
+              dateTimes,
+            );
+          }),
+        );
+
+        return recurringClasses;
+      },
+    );
 
     res.status(201).json({ result });
   } catch (error) {
