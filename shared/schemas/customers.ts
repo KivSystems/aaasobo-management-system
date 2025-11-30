@@ -44,6 +44,7 @@ export const DeclineFreeTrialRequest = z.object({
   classCode: z
     .string()
     .min(1)
+    .optional()
     .describe("Class code for the free trial to decline"),
 });
 

@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/prismaClient";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../generated/prisma";
 import { nDaysLater } from "../helper/dateUtils";
 
 export const getInstructorSchedules = async (instructorId: number) => {

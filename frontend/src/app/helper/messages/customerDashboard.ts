@@ -185,7 +185,7 @@ export const DOUBLE_BOOKING_CONFIRMATION_MESSAGE = {
 export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
   success: {
     ja: "クラスの予約が完了しました！",
-    en: "Your class has been successfully booked!",
+    en: "Your class has been successfully booked.",
   },
   "past rebooking deadline": {
     ja: "振替予約は、クラス開始の3時間前まで可能です。ご予約時点で締切を過ぎていたため、振替ができませんでした。お手数ですが、ページを更新し別のクラスをご検討ください。",
@@ -256,23 +256,28 @@ export const FREE_TRIAL_DECLINE_CONFIRMATION_MESSAGE = {
 };
 
 export const FREE_TRIAL_REMOVE_SUCCESS_MESSAGE = {
-  ja: "無料トライアルクラスを削除しました。",
-  en: "The free trial class has been removed.",
+  ja: "無料トライアルクラスをスキップしました。",
+  en: "The free trial class has been skipped.",
 };
 
 export const FREE_TRIAL_ALREADY_REMOVED_MESSAGE = {
-  ja: "無料トライアルクラスはすでに削除済みです。",
-  en: "The free trial class has already been removed.",
+  ja: "無料トライアルクラスはすでにスキップ処理済みです。",
+  en: "The free trial class has already been skipped.",
 };
 
 export const FREE_TRIAL_REMOVE_ERROR_MESSAGE = {
-  ja: `無料トライアルクラスの削除に失敗しました。もう一度お試しください。解決しない場合は、${CONTACT_EMAIL} かLINE（${LINE_QR_CODE_URL}）でお問い合わせください。`,
+  ja: `無料トライアルクラスの削除に失敗しました。もう一度お試しください。解決しない場合は、${CONTACT_EMAIL} かLINE (${LINE_QR_CODE_URL}）でお問い合わせください。`,
   en: `Failed to remove the free trial class. Please try again. If the problem persists, contact us at ${CONTACT_EMAIL} or LINE(${LINE_QR_CODE_URL}).`,
 };
 
-export const WELCOME_MODAL_TITLE = {
-  ja: "オンラインこども英会話プログラム【AaasoBo!】アーソボ！へようこそ",
-  en: "Welcome to AaasoBo!, the Online English Conversation Program for Kids",
+export const WELCOME_MODAL_TITLE1 = {
+  ja: "オンラインこども英会話プログラム",
+  en: "Welcome to AaasoBo!,",
+};
+
+export const WELCOME_MODAL_TITLE2 = {
+  ja: "AaasoBo! へようこそ",
+  en: "the Online English Conversation Program for Kids",
 };
 
 export const FREE_TRIAL_BOOKING_INSTRUCTION_MESSAGE = {
@@ -283,6 +288,11 @@ export const FREE_TRIAL_BOOKING_INSTRUCTION_MESSAGE = {
 export const CHILD_PROFILE_UPDATE_INSTRUCTION_MESSAGE = {
   ja: "クラスに参加するお子さまを追加する場合は、左サイドメニューの『お子さまプロフィール』から変更できます。",
   en: "To add children who will join the class, please go to 'Children Profiles' in the left-hand side menu.",
+};
+
+export const MEMBERSHIP_INSTRUCTION_MESSAGE = {
+  ja: `有料クラスを受講される場合は、Eメール (${CONTACT_EMAIL}) またはLINE (${LINE_QR_CODE_URL}) までご連絡下さい。`,
+  en: `To continue using AaasoBo! for paid classes, please us by Email (${CONTACT_EMAIL}) or LINE(${LINE_QR_CODE_URL}).`,
 };
 
 // Regular Classes Page Messages

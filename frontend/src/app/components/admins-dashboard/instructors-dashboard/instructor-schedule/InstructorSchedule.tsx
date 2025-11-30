@@ -111,7 +111,7 @@ export default function InstructorSchedule({
       // Refresh schedules and select the new one
       await fetchSchedules();
       setSelectedScheduleId(response.schedule.id);
-      toast.success("Schedule created successfully!");
+      toast.success("Schedule created successfully.");
     } catch (error) {
       console.error("Failed to create schedule:", error);
       const errorMessage =

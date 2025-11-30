@@ -256,7 +256,7 @@ export default function ProgressiveBookingFlow({
         toast.success(
           language === "ja"
             ? "予約が完了しました"
-            : "Booking completed successfully",
+            : "Booking completed successfully.",
         );
         onClose();
         // Optionally reload the page to show the updated booking

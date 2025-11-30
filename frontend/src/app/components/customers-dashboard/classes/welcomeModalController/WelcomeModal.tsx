@@ -6,8 +6,10 @@ import { markWelcomeSeen } from "@/app/helper/api/customersApi";
 import {
   CHILD_PROFILE_UPDATE_INSTRUCTION_MESSAGE,
   FREE_TRIAL_BOOKING_INSTRUCTION_MESSAGE,
+  MEMBERSHIP_INSTRUCTION_MESSAGE,
   LOGIN_REQUIRED_MESSAGE,
-  WELCOME_MODAL_TITLE,
+  WELCOME_MODAL_TITLE1,
+  WELCOME_MODAL_TITLE2,
 } from "@/app/helper/messages/customerDashboard";
 import { validateSession } from "@/app/actions/validateSession";
 import { confirmAndDeclineFreeTrialClass } from "@/app/helper/utils/confirmAndDeclineFreeTrialClass";
@@ -38,7 +40,9 @@ export default function WelcomeModal({
   return (
     <div className={styles.welcomeModal}>
       <h2 className={styles.welcomeModal__title}>
-        {WELCOME_MODAL_TITLE[language]}
+        {WELCOME_MODAL_TITLE1[language]}
+        <br />
+        {WELCOME_MODAL_TITLE2[language]}
       </h2>
 
       <p className={styles.welcomeModal__description}>
@@ -65,6 +69,10 @@ export default function WelcomeModal({
 
       <p className={styles.welcomeModal__description}>
         - {CHILD_PROFILE_UPDATE_INSTRUCTION_MESSAGE[language]}
+      </p>
+
+      <p className={styles.welcomeModal__description}>
+        - {MEMBERSHIP_INSTRUCTION_MESSAGE[language]}
       </p>
 
       <div className={styles.welcomeModal__button}>
