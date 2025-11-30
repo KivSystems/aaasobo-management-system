@@ -134,6 +134,7 @@ export const getAllInstructorProfilesController = async (
           skill: instructor.skill,
           createdAt: instructor.createdAt,
           terminationAt: terminationAt,
+          isNative: instructor.isNative,
         };
       }),
     );
