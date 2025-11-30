@@ -1,4 +1,4 @@
-import { Prisma, Instructor } from "../../generated/prisma";
+import { Instructor } from "../../generated/prisma";
 import { Request, Response } from "express";
 import { RequestWithParams } from "../middlewares/validationMiddleware";
 import {
