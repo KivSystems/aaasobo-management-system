@@ -24,6 +24,21 @@ export const confirmAlert: (text: string) => Promise<boolean> = (
   return result;
 };
 
+export const successAlert: (text: string) => Promise<void> = async (
+  text: string,
+) => {
+  Swal.fire({
+    text: text,
+    icon: "success",
+    confirmButtonText: "OK",
+    showConfirmButton: true,
+    didOpen: () => {
+      const container = Swal.getContainer()!;
+      container.style.zIndex = "99999";
+    },
+  });
+};
+
 export const errorAlert: (text: string) => Promise<void> = async (
   text: string,
 ) => {
