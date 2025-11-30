@@ -185,7 +185,7 @@ export const DOUBLE_BOOKING_CONFIRMATION_MESSAGE = {
 export const REBOOK_CLASS_RESULT_MESSAGES: Record<string, LocalizedMessage> = {
   success: {
     ja: "クラスの予約が完了しました！",
-    en: "Your class has been successfully booked!",
+    en: "Your class has been successfully booked.",
   },
   "past rebooking deadline": {
     ja: "振替予約は、クラス開始の3時間前まで可能です。ご予約時点で締切を過ぎていたため、振替ができませんでした。お手数ですが、ページを更新し別のクラスをご検討ください。",
