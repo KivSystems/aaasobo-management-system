@@ -3,7 +3,7 @@
 import Modal from "@/app/components/elements/modal/Modal";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useState } from "react";
-import WelcomeModal from "./WelcomeModa";
+import WelcomeModal from "./WelcomeModal";
 
 export default function WelcomeModalController({
   customerId,
