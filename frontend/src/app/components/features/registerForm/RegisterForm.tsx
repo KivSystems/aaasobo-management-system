@@ -400,7 +400,6 @@ const RegisterForm = ({
             error={localMessages.description}
             onChange={() => clearErrorMessage("description")}
           />{" "}
-          
           {/* Native flag */}
           <label className={styles.checkLabel}>
             <input
