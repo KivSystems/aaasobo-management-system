@@ -289,7 +289,7 @@ export const CreateScheduleRequest = z.object({
     )
     .describe("Effective from date in YYYY-MM-DD format"),
   timezone: z.string().min(1).describe("Timezone (e.g., Asia/Tokyo)"),
-  slots: z.array(CreateSlotRequest).min(1).describe("Array of time slots"),
+  slots: z.array(CreateSlotRequest).min(0).describe("Array of time slots"),
 });
 
 export const CreateScheduleResponse = z.object({

@@ -171,7 +171,7 @@ function InstructorProfile({
   useEffect(() => {
     if (updateResultState !== undefined) {
       if ("instructor" in updateResultState && updateResultState.instructor) {
-        toast.success("Profile updated successfully!");
+        toast.success("Profile updated successfully");
         setIsEditing(false);
 
         const newInstructor = updateResultState.instructor;

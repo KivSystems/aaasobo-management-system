@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../../prisma/prismaClient";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../generated/prisma";
 import { nHoursLater } from "../helper/dateUtils";
 
 export const generateVerificationToken = async (

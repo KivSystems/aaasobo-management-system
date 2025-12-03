@@ -1,7 +1,11 @@
 import "dotenv/config";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient, Prisma } from "../../generated/prisma/client";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env.POSTGRES_PRISMA_URL,
+});
+export const prisma = new PrismaClient({ adapter });
 
 async function insertInstructors() {
   await prisma.instructor.createMany({
@@ -1078,7 +1082,7 @@ async function insertCustomers() {
         password:
           "$2b$12$qbcPqqpR3nKgtCgrusCbQOfMqJJHiMlBSkeClYEeWkKM6Fc6xahD2",
         prefecture: "北海道 / Hokkaido",
-        hasSeenWelcome: true,
+        hasSeenWelcome: false,
         emailVerified: "2025-04-11T01:26:02.736Z",
         createdAt: "2025-04-01T00:00:00.000Z",
         updatedAt: "2024-08-10T00:00:00.000Z",

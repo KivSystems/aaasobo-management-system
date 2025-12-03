@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/prismaClient";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../generated/prisma";
 import { nDaysLater } from "../helper/dateUtils";
 
 export const getInstructorSchedules = async (instructorId: number) => {
@@ -83,45 +83,91 @@ export const createInstructorSchedule = async (data: {
   }>;
 }) => {
   try {
+    const { instructorId, effectiveFrom, timezone, slots } = data;
+
     return await prisma.$transaction(async (tx) => {
-      // Find the currently active schedule (effectiveTo: null)
-      // Note: This should be findUnique since we have @@unique([instructorId, effectiveTo]),
-      // but Prisma doesn't support null values in compound unique constraints with findUnique.
-      // Using findFirst is safe here as the DB constraint ensures uniqueness.
-      const currentActiveSchedule = await tx.instructorSchedule.findFirst({
-        where: {
-          instructorId: data.instructorId,
-          effectiveTo: null,
+      // Fetch all schedules for the instructor
+      const existingSchedules = await tx.instructorSchedule.findMany({
+        where: { instructorId: instructorId },
+        select: {
+          id: true,
+          effectiveFrom: true,
+          effectiveTo: true,
+          timezone: true,
         },
+        orderBy: { effectiveFrom: "asc" },
       });
 
-      // If there's an active schedule, end it
-      if (currentActiveSchedule) {
-        await tx.instructorSchedule.update({
-          where: { id: currentActiveSchedule.id },
-          data: { effectiveTo: data.effectiveFrom },
-        });
+      // Find the target index to insert the new schedule
+      const insertIndex = existingSchedules.findIndex(
+        (s) => s.effectiveFrom > effectiveFrom,
+      );
+
+      interface InstructorSchedule {
+        id: number;
+        effectiveFrom: Date;
+        effectiveTo: Date | null;
+        timezone: string;
+      }
+      let newSchedule: InstructorSchedule;
+      let lastSchedule: InstructorSchedule;
+      let nextSchedule: InstructorSchedule;
+
+      // Define lastSchedule and nextSchedule based on insertIndex
+      lastSchedule = existingSchedules[insertIndex - 1];
+      if (!lastSchedule) {
+        lastSchedule = existingSchedules[existingSchedules.length - 1];
+      }
+      nextSchedule = existingSchedules[insertIndex];
+      if (!nextSchedule) {
+        nextSchedule = existingSchedules[insertIndex - 1];
       }
 
-      const schedule = await tx.instructorSchedule.create({
+      if (lastSchedule || nextSchedule) {
+        // Handle the logic if effectiveFrom date is the same as last or next schedule
+        if (
+          lastSchedule?.effectiveFrom.getTime() === effectiveFrom.getTime() ||
+          nextSchedule?.effectiveFrom.getTime() === effectiveFrom.getTime()
+        ) {
+          await tx.instructorSlot.deleteMany({
+            where: {
+              scheduleId: lastSchedule ? lastSchedule.id : nextSchedule.id,
+            },
+          });
+          await tx.instructorSchedule.delete({
+            where: { id: lastSchedule ? lastSchedule.id : nextSchedule.id },
+          });
+        } else {
+          await tx.instructorSchedule.update({
+            where: { id: lastSchedule.id },
+            data: {
+              effectiveTo: insertIndex === 0 ? null : effectiveFrom,
+            },
+          });
+        }
+      }
+
+      // Create the new schedule
+      newSchedule = await tx.instructorSchedule.create({
         data: {
-          instructorId: data.instructorId,
-          effectiveFrom: data.effectiveFrom,
-          effectiveTo: null,
-          timezone: data.timezone,
+          instructorId: instructorId,
+          effectiveFrom: effectiveFrom,
+          effectiveTo: nextSchedule ? nextSchedule.effectiveFrom : null,
+          timezone: timezone,
         },
       });
 
+      // Create slots for the new schedule
       await tx.instructorSlot.createMany({
-        data: data.slots.map((slot) => ({
-          scheduleId: schedule.id,
+        data: slots.map((slot) => ({
+          scheduleId: newSchedule.id,
           weekday: slot.weekday,
           startTime: new Date(`1970-01-01T${slot.startTime}:00.000Z`),
         })),
       });
 
       const createdSchedule = await tx.instructorSchedule.findUnique({
-        where: { id: schedule.id },
+        where: { id: newSchedule.id },
         include: { slots: true },
       });
 

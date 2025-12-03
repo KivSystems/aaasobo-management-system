@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/prismaClient";
-import { Instructor } from "@prisma/client";
+import { Instructor } from "../../generated/prisma";
 import {
   hashPassword,
   defaultUserImageUrl,
@@ -289,7 +289,7 @@ export const getInstructorProfiles = async () => {
     },
   });
 
-  const instructorProfiles = instructors.map((instructor) => ({
+  const instructorProfiles = instructors.map((instructor: Instructor) => ({
     id: instructor.id,
     name: instructor.name,
     nickname: instructor.nickname,

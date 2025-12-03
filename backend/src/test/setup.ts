@@ -3,7 +3,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../generated/prisma";
 import { execSync } from "child_process";
 
 const { faker } = require("@faker-js/faker");

@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/prismaClient";
-import { Admins } from "@prisma/client";
+import { Admins } from "../../generated/prisma";
 import { hashPassword } from "../helper/commonUtils";
 
 // Register a new admin in the DB

@@ -36,7 +36,8 @@ export const ChildProfile = z
   .object({
     id: z.number(),
     name: z.string(),
-    birthdate: z.string().nullish(), // Handle both null and undefined
+    birthdate: z.string(),
+    // birthdate: z.string().nullish(), // Handle both null and undefined
     personalInfo: z.string().nullish(),
     customerId: z.number().optional(),
   })

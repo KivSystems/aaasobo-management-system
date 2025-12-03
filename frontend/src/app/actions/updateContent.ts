@@ -290,7 +290,7 @@ export async function generateClassesAction(
     revalidateClassList();
 
     return {
-      successMessage: "Classes generated successfully!",
+      successMessage: "Classes generated successfully.",
     };
   } catch (error) {
     console.error("Unexpected error in updateContent server action:", error);

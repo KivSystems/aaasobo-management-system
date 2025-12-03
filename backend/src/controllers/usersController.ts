@@ -28,7 +28,7 @@ import {
   getPasswordResetTokenByToken,
 } from "../services/passwordResetTokensService";
 import { hashPassword } from "../helper/commonUtils";
-import { Customer } from "@prisma/client";
+import { Customer } from "../../generated/prisma";
 import {
   AuthenticateRequest,
   SendPasswordResetRequest,

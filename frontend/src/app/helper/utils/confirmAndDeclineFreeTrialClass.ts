@@ -7,7 +7,11 @@ import {
 } from "../messages/customerDashboard";
 import { declineFreeTrialClass } from "../api/customersApi";
 import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
-import { errorAlert, confirmAlert } from "@/app/helper/utils/alertUtils";
+import {
+  errorAlert,
+  confirmAlert,
+  successAlert,
+} from "@/app/helper/utils/alertUtils";
 
 export const confirmAndDeclineFreeTrialClass = async ({
   customerId,
@@ -21,6 +25,7 @@ export const confirmAndDeclineFreeTrialClass = async ({
   classCode?: string;
 }) => {
   const { isValid, error } = await validateSession(customerId);
+  console.log("confirmAndDeclineFreeTrialClass classCode:", classCode);
 
   if (!isValid) {
     return errorAlert(
@@ -40,9 +45,10 @@ export const confirmAndDeclineFreeTrialClass = async ({
     classCode,
   );
 
-  if (success) {
-    revalidateCustomerCalendar(customerId, userSessionType);
+  if (!success) {
+    return errorAlert(message[language]);
   }
 
-  return errorAlert(message[language]);
+  revalidateCustomerCalendar(customerId, userSessionType);
+  return successAlert(message[language]);
 };

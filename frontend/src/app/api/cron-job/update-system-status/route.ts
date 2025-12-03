@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     console.log("System status updated to:", status);
     return NextResponse.json(
       {
-        message: "Cron job (system status update) executed successfully",
+        message: "Cron job (system status update) executed successfully.",
         status,
       },
       { status: 200 },

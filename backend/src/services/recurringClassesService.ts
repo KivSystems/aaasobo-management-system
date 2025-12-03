@@ -1,6 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
+import { Prisma, RecurringClass, Class } from "../../generated/prisma";
 import { JAPAN_TIME_DIFF, nDaysLater, nHoursBefore } from "../helper/dateUtils";
-import { Prisma, RecurringClass, Class } from "@prisma/client";
 
 interface CreateRegularClassParams {
   instructorId: number;

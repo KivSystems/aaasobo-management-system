@@ -29,10 +29,11 @@ export function verifyAuthentication(
       return res.status(500).json({ message: "Server configuration error" });
     }
 
-    // Debugging logs for cookies
-    console.log("Logged date & time:", new Date().toISOString());
-    console.log("[Server Component] Request cookies:", req.headers.cookie);
-    console.log("[Client Component] Parsed cookies:", req.cookies);
+    // The following console log is for debugging purposes only and should be removed in production
+    // Leave it commented out for now
+    // console.log("Logged date & time:", new Date().toISOString());
+    // console.log("[Server Component] Request cookies:", req.headers.cookie);
+    // console.log("[Client Component] Parsed cookies:", req.cookies);
 
     // Extract the JWT token from cookies
     let token: string | undefined;

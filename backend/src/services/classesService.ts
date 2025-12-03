@@ -1,4 +1,4 @@
-import { Prisma, Status } from "@prisma/client";
+import { Prisma, Status } from "../../generated/prisma";
 import { prisma } from "../../prisma/prismaClient";
 import { getJstDayRange, nHoursLater } from "../helper/dateUtils";
 import { NewClassToRebookType } from "../controllers/classesController";

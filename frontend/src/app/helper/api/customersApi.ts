@@ -218,7 +218,7 @@ export const registerCustomer = async (
       };
     }
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
