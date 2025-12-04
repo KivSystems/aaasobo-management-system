@@ -86,6 +86,7 @@ export const instructorRegisterSchema = z
     userType: z.enum(["admin", "customer", "instructor"], {
       message: "Invalid user type.",
     }),
+    isNative: z.string("on").nullable(),
   })
   .refine((data) => data.password === data.passConfirmation, {
     message: "Passwords do not match.",
@@ -150,6 +151,7 @@ export const planRegisterSchema = z.object({
     }),
   weeklyClassTimes: z.number(),
   description: z.string().min(1, "Description is required."),
+  isNative: z.string("on").nullable(),
 });
 
 export const eventRegisterSchema = z.object({
@@ -198,6 +200,7 @@ export const planUpdateSchema = z.object({
       message: "Plan Name (Japanese) must contain Japanese characters.",
     }),
   description: z.string().min(1, "Description is required."),
+  isNative: z.string("on").nullable(),
 });
 
 export const scheduleUpdateSchema = z.object({

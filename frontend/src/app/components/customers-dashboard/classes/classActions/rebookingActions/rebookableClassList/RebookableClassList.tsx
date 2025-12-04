@@ -34,6 +34,7 @@ export default function RebookableClassList({
     rebookableUntil: Date,
     isFreeTrial: boolean,
     classCode?: string,
+    subscription?: Subscription,
   ) => {
     const now = new Date().getTime();
 
@@ -57,6 +58,7 @@ export default function RebookableClassList({
     setSelectedClassId(id);
     setSelectedIsFreeTrial(isFreeTrial);
     setSelectedClassCode(classCode || "");
+    setPlan(subscription?.plan);
     setModalOpen(true);
   };
 
@@ -65,6 +67,7 @@ export default function RebookableClassList({
   const [selectedIsFreeTrial, setSelectedIsFreeTrial] =
     useState<boolean>(false);
   const [selectedClassCode, setSelectedClassCode] = useState<string>("");
+  const [plan, setPlan] = useState<Plan>();
 
   return (
     <ul className={styles.modal__list}>
@@ -146,6 +149,7 @@ export default function RebookableClassList({
                     classItem.rebookableUntil,
                     classItem.isFreeTrial,
                     classItem.classCode,
+                    classItem.subscription,
                   )
                 }
               />
@@ -164,6 +168,7 @@ export default function RebookableClassList({
           classCode={selectedClassCode}
           childProfiles={childProfiles}
           customerId={customerId}
+          plan={plan}
         />
       )}
     </ul>

@@ -8,6 +8,8 @@ import {
   getCalendarClassesController,
   getInstructorProfilesController,
   getSameDateClassesController,
+  getNativeInstructorProfilesController,
+  getNonNativeInstructorProfilesController,
 } from "../../src/controllers/instructorsController";
 import { registerRoutes } from "../middlewares/validationMiddleware";
 import {
@@ -53,6 +55,7 @@ import {
   getInstructorAvailableSlotsController,
   getAllAvailableSlotsController,
   getActiveInstructorScheduleController,
+  getAvailableSlotsByTypeController,
 } from "../../src/controllers/instructorScheduleController";
 import {
   getInstructorAbsencesController,
@@ -71,6 +74,46 @@ const profilesConfig = {
     responses: {
       200: {
         description: "Successfully retrieved instructor profiles",
+        schema: InstructorProfilesResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const nativeProfilesConfig = {
+  method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
+  handler: getNativeInstructorProfilesController,
+  openapi: {
+    summary: "Get Native instructor profiles",
+    description: "Get public instructor profiles for customer dashboard",
+    responses: {
+      200: {
+        description: "Successfully retrieved native instructor profiles",
+        schema: InstructorProfilesResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const nonNativeProfilesConfig = {
+  method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
+  handler: getNonNativeInstructorProfilesController,
+  openapi: {
+    summary: "Get Non Native instructor profiles",
+    description: "Get public instructor profiles for customer dashboard",
+    responses: {
+      200: {
+        description: "Successfully retrieved non native instructor profiles",
         schema: InstructorProfilesResponse,
       },
       500: {
@@ -237,6 +280,32 @@ const availableSlotsConfig = {
     summary: "Get all available instructor slots",
     description:
       "Get available time slots across all instructors for a date range",
+    responses: {
+      200: {
+        description: "Successfully retrieved available slots",
+        schema: AvailableSlotsResponse,
+      },
+      400: {
+        description: "Invalid query parameters",
+        schema: MessageErrorResponse,
+      },
+      500: {
+        description: "Internal server error",
+        schema: MessageErrorResponse,
+      },
+    },
+  },
+} as const;
+
+const availableSlotsByTypeConfig = {
+  method: "get" as const,
+  querySchema: AvailableSlotsQuery,
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
+  handler: getAvailableSlotsByTypeController,
+  openapi: {
+    summary: "Get native or non native available instructor slots",
+    description:
+      "Get available time slots across native or non native instructors for a date range",
     responses: {
       200: {
         description: "Successfully retrieved available slots",
@@ -539,8 +608,11 @@ const postTerminationScheduleConfig = {
 const validatedRouteConfigs = {
   "/all-profiles": [allProfilesConfig],
   "/available-slots": [availableSlotsConfig],
+  "/available-slots/by-type": [availableSlotsByTypeConfig],
   "/class/:id": [classInstructorConfig],
   "/profiles": [profilesConfig],
+  "/profiles/native": [nativeProfilesConfig],
+  "/profiles/non-native": [nonNativeProfilesConfig],
   "/schedules/post-termination": [postTerminationScheduleConfig],
   "/:id": [instructorByIdConfig],
   "/:id/absences": [instructorAbsencesConfig, createAbsenceConfig],

@@ -21,6 +21,7 @@ export const InstructorProfile = z.object({
   nickname: z.string().min(1).describe("Instructor nickname"),
   icon: z.string().describe("Instructor profile icon URL from database"),
   introductionURL: z.string().describe("Instructor introduction video URL"),
+  isNative: z.boolean().describe("If it's native or not"),
 });
 
 export const InstructorProfilesResponse = z
@@ -49,6 +50,7 @@ export const DetailedInstructorProfile = z.object({
     .datetime()
     .nullable()
     .describe("Termination timestamp (ISO string)"),
+  isNative: z.boolean().describe("If it's native or not"),
 });
 
 export const AllInstructorProfilesResponse = z
@@ -80,6 +82,7 @@ export const CompleteInstructor = z.object({
   passcode: z.string().nullable().describe("Meeting passcode"),
   introductionURL: z.string().nullable().describe("Introduction video URL"),
   terminationAt: z.string().nullable().describe("Termination timestamp (JST)"),
+  isNative: z.boolean().describe("If it's native or not"),
 });
 
 export const InstructorResponse = z
@@ -181,6 +184,7 @@ export const AvailableSlotsQuery = z
     timezone: z
       .literal("Asia/Tokyo")
       .describe("Timezone (currently only Asia/Tokyo is supported)"),
+    isNative: z.string("true") || z.string("false"),
   })
   .refine(
     (data) => new Date(data.start) < new Date(data.end),

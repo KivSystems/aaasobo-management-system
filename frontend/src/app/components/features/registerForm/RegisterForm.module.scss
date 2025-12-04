@@ -83,3 +83,15 @@
     flex-shrink: 0;
   }
 }
+
+.checkLabel {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  gap: 4px;
+  cursor: pointer;
+
+  input {
+    cursor: pointer;
+  }
+}

@@ -103,6 +103,7 @@ type Plan = {
   description: string;
   weeklyClassTimes?: number;
   terminationAt?: string | null;
+  isNative: boolean;
 };
 
 type BusinessEventType = {
@@ -373,6 +374,7 @@ type RebookableClass = {
   rebookableUntil: Date;
   classCode: string;
   isFreeTrial: boolean;
+  subscription: Subscription;
 };
 
 type RebookingModalControllerProps = {

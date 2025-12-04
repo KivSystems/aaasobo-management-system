@@ -209,7 +209,7 @@ export const registerInstructor = async (
       }
     }
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -364,6 +364,98 @@ export const getInstructorProfiles = async (cookie?: string) => {
   } catch (error) {
     console.error(
       "API error while fetching instructor profiles for rebooking page:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILES);
+  }
+};
+
+export const getNativeInstructorProfiles = async (cookie?: string) => {
+  try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
+
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/profiles/native`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/profiles/native`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const instructorProfiles: InstructorProfile[] = await response.json();
+    return instructorProfiles;
+  } catch (error) {
+    console.error(
+      "API error while fetching native instructor profiles for rebooking page:",
+      error,
+    );
+    throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILES);
+  }
+};
+
+export const getNonNativeInstructorProfiles = async (cookie?: string) => {
+  try {
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
+
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/profiles/non-native`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/profiles/non-native`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
+    }
+
+    const instructorProfiles: InstructorProfile[] = await response.json();
+    return instructorProfiles;
+  } catch (error) {
+    console.error(
+      "API error while fetching non native instructor profiles for rebooking page:",
       error,
     );
     throw new Error(FAILED_TO_FETCH_INSTRUCTOR_PROFILES);
@@ -815,6 +907,63 @@ export const getAllInstructorAvailableSlots = async (
     return data;
   } catch (error) {
     console.error("Failed to fetch all instructor available slots:", error);
+    return { message: "Failed to fetch available slots" };
+  }
+};
+
+export const getInstructorAvailableSlotsByType = async (
+  startDate: string,
+  endDate: string,
+  isNative: boolean,
+  cookie?: string,
+) => {
+  try {
+    const params = new URLSearchParams({
+      start: startDate,
+      end: endDate,
+      timezone: "Asia/Tokyo",
+    });
+
+    let apiURL;
+    let headers;
+    let response;
+    const method = "GET";
+
+    if (cookie) {
+      // From server component
+      apiURL = `${BASE_URL}/available-slots/by-type?${params}&isNative=${isNative}`;
+      headers = { "Content-Type": "application/json", Cookie: cookie };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+        cache: "no-store",
+      });
+    } else {
+      // From client component (via proxy)
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      const backendEndpoint = `/instructors/available-slots/by-type?${params}&isNative=${isNative}`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      };
+      response = await fetch(apiURL, {
+        method,
+        headers,
+      });
+    }
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to fetch: ${response.status}`);
+    }
+
+    const data = (await response.json()) as AvailableSlotsResponse;
+    return data;
+  } catch (error) {
+    console.error(
+      "Failed to fetch native or non native instructor available slots:",
+      error,
+    );
     return { message: "Failed to fetch available slots" };
   }
 };

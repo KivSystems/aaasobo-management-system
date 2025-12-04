@@ -37,6 +37,7 @@ export const getPlanController = async (
         name: plan.name,
         weeklyClassTimes: plan.weeklyClassTimes,
         description: plan.description,
+        isNative: plan.isNative,
       },
     });
   } catch (error) {

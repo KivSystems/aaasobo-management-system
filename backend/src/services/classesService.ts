@@ -324,6 +324,14 @@ export const getRebookableClasses = async (customerId: number) => {
         gte: rebookableFrom,
       },
     },
+    include: {
+      subscription: {
+        include: {
+          plan: true,
+          customer: true,
+        },
+      },
+    },
   });
 
   // Free trial classes
@@ -334,6 +342,14 @@ export const getRebookableClasses = async (customerId: number) => {
       status: { in: ["canceledByCustomer", "canceledByInstructor", "pending"] },
       rebookableUntil: {
         gte: freeTrialBookableFrom,
+      },
+    },
+    include: {
+      subscription: {
+        include: {
+          plan: true,
+          customer: true,
+        },
       },
     },
   });
@@ -347,6 +363,7 @@ export const getRebookableClasses = async (customerId: number) => {
     rebookableUntil: classItem.rebookableUntil,
     classCode: classItem.classCode,
     isFreeTrial: classItem.isFreeTrial,
+    subscription: classItem.subscription,
   }));
 };
 

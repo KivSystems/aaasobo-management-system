@@ -151,6 +151,7 @@ function CurrentSubscription({
                   customerId={customerId}
                   customerTerminationAt={customerTerminationAt}
                   language={language}
+                  plan={plan}
                   refreshKey={refreshKey}
                 />
               </div>

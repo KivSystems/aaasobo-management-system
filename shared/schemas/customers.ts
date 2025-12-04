@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ErrorResponse } from "./common";
+import { SubscriptionResponse } from "./subscriptions";
 
 // Parameter schemas
 export const CustomerIdParams = z.object({
@@ -70,6 +71,7 @@ export const SubscriptionsResponse = z.object({
               .datetime()
               .nullable()
               .describe("Plan termination date"),
+            isNative: z.boolean().describe("If it's a native plan or not"),
           })
           .describe("Associated plan details"),
       }),
@@ -114,6 +116,7 @@ export const RebookableClassesResponse = z
         .describe("Rebookable until date"),
       classCode: z.string().describe("Class code"),
       isFreeTrial: z.boolean().describe("Whether this is a free trial class"),
+      subscription: SubscriptionResponse.nullable(),
     }),
   )
   .describe("List of rebookable classes");

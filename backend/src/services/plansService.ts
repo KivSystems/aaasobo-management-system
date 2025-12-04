@@ -5,6 +5,7 @@ export const registerPlan = async (data: {
   name: string;
   weeklyClassTimes: number;
   description: string;
+  isNative: boolean;
 }) => {
   await prisma.plan.create({ data });
 
@@ -61,6 +62,7 @@ export const updatePlan = async (
   id: number,
   name: string,
   description: string,
+  isNative: boolean,
 ) => {
   try {
     // Update the plan data.
@@ -71,6 +73,7 @@ export const updatePlan = async (
       data: {
         name,
         description,
+        isNative,
       },
     });
     return plan;

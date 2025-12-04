@@ -20,6 +20,7 @@ interface ProgressiveBookingFlowProps {
   classCode?: string;
   childProfiles: Child[];
   customerId: number;
+  plan?: Plan;
 }
 
 type StepStatus = "completed" | "current" | "pending";
@@ -39,6 +40,7 @@ export default function ProgressiveBookingFlow({
   classCode,
   childProfiles,
   customerId,
+  plan,
 }: ProgressiveBookingFlowProps) {
   // All hooks must be called at the top level
   const [selectedMode, setSelectedMode] = useState<
@@ -344,6 +346,7 @@ export default function ProgressiveBookingFlow({
               <div className={styles.sectionContent}>
                 <InstructorSelection
                   onInstructorSelect={handleInstructorSelect}
+                  plan={plan}
                   language={language}
                 />
               </div>
@@ -378,6 +381,7 @@ export default function ProgressiveBookingFlow({
                   onSlotSelect={handleSlotSelect}
                   language={language}
                   selectedInstructor={null}
+                  isNative={plan?.isNative}
                 />
               </div>
             )}

@@ -6,6 +6,7 @@ import {
   getInstructorAvailableSlots,
   getAllAvailableSlots,
   getActiveInstructorSchedule,
+  getAvailableSlotsByType,
 } from "../services/instructorScheduleService";
 import { getInstructorsToLeave } from "../services/instructorsService";
 import { Request } from "express";
@@ -183,6 +184,40 @@ export const getAllAvailableSlotsController = async (
     const { start, end, timezone } = req.query;
 
     const availableSlots = await getAllAvailableSlots(start, end, timezone);
+
+    res.status(200).json({
+      message: "Available slots retrieved successfully",
+      data: availableSlots,
+    });
+  } catch (error) {
+    console.error("Error fetching available slots:", error);
+    res.status(500).json({
+      message: "Failed to fetch available slots",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const getAvailableSlotsByTypeController = async (
+  req: RequestWithQuery<AvailableSlotsQuery>,
+  res: Response,
+) => {
+  try {
+    const { start, end, timezone, isNative: isNativeStr } = req.query;
+    const isNative = isNativeStr === "true";
+
+    if (isNativeStr === "undefined") {
+      return res.status(404).json({
+        message: "No Native flag found",
+      });
+    }
+
+    const availableSlots = await getAvailableSlotsByType(
+      start,
+      end,
+      timezone,
+      isNative,
+    );
 
     res.status(200).json({
       message: "Available slots retrieved successfully",

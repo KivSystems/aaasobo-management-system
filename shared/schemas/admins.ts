@@ -64,6 +64,7 @@ export const RegisterInstructorRequest = z.object({
   meetingId: z.string().min(1, "Meeting ID is required"),
   passcode: z.string().min(1, "Passcode is required"),
   introductionURL: z.string().min(1, "Introduction URL is required"),
+  isNative: z.string("true") || z.string("false"),
 });
 
 export const UpdateInstructorRequest = z.object({
@@ -93,12 +94,14 @@ export const RegisterPlanRequest = z.object({
     .int()
     .positive("Weekly class times must be a positive integer"),
   description: z.string().min(1, "Description is required"),
+  isNative: z.string("true") || z.string("false"),
 });
 
 export const UpdatePlanRequest = z.object({
   planNameEng: z.string().min(1, "Plan name (English) is required"),
   planNameJpn: z.string().min(1, "Plan name (Japanese) is required"),
   description: z.string().min(1, "Description is required"),
+  isNative: z.string("true") || z.string("false"),
 });
 
 // Event schemas

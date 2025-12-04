@@ -92,6 +92,58 @@
   }
 }
 
+// Toggle switch
+.toggleSwitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggleSlider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #e6e6e6;
+    border-radius: 999px;
+    transition: background 160ms ease;
+    display: inline-block;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  .toggleSlider::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    transition: transform 160ms ease;
+  }
+
+  input[type="checkbox"]:checked + .toggleSlider {
+    background: linear-gradient(180deg, #28a745 0%, #218838 100%);
+  }
+
+  input[type="checkbox"]:checked + .toggleSlider::after {
+    transform: translateX(20px);
+  }
+
+  .toggleLabel {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
 // buttons
 .buttons {
   display: flex;

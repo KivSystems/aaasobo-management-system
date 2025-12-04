@@ -23,6 +23,7 @@ function RegularClassesTable({
   isSelectable,
   selectedRecurringIds,
   onToggleRecurring,
+  plan,
   refreshKey,
 }: {
   subscriptionId: number;
@@ -34,6 +35,7 @@ function RegularClassesTable({
   isSelectable?: boolean;
   selectedRecurringIds?: number[];
   onToggleRecurring?: (id: number) => void;
+  plan?: Plan;
   refreshKey?: number;
 }) {
   const [activeRecurringClasses, setActiveRecurringClasses] = useState<
@@ -216,6 +218,7 @@ function RegularClassesTable({
           userSessionType={userSessionType}
           adminId={adminId}
           onSuccess={handleEditSuccess}
+          plan={plan}
         />
       )}
     </div>
