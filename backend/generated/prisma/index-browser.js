@@ -128,31 +128,32 @@ exports.Prisma.InstructorScalarFieldEnum = {
   classURL: 'classURL',
   icon: 'icon',
   nickname: 'nickname',
-  birthdate: 'birthdate',
-  lifeHistory: 'lifeHistory',
-  favoriteFood: 'favoriteFood',
-  hobby: 'hobby',
-  messageForChildren: 'messageForChildren',
-  workingTime: 'workingTime',
-  skill: 'skill',
   meetingId: 'meetingId',
   passcode: 'passcode',
   introductionURL: 'introductionURL',
   createdAt: 'createdAt',
+  birthdate: 'birthdate',
+  favoriteFood: 'favoriteFood',
+  hobby: 'hobby',
+  lifeHistory: 'lifeHistory',
+  messageForChildren: 'messageForChildren',
+  skill: 'skill',
+  workingTime: 'workingTime',
+  terminationAt: 'terminationAt',
   updatedAt: 'updatedAt',
-  terminationAt: 'terminationAt'
+  isNative: 'isNative'
 };
 
 exports.Prisma.CustomerScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
-  emailVerified: 'emailVerified',
   password: 'password',
   prefecture: 'prefecture',
-  hasSeenWelcome: 'hasSeenWelcome',
+  emailVerified: 'emailVerified',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  hasSeenWelcome: 'hasSeenWelcome',
   terminationAt: 'terminationAt'
 };
 
@@ -165,9 +166,9 @@ exports.Prisma.ClassScalarFieldEnum = {
   status: 'status',
   subscriptionId: 'subscriptionId',
   rebookableUntil: 'rebookableUntil',
+  classCode: 'classCode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  classCode: 'classCode',
   isFreeTrial: 'isFreeTrial'
 };
 
@@ -198,11 +199,12 @@ exports.Prisma.ClassAttendanceScalarFieldEnum = {
 exports.Prisma.PlanScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  weeklyClassTimes: 'weeklyClassTimes',
   description: 'description',
+  weeklyClassTimes: 'weeklyClassTimes',
   createdAt: 'createdAt',
+  terminationAt: 'terminationAt',
   updatedAt: 'updatedAt',
-  terminationAt: 'terminationAt'
+  isNative: 'isNative'
 };
 
 exports.Prisma.SubscriptionScalarFieldEnum = {

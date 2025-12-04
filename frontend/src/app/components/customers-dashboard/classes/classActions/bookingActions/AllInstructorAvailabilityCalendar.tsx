@@ -112,7 +112,7 @@ export default function AllInstructorAvailabilityCalendar({
         return [];
       }
     },
-    [language],
+    [language, isNative],
   );
 
   const handleSlotClick = useCallback(

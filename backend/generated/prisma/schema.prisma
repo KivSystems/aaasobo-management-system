@@ -1,13 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider   = "prisma-client-js"
   output     = "../generated/prisma"
-  engineType = "client" // enable Prisma ORM without Rust
+  engineType = "client"
 }
 
 datasource db {
@@ -19,42 +13,43 @@ model Instructor {
   name                String
   email               String               @unique
   password            String
-  classes             Class[]
-  recurringClasses    RecurringClass[]
   classURL            String               @unique
   icon                String               @unique
   nickname            String               @unique
-  birthdate           DateTime
-  lifeHistory         String
-  favoriteFood        String
-  hobby               String
-  messageForChildren  String
-  workingTime         String
-  skill               String
   meetingId           String               @unique
   passcode            String               @unique
   introductionURL     String               @unique
   createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @default(now()) @updatedAt
+  birthdate           DateTime
+  favoriteFood        String
+  hobby               String
+  lifeHistory         String
+  messageForChildren  String
+  skill               String
+  workingTime         String
   terminationAt       DateTime?
-  instructorSchedules InstructorSchedule[]
+  updatedAt           DateTime             @default(now()) @updatedAt
+  isNative            Boolean
+  classes             Class[]
   instructorAbsences  InstructorAbsence[]
+  instructorSchedules InstructorSchedule[]
+  recurringClasses    RecurringClass[]
 }
 
 model Customer {
   id             Int            @id @default(autoincrement())
   name           String
   email          String         @unique
-  emailVerified  DateTime?
   password       String
-  classes        Class[]
-  children       Children[]
-  subscription   Subscription[]
   prefecture     String
-  hasSeenWelcome Boolean        @default(false)
+  emailVerified  DateTime?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  hasSeenWelcome Boolean        @default(false)
   terminationAt  DateTime?
+  children       Children[]
+  classes        Class[]
+  subscription   Subscription[]
 }
 
 model Class {
@@ -64,29 +59,19 @@ model Class {
   recurringClassId Int?
   dateTime         DateTime?
   status           Status
-  instructor       Instructor?       @relation(fields: [instructorId], references: [id])
-  customer         Customer          @relation(fields: [customerId], references: [id])
-  recurringClass   RecurringClass?   @relation(fields: [recurringClassId], references: [id])
-  classAttendance  ClassAttendance[]
   subscriptionId   Int?
-  subscription     Subscription?     @relation(fields: [subscriptionId], references: [id])
   rebookableUntil  DateTime?
+  classCode        String
   createdAt        DateTime          @default(now())
   updatedAt        DateTime
-  classCode        String
   isFreeTrial      Boolean           @default(false)
+  customer         Customer          @relation(fields: [customerId], references: [id])
+  instructor       Instructor?       @relation(fields: [instructorId], references: [id])
+  recurringClass   RecurringClass?   @relation(fields: [recurringClassId], references: [id])
+  subscription     Subscription?     @relation(fields: [subscriptionId], references: [id])
+  classAttendance  ClassAttendance[]
 
   @@index([dateTime])
-}
-
-enum Status {
-  booked
-  completed
-  canceledByCustomer
-  canceledByInstructor
-  pending
-  rebooked
-  declined
 }
 
 model Admins {
@@ -102,20 +87,20 @@ model Children {
   id                       Int                        @id @default(autoincrement())
   customerId               Int
   name                     String
-  customer                 Customer                   @relation(fields: [customerId], references: [id])
-  classAttendance          ClassAttendance[]
-  recurringClassAttendance RecurringClassAttendance[]
   birthdate                DateTime?
   personalInfo             String?
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @default(now()) @updatedAt
+  customer                 Customer                   @relation(fields: [customerId], references: [id])
+  classAttendance          ClassAttendance[]
+  recurringClassAttendance RecurringClassAttendance[]
 }
 
 model ClassAttendance {
   classId    Int
   childrenId Int
-  class      Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
   children   Children @relation(fields: [childrenId], references: [id])
+  class      Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
 
   @@id([classId, childrenId])
 }
@@ -123,11 +108,12 @@ model ClassAttendance {
 model Plan {
   id               Int            @id @default(autoincrement())
   name             String
-  weeklyClassTimes Int
   description      String
+  weeklyClassTimes Int
   createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @default(now()) @updatedAt
   terminationAt    DateTime?
+  updatedAt        DateTime       @default(now()) @updatedAt
+  isNative         Boolean
   subscription     Subscription[]
 }
 
@@ -137,10 +123,10 @@ model Subscription {
   customerId     Int
   startAt        DateTime
   endAt          DateTime?
-  plan           Plan             @relation(fields: [planId], references: [id])
-  customer       Customer         @relation(fields: [customerId], references: [id])
   class          Class[]
   recurringClass RecurringClass[]
+  customer       Customer         @relation(fields: [customerId], references: [id])
+  plan           Plan             @relation(fields: [planId], references: [id])
 }
 
 model RecurringClass {
@@ -149,17 +135,17 @@ model RecurringClass {
   subscriptionId           Int?
   startAt                  DateTime?
   endAt                    DateTime?
+  classes                  Class[]
   instructor               Instructor?                @relation(fields: [instructorId], references: [id])
   subscription             Subscription?              @relation(fields: [subscriptionId], references: [id])
   recurringClassAttendance RecurringClassAttendance[]
-  classes                  Class[]
 }
 
 model RecurringClassAttendance {
   recurringClassId Int
   childrenId       Int
-  recurringClass   RecurringClass @relation(fields: [recurringClassId], references: [id])
   children         Children       @relation(fields: [childrenId], references: [id])
+  recurringClass   RecurringClass @relation(fields: [recurringClassId], references: [id])
 
   @@id([recurringClassId, childrenId])
 }
@@ -211,7 +197,7 @@ model InstructorSchedule {
 model InstructorSlot {
   scheduleId Int
   weekday    Int
-  startTime  DateTime           @db.Time
+  startTime  DateTime           @db.Time(6)
   schedule   InstructorSchedule @relation(fields: [scheduleId], references: [id])
 
   @@id([scheduleId, weekday, startTime])
@@ -230,4 +216,14 @@ model SystemStatus {
   status    String   @default("Running")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Status {
+  booked
+  completed
+  canceledByCustomer
+  canceledByInstructor
+  pending
+  rebooked
+  declined
 }

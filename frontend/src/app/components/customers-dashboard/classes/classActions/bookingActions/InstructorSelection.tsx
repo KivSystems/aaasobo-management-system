@@ -62,7 +62,7 @@ export default function InstructorSelection({
     };
 
     fetchInstructors();
-  }, [language, availableInstructors]);
+  }, [language, availableInstructors, plan?.isNative]);
 
   const filteredInstructors = instructors.filter((instructor) =>
     instructor.nickname.toLowerCase().includes(searchTerm.toLowerCase()),

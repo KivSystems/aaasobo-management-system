@@ -2416,16 +2416,16 @@ export namespace Prisma {
 
   export type InstructorCountOutputType = {
     classes: number
-    recurringClasses: number
-    instructorSchedules: number
     instructorAbsences: number
+    instructorSchedules: number
+    recurringClasses: number
   }
 
   export type InstructorCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     classes?: boolean | InstructorCountOutputTypeCountClassesArgs
-    recurringClasses?: boolean | InstructorCountOutputTypeCountRecurringClassesArgs
-    instructorSchedules?: boolean | InstructorCountOutputTypeCountInstructorSchedulesArgs
     instructorAbsences?: boolean | InstructorCountOutputTypeCountInstructorAbsencesArgs
+    instructorSchedules?: boolean | InstructorCountOutputTypeCountInstructorSchedulesArgs
+    recurringClasses?: boolean | InstructorCountOutputTypeCountRecurringClassesArgs
   }
 
   // Custom InputTypes
@@ -2449,8 +2449,8 @@ export namespace Prisma {
   /**
    * InstructorCountOutputType without action
    */
-  export type InstructorCountOutputTypeCountRecurringClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RecurringClassWhereInput
+  export type InstructorCountOutputTypeCountInstructorAbsencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InstructorAbsenceWhereInput
   }
 
   /**
@@ -2463,8 +2463,8 @@ export namespace Prisma {
   /**
    * InstructorCountOutputType without action
    */
-  export type InstructorCountOutputTypeCountInstructorAbsencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: InstructorAbsenceWhereInput
+  export type InstructorCountOutputTypeCountRecurringClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RecurringClassWhereInput
   }
 
 
@@ -2473,14 +2473,14 @@ export namespace Prisma {
    */
 
   export type CustomerCountOutputType = {
-    classes: number
     children: number
+    classes: number
     subscription: number
   }
 
   export type CustomerCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    classes?: boolean | CustomerCountOutputTypeCountClassesArgs
     children?: boolean | CustomerCountOutputTypeCountChildrenArgs
+    classes?: boolean | CustomerCountOutputTypeCountClassesArgs
     subscription?: boolean | CustomerCountOutputTypeCountSubscriptionArgs
   }
 
@@ -2498,15 +2498,15 @@ export namespace Prisma {
   /**
    * CustomerCountOutputType without action
    */
-  export type CustomerCountOutputTypeCountClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ClassWhereInput
+  export type CustomerCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChildrenWhereInput
   }
 
   /**
    * CustomerCountOutputType without action
    */
-  export type CustomerCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ChildrenWhereInput
+  export type CustomerCountOutputTypeCountClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClassWhereInput
   }
 
   /**
@@ -2664,13 +2664,13 @@ export namespace Prisma {
    */
 
   export type RecurringClassCountOutputType = {
-    recurringClassAttendance: number
     classes: number
+    recurringClassAttendance: number
   }
 
   export type RecurringClassCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    recurringClassAttendance?: boolean | RecurringClassCountOutputTypeCountRecurringClassAttendanceArgs
     classes?: boolean | RecurringClassCountOutputTypeCountClassesArgs
+    recurringClassAttendance?: boolean | RecurringClassCountOutputTypeCountRecurringClassAttendanceArgs
   }
 
   // Custom InputTypes
@@ -2687,15 +2687,15 @@ export namespace Prisma {
   /**
    * RecurringClassCountOutputType without action
    */
-  export type RecurringClassCountOutputTypeCountRecurringClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RecurringClassAttendanceWhereInput
+  export type RecurringClassCountOutputTypeCountClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClassWhereInput
   }
 
   /**
    * RecurringClassCountOutputType without action
    */
-  export type RecurringClassCountOutputTypeCountClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ClassWhereInput
+  export type RecurringClassCountOutputTypeCountRecurringClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RecurringClassAttendanceWhereInput
   }
 
 
@@ -2793,19 +2793,20 @@ export namespace Prisma {
     classURL: string | null
     icon: string | null
     nickname: string | null
-    birthdate: Date | null
-    lifeHistory: string | null
-    favoriteFood: string | null
-    hobby: string | null
-    messageForChildren: string | null
-    workingTime: string | null
-    skill: string | null
     meetingId: string | null
     passcode: string | null
     introductionURL: string | null
     createdAt: Date | null
-    updatedAt: Date | null
+    birthdate: Date | null
+    favoriteFood: string | null
+    hobby: string | null
+    lifeHistory: string | null
+    messageForChildren: string | null
+    skill: string | null
+    workingTime: string | null
     terminationAt: Date | null
+    updatedAt: Date | null
+    isNative: boolean | null
   }
 
   export type InstructorMaxAggregateOutputType = {
@@ -2816,19 +2817,20 @@ export namespace Prisma {
     classURL: string | null
     icon: string | null
     nickname: string | null
-    birthdate: Date | null
-    lifeHistory: string | null
-    favoriteFood: string | null
-    hobby: string | null
-    messageForChildren: string | null
-    workingTime: string | null
-    skill: string | null
     meetingId: string | null
     passcode: string | null
     introductionURL: string | null
     createdAt: Date | null
-    updatedAt: Date | null
+    birthdate: Date | null
+    favoriteFood: string | null
+    hobby: string | null
+    lifeHistory: string | null
+    messageForChildren: string | null
+    skill: string | null
+    workingTime: string | null
     terminationAt: Date | null
+    updatedAt: Date | null
+    isNative: boolean | null
   }
 
   export type InstructorCountAggregateOutputType = {
@@ -2839,19 +2841,20 @@ export namespace Prisma {
     classURL: number
     icon: number
     nickname: number
-    birthdate: number
-    lifeHistory: number
-    favoriteFood: number
-    hobby: number
-    messageForChildren: number
-    workingTime: number
-    skill: number
     meetingId: number
     passcode: number
     introductionURL: number
     createdAt: number
-    updatedAt: number
+    birthdate: number
+    favoriteFood: number
+    hobby: number
+    lifeHistory: number
+    messageForChildren: number
+    skill: number
+    workingTime: number
     terminationAt: number
+    updatedAt: number
+    isNative: number
     _all: number
   }
 
@@ -2872,19 +2875,20 @@ export namespace Prisma {
     classURL?: true
     icon?: true
     nickname?: true
-    birthdate?: true
-    lifeHistory?: true
-    favoriteFood?: true
-    hobby?: true
-    messageForChildren?: true
-    workingTime?: true
-    skill?: true
     meetingId?: true
     passcode?: true
     introductionURL?: true
     createdAt?: true
-    updatedAt?: true
+    birthdate?: true
+    favoriteFood?: true
+    hobby?: true
+    lifeHistory?: true
+    messageForChildren?: true
+    skill?: true
+    workingTime?: true
     terminationAt?: true
+    updatedAt?: true
+    isNative?: true
   }
 
   export type InstructorMaxAggregateInputType = {
@@ -2895,19 +2899,20 @@ export namespace Prisma {
     classURL?: true
     icon?: true
     nickname?: true
-    birthdate?: true
-    lifeHistory?: true
-    favoriteFood?: true
-    hobby?: true
-    messageForChildren?: true
-    workingTime?: true
-    skill?: true
     meetingId?: true
     passcode?: true
     introductionURL?: true
     createdAt?: true
-    updatedAt?: true
+    birthdate?: true
+    favoriteFood?: true
+    hobby?: true
+    lifeHistory?: true
+    messageForChildren?: true
+    skill?: true
+    workingTime?: true
     terminationAt?: true
+    updatedAt?: true
+    isNative?: true
   }
 
   export type InstructorCountAggregateInputType = {
@@ -2918,19 +2923,20 @@ export namespace Prisma {
     classURL?: true
     icon?: true
     nickname?: true
-    birthdate?: true
-    lifeHistory?: true
-    favoriteFood?: true
-    hobby?: true
-    messageForChildren?: true
-    workingTime?: true
-    skill?: true
     meetingId?: true
     passcode?: true
     introductionURL?: true
     createdAt?: true
-    updatedAt?: true
+    birthdate?: true
+    favoriteFood?: true
+    hobby?: true
+    lifeHistory?: true
+    messageForChildren?: true
+    skill?: true
+    workingTime?: true
     terminationAt?: true
+    updatedAt?: true
+    isNative?: true
     _all?: true
   }
 
@@ -3028,19 +3034,20 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt: Date
-    updatedAt: Date
+    birthdate: Date
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt: Date | null
+    updatedAt: Date
+    isNative: boolean
     _count: InstructorCountAggregateOutputType | null
     _avg: InstructorAvgAggregateOutputType | null
     _sum: InstructorSumAggregateOutputType | null
@@ -3070,23 +3077,24 @@ export namespace Prisma {
     classURL?: boolean
     icon?: boolean
     nickname?: boolean
-    birthdate?: boolean
-    lifeHistory?: boolean
-    favoriteFood?: boolean
-    hobby?: boolean
-    messageForChildren?: boolean
-    workingTime?: boolean
-    skill?: boolean
     meetingId?: boolean
     passcode?: boolean
     introductionURL?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
+    birthdate?: boolean
+    favoriteFood?: boolean
+    hobby?: boolean
+    lifeHistory?: boolean
+    messageForChildren?: boolean
+    skill?: boolean
+    workingTime?: boolean
     terminationAt?: boolean
+    updatedAt?: boolean
+    isNative?: boolean
     classes?: boolean | Instructor$classesArgs<ExtArgs>
-    recurringClasses?: boolean | Instructor$recurringClassesArgs<ExtArgs>
-    instructorSchedules?: boolean | Instructor$instructorSchedulesArgs<ExtArgs>
     instructorAbsences?: boolean | Instructor$instructorAbsencesArgs<ExtArgs>
+    instructorSchedules?: boolean | Instructor$instructorSchedulesArgs<ExtArgs>
+    recurringClasses?: boolean | Instructor$recurringClassesArgs<ExtArgs>
     _count?: boolean | InstructorCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["instructor"]>
 
@@ -3098,19 +3106,20 @@ export namespace Prisma {
     classURL?: boolean
     icon?: boolean
     nickname?: boolean
-    birthdate?: boolean
-    lifeHistory?: boolean
-    favoriteFood?: boolean
-    hobby?: boolean
-    messageForChildren?: boolean
-    workingTime?: boolean
-    skill?: boolean
     meetingId?: boolean
     passcode?: boolean
     introductionURL?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
+    birthdate?: boolean
+    favoriteFood?: boolean
+    hobby?: boolean
+    lifeHistory?: boolean
+    messageForChildren?: boolean
+    skill?: boolean
+    workingTime?: boolean
     terminationAt?: boolean
+    updatedAt?: boolean
+    isNative?: boolean
   }, ExtArgs["result"]["instructor"]>
 
   export type InstructorSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3121,19 +3130,20 @@ export namespace Prisma {
     classURL?: boolean
     icon?: boolean
     nickname?: boolean
-    birthdate?: boolean
-    lifeHistory?: boolean
-    favoriteFood?: boolean
-    hobby?: boolean
-    messageForChildren?: boolean
-    workingTime?: boolean
-    skill?: boolean
     meetingId?: boolean
     passcode?: boolean
     introductionURL?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
+    birthdate?: boolean
+    favoriteFood?: boolean
+    hobby?: boolean
+    lifeHistory?: boolean
+    messageForChildren?: boolean
+    skill?: boolean
+    workingTime?: boolean
     terminationAt?: boolean
+    updatedAt?: boolean
+    isNative?: boolean
   }, ExtArgs["result"]["instructor"]>
 
   export type InstructorSelectScalar = {
@@ -3144,27 +3154,28 @@ export namespace Prisma {
     classURL?: boolean
     icon?: boolean
     nickname?: boolean
-    birthdate?: boolean
-    lifeHistory?: boolean
-    favoriteFood?: boolean
-    hobby?: boolean
-    messageForChildren?: boolean
-    workingTime?: boolean
-    skill?: boolean
     meetingId?: boolean
     passcode?: boolean
     introductionURL?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
+    birthdate?: boolean
+    favoriteFood?: boolean
+    hobby?: boolean
+    lifeHistory?: boolean
+    messageForChildren?: boolean
+    skill?: boolean
+    workingTime?: boolean
     terminationAt?: boolean
+    updatedAt?: boolean
+    isNative?: boolean
   }
 
-  export type InstructorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "classURL" | "icon" | "nickname" | "birthdate" | "lifeHistory" | "favoriteFood" | "hobby" | "messageForChildren" | "workingTime" | "skill" | "meetingId" | "passcode" | "introductionURL" | "createdAt" | "updatedAt" | "terminationAt", ExtArgs["result"]["instructor"]>
+  export type InstructorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "classURL" | "icon" | "nickname" | "meetingId" | "passcode" | "introductionURL" | "createdAt" | "birthdate" | "favoriteFood" | "hobby" | "lifeHistory" | "messageForChildren" | "skill" | "workingTime" | "terminationAt" | "updatedAt" | "isNative", ExtArgs["result"]["instructor"]>
   export type InstructorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     classes?: boolean | Instructor$classesArgs<ExtArgs>
-    recurringClasses?: boolean | Instructor$recurringClassesArgs<ExtArgs>
-    instructorSchedules?: boolean | Instructor$instructorSchedulesArgs<ExtArgs>
     instructorAbsences?: boolean | Instructor$instructorAbsencesArgs<ExtArgs>
+    instructorSchedules?: boolean | Instructor$instructorSchedulesArgs<ExtArgs>
+    recurringClasses?: boolean | Instructor$recurringClassesArgs<ExtArgs>
     _count?: boolean | InstructorCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type InstructorIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3174,9 +3185,9 @@ export namespace Prisma {
     name: "Instructor"
     objects: {
       classes: Prisma.$ClassPayload<ExtArgs>[]
-      recurringClasses: Prisma.$RecurringClassPayload<ExtArgs>[]
-      instructorSchedules: Prisma.$InstructorSchedulePayload<ExtArgs>[]
       instructorAbsences: Prisma.$InstructorAbsencePayload<ExtArgs>[]
+      instructorSchedules: Prisma.$InstructorSchedulePayload<ExtArgs>[]
+      recurringClasses: Prisma.$RecurringClassPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3186,19 +3197,20 @@ export namespace Prisma {
       classURL: string
       icon: string
       nickname: string
-      birthdate: Date
-      lifeHistory: string
-      favoriteFood: string
-      hobby: string
-      messageForChildren: string
-      workingTime: string
-      skill: string
       meetingId: string
       passcode: string
       introductionURL: string
       createdAt: Date
-      updatedAt: Date
+      birthdate: Date
+      favoriteFood: string
+      hobby: string
+      lifeHistory: string
+      messageForChildren: string
+      skill: string
+      workingTime: string
       terminationAt: Date | null
+      updatedAt: Date
+      isNative: boolean
     }, ExtArgs["result"]["instructor"]>
     composites: {}
   }
@@ -3594,9 +3606,9 @@ export namespace Prisma {
   export interface Prisma__InstructorClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     classes<T extends Instructor$classesArgs<ExtArgs> = {}>(args?: Subset<T, Instructor$classesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    recurringClasses<T extends Instructor$recurringClassesArgs<ExtArgs> = {}>(args?: Subset<T, Instructor$recurringClassesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    instructorSchedules<T extends Instructor$instructorSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Instructor$instructorSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InstructorSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     instructorAbsences<T extends Instructor$instructorAbsencesArgs<ExtArgs> = {}>(args?: Subset<T, Instructor$instructorAbsencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InstructorAbsencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    instructorSchedules<T extends Instructor$instructorSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Instructor$instructorSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InstructorSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    recurringClasses<T extends Instructor$recurringClassesArgs<ExtArgs> = {}>(args?: Subset<T, Instructor$recurringClassesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3633,19 +3645,20 @@ export namespace Prisma {
     readonly classURL: FieldRef<"Instructor", 'String'>
     readonly icon: FieldRef<"Instructor", 'String'>
     readonly nickname: FieldRef<"Instructor", 'String'>
-    readonly birthdate: FieldRef<"Instructor", 'DateTime'>
-    readonly lifeHistory: FieldRef<"Instructor", 'String'>
-    readonly favoriteFood: FieldRef<"Instructor", 'String'>
-    readonly hobby: FieldRef<"Instructor", 'String'>
-    readonly messageForChildren: FieldRef<"Instructor", 'String'>
-    readonly workingTime: FieldRef<"Instructor", 'String'>
-    readonly skill: FieldRef<"Instructor", 'String'>
     readonly meetingId: FieldRef<"Instructor", 'String'>
     readonly passcode: FieldRef<"Instructor", 'String'>
     readonly introductionURL: FieldRef<"Instructor", 'String'>
     readonly createdAt: FieldRef<"Instructor", 'DateTime'>
-    readonly updatedAt: FieldRef<"Instructor", 'DateTime'>
+    readonly birthdate: FieldRef<"Instructor", 'DateTime'>
+    readonly favoriteFood: FieldRef<"Instructor", 'String'>
+    readonly hobby: FieldRef<"Instructor", 'String'>
+    readonly lifeHistory: FieldRef<"Instructor", 'String'>
+    readonly messageForChildren: FieldRef<"Instructor", 'String'>
+    readonly skill: FieldRef<"Instructor", 'String'>
+    readonly workingTime: FieldRef<"Instructor", 'String'>
     readonly terminationAt: FieldRef<"Instructor", 'DateTime'>
+    readonly updatedAt: FieldRef<"Instructor", 'DateTime'>
+    readonly isNative: FieldRef<"Instructor", 'Boolean'>
   }
     
 
@@ -4058,27 +4071,27 @@ export namespace Prisma {
   }
 
   /**
-   * Instructor.recurringClasses
+   * Instructor.instructorAbsences
    */
-  export type Instructor$recurringClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Instructor$instructorAbsencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the RecurringClass
+     * Select specific fields to fetch from the InstructorAbsence
      */
-    select?: RecurringClassSelect<ExtArgs> | null
+    select?: InstructorAbsenceSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the RecurringClass
+     * Omit specific fields from the InstructorAbsence
      */
-    omit?: RecurringClassOmit<ExtArgs> | null
+    omit?: InstructorAbsenceOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: RecurringClassInclude<ExtArgs> | null
-    where?: RecurringClassWhereInput
-    orderBy?: RecurringClassOrderByWithRelationInput | RecurringClassOrderByWithRelationInput[]
-    cursor?: RecurringClassWhereUniqueInput
+    include?: InstructorAbsenceInclude<ExtArgs> | null
+    where?: InstructorAbsenceWhereInput
+    orderBy?: InstructorAbsenceOrderByWithRelationInput | InstructorAbsenceOrderByWithRelationInput[]
+    cursor?: InstructorAbsenceWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: RecurringClassScalarFieldEnum | RecurringClassScalarFieldEnum[]
+    distinct?: InstructorAbsenceScalarFieldEnum | InstructorAbsenceScalarFieldEnum[]
   }
 
   /**
@@ -4106,27 +4119,27 @@ export namespace Prisma {
   }
 
   /**
-   * Instructor.instructorAbsences
+   * Instructor.recurringClasses
    */
-  export type Instructor$instructorAbsencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Instructor$recurringClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the InstructorAbsence
+     * Select specific fields to fetch from the RecurringClass
      */
-    select?: InstructorAbsenceSelect<ExtArgs> | null
+    select?: RecurringClassSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the InstructorAbsence
+     * Omit specific fields from the RecurringClass
      */
-    omit?: InstructorAbsenceOmit<ExtArgs> | null
+    omit?: RecurringClassOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: InstructorAbsenceInclude<ExtArgs> | null
-    where?: InstructorAbsenceWhereInput
-    orderBy?: InstructorAbsenceOrderByWithRelationInput | InstructorAbsenceOrderByWithRelationInput[]
-    cursor?: InstructorAbsenceWhereUniqueInput
+    include?: RecurringClassInclude<ExtArgs> | null
+    where?: RecurringClassWhereInput
+    orderBy?: RecurringClassOrderByWithRelationInput | RecurringClassOrderByWithRelationInput[]
+    cursor?: RecurringClassWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: InstructorAbsenceScalarFieldEnum | InstructorAbsenceScalarFieldEnum[]
+    distinct?: RecurringClassScalarFieldEnum | RecurringClassScalarFieldEnum[]
   }
 
   /**
@@ -4172,12 +4185,12 @@ export namespace Prisma {
     id: number | null
     name: string | null
     email: string | null
-    emailVerified: Date | null
     password: string | null
     prefecture: string | null
-    hasSeenWelcome: boolean | null
+    emailVerified: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    hasSeenWelcome: boolean | null
     terminationAt: Date | null
   }
 
@@ -4185,12 +4198,12 @@ export namespace Prisma {
     id: number | null
     name: string | null
     email: string | null
-    emailVerified: Date | null
     password: string | null
     prefecture: string | null
-    hasSeenWelcome: boolean | null
+    emailVerified: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    hasSeenWelcome: boolean | null
     terminationAt: Date | null
   }
 
@@ -4198,12 +4211,12 @@ export namespace Prisma {
     id: number
     name: number
     email: number
-    emailVerified: number
     password: number
     prefecture: number
-    hasSeenWelcome: number
+    emailVerified: number
     createdAt: number
     updatedAt: number
+    hasSeenWelcome: number
     terminationAt: number
     _all: number
   }
@@ -4221,12 +4234,12 @@ export namespace Prisma {
     id?: true
     name?: true
     email?: true
-    emailVerified?: true
     password?: true
     prefecture?: true
-    hasSeenWelcome?: true
+    emailVerified?: true
     createdAt?: true
     updatedAt?: true
+    hasSeenWelcome?: true
     terminationAt?: true
   }
 
@@ -4234,12 +4247,12 @@ export namespace Prisma {
     id?: true
     name?: true
     email?: true
-    emailVerified?: true
     password?: true
     prefecture?: true
-    hasSeenWelcome?: true
+    emailVerified?: true
     createdAt?: true
     updatedAt?: true
+    hasSeenWelcome?: true
     terminationAt?: true
   }
 
@@ -4247,12 +4260,12 @@ export namespace Prisma {
     id?: true
     name?: true
     email?: true
-    emailVerified?: true
     password?: true
     prefecture?: true
-    hasSeenWelcome?: true
+    emailVerified?: true
     createdAt?: true
     updatedAt?: true
+    hasSeenWelcome?: true
     terminationAt?: true
     _all?: true
   }
@@ -4347,12 +4360,12 @@ export namespace Prisma {
     id: number
     name: string
     email: string
-    emailVerified: Date | null
     password: string
     prefecture: string
-    hasSeenWelcome: boolean
+    emailVerified: Date | null
     createdAt: Date
     updatedAt: Date
+    hasSeenWelcome: boolean
     terminationAt: Date | null
     _count: CustomerCountAggregateOutputType | null
     _avg: CustomerAvgAggregateOutputType | null
@@ -4379,15 +4392,15 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     email?: boolean
-    emailVerified?: boolean
     password?: boolean
     prefecture?: boolean
-    hasSeenWelcome?: boolean
+    emailVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    hasSeenWelcome?: boolean
     terminationAt?: boolean
-    classes?: boolean | Customer$classesArgs<ExtArgs>
     children?: boolean | Customer$childrenArgs<ExtArgs>
+    classes?: boolean | Customer$classesArgs<ExtArgs>
     subscription?: boolean | Customer$subscriptionArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
@@ -4396,12 +4409,12 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     email?: boolean
-    emailVerified?: boolean
     password?: boolean
     prefecture?: boolean
-    hasSeenWelcome?: boolean
+    emailVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    hasSeenWelcome?: boolean
     terminationAt?: boolean
   }, ExtArgs["result"]["customer"]>
 
@@ -4409,12 +4422,12 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     email?: boolean
-    emailVerified?: boolean
     password?: boolean
     prefecture?: boolean
-    hasSeenWelcome?: boolean
+    emailVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    hasSeenWelcome?: boolean
     terminationAt?: boolean
   }, ExtArgs["result"]["customer"]>
 
@@ -4422,19 +4435,19 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     email?: boolean
-    emailVerified?: boolean
     password?: boolean
     prefecture?: boolean
-    hasSeenWelcome?: boolean
+    emailVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    hasSeenWelcome?: boolean
     terminationAt?: boolean
   }
 
-  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "password" | "prefecture" | "hasSeenWelcome" | "createdAt" | "updatedAt" | "terminationAt", ExtArgs["result"]["customer"]>
+  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "prefecture" | "emailVerified" | "createdAt" | "updatedAt" | "hasSeenWelcome" | "terminationAt", ExtArgs["result"]["customer"]>
   export type CustomerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    classes?: boolean | Customer$classesArgs<ExtArgs>
     children?: boolean | Customer$childrenArgs<ExtArgs>
+    classes?: boolean | Customer$classesArgs<ExtArgs>
     subscription?: boolean | Customer$subscriptionArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -4444,20 +4457,20 @@ export namespace Prisma {
   export type $CustomerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Customer"
     objects: {
-      classes: Prisma.$ClassPayload<ExtArgs>[]
       children: Prisma.$ChildrenPayload<ExtArgs>[]
+      classes: Prisma.$ClassPayload<ExtArgs>[]
       subscription: Prisma.$SubscriptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
       email: string
-      emailVerified: Date | null
       password: string
       prefecture: string
-      hasSeenWelcome: boolean
+      emailVerified: Date | null
       createdAt: Date
       updatedAt: Date
+      hasSeenWelcome: boolean
       terminationAt: Date | null
     }, ExtArgs["result"]["customer"]>
     composites: {}
@@ -4853,8 +4866,8 @@ export namespace Prisma {
    */
   export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    classes<T extends Customer$classesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$classesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     children<T extends Customer$childrenArgs<ExtArgs> = {}>(args?: Subset<T, Customer$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    classes<T extends Customer$classesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$classesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subscription<T extends Customer$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, Customer$subscriptionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4888,12 +4901,12 @@ export namespace Prisma {
     readonly id: FieldRef<"Customer", 'Int'>
     readonly name: FieldRef<"Customer", 'String'>
     readonly email: FieldRef<"Customer", 'String'>
-    readonly emailVerified: FieldRef<"Customer", 'DateTime'>
     readonly password: FieldRef<"Customer", 'String'>
     readonly prefecture: FieldRef<"Customer", 'String'>
-    readonly hasSeenWelcome: FieldRef<"Customer", 'Boolean'>
+    readonly emailVerified: FieldRef<"Customer", 'DateTime'>
     readonly createdAt: FieldRef<"Customer", 'DateTime'>
     readonly updatedAt: FieldRef<"Customer", 'DateTime'>
+    readonly hasSeenWelcome: FieldRef<"Customer", 'Boolean'>
     readonly terminationAt: FieldRef<"Customer", 'DateTime'>
   }
     
@@ -5283,30 +5296,6 @@ export namespace Prisma {
   }
 
   /**
-   * Customer.classes
-   */
-  export type Customer$classesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Class
-     */
-    select?: ClassSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Class
-     */
-    omit?: ClassOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClassInclude<ExtArgs> | null
-    where?: ClassWhereInput
-    orderBy?: ClassOrderByWithRelationInput | ClassOrderByWithRelationInput[]
-    cursor?: ClassWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ClassScalarFieldEnum | ClassScalarFieldEnum[]
-  }
-
-  /**
    * Customer.children
    */
   export type Customer$childrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5328,6 +5317,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ChildrenScalarFieldEnum | ChildrenScalarFieldEnum[]
+  }
+
+  /**
+   * Customer.classes
+   */
+  export type Customer$classesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Class
+     */
+    select?: ClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Class
+     */
+    omit?: ClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClassInclude<ExtArgs> | null
+    where?: ClassWhereInput
+    orderBy?: ClassOrderByWithRelationInput | ClassOrderByWithRelationInput[]
+    cursor?: ClassWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClassScalarFieldEnum | ClassScalarFieldEnum[]
   }
 
   /**
@@ -5410,9 +5423,9 @@ export namespace Prisma {
     status: $Enums.Status | null
     subscriptionId: number | null
     rebookableUntil: Date | null
+    classCode: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    classCode: string | null
     isFreeTrial: boolean | null
   }
 
@@ -5425,9 +5438,9 @@ export namespace Prisma {
     status: $Enums.Status | null
     subscriptionId: number | null
     rebookableUntil: Date | null
+    classCode: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    classCode: string | null
     isFreeTrial: boolean | null
   }
 
@@ -5440,9 +5453,9 @@ export namespace Prisma {
     status: number
     subscriptionId: number
     rebookableUntil: number
+    classCode: number
     createdAt: number
     updatedAt: number
-    classCode: number
     isFreeTrial: number
     _all: number
   }
@@ -5473,9 +5486,9 @@ export namespace Prisma {
     status?: true
     subscriptionId?: true
     rebookableUntil?: true
+    classCode?: true
     createdAt?: true
     updatedAt?: true
-    classCode?: true
     isFreeTrial?: true
   }
 
@@ -5488,9 +5501,9 @@ export namespace Prisma {
     status?: true
     subscriptionId?: true
     rebookableUntil?: true
+    classCode?: true
     createdAt?: true
     updatedAt?: true
-    classCode?: true
     isFreeTrial?: true
   }
 
@@ -5503,9 +5516,9 @@ export namespace Prisma {
     status?: true
     subscriptionId?: true
     rebookableUntil?: true
+    classCode?: true
     createdAt?: true
     updatedAt?: true
-    classCode?: true
     isFreeTrial?: true
     _all?: true
   }
@@ -5605,9 +5618,9 @@ export namespace Prisma {
     status: $Enums.Status
     subscriptionId: number | null
     rebookableUntil: Date | null
+    classCode: string
     createdAt: Date
     updatedAt: Date
-    classCode: string
     isFreeTrial: boolean
     _count: ClassCountAggregateOutputType | null
     _avg: ClassAvgAggregateOutputType | null
@@ -5639,15 +5652,15 @@ export namespace Prisma {
     status?: boolean
     subscriptionId?: boolean
     rebookableUntil?: boolean
+    classCode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    classCode?: boolean
     isFreeTrial?: boolean
-    instructor?: boolean | Class$instructorArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    instructor?: boolean | Class$instructorArgs<ExtArgs>
     recurringClass?: boolean | Class$recurringClassArgs<ExtArgs>
-    classAttendance?: boolean | Class$classAttendanceArgs<ExtArgs>
     subscription?: boolean | Class$subscriptionArgs<ExtArgs>
+    classAttendance?: boolean | Class$classAttendanceArgs<ExtArgs>
     _count?: boolean | ClassCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["class"]>
 
@@ -5660,12 +5673,12 @@ export namespace Prisma {
     status?: boolean
     subscriptionId?: boolean
     rebookableUntil?: boolean
+    classCode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    classCode?: boolean
     isFreeTrial?: boolean
-    instructor?: boolean | Class$instructorArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    instructor?: boolean | Class$instructorArgs<ExtArgs>
     recurringClass?: boolean | Class$recurringClassArgs<ExtArgs>
     subscription?: boolean | Class$subscriptionArgs<ExtArgs>
   }, ExtArgs["result"]["class"]>
@@ -5679,12 +5692,12 @@ export namespace Prisma {
     status?: boolean
     subscriptionId?: boolean
     rebookableUntil?: boolean
+    classCode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    classCode?: boolean
     isFreeTrial?: boolean
-    instructor?: boolean | Class$instructorArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    instructor?: boolean | Class$instructorArgs<ExtArgs>
     recurringClass?: boolean | Class$recurringClassArgs<ExtArgs>
     subscription?: boolean | Class$subscriptionArgs<ExtArgs>
   }, ExtArgs["result"]["class"]>
@@ -5698,30 +5711,30 @@ export namespace Prisma {
     status?: boolean
     subscriptionId?: boolean
     rebookableUntil?: boolean
+    classCode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    classCode?: boolean
     isFreeTrial?: boolean
   }
 
-  export type ClassOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "instructorId" | "customerId" | "recurringClassId" | "dateTime" | "status" | "subscriptionId" | "rebookableUntil" | "createdAt" | "updatedAt" | "classCode" | "isFreeTrial", ExtArgs["result"]["class"]>
+  export type ClassOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "instructorId" | "customerId" | "recurringClassId" | "dateTime" | "status" | "subscriptionId" | "rebookableUntil" | "classCode" | "createdAt" | "updatedAt" | "isFreeTrial", ExtArgs["result"]["class"]>
   export type ClassInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    instructor?: boolean | Class$instructorArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    instructor?: boolean | Class$instructorArgs<ExtArgs>
     recurringClass?: boolean | Class$recurringClassArgs<ExtArgs>
-    classAttendance?: boolean | Class$classAttendanceArgs<ExtArgs>
     subscription?: boolean | Class$subscriptionArgs<ExtArgs>
+    classAttendance?: boolean | Class$classAttendanceArgs<ExtArgs>
     _count?: boolean | ClassCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ClassIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    instructor?: boolean | Class$instructorArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    instructor?: boolean | Class$instructorArgs<ExtArgs>
     recurringClass?: boolean | Class$recurringClassArgs<ExtArgs>
     subscription?: boolean | Class$subscriptionArgs<ExtArgs>
   }
   export type ClassIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    instructor?: boolean | Class$instructorArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    instructor?: boolean | Class$instructorArgs<ExtArgs>
     recurringClass?: boolean | Class$recurringClassArgs<ExtArgs>
     subscription?: boolean | Class$subscriptionArgs<ExtArgs>
   }
@@ -5729,11 +5742,11 @@ export namespace Prisma {
   export type $ClassPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Class"
     objects: {
-      instructor: Prisma.$InstructorPayload<ExtArgs> | null
       customer: Prisma.$CustomerPayload<ExtArgs>
+      instructor: Prisma.$InstructorPayload<ExtArgs> | null
       recurringClass: Prisma.$RecurringClassPayload<ExtArgs> | null
-      classAttendance: Prisma.$ClassAttendancePayload<ExtArgs>[]
       subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
+      classAttendance: Prisma.$ClassAttendancePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -5744,9 +5757,9 @@ export namespace Prisma {
       status: $Enums.Status
       subscriptionId: number | null
       rebookableUntil: Date | null
+      classCode: string
       createdAt: Date
       updatedAt: Date
-      classCode: string
       isFreeTrial: boolean
     }, ExtArgs["result"]["class"]>
     composites: {}
@@ -6142,11 +6155,11 @@ export namespace Prisma {
    */
   export interface Prisma__ClassClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    instructor<T extends Class$instructorArgs<ExtArgs> = {}>(args?: Subset<T, Class$instructorArgs<ExtArgs>>): Prisma__InstructorClient<$Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    instructor<T extends Class$instructorArgs<ExtArgs> = {}>(args?: Subset<T, Class$instructorArgs<ExtArgs>>): Prisma__InstructorClient<$Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     recurringClass<T extends Class$recurringClassArgs<ExtArgs> = {}>(args?: Subset<T, Class$recurringClassArgs<ExtArgs>>): Prisma__RecurringClassClient<$Result.GetResult<Prisma.$RecurringClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    classAttendance<T extends Class$classAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Class$classAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subscription<T extends Class$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, Class$subscriptionArgs<ExtArgs>>): Prisma__SubscriptionClient<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    classAttendance<T extends Class$classAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Class$classAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6184,9 +6197,9 @@ export namespace Prisma {
     readonly status: FieldRef<"Class", 'Status'>
     readonly subscriptionId: FieldRef<"Class", 'Int'>
     readonly rebookableUntil: FieldRef<"Class", 'DateTime'>
+    readonly classCode: FieldRef<"Class", 'String'>
     readonly createdAt: FieldRef<"Class", 'DateTime'>
     readonly updatedAt: FieldRef<"Class", 'DateTime'>
-    readonly classCode: FieldRef<"Class", 'String'>
     readonly isFreeTrial: FieldRef<"Class", 'Boolean'>
   }
     
@@ -6622,6 +6635,25 @@ export namespace Prisma {
   }
 
   /**
+   * Class.subscription
+   */
+  export type Class$subscriptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Subscription
+     */
+    select?: SubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Subscription
+     */
+    omit?: SubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SubscriptionInclude<ExtArgs> | null
+    where?: SubscriptionWhereInput
+  }
+
+  /**
    * Class.classAttendance
    */
   export type Class$classAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6643,25 +6675,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ClassAttendanceScalarFieldEnum | ClassAttendanceScalarFieldEnum[]
-  }
-
-  /**
-   * Class.subscription
-   */
-  export type Class$subscriptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     */
-    select?: SubscriptionSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Subscription
-     */
-    omit?: SubscriptionOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: SubscriptionInclude<ExtArgs> | null
-    where?: SubscriptionWhereInput
   }
 
   /**
@@ -9083,22 +9096,22 @@ export namespace Prisma {
   export type ClassAttendanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     classId?: boolean
     childrenId?: boolean
-    class?: boolean | ClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    class?: boolean | ClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["classAttendance"]>
 
   export type ClassAttendanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     classId?: boolean
     childrenId?: boolean
-    class?: boolean | ClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    class?: boolean | ClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["classAttendance"]>
 
   export type ClassAttendanceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     classId?: boolean
     childrenId?: boolean
-    class?: boolean | ClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    class?: boolean | ClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["classAttendance"]>
 
   export type ClassAttendanceSelectScalar = {
@@ -9108,23 +9121,23 @@ export namespace Prisma {
 
   export type ClassAttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"classId" | "childrenId", ExtArgs["result"]["classAttendance"]>
   export type ClassAttendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    class?: boolean | ClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    class?: boolean | ClassDefaultArgs<ExtArgs>
   }
   export type ClassAttendanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    class?: boolean | ClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    class?: boolean | ClassDefaultArgs<ExtArgs>
   }
   export type ClassAttendanceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    class?: boolean | ClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    class?: boolean | ClassDefaultArgs<ExtArgs>
   }
 
   export type $ClassAttendancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ClassAttendance"
     objects: {
-      class: Prisma.$ClassPayload<ExtArgs>
       children: Prisma.$ChildrenPayload<ExtArgs>
+      class: Prisma.$ClassPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       classId: number
@@ -9523,8 +9536,8 @@ export namespace Prisma {
    */
   export interface Prisma__ClassAttendanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    class<T extends ClassDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClassDefaultArgs<ExtArgs>>): Prisma__ClassClient<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     children<T extends ChildrenDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChildrenDefaultArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    class<T extends ClassDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClassDefaultArgs<ExtArgs>>): Prisma__ClassClient<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9995,31 +10008,34 @@ export namespace Prisma {
   export type PlanMinAggregateOutputType = {
     id: number | null
     name: string | null
-    weeklyClassTimes: number | null
     description: string | null
+    weeklyClassTimes: number | null
     createdAt: Date | null
-    updatedAt: Date | null
     terminationAt: Date | null
+    updatedAt: Date | null
+    isNative: boolean | null
   }
 
   export type PlanMaxAggregateOutputType = {
     id: number | null
     name: string | null
-    weeklyClassTimes: number | null
     description: string | null
+    weeklyClassTimes: number | null
     createdAt: Date | null
-    updatedAt: Date | null
     terminationAt: Date | null
+    updatedAt: Date | null
+    isNative: boolean | null
   }
 
   export type PlanCountAggregateOutputType = {
     id: number
     name: number
-    weeklyClassTimes: number
     description: number
+    weeklyClassTimes: number
     createdAt: number
-    updatedAt: number
     terminationAt: number
+    updatedAt: number
+    isNative: number
     _all: number
   }
 
@@ -10037,31 +10053,34 @@ export namespace Prisma {
   export type PlanMinAggregateInputType = {
     id?: true
     name?: true
-    weeklyClassTimes?: true
     description?: true
+    weeklyClassTimes?: true
     createdAt?: true
-    updatedAt?: true
     terminationAt?: true
+    updatedAt?: true
+    isNative?: true
   }
 
   export type PlanMaxAggregateInputType = {
     id?: true
     name?: true
-    weeklyClassTimes?: true
     description?: true
+    weeklyClassTimes?: true
     createdAt?: true
-    updatedAt?: true
     terminationAt?: true
+    updatedAt?: true
+    isNative?: true
   }
 
   export type PlanCountAggregateInputType = {
     id?: true
     name?: true
-    weeklyClassTimes?: true
     description?: true
+    weeklyClassTimes?: true
     createdAt?: true
-    updatedAt?: true
     terminationAt?: true
+    updatedAt?: true
+    isNative?: true
     _all?: true
   }
 
@@ -10154,11 +10173,12 @@ export namespace Prisma {
   export type PlanGroupByOutputType = {
     id: number
     name: string
-    weeklyClassTimes: number
     description: string
+    weeklyClassTimes: number
     createdAt: Date
-    updatedAt: Date
     terminationAt: Date | null
+    updatedAt: Date
+    isNative: boolean
     _count: PlanCountAggregateOutputType | null
     _avg: PlanAvgAggregateOutputType | null
     _sum: PlanSumAggregateOutputType | null
@@ -10183,11 +10203,12 @@ export namespace Prisma {
   export type PlanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    weeklyClassTimes?: boolean
     description?: boolean
+    weeklyClassTimes?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
     terminationAt?: boolean
+    updatedAt?: boolean
+    isNative?: boolean
     subscription?: boolean | Plan$subscriptionArgs<ExtArgs>
     _count?: boolean | PlanCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["plan"]>
@@ -10195,34 +10216,37 @@ export namespace Prisma {
   export type PlanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    weeklyClassTimes?: boolean
     description?: boolean
+    weeklyClassTimes?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
     terminationAt?: boolean
+    updatedAt?: boolean
+    isNative?: boolean
   }, ExtArgs["result"]["plan"]>
 
   export type PlanSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    weeklyClassTimes?: boolean
     description?: boolean
+    weeklyClassTimes?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
     terminationAt?: boolean
+    updatedAt?: boolean
+    isNative?: boolean
   }, ExtArgs["result"]["plan"]>
 
   export type PlanSelectScalar = {
     id?: boolean
     name?: boolean
-    weeklyClassTimes?: boolean
     description?: boolean
+    weeklyClassTimes?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
     terminationAt?: boolean
+    updatedAt?: boolean
+    isNative?: boolean
   }
 
-  export type PlanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "weeklyClassTimes" | "description" | "createdAt" | "updatedAt" | "terminationAt", ExtArgs["result"]["plan"]>
+  export type PlanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "weeklyClassTimes" | "createdAt" | "terminationAt" | "updatedAt" | "isNative", ExtArgs["result"]["plan"]>
   export type PlanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subscription?: boolean | Plan$subscriptionArgs<ExtArgs>
     _count?: boolean | PlanCountOutputTypeDefaultArgs<ExtArgs>
@@ -10238,11 +10262,12 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
-      weeklyClassTimes: number
       description: string
+      weeklyClassTimes: number
       createdAt: Date
-      updatedAt: Date
       terminationAt: Date | null
+      updatedAt: Date
+      isNative: boolean
     }, ExtArgs["result"]["plan"]>
     composites: {}
   }
@@ -10669,11 +10694,12 @@ export namespace Prisma {
   interface PlanFieldRefs {
     readonly id: FieldRef<"Plan", 'Int'>
     readonly name: FieldRef<"Plan", 'String'>
-    readonly weeklyClassTimes: FieldRef<"Plan", 'Int'>
     readonly description: FieldRef<"Plan", 'String'>
+    readonly weeklyClassTimes: FieldRef<"Plan", 'Int'>
     readonly createdAt: FieldRef<"Plan", 'DateTime'>
-    readonly updatedAt: FieldRef<"Plan", 'DateTime'>
     readonly terminationAt: FieldRef<"Plan", 'DateTime'>
+    readonly updatedAt: FieldRef<"Plan", 'DateTime'>
+    readonly isNative: FieldRef<"Plan", 'Boolean'>
   }
     
 
@@ -11310,10 +11336,10 @@ export namespace Prisma {
     customerId?: boolean
     startAt?: boolean
     endAt?: boolean
-    plan?: boolean | PlanDefaultArgs<ExtArgs>
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
     class?: boolean | Subscription$classArgs<ExtArgs>
     recurringClass?: boolean | Subscription$recurringClassArgs<ExtArgs>
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
     _count?: boolean | SubscriptionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subscription"]>
 
@@ -11323,8 +11349,8 @@ export namespace Prisma {
     customerId?: boolean
     startAt?: boolean
     endAt?: boolean
-    plan?: boolean | PlanDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subscription"]>
 
   export type SubscriptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11333,8 +11359,8 @@ export namespace Prisma {
     customerId?: boolean
     startAt?: boolean
     endAt?: boolean
-    plan?: boolean | PlanDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subscription"]>
 
   export type SubscriptionSelectScalar = {
@@ -11347,28 +11373,28 @@ export namespace Prisma {
 
   export type SubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "planId" | "customerId" | "startAt" | "endAt", ExtArgs["result"]["subscription"]>
   export type SubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    plan?: boolean | PlanDefaultArgs<ExtArgs>
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
     class?: boolean | Subscription$classArgs<ExtArgs>
     recurringClass?: boolean | Subscription$recurringClassArgs<ExtArgs>
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
     _count?: boolean | SubscriptionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SubscriptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    plan?: boolean | PlanDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
   }
   export type SubscriptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    plan?: boolean | PlanDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
   }
 
   export type $SubscriptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Subscription"
     objects: {
-      plan: Prisma.$PlanPayload<ExtArgs>
-      customer: Prisma.$CustomerPayload<ExtArgs>
       class: Prisma.$ClassPayload<ExtArgs>[]
       recurringClass: Prisma.$RecurringClassPayload<ExtArgs>[]
+      customer: Prisma.$CustomerPayload<ExtArgs>
+      plan: Prisma.$PlanPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -11770,10 +11796,10 @@ export namespace Prisma {
    */
   export interface Prisma__SubscriptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    plan<T extends PlanDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlanDefaultArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     class<T extends Subscription$classArgs<ExtArgs> = {}>(args?: Subset<T, Subscription$classArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     recurringClass<T extends Subscription$recurringClassArgs<ExtArgs> = {}>(args?: Subset<T, Subscription$recurringClassArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    plan<T extends PlanDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlanDefaultArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12476,10 +12502,10 @@ export namespace Prisma {
     subscriptionId?: boolean
     startAt?: boolean
     endAt?: boolean
+    classes?: boolean | RecurringClass$classesArgs<ExtArgs>
     instructor?: boolean | RecurringClass$instructorArgs<ExtArgs>
     subscription?: boolean | RecurringClass$subscriptionArgs<ExtArgs>
     recurringClassAttendance?: boolean | RecurringClass$recurringClassAttendanceArgs<ExtArgs>
-    classes?: boolean | RecurringClass$classesArgs<ExtArgs>
     _count?: boolean | RecurringClassCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recurringClass"]>
 
@@ -12513,10 +12539,10 @@ export namespace Prisma {
 
   export type RecurringClassOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "instructorId" | "subscriptionId" | "startAt" | "endAt", ExtArgs["result"]["recurringClass"]>
   export type RecurringClassInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    classes?: boolean | RecurringClass$classesArgs<ExtArgs>
     instructor?: boolean | RecurringClass$instructorArgs<ExtArgs>
     subscription?: boolean | RecurringClass$subscriptionArgs<ExtArgs>
     recurringClassAttendance?: boolean | RecurringClass$recurringClassAttendanceArgs<ExtArgs>
-    classes?: boolean | RecurringClass$classesArgs<ExtArgs>
     _count?: boolean | RecurringClassCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type RecurringClassIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12531,10 +12557,10 @@ export namespace Prisma {
   export type $RecurringClassPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "RecurringClass"
     objects: {
+      classes: Prisma.$ClassPayload<ExtArgs>[]
       instructor: Prisma.$InstructorPayload<ExtArgs> | null
       subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
       recurringClassAttendance: Prisma.$RecurringClassAttendancePayload<ExtArgs>[]
-      classes: Prisma.$ClassPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -12936,10 +12962,10 @@ export namespace Prisma {
    */
   export interface Prisma__RecurringClassClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    classes<T extends RecurringClass$classesArgs<ExtArgs> = {}>(args?: Subset<T, RecurringClass$classesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     instructor<T extends RecurringClass$instructorArgs<ExtArgs> = {}>(args?: Subset<T, RecurringClass$instructorArgs<ExtArgs>>): Prisma__InstructorClient<$Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     subscription<T extends RecurringClass$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, RecurringClass$subscriptionArgs<ExtArgs>>): Prisma__SubscriptionClient<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     recurringClassAttendance<T extends RecurringClass$recurringClassAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, RecurringClass$recurringClassAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    classes<T extends RecurringClass$classesArgs<ExtArgs> = {}>(args?: Subset<T, RecurringClass$classesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13370,6 +13396,30 @@ export namespace Prisma {
   }
 
   /**
+   * RecurringClass.classes
+   */
+  export type RecurringClass$classesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Class
+     */
+    select?: ClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Class
+     */
+    omit?: ClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClassInclude<ExtArgs> | null
+    where?: ClassWhereInput
+    orderBy?: ClassOrderByWithRelationInput | ClassOrderByWithRelationInput[]
+    cursor?: ClassWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClassScalarFieldEnum | ClassScalarFieldEnum[]
+  }
+
+  /**
    * RecurringClass.instructor
    */
   export type RecurringClass$instructorArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13429,30 +13479,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RecurringClassAttendanceScalarFieldEnum | RecurringClassAttendanceScalarFieldEnum[]
-  }
-
-  /**
-   * RecurringClass.classes
-   */
-  export type RecurringClass$classesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Class
-     */
-    select?: ClassSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Class
-     */
-    omit?: ClassOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClassInclude<ExtArgs> | null
-    where?: ClassWhereInput
-    orderBy?: ClassOrderByWithRelationInput | ClassOrderByWithRelationInput[]
-    cursor?: ClassWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ClassScalarFieldEnum | ClassScalarFieldEnum[]
   }
 
   /**
@@ -13652,22 +13678,22 @@ export namespace Prisma {
   export type RecurringClassAttendanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     recurringClassId?: boolean
     childrenId?: boolean
-    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recurringClassAttendance"]>
 
   export type RecurringClassAttendanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     recurringClassId?: boolean
     childrenId?: boolean
-    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recurringClassAttendance"]>
 
   export type RecurringClassAttendanceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     recurringClassId?: boolean
     childrenId?: boolean
-    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recurringClassAttendance"]>
 
   export type RecurringClassAttendanceSelectScalar = {
@@ -13677,23 +13703,23 @@ export namespace Prisma {
 
   export type RecurringClassAttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"recurringClassId" | "childrenId", ExtArgs["result"]["recurringClassAttendance"]>
   export type RecurringClassAttendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }
   export type RecurringClassAttendanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }
   export type RecurringClassAttendanceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
     children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }
 
   export type $RecurringClassAttendancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "RecurringClassAttendance"
     objects: {
-      recurringClass: Prisma.$RecurringClassPayload<ExtArgs>
       children: Prisma.$ChildrenPayload<ExtArgs>
+      recurringClass: Prisma.$RecurringClassPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       recurringClassId: number
@@ -14092,8 +14118,8 @@ export namespace Prisma {
    */
   export interface Prisma__RecurringClassAttendanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    recurringClass<T extends RecurringClassDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RecurringClassDefaultArgs<ExtArgs>>): Prisma__RecurringClassClient<$Result.GetResult<Prisma.$RecurringClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     children<T extends ChildrenDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChildrenDefaultArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    recurringClass<T extends RecurringClassDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RecurringClassDefaultArgs<ExtArgs>>): Prisma__RecurringClassClient<$Result.GetResult<Prisma.$RecurringClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22938,19 +22964,20 @@ export namespace Prisma {
     classURL: 'classURL',
     icon: 'icon',
     nickname: 'nickname',
-    birthdate: 'birthdate',
-    lifeHistory: 'lifeHistory',
-    favoriteFood: 'favoriteFood',
-    hobby: 'hobby',
-    messageForChildren: 'messageForChildren',
-    workingTime: 'workingTime',
-    skill: 'skill',
     meetingId: 'meetingId',
     passcode: 'passcode',
     introductionURL: 'introductionURL',
     createdAt: 'createdAt',
+    birthdate: 'birthdate',
+    favoriteFood: 'favoriteFood',
+    hobby: 'hobby',
+    lifeHistory: 'lifeHistory',
+    messageForChildren: 'messageForChildren',
+    skill: 'skill',
+    workingTime: 'workingTime',
+    terminationAt: 'terminationAt',
     updatedAt: 'updatedAt',
-    terminationAt: 'terminationAt'
+    isNative: 'isNative'
   };
 
   export type InstructorScalarFieldEnum = (typeof InstructorScalarFieldEnum)[keyof typeof InstructorScalarFieldEnum]
@@ -22960,12 +22987,12 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     email: 'email',
-    emailVerified: 'emailVerified',
     password: 'password',
     prefecture: 'prefecture',
-    hasSeenWelcome: 'hasSeenWelcome',
+    emailVerified: 'emailVerified',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
+    hasSeenWelcome: 'hasSeenWelcome',
     terminationAt: 'terminationAt'
   };
 
@@ -22981,9 +23008,9 @@ export namespace Prisma {
     status: 'status',
     subscriptionId: 'subscriptionId',
     rebookableUntil: 'rebookableUntil',
+    classCode: 'classCode',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    classCode: 'classCode',
     isFreeTrial: 'isFreeTrial'
   };
 
@@ -23026,11 +23053,12 @@ export namespace Prisma {
   export const PlanScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    weeklyClassTimes: 'weeklyClassTimes',
     description: 'description',
+    weeklyClassTimes: 'weeklyClassTimes',
     createdAt: 'createdAt',
+    terminationAt: 'terminationAt',
     updatedAt: 'updatedAt',
-    terminationAt: 'terminationAt'
+    isNative: 'isNative'
   };
 
   export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
@@ -23262,23 +23290,24 @@ export namespace Prisma {
     classURL?: StringFilter<"Instructor"> | string
     icon?: StringFilter<"Instructor"> | string
     nickname?: StringFilter<"Instructor"> | string
-    birthdate?: DateTimeFilter<"Instructor"> | Date | string
-    lifeHistory?: StringFilter<"Instructor"> | string
-    favoriteFood?: StringFilter<"Instructor"> | string
-    hobby?: StringFilter<"Instructor"> | string
-    messageForChildren?: StringFilter<"Instructor"> | string
-    workingTime?: StringFilter<"Instructor"> | string
-    skill?: StringFilter<"Instructor"> | string
     meetingId?: StringFilter<"Instructor"> | string
     passcode?: StringFilter<"Instructor"> | string
     introductionURL?: StringFilter<"Instructor"> | string
     createdAt?: DateTimeFilter<"Instructor"> | Date | string
-    updatedAt?: DateTimeFilter<"Instructor"> | Date | string
+    birthdate?: DateTimeFilter<"Instructor"> | Date | string
+    favoriteFood?: StringFilter<"Instructor"> | string
+    hobby?: StringFilter<"Instructor"> | string
+    lifeHistory?: StringFilter<"Instructor"> | string
+    messageForChildren?: StringFilter<"Instructor"> | string
+    skill?: StringFilter<"Instructor"> | string
+    workingTime?: StringFilter<"Instructor"> | string
     terminationAt?: DateTimeNullableFilter<"Instructor"> | Date | string | null
+    updatedAt?: DateTimeFilter<"Instructor"> | Date | string
+    isNative?: BoolFilter<"Instructor"> | boolean
     classes?: ClassListRelationFilter
-    recurringClasses?: RecurringClassListRelationFilter
-    instructorSchedules?: InstructorScheduleListRelationFilter
     instructorAbsences?: InstructorAbsenceListRelationFilter
+    instructorSchedules?: InstructorScheduleListRelationFilter
+    recurringClasses?: RecurringClassListRelationFilter
   }
 
   export type InstructorOrderByWithRelationInput = {
@@ -23289,23 +23318,24 @@ export namespace Prisma {
     classURL?: SortOrder
     icon?: SortOrder
     nickname?: SortOrder
-    birthdate?: SortOrder
-    lifeHistory?: SortOrder
-    favoriteFood?: SortOrder
-    hobby?: SortOrder
-    messageForChildren?: SortOrder
-    workingTime?: SortOrder
-    skill?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
     introductionURL?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
+    birthdate?: SortOrder
+    favoriteFood?: SortOrder
+    hobby?: SortOrder
+    lifeHistory?: SortOrder
+    messageForChildren?: SortOrder
+    skill?: SortOrder
+    workingTime?: SortOrder
     terminationAt?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
     classes?: ClassOrderByRelationAggregateInput
-    recurringClasses?: RecurringClassOrderByRelationAggregateInput
-    instructorSchedules?: InstructorScheduleOrderByRelationAggregateInput
     instructorAbsences?: InstructorAbsenceOrderByRelationAggregateInput
+    instructorSchedules?: InstructorScheduleOrderByRelationAggregateInput
+    recurringClasses?: RecurringClassOrderByRelationAggregateInput
   }
 
   export type InstructorWhereUniqueInput = Prisma.AtLeast<{
@@ -23322,20 +23352,21 @@ export namespace Prisma {
     NOT?: InstructorWhereInput | InstructorWhereInput[]
     name?: StringFilter<"Instructor"> | string
     password?: StringFilter<"Instructor"> | string
+    createdAt?: DateTimeFilter<"Instructor"> | Date | string
     birthdate?: DateTimeFilter<"Instructor"> | Date | string
-    lifeHistory?: StringFilter<"Instructor"> | string
     favoriteFood?: StringFilter<"Instructor"> | string
     hobby?: StringFilter<"Instructor"> | string
+    lifeHistory?: StringFilter<"Instructor"> | string
     messageForChildren?: StringFilter<"Instructor"> | string
-    workingTime?: StringFilter<"Instructor"> | string
     skill?: StringFilter<"Instructor"> | string
-    createdAt?: DateTimeFilter<"Instructor"> | Date | string
-    updatedAt?: DateTimeFilter<"Instructor"> | Date | string
+    workingTime?: StringFilter<"Instructor"> | string
     terminationAt?: DateTimeNullableFilter<"Instructor"> | Date | string | null
+    updatedAt?: DateTimeFilter<"Instructor"> | Date | string
+    isNative?: BoolFilter<"Instructor"> | boolean
     classes?: ClassListRelationFilter
-    recurringClasses?: RecurringClassListRelationFilter
-    instructorSchedules?: InstructorScheduleListRelationFilter
     instructorAbsences?: InstructorAbsenceListRelationFilter
+    instructorSchedules?: InstructorScheduleListRelationFilter
+    recurringClasses?: RecurringClassListRelationFilter
   }, "id" | "email" | "classURL" | "icon" | "nickname" | "meetingId" | "passcode" | "introductionURL">
 
   export type InstructorOrderByWithAggregationInput = {
@@ -23346,19 +23377,20 @@ export namespace Prisma {
     classURL?: SortOrder
     icon?: SortOrder
     nickname?: SortOrder
-    birthdate?: SortOrder
-    lifeHistory?: SortOrder
-    favoriteFood?: SortOrder
-    hobby?: SortOrder
-    messageForChildren?: SortOrder
-    workingTime?: SortOrder
-    skill?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
     introductionURL?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
+    birthdate?: SortOrder
+    favoriteFood?: SortOrder
+    hobby?: SortOrder
+    lifeHistory?: SortOrder
+    messageForChildren?: SortOrder
+    skill?: SortOrder
+    workingTime?: SortOrder
     terminationAt?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
     _count?: InstructorCountOrderByAggregateInput
     _avg?: InstructorAvgOrderByAggregateInput
     _max?: InstructorMaxOrderByAggregateInput
@@ -23377,19 +23409,20 @@ export namespace Prisma {
     classURL?: StringWithAggregatesFilter<"Instructor"> | string
     icon?: StringWithAggregatesFilter<"Instructor"> | string
     nickname?: StringWithAggregatesFilter<"Instructor"> | string
-    birthdate?: DateTimeWithAggregatesFilter<"Instructor"> | Date | string
-    lifeHistory?: StringWithAggregatesFilter<"Instructor"> | string
-    favoriteFood?: StringWithAggregatesFilter<"Instructor"> | string
-    hobby?: StringWithAggregatesFilter<"Instructor"> | string
-    messageForChildren?: StringWithAggregatesFilter<"Instructor"> | string
-    workingTime?: StringWithAggregatesFilter<"Instructor"> | string
-    skill?: StringWithAggregatesFilter<"Instructor"> | string
     meetingId?: StringWithAggregatesFilter<"Instructor"> | string
     passcode?: StringWithAggregatesFilter<"Instructor"> | string
     introductionURL?: StringWithAggregatesFilter<"Instructor"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Instructor"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Instructor"> | Date | string
+    birthdate?: DateTimeWithAggregatesFilter<"Instructor"> | Date | string
+    favoriteFood?: StringWithAggregatesFilter<"Instructor"> | string
+    hobby?: StringWithAggregatesFilter<"Instructor"> | string
+    lifeHistory?: StringWithAggregatesFilter<"Instructor"> | string
+    messageForChildren?: StringWithAggregatesFilter<"Instructor"> | string
+    skill?: StringWithAggregatesFilter<"Instructor"> | string
+    workingTime?: StringWithAggregatesFilter<"Instructor"> | string
     terminationAt?: DateTimeNullableWithAggregatesFilter<"Instructor"> | Date | string | null
+    updatedAt?: DateTimeWithAggregatesFilter<"Instructor"> | Date | string
+    isNative?: BoolWithAggregatesFilter<"Instructor"> | boolean
   }
 
   export type CustomerWhereInput = {
@@ -23399,15 +23432,15 @@ export namespace Prisma {
     id?: IntFilter<"Customer"> | number
     name?: StringFilter<"Customer"> | string
     email?: StringFilter<"Customer"> | string
-    emailVerified?: DateTimeNullableFilter<"Customer"> | Date | string | null
     password?: StringFilter<"Customer"> | string
     prefecture?: StringFilter<"Customer"> | string
-    hasSeenWelcome?: BoolFilter<"Customer"> | boolean
+    emailVerified?: DateTimeNullableFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
+    hasSeenWelcome?: BoolFilter<"Customer"> | boolean
     terminationAt?: DateTimeNullableFilter<"Customer"> | Date | string | null
-    classes?: ClassListRelationFilter
     children?: ChildrenListRelationFilter
+    classes?: ClassListRelationFilter
     subscription?: SubscriptionListRelationFilter
   }
 
@@ -23415,15 +23448,15 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    emailVerified?: SortOrderInput | SortOrder
     password?: SortOrder
     prefecture?: SortOrder
-    hasSeenWelcome?: SortOrder
+    emailVerified?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    hasSeenWelcome?: SortOrder
     terminationAt?: SortOrderInput | SortOrder
-    classes?: ClassOrderByRelationAggregateInput
     children?: ChildrenOrderByRelationAggregateInput
+    classes?: ClassOrderByRelationAggregateInput
     subscription?: SubscriptionOrderByRelationAggregateInput
   }
 
@@ -23434,15 +23467,15 @@ export namespace Prisma {
     OR?: CustomerWhereInput[]
     NOT?: CustomerWhereInput | CustomerWhereInput[]
     name?: StringFilter<"Customer"> | string
-    emailVerified?: DateTimeNullableFilter<"Customer"> | Date | string | null
     password?: StringFilter<"Customer"> | string
     prefecture?: StringFilter<"Customer"> | string
-    hasSeenWelcome?: BoolFilter<"Customer"> | boolean
+    emailVerified?: DateTimeNullableFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
+    hasSeenWelcome?: BoolFilter<"Customer"> | boolean
     terminationAt?: DateTimeNullableFilter<"Customer"> | Date | string | null
-    classes?: ClassListRelationFilter
     children?: ChildrenListRelationFilter
+    classes?: ClassListRelationFilter
     subscription?: SubscriptionListRelationFilter
   }, "id" | "email">
 
@@ -23450,12 +23483,12 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    emailVerified?: SortOrderInput | SortOrder
     password?: SortOrder
     prefecture?: SortOrder
-    hasSeenWelcome?: SortOrder
+    emailVerified?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    hasSeenWelcome?: SortOrder
     terminationAt?: SortOrderInput | SortOrder
     _count?: CustomerCountOrderByAggregateInput
     _avg?: CustomerAvgOrderByAggregateInput
@@ -23471,12 +23504,12 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Customer"> | number
     name?: StringWithAggregatesFilter<"Customer"> | string
     email?: StringWithAggregatesFilter<"Customer"> | string
-    emailVerified?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
     password?: StringWithAggregatesFilter<"Customer"> | string
     prefecture?: StringWithAggregatesFilter<"Customer"> | string
-    hasSeenWelcome?: BoolWithAggregatesFilter<"Customer"> | boolean
+    emailVerified?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
+    hasSeenWelcome?: BoolWithAggregatesFilter<"Customer"> | boolean
     terminationAt?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
   }
 
@@ -23492,15 +23525,15 @@ export namespace Prisma {
     status?: EnumStatusFilter<"Class"> | $Enums.Status
     subscriptionId?: IntNullableFilter<"Class"> | number | null
     rebookableUntil?: DateTimeNullableFilter<"Class"> | Date | string | null
+    classCode?: StringFilter<"Class"> | string
     createdAt?: DateTimeFilter<"Class"> | Date | string
     updatedAt?: DateTimeFilter<"Class"> | Date | string
-    classCode?: StringFilter<"Class"> | string
     isFreeTrial?: BoolFilter<"Class"> | boolean
-    instructor?: XOR<InstructorNullableScalarRelationFilter, InstructorWhereInput> | null
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    instructor?: XOR<InstructorNullableScalarRelationFilter, InstructorWhereInput> | null
     recurringClass?: XOR<RecurringClassNullableScalarRelationFilter, RecurringClassWhereInput> | null
-    classAttendance?: ClassAttendanceListRelationFilter
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
+    classAttendance?: ClassAttendanceListRelationFilter
   }
 
   export type ClassOrderByWithRelationInput = {
@@ -23512,15 +23545,15 @@ export namespace Prisma {
     status?: SortOrder
     subscriptionId?: SortOrderInput | SortOrder
     rebookableUntil?: SortOrderInput | SortOrder
+    classCode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    classCode?: SortOrder
     isFreeTrial?: SortOrder
-    instructor?: InstructorOrderByWithRelationInput
     customer?: CustomerOrderByWithRelationInput
+    instructor?: InstructorOrderByWithRelationInput
     recurringClass?: RecurringClassOrderByWithRelationInput
-    classAttendance?: ClassAttendanceOrderByRelationAggregateInput
     subscription?: SubscriptionOrderByWithRelationInput
+    classAttendance?: ClassAttendanceOrderByRelationAggregateInput
   }
 
   export type ClassWhereUniqueInput = Prisma.AtLeast<{
@@ -23535,15 +23568,15 @@ export namespace Prisma {
     status?: EnumStatusFilter<"Class"> | $Enums.Status
     subscriptionId?: IntNullableFilter<"Class"> | number | null
     rebookableUntil?: DateTimeNullableFilter<"Class"> | Date | string | null
+    classCode?: StringFilter<"Class"> | string
     createdAt?: DateTimeFilter<"Class"> | Date | string
     updatedAt?: DateTimeFilter<"Class"> | Date | string
-    classCode?: StringFilter<"Class"> | string
     isFreeTrial?: BoolFilter<"Class"> | boolean
-    instructor?: XOR<InstructorNullableScalarRelationFilter, InstructorWhereInput> | null
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    instructor?: XOR<InstructorNullableScalarRelationFilter, InstructorWhereInput> | null
     recurringClass?: XOR<RecurringClassNullableScalarRelationFilter, RecurringClassWhereInput> | null
-    classAttendance?: ClassAttendanceListRelationFilter
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
+    classAttendance?: ClassAttendanceListRelationFilter
   }, "id">
 
   export type ClassOrderByWithAggregationInput = {
@@ -23555,9 +23588,9 @@ export namespace Prisma {
     status?: SortOrder
     subscriptionId?: SortOrderInput | SortOrder
     rebookableUntil?: SortOrderInput | SortOrder
+    classCode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    classCode?: SortOrder
     isFreeTrial?: SortOrder
     _count?: ClassCountOrderByAggregateInput
     _avg?: ClassAvgOrderByAggregateInput
@@ -23578,9 +23611,9 @@ export namespace Prisma {
     status?: EnumStatusWithAggregatesFilter<"Class"> | $Enums.Status
     subscriptionId?: IntNullableWithAggregatesFilter<"Class"> | number | null
     rebookableUntil?: DateTimeNullableWithAggregatesFilter<"Class"> | Date | string | null
+    classCode?: StringWithAggregatesFilter<"Class"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Class"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Class"> | Date | string
-    classCode?: StringWithAggregatesFilter<"Class"> | string
     isFreeTrial?: BoolWithAggregatesFilter<"Class"> | boolean
   }
 
@@ -23722,15 +23755,15 @@ export namespace Prisma {
     NOT?: ClassAttendanceWhereInput | ClassAttendanceWhereInput[]
     classId?: IntFilter<"ClassAttendance"> | number
     childrenId?: IntFilter<"ClassAttendance"> | number
-    class?: XOR<ClassScalarRelationFilter, ClassWhereInput>
     children?: XOR<ChildrenScalarRelationFilter, ChildrenWhereInput>
+    class?: XOR<ClassScalarRelationFilter, ClassWhereInput>
   }
 
   export type ClassAttendanceOrderByWithRelationInput = {
     classId?: SortOrder
     childrenId?: SortOrder
-    class?: ClassOrderByWithRelationInput
     children?: ChildrenOrderByWithRelationInput
+    class?: ClassOrderByWithRelationInput
   }
 
   export type ClassAttendanceWhereUniqueInput = Prisma.AtLeast<{
@@ -23740,8 +23773,8 @@ export namespace Prisma {
     NOT?: ClassAttendanceWhereInput | ClassAttendanceWhereInput[]
     classId?: IntFilter<"ClassAttendance"> | number
     childrenId?: IntFilter<"ClassAttendance"> | number
-    class?: XOR<ClassScalarRelationFilter, ClassWhereInput>
     children?: XOR<ChildrenScalarRelationFilter, ChildrenWhereInput>
+    class?: XOR<ClassScalarRelationFilter, ClassWhereInput>
   }, "classId_childrenId">
 
   export type ClassAttendanceOrderByWithAggregationInput = {
@@ -23768,22 +23801,24 @@ export namespace Prisma {
     NOT?: PlanWhereInput | PlanWhereInput[]
     id?: IntFilter<"Plan"> | number
     name?: StringFilter<"Plan"> | string
-    weeklyClassTimes?: IntFilter<"Plan"> | number
     description?: StringFilter<"Plan"> | string
+    weeklyClassTimes?: IntFilter<"Plan"> | number
     createdAt?: DateTimeFilter<"Plan"> | Date | string
-    updatedAt?: DateTimeFilter<"Plan"> | Date | string
     terminationAt?: DateTimeNullableFilter<"Plan"> | Date | string | null
+    updatedAt?: DateTimeFilter<"Plan"> | Date | string
+    isNative?: BoolFilter<"Plan"> | boolean
     subscription?: SubscriptionListRelationFilter
   }
 
   export type PlanOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    weeklyClassTimes?: SortOrder
     description?: SortOrder
+    weeklyClassTimes?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
     terminationAt?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
     subscription?: SubscriptionOrderByRelationAggregateInput
   }
 
@@ -23793,22 +23828,24 @@ export namespace Prisma {
     OR?: PlanWhereInput[]
     NOT?: PlanWhereInput | PlanWhereInput[]
     name?: StringFilter<"Plan"> | string
-    weeklyClassTimes?: IntFilter<"Plan"> | number
     description?: StringFilter<"Plan"> | string
+    weeklyClassTimes?: IntFilter<"Plan"> | number
     createdAt?: DateTimeFilter<"Plan"> | Date | string
-    updatedAt?: DateTimeFilter<"Plan"> | Date | string
     terminationAt?: DateTimeNullableFilter<"Plan"> | Date | string | null
+    updatedAt?: DateTimeFilter<"Plan"> | Date | string
+    isNative?: BoolFilter<"Plan"> | boolean
     subscription?: SubscriptionListRelationFilter
   }, "id">
 
   export type PlanOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    weeklyClassTimes?: SortOrder
     description?: SortOrder
+    weeklyClassTimes?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
     terminationAt?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
     _count?: PlanCountOrderByAggregateInput
     _avg?: PlanAvgOrderByAggregateInput
     _max?: PlanMaxOrderByAggregateInput
@@ -23822,11 +23859,12 @@ export namespace Prisma {
     NOT?: PlanScalarWhereWithAggregatesInput | PlanScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Plan"> | number
     name?: StringWithAggregatesFilter<"Plan"> | string
-    weeklyClassTimes?: IntWithAggregatesFilter<"Plan"> | number
     description?: StringWithAggregatesFilter<"Plan"> | string
+    weeklyClassTimes?: IntWithAggregatesFilter<"Plan"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Plan"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Plan"> | Date | string
     terminationAt?: DateTimeNullableWithAggregatesFilter<"Plan"> | Date | string | null
+    updatedAt?: DateTimeWithAggregatesFilter<"Plan"> | Date | string
+    isNative?: BoolWithAggregatesFilter<"Plan"> | boolean
   }
 
   export type SubscriptionWhereInput = {
@@ -23838,10 +23876,10 @@ export namespace Prisma {
     customerId?: IntFilter<"Subscription"> | number
     startAt?: DateTimeFilter<"Subscription"> | Date | string
     endAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
-    plan?: XOR<PlanScalarRelationFilter, PlanWhereInput>
-    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     class?: ClassListRelationFilter
     recurringClass?: RecurringClassListRelationFilter
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    plan?: XOR<PlanScalarRelationFilter, PlanWhereInput>
   }
 
   export type SubscriptionOrderByWithRelationInput = {
@@ -23850,10 +23888,10 @@ export namespace Prisma {
     customerId?: SortOrder
     startAt?: SortOrder
     endAt?: SortOrderInput | SortOrder
-    plan?: PlanOrderByWithRelationInput
-    customer?: CustomerOrderByWithRelationInput
     class?: ClassOrderByRelationAggregateInput
     recurringClass?: RecurringClassOrderByRelationAggregateInput
+    customer?: CustomerOrderByWithRelationInput
+    plan?: PlanOrderByWithRelationInput
   }
 
   export type SubscriptionWhereUniqueInput = Prisma.AtLeast<{
@@ -23865,10 +23903,10 @@ export namespace Prisma {
     customerId?: IntFilter<"Subscription"> | number
     startAt?: DateTimeFilter<"Subscription"> | Date | string
     endAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
-    plan?: XOR<PlanScalarRelationFilter, PlanWhereInput>
-    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     class?: ClassListRelationFilter
     recurringClass?: RecurringClassListRelationFilter
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    plan?: XOR<PlanScalarRelationFilter, PlanWhereInput>
   }, "id">
 
   export type SubscriptionOrderByWithAggregationInput = {
@@ -23904,10 +23942,10 @@ export namespace Prisma {
     subscriptionId?: IntNullableFilter<"RecurringClass"> | number | null
     startAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
     endAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
+    classes?: ClassListRelationFilter
     instructor?: XOR<InstructorNullableScalarRelationFilter, InstructorWhereInput> | null
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
     recurringClassAttendance?: RecurringClassAttendanceListRelationFilter
-    classes?: ClassListRelationFilter
   }
 
   export type RecurringClassOrderByWithRelationInput = {
@@ -23916,10 +23954,10 @@ export namespace Prisma {
     subscriptionId?: SortOrderInput | SortOrder
     startAt?: SortOrderInput | SortOrder
     endAt?: SortOrderInput | SortOrder
+    classes?: ClassOrderByRelationAggregateInput
     instructor?: InstructorOrderByWithRelationInput
     subscription?: SubscriptionOrderByWithRelationInput
     recurringClassAttendance?: RecurringClassAttendanceOrderByRelationAggregateInput
-    classes?: ClassOrderByRelationAggregateInput
   }
 
   export type RecurringClassWhereUniqueInput = Prisma.AtLeast<{
@@ -23931,10 +23969,10 @@ export namespace Prisma {
     subscriptionId?: IntNullableFilter<"RecurringClass"> | number | null
     startAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
     endAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
+    classes?: ClassListRelationFilter
     instructor?: XOR<InstructorNullableScalarRelationFilter, InstructorWhereInput> | null
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
     recurringClassAttendance?: RecurringClassAttendanceListRelationFilter
-    classes?: ClassListRelationFilter
   }, "id">
 
   export type RecurringClassOrderByWithAggregationInput = {
@@ -23967,15 +24005,15 @@ export namespace Prisma {
     NOT?: RecurringClassAttendanceWhereInput | RecurringClassAttendanceWhereInput[]
     recurringClassId?: IntFilter<"RecurringClassAttendance"> | number
     childrenId?: IntFilter<"RecurringClassAttendance"> | number
-    recurringClass?: XOR<RecurringClassScalarRelationFilter, RecurringClassWhereInput>
     children?: XOR<ChildrenScalarRelationFilter, ChildrenWhereInput>
+    recurringClass?: XOR<RecurringClassScalarRelationFilter, RecurringClassWhereInput>
   }
 
   export type RecurringClassAttendanceOrderByWithRelationInput = {
     recurringClassId?: SortOrder
     childrenId?: SortOrder
-    recurringClass?: RecurringClassOrderByWithRelationInput
     children?: ChildrenOrderByWithRelationInput
+    recurringClass?: RecurringClassOrderByWithRelationInput
   }
 
   export type RecurringClassAttendanceWhereUniqueInput = Prisma.AtLeast<{
@@ -23985,8 +24023,8 @@ export namespace Prisma {
     NOT?: RecurringClassAttendanceWhereInput | RecurringClassAttendanceWhereInput[]
     recurringClassId?: IntFilter<"RecurringClassAttendance"> | number
     childrenId?: IntFilter<"RecurringClassAttendance"> | number
-    recurringClass?: XOR<RecurringClassScalarRelationFilter, RecurringClassWhereInput>
     children?: XOR<ChildrenScalarRelationFilter, ChildrenWhereInput>
+    recurringClass?: XOR<RecurringClassScalarRelationFilter, RecurringClassWhereInput>
   }, "recurringClassId_childrenId">
 
   export type RecurringClassAttendanceOrderByWithAggregationInput = {
@@ -24405,23 +24443,24 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     classes?: ClassCreateNestedManyWithoutInstructorInput
-    recurringClasses?: RecurringClassCreateNestedManyWithoutInstructorInput
-    instructorSchedules?: InstructorScheduleCreateNestedManyWithoutInstructorInput
     instructorAbsences?: InstructorAbsenceCreateNestedManyWithoutInstructorInput
+    instructorSchedules?: InstructorScheduleCreateNestedManyWithoutInstructorInput
+    recurringClasses?: RecurringClassCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedCreateInput = {
@@ -24432,23 +24471,24 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     classes?: ClassUncheckedCreateNestedManyWithoutInstructorInput
-    recurringClasses?: RecurringClassUncheckedCreateNestedManyWithoutInstructorInput
-    instructorSchedules?: InstructorScheduleUncheckedCreateNestedManyWithoutInstructorInput
     instructorAbsences?: InstructorAbsenceUncheckedCreateNestedManyWithoutInstructorInput
+    instructorSchedules?: InstructorScheduleUncheckedCreateNestedManyWithoutInstructorInput
+    recurringClasses?: RecurringClassUncheckedCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUpdateInput = {
@@ -24458,23 +24498,24 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     classes?: ClassUpdateManyWithoutInstructorNestedInput
-    recurringClasses?: RecurringClassUpdateManyWithoutInstructorNestedInput
-    instructorSchedules?: InstructorScheduleUpdateManyWithoutInstructorNestedInput
     instructorAbsences?: InstructorAbsenceUpdateManyWithoutInstructorNestedInput
+    instructorSchedules?: InstructorScheduleUpdateManyWithoutInstructorNestedInput
+    recurringClasses?: RecurringClassUpdateManyWithoutInstructorNestedInput
   }
 
   export type InstructorUncheckedUpdateInput = {
@@ -24485,23 +24526,24 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     classes?: ClassUncheckedUpdateManyWithoutInstructorNestedInput
-    recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
-    instructorSchedules?: InstructorScheduleUncheckedUpdateManyWithoutInstructorNestedInput
     instructorAbsences?: InstructorAbsenceUncheckedUpdateManyWithoutInstructorNestedInput
+    instructorSchedules?: InstructorScheduleUncheckedUpdateManyWithoutInstructorNestedInput
+    recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
   }
 
   export type InstructorCreateManyInput = {
@@ -24512,19 +24554,20 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
   }
 
   export type InstructorUpdateManyMutationInput = {
@@ -24534,19 +24577,20 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type InstructorUncheckedUpdateManyInput = {
@@ -24557,33 +24601,34 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CustomerCreateInput = {
     name: string
     email: string
-    emailVerified?: Date | string | null
     password: string
     prefecture: string
-    hasSeenWelcome?: boolean
+    emailVerified?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
-    classes?: ClassCreateNestedManyWithoutCustomerInput
     children?: ChildrenCreateNestedManyWithoutCustomerInput
+    classes?: ClassCreateNestedManyWithoutCustomerInput
     subscription?: SubscriptionCreateNestedManyWithoutCustomerInput
   }
 
@@ -24591,30 +24636,30 @@ export namespace Prisma {
     id?: number
     name: string
     email: string
-    emailVerified?: Date | string | null
     password: string
     prefecture: string
-    hasSeenWelcome?: boolean
+    emailVerified?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
-    classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
     children?: ChildrenUncheckedCreateNestedManyWithoutCustomerInput
+    classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
     subscription?: SubscriptionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     password?: StringFieldUpdateOperationsInput | string
     prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    classes?: ClassUpdateManyWithoutCustomerNestedInput
     children?: ChildrenUpdateManyWithoutCustomerNestedInput
+    classes?: ClassUpdateManyWithoutCustomerNestedInput
     subscription?: SubscriptionUpdateManyWithoutCustomerNestedInput
   }
 
@@ -24622,15 +24667,15 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     password?: StringFieldUpdateOperationsInput | string
     prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
     children?: ChildrenUncheckedUpdateManyWithoutCustomerNestedInput
+    classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
     subscription?: SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
@@ -24638,24 +24683,24 @@ export namespace Prisma {
     id?: number
     name: string
     email: string
-    emailVerified?: Date | string | null
     password: string
     prefecture: string
-    hasSeenWelcome?: boolean
+    emailVerified?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
   }
 
   export type CustomerUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     password?: StringFieldUpdateOperationsInput | string
     prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
@@ -24663,12 +24708,12 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     password?: StringFieldUpdateOperationsInput | string
     prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
@@ -24676,15 +24721,15 @@ export namespace Prisma {
     dateTime?: Date | string | null
     status: $Enums.Status
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
-    instructor?: InstructorCreateNestedOneWithoutClassesInput
     customer: CustomerCreateNestedOneWithoutClassesInput
+    instructor?: InstructorCreateNestedOneWithoutClassesInput
     recurringClass?: RecurringClassCreateNestedOneWithoutClassesInput
-    classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
     subscription?: SubscriptionCreateNestedOneWithoutClassInput
+    classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
   }
 
   export type ClassUncheckedCreateInput = {
@@ -24696,9 +24741,9 @@ export namespace Prisma {
     status: $Enums.Status
     subscriptionId?: number | null
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
     classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutClassInput
   }
@@ -24707,15 +24752,15 @@ export namespace Prisma {
     dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
-    instructor?: InstructorUpdateOneWithoutClassesNestedInput
     customer?: CustomerUpdateOneRequiredWithoutClassesNestedInput
+    instructor?: InstructorUpdateOneWithoutClassesNestedInput
     recurringClass?: RecurringClassUpdateOneWithoutClassesNestedInput
-    classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
     subscription?: SubscriptionUpdateOneWithoutClassNestedInput
+    classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
   }
 
   export type ClassUncheckedUpdateInput = {
@@ -24727,9 +24772,9 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
     classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutClassNestedInput
   }
@@ -24743,9 +24788,9 @@ export namespace Prisma {
     status: $Enums.Status
     subscriptionId?: number | null
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
   }
 
@@ -24753,9 +24798,9 @@ export namespace Prisma {
     dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -24768,9 +24813,9 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -24909,8 +24954,8 @@ export namespace Prisma {
   }
 
   export type ClassAttendanceCreateInput = {
-    class: ClassCreateNestedOneWithoutClassAttendanceInput
     children: ChildrenCreateNestedOneWithoutClassAttendanceInput
+    class: ClassCreateNestedOneWithoutClassAttendanceInput
   }
 
   export type ClassAttendanceUncheckedCreateInput = {
@@ -24919,8 +24964,8 @@ export namespace Prisma {
   }
 
   export type ClassAttendanceUpdateInput = {
-    class?: ClassUpdateOneRequiredWithoutClassAttendanceNestedInput
     children?: ChildrenUpdateOneRequiredWithoutClassAttendanceNestedInput
+    class?: ClassUpdateOneRequiredWithoutClassAttendanceNestedInput
   }
 
   export type ClassAttendanceUncheckedUpdateInput = {
@@ -24944,82 +24989,89 @@ export namespace Prisma {
 
   export type PlanCreateInput = {
     name: string
-    weeklyClassTimes: number
     description: string
+    weeklyClassTimes: number
     createdAt?: Date | string
-    updatedAt?: Date | string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     subscription?: SubscriptionCreateNestedManyWithoutPlanInput
   }
 
   export type PlanUncheckedCreateInput = {
     id?: number
     name: string
-    weeklyClassTimes: number
     description: string
+    weeklyClassTimes: number
     createdAt?: Date | string
-    updatedAt?: Date | string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     subscription?: SubscriptionUncheckedCreateNestedManyWithoutPlanInput
   }
 
   export type PlanUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
-    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     subscription?: SubscriptionUpdateManyWithoutPlanNestedInput
   }
 
   export type PlanUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
-    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     subscription?: SubscriptionUncheckedUpdateManyWithoutPlanNestedInput
   }
 
   export type PlanCreateManyInput = {
     id?: number
     name: string
-    weeklyClassTimes: number
     description: string
+    weeklyClassTimes: number
     createdAt?: Date | string
-    updatedAt?: Date | string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
   }
 
   export type PlanUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
-    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PlanUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
-    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SubscriptionCreateInput = {
     startAt: Date | string
     endAt?: Date | string | null
-    plan: PlanCreateNestedOneWithoutSubscriptionInput
-    customer: CustomerCreateNestedOneWithoutSubscriptionInput
     class?: ClassCreateNestedManyWithoutSubscriptionInput
     recurringClass?: RecurringClassCreateNestedManyWithoutSubscriptionInput
+    customer: CustomerCreateNestedOneWithoutSubscriptionInput
+    plan: PlanCreateNestedOneWithoutSubscriptionInput
   }
 
   export type SubscriptionUncheckedCreateInput = {
@@ -25035,10 +25087,10 @@ export namespace Prisma {
   export type SubscriptionUpdateInput = {
     startAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    plan?: PlanUpdateOneRequiredWithoutSubscriptionNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutSubscriptionNestedInput
     class?: ClassUpdateManyWithoutSubscriptionNestedInput
     recurringClass?: RecurringClassUpdateManyWithoutSubscriptionNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutSubscriptionNestedInput
+    plan?: PlanUpdateOneRequiredWithoutSubscriptionNestedInput
   }
 
   export type SubscriptionUncheckedUpdateInput = {
@@ -25075,10 +25127,10 @@ export namespace Prisma {
   export type RecurringClassCreateInput = {
     startAt?: Date | string | null
     endAt?: Date | string | null
+    classes?: ClassCreateNestedManyWithoutRecurringClassInput
     instructor?: InstructorCreateNestedOneWithoutRecurringClassesInput
     subscription?: SubscriptionCreateNestedOneWithoutRecurringClassInput
     recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutRecurringClassInput
-    classes?: ClassCreateNestedManyWithoutRecurringClassInput
   }
 
   export type RecurringClassUncheckedCreateInput = {
@@ -25087,17 +25139,17 @@ export namespace Prisma {
     subscriptionId?: number | null
     startAt?: Date | string | null
     endAt?: Date | string | null
-    recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutRecurringClassInput
     classes?: ClassUncheckedCreateNestedManyWithoutRecurringClassInput
+    recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutRecurringClassInput
   }
 
   export type RecurringClassUpdateInput = {
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classes?: ClassUpdateManyWithoutRecurringClassNestedInput
     instructor?: InstructorUpdateOneWithoutRecurringClassesNestedInput
     subscription?: SubscriptionUpdateOneWithoutRecurringClassNestedInput
     recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutRecurringClassNestedInput
-    classes?: ClassUpdateManyWithoutRecurringClassNestedInput
   }
 
   export type RecurringClassUncheckedUpdateInput = {
@@ -25106,8 +25158,8 @@ export namespace Prisma {
     subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassNestedInput
     classes?: ClassUncheckedUpdateManyWithoutRecurringClassNestedInput
+    recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassNestedInput
   }
 
   export type RecurringClassCreateManyInput = {
@@ -25132,8 +25184,8 @@ export namespace Prisma {
   }
 
   export type RecurringClassAttendanceCreateInput = {
-    recurringClass: RecurringClassCreateNestedOneWithoutRecurringClassAttendanceInput
     children: ChildrenCreateNestedOneWithoutRecurringClassAttendanceInput
+    recurringClass: RecurringClassCreateNestedOneWithoutRecurringClassAttendanceInput
   }
 
   export type RecurringClassAttendanceUncheckedCreateInput = {
@@ -25142,8 +25194,8 @@ export namespace Prisma {
   }
 
   export type RecurringClassAttendanceUpdateInput = {
-    recurringClass?: RecurringClassUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
     children?: ChildrenUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
+    recurringClass?: RecurringClassUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
   }
 
   export type RecurringClassAttendanceUncheckedUpdateInput = {
@@ -25569,16 +25621,21 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type ClassListRelationFilter = {
     every?: ClassWhereInput
     some?: ClassWhereInput
     none?: ClassWhereInput
   }
 
-  export type RecurringClassListRelationFilter = {
-    every?: RecurringClassWhereInput
-    some?: RecurringClassWhereInput
-    none?: RecurringClassWhereInput
+  export type InstructorAbsenceListRelationFilter = {
+    every?: InstructorAbsenceWhereInput
+    some?: InstructorAbsenceWhereInput
+    none?: InstructorAbsenceWhereInput
   }
 
   export type InstructorScheduleListRelationFilter = {
@@ -25587,10 +25644,10 @@ export namespace Prisma {
     none?: InstructorScheduleWhereInput
   }
 
-  export type InstructorAbsenceListRelationFilter = {
-    every?: InstructorAbsenceWhereInput
-    some?: InstructorAbsenceWhereInput
-    none?: InstructorAbsenceWhereInput
+  export type RecurringClassListRelationFilter = {
+    every?: RecurringClassWhereInput
+    some?: RecurringClassWhereInput
+    none?: RecurringClassWhereInput
   }
 
   export type SortOrderInput = {
@@ -25602,7 +25659,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type RecurringClassOrderByRelationAggregateInput = {
+  export type InstructorAbsenceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25610,7 +25667,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type InstructorAbsenceOrderByRelationAggregateInput = {
+  export type RecurringClassOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25622,19 +25679,20 @@ export namespace Prisma {
     classURL?: SortOrder
     icon?: SortOrder
     nickname?: SortOrder
-    birthdate?: SortOrder
-    lifeHistory?: SortOrder
-    favoriteFood?: SortOrder
-    hobby?: SortOrder
-    messageForChildren?: SortOrder
-    workingTime?: SortOrder
-    skill?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
     introductionURL?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
+    birthdate?: SortOrder
+    favoriteFood?: SortOrder
+    hobby?: SortOrder
+    lifeHistory?: SortOrder
+    messageForChildren?: SortOrder
+    skill?: SortOrder
+    workingTime?: SortOrder
     terminationAt?: SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
   }
 
   export type InstructorAvgOrderByAggregateInput = {
@@ -25649,19 +25707,20 @@ export namespace Prisma {
     classURL?: SortOrder
     icon?: SortOrder
     nickname?: SortOrder
-    birthdate?: SortOrder
-    lifeHistory?: SortOrder
-    favoriteFood?: SortOrder
-    hobby?: SortOrder
-    messageForChildren?: SortOrder
-    workingTime?: SortOrder
-    skill?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
     introductionURL?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
+    birthdate?: SortOrder
+    favoriteFood?: SortOrder
+    hobby?: SortOrder
+    lifeHistory?: SortOrder
+    messageForChildren?: SortOrder
+    skill?: SortOrder
+    workingTime?: SortOrder
     terminationAt?: SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
   }
 
   export type InstructorMinOrderByAggregateInput = {
@@ -25672,19 +25731,20 @@ export namespace Prisma {
     classURL?: SortOrder
     icon?: SortOrder
     nickname?: SortOrder
-    birthdate?: SortOrder
-    lifeHistory?: SortOrder
-    favoriteFood?: SortOrder
-    hobby?: SortOrder
-    messageForChildren?: SortOrder
-    workingTime?: SortOrder
-    skill?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
     introductionURL?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
+    birthdate?: SortOrder
+    favoriteFood?: SortOrder
+    hobby?: SortOrder
+    lifeHistory?: SortOrder
+    messageForChildren?: SortOrder
+    skill?: SortOrder
+    workingTime?: SortOrder
     terminationAt?: SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
   }
 
   export type InstructorSumOrderByAggregateInput = {
@@ -25753,9 +25813,12 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type ChildrenListRelationFilter = {
@@ -25782,12 +25845,12 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    emailVerified?: SortOrder
     password?: SortOrder
     prefecture?: SortOrder
-    hasSeenWelcome?: SortOrder
+    emailVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    hasSeenWelcome?: SortOrder
     terminationAt?: SortOrder
   }
 
@@ -25799,12 +25862,12 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    emailVerified?: SortOrder
     password?: SortOrder
     prefecture?: SortOrder
-    hasSeenWelcome?: SortOrder
+    emailVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    hasSeenWelcome?: SortOrder
     terminationAt?: SortOrder
   }
 
@@ -25812,25 +25875,17 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    emailVerified?: SortOrder
     password?: SortOrder
     prefecture?: SortOrder
-    hasSeenWelcome?: SortOrder
+    emailVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    hasSeenWelcome?: SortOrder
     terminationAt?: SortOrder
   }
 
   export type CustomerSumOrderByAggregateInput = {
     id?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -25851,14 +25906,14 @@ export namespace Prisma {
     not?: NestedEnumStatusFilter<$PrismaModel> | $Enums.Status
   }
 
-  export type InstructorNullableScalarRelationFilter = {
-    is?: InstructorWhereInput | null
-    isNot?: InstructorWhereInput | null
-  }
-
   export type CustomerScalarRelationFilter = {
     is?: CustomerWhereInput
     isNot?: CustomerWhereInput
+  }
+
+  export type InstructorNullableScalarRelationFilter = {
+    is?: InstructorWhereInput | null
+    isNot?: InstructorWhereInput | null
   }
 
   export type RecurringClassNullableScalarRelationFilter = {
@@ -25866,15 +25921,15 @@ export namespace Prisma {
     isNot?: RecurringClassWhereInput | null
   }
 
+  export type SubscriptionNullableScalarRelationFilter = {
+    is?: SubscriptionWhereInput | null
+    isNot?: SubscriptionWhereInput | null
+  }
+
   export type ClassAttendanceListRelationFilter = {
     every?: ClassAttendanceWhereInput
     some?: ClassAttendanceWhereInput
     none?: ClassAttendanceWhereInput
-  }
-
-  export type SubscriptionNullableScalarRelationFilter = {
-    is?: SubscriptionWhereInput | null
-    isNot?: SubscriptionWhereInput | null
   }
 
   export type ClassAttendanceOrderByRelationAggregateInput = {
@@ -25890,9 +25945,9 @@ export namespace Prisma {
     status?: SortOrder
     subscriptionId?: SortOrder
     rebookableUntil?: SortOrder
+    classCode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    classCode?: SortOrder
     isFreeTrial?: SortOrder
   }
 
@@ -25913,9 +25968,9 @@ export namespace Prisma {
     status?: SortOrder
     subscriptionId?: SortOrder
     rebookableUntil?: SortOrder
+    classCode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    classCode?: SortOrder
     isFreeTrial?: SortOrder
   }
 
@@ -25928,9 +25983,9 @@ export namespace Prisma {
     status?: SortOrder
     subscriptionId?: SortOrder
     rebookableUntil?: SortOrder
+    classCode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    classCode?: SortOrder
     isFreeTrial?: SortOrder
   }
 
@@ -26086,14 +26141,14 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type ClassScalarRelationFilter = {
-    is?: ClassWhereInput
-    isNot?: ClassWhereInput
-  }
-
   export type ChildrenScalarRelationFilter = {
     is?: ChildrenWhereInput
     isNot?: ChildrenWhereInput
+  }
+
+  export type ClassScalarRelationFilter = {
+    is?: ClassWhereInput
+    isNot?: ClassWhereInput
   }
 
   export type ClassAttendanceClassIdChildrenIdCompoundUniqueInput = {
@@ -26129,11 +26184,12 @@ export namespace Prisma {
   export type PlanCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    weeklyClassTimes?: SortOrder
     description?: SortOrder
+    weeklyClassTimes?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
     terminationAt?: SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
   }
 
   export type PlanAvgOrderByAggregateInput = {
@@ -26144,21 +26200,23 @@ export namespace Prisma {
   export type PlanMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    weeklyClassTimes?: SortOrder
     description?: SortOrder
+    weeklyClassTimes?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
     terminationAt?: SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
   }
 
   export type PlanMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    weeklyClassTimes?: SortOrder
     description?: SortOrder
+    weeklyClassTimes?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
     terminationAt?: SortOrder
+    updatedAt?: SortOrder
+    isNative?: SortOrder
   }
 
   export type PlanSumOrderByAggregateInput = {
@@ -26556,11 +26614,11 @@ export namespace Prisma {
     connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
   }
 
-  export type RecurringClassCreateNestedManyWithoutInstructorInput = {
-    create?: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput> | RecurringClassCreateWithoutInstructorInput[] | RecurringClassUncheckedCreateWithoutInstructorInput[]
-    connectOrCreate?: RecurringClassCreateOrConnectWithoutInstructorInput | RecurringClassCreateOrConnectWithoutInstructorInput[]
-    createMany?: RecurringClassCreateManyInstructorInputEnvelope
-    connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+  export type InstructorAbsenceCreateNestedManyWithoutInstructorInput = {
+    create?: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput> | InstructorAbsenceCreateWithoutInstructorInput[] | InstructorAbsenceUncheckedCreateWithoutInstructorInput[]
+    connectOrCreate?: InstructorAbsenceCreateOrConnectWithoutInstructorInput | InstructorAbsenceCreateOrConnectWithoutInstructorInput[]
+    createMany?: InstructorAbsenceCreateManyInstructorInputEnvelope
+    connect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
   }
 
   export type InstructorScheduleCreateNestedManyWithoutInstructorInput = {
@@ -26570,11 +26628,11 @@ export namespace Prisma {
     connect?: InstructorScheduleWhereUniqueInput | InstructorScheduleWhereUniqueInput[]
   }
 
-  export type InstructorAbsenceCreateNestedManyWithoutInstructorInput = {
-    create?: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput> | InstructorAbsenceCreateWithoutInstructorInput[] | InstructorAbsenceUncheckedCreateWithoutInstructorInput[]
-    connectOrCreate?: InstructorAbsenceCreateOrConnectWithoutInstructorInput | InstructorAbsenceCreateOrConnectWithoutInstructorInput[]
-    createMany?: InstructorAbsenceCreateManyInstructorInputEnvelope
-    connect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+  export type RecurringClassCreateNestedManyWithoutInstructorInput = {
+    create?: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput> | RecurringClassCreateWithoutInstructorInput[] | RecurringClassUncheckedCreateWithoutInstructorInput[]
+    connectOrCreate?: RecurringClassCreateOrConnectWithoutInstructorInput | RecurringClassCreateOrConnectWithoutInstructorInput[]
+    createMany?: RecurringClassCreateManyInstructorInputEnvelope
+    connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
   }
 
   export type ClassUncheckedCreateNestedManyWithoutInstructorInput = {
@@ -26584,11 +26642,11 @@ export namespace Prisma {
     connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
   }
 
-  export type RecurringClassUncheckedCreateNestedManyWithoutInstructorInput = {
-    create?: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput> | RecurringClassCreateWithoutInstructorInput[] | RecurringClassUncheckedCreateWithoutInstructorInput[]
-    connectOrCreate?: RecurringClassCreateOrConnectWithoutInstructorInput | RecurringClassCreateOrConnectWithoutInstructorInput[]
-    createMany?: RecurringClassCreateManyInstructorInputEnvelope
-    connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+  export type InstructorAbsenceUncheckedCreateNestedManyWithoutInstructorInput = {
+    create?: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput> | InstructorAbsenceCreateWithoutInstructorInput[] | InstructorAbsenceUncheckedCreateWithoutInstructorInput[]
+    connectOrCreate?: InstructorAbsenceCreateOrConnectWithoutInstructorInput | InstructorAbsenceCreateOrConnectWithoutInstructorInput[]
+    createMany?: InstructorAbsenceCreateManyInstructorInputEnvelope
+    connect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
   }
 
   export type InstructorScheduleUncheckedCreateNestedManyWithoutInstructorInput = {
@@ -26598,11 +26656,11 @@ export namespace Prisma {
     connect?: InstructorScheduleWhereUniqueInput | InstructorScheduleWhereUniqueInput[]
   }
 
-  export type InstructorAbsenceUncheckedCreateNestedManyWithoutInstructorInput = {
-    create?: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput> | InstructorAbsenceCreateWithoutInstructorInput[] | InstructorAbsenceUncheckedCreateWithoutInstructorInput[]
-    connectOrCreate?: InstructorAbsenceCreateOrConnectWithoutInstructorInput | InstructorAbsenceCreateOrConnectWithoutInstructorInput[]
-    createMany?: InstructorAbsenceCreateManyInstructorInputEnvelope
-    connect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+  export type RecurringClassUncheckedCreateNestedManyWithoutInstructorInput = {
+    create?: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput> | RecurringClassCreateWithoutInstructorInput[] | RecurringClassUncheckedCreateWithoutInstructorInput[]
+    connectOrCreate?: RecurringClassCreateOrConnectWithoutInstructorInput | RecurringClassCreateOrConnectWithoutInstructorInput[]
+    createMany?: RecurringClassCreateManyInstructorInputEnvelope
+    connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -26615,6 +26673,10 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type ClassUpdateManyWithoutInstructorNestedInput = {
@@ -26631,18 +26693,18 @@ export namespace Prisma {
     deleteMany?: ClassScalarWhereInput | ClassScalarWhereInput[]
   }
 
-  export type RecurringClassUpdateManyWithoutInstructorNestedInput = {
-    create?: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput> | RecurringClassCreateWithoutInstructorInput[] | RecurringClassUncheckedCreateWithoutInstructorInput[]
-    connectOrCreate?: RecurringClassCreateOrConnectWithoutInstructorInput | RecurringClassCreateOrConnectWithoutInstructorInput[]
-    upsert?: RecurringClassUpsertWithWhereUniqueWithoutInstructorInput | RecurringClassUpsertWithWhereUniqueWithoutInstructorInput[]
-    createMany?: RecurringClassCreateManyInstructorInputEnvelope
-    set?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-    disconnect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-    delete?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-    connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-    update?: RecurringClassUpdateWithWhereUniqueWithoutInstructorInput | RecurringClassUpdateWithWhereUniqueWithoutInstructorInput[]
-    updateMany?: RecurringClassUpdateManyWithWhereWithoutInstructorInput | RecurringClassUpdateManyWithWhereWithoutInstructorInput[]
-    deleteMany?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
+  export type InstructorAbsenceUpdateManyWithoutInstructorNestedInput = {
+    create?: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput> | InstructorAbsenceCreateWithoutInstructorInput[] | InstructorAbsenceUncheckedCreateWithoutInstructorInput[]
+    connectOrCreate?: InstructorAbsenceCreateOrConnectWithoutInstructorInput | InstructorAbsenceCreateOrConnectWithoutInstructorInput[]
+    upsert?: InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput | InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput[]
+    createMany?: InstructorAbsenceCreateManyInstructorInputEnvelope
+    set?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+    disconnect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+    delete?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+    connect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+    update?: InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput | InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput[]
+    updateMany?: InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput | InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput[]
+    deleteMany?: InstructorAbsenceScalarWhereInput | InstructorAbsenceScalarWhereInput[]
   }
 
   export type InstructorScheduleUpdateManyWithoutInstructorNestedInput = {
@@ -26659,18 +26721,18 @@ export namespace Prisma {
     deleteMany?: InstructorScheduleScalarWhereInput | InstructorScheduleScalarWhereInput[]
   }
 
-  export type InstructorAbsenceUpdateManyWithoutInstructorNestedInput = {
-    create?: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput> | InstructorAbsenceCreateWithoutInstructorInput[] | InstructorAbsenceUncheckedCreateWithoutInstructorInput[]
-    connectOrCreate?: InstructorAbsenceCreateOrConnectWithoutInstructorInput | InstructorAbsenceCreateOrConnectWithoutInstructorInput[]
-    upsert?: InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput | InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput[]
-    createMany?: InstructorAbsenceCreateManyInstructorInputEnvelope
-    set?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
-    disconnect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
-    delete?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
-    connect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
-    update?: InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput | InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput[]
-    updateMany?: InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput | InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput[]
-    deleteMany?: InstructorAbsenceScalarWhereInput | InstructorAbsenceScalarWhereInput[]
+  export type RecurringClassUpdateManyWithoutInstructorNestedInput = {
+    create?: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput> | RecurringClassCreateWithoutInstructorInput[] | RecurringClassUncheckedCreateWithoutInstructorInput[]
+    connectOrCreate?: RecurringClassCreateOrConnectWithoutInstructorInput | RecurringClassCreateOrConnectWithoutInstructorInput[]
+    upsert?: RecurringClassUpsertWithWhereUniqueWithoutInstructorInput | RecurringClassUpsertWithWhereUniqueWithoutInstructorInput[]
+    createMany?: RecurringClassCreateManyInstructorInputEnvelope
+    set?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+    disconnect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+    delete?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+    connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+    update?: RecurringClassUpdateWithWhereUniqueWithoutInstructorInput | RecurringClassUpdateWithWhereUniqueWithoutInstructorInput[]
+    updateMany?: RecurringClassUpdateManyWithWhereWithoutInstructorInput | RecurringClassUpdateManyWithWhereWithoutInstructorInput[]
+    deleteMany?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -26695,18 +26757,18 @@ export namespace Prisma {
     deleteMany?: ClassScalarWhereInput | ClassScalarWhereInput[]
   }
 
-  export type RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput = {
-    create?: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput> | RecurringClassCreateWithoutInstructorInput[] | RecurringClassUncheckedCreateWithoutInstructorInput[]
-    connectOrCreate?: RecurringClassCreateOrConnectWithoutInstructorInput | RecurringClassCreateOrConnectWithoutInstructorInput[]
-    upsert?: RecurringClassUpsertWithWhereUniqueWithoutInstructorInput | RecurringClassUpsertWithWhereUniqueWithoutInstructorInput[]
-    createMany?: RecurringClassCreateManyInstructorInputEnvelope
-    set?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-    disconnect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-    delete?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-    connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-    update?: RecurringClassUpdateWithWhereUniqueWithoutInstructorInput | RecurringClassUpdateWithWhereUniqueWithoutInstructorInput[]
-    updateMany?: RecurringClassUpdateManyWithWhereWithoutInstructorInput | RecurringClassUpdateManyWithWhereWithoutInstructorInput[]
-    deleteMany?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
+  export type InstructorAbsenceUncheckedUpdateManyWithoutInstructorNestedInput = {
+    create?: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput> | InstructorAbsenceCreateWithoutInstructorInput[] | InstructorAbsenceUncheckedCreateWithoutInstructorInput[]
+    connectOrCreate?: InstructorAbsenceCreateOrConnectWithoutInstructorInput | InstructorAbsenceCreateOrConnectWithoutInstructorInput[]
+    upsert?: InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput | InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput[]
+    createMany?: InstructorAbsenceCreateManyInstructorInputEnvelope
+    set?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+    disconnect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+    delete?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+    connect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
+    update?: InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput | InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput[]
+    updateMany?: InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput | InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput[]
+    deleteMany?: InstructorAbsenceScalarWhereInput | InstructorAbsenceScalarWhereInput[]
   }
 
   export type InstructorScheduleUncheckedUpdateManyWithoutInstructorNestedInput = {
@@ -26723,25 +26785,18 @@ export namespace Prisma {
     deleteMany?: InstructorScheduleScalarWhereInput | InstructorScheduleScalarWhereInput[]
   }
 
-  export type InstructorAbsenceUncheckedUpdateManyWithoutInstructorNestedInput = {
-    create?: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput> | InstructorAbsenceCreateWithoutInstructorInput[] | InstructorAbsenceUncheckedCreateWithoutInstructorInput[]
-    connectOrCreate?: InstructorAbsenceCreateOrConnectWithoutInstructorInput | InstructorAbsenceCreateOrConnectWithoutInstructorInput[]
-    upsert?: InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput | InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput[]
-    createMany?: InstructorAbsenceCreateManyInstructorInputEnvelope
-    set?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
-    disconnect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
-    delete?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
-    connect?: InstructorAbsenceWhereUniqueInput | InstructorAbsenceWhereUniqueInput[]
-    update?: InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput | InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput[]
-    updateMany?: InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput | InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput[]
-    deleteMany?: InstructorAbsenceScalarWhereInput | InstructorAbsenceScalarWhereInput[]
-  }
-
-  export type ClassCreateNestedManyWithoutCustomerInput = {
-    create?: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput> | ClassCreateWithoutCustomerInput[] | ClassUncheckedCreateWithoutCustomerInput[]
-    connectOrCreate?: ClassCreateOrConnectWithoutCustomerInput | ClassCreateOrConnectWithoutCustomerInput[]
-    createMany?: ClassCreateManyCustomerInputEnvelope
-    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+  export type RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput = {
+    create?: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput> | RecurringClassCreateWithoutInstructorInput[] | RecurringClassUncheckedCreateWithoutInstructorInput[]
+    connectOrCreate?: RecurringClassCreateOrConnectWithoutInstructorInput | RecurringClassCreateOrConnectWithoutInstructorInput[]
+    upsert?: RecurringClassUpsertWithWhereUniqueWithoutInstructorInput | RecurringClassUpsertWithWhereUniqueWithoutInstructorInput[]
+    createMany?: RecurringClassCreateManyInstructorInputEnvelope
+    set?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+    disconnect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+    delete?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+    connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
+    update?: RecurringClassUpdateWithWhereUniqueWithoutInstructorInput | RecurringClassUpdateWithWhereUniqueWithoutInstructorInput[]
+    updateMany?: RecurringClassUpdateManyWithWhereWithoutInstructorInput | RecurringClassUpdateManyWithWhereWithoutInstructorInput[]
+    deleteMany?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
   }
 
   export type ChildrenCreateNestedManyWithoutCustomerInput = {
@@ -26751,18 +26806,18 @@ export namespace Prisma {
     connect?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
   }
 
+  export type ClassCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput> | ClassCreateWithoutCustomerInput[] | ClassUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ClassCreateOrConnectWithoutCustomerInput | ClassCreateOrConnectWithoutCustomerInput[]
+    createMany?: ClassCreateManyCustomerInputEnvelope
+    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+  }
+
   export type SubscriptionCreateNestedManyWithoutCustomerInput = {
     create?: XOR<SubscriptionCreateWithoutCustomerInput, SubscriptionUncheckedCreateWithoutCustomerInput> | SubscriptionCreateWithoutCustomerInput[] | SubscriptionUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutCustomerInput | SubscriptionCreateOrConnectWithoutCustomerInput[]
     createMany?: SubscriptionCreateManyCustomerInputEnvelope
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
-  }
-
-  export type ClassUncheckedCreateNestedManyWithoutCustomerInput = {
-    create?: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput> | ClassCreateWithoutCustomerInput[] | ClassUncheckedCreateWithoutCustomerInput[]
-    connectOrCreate?: ClassCreateOrConnectWithoutCustomerInput | ClassCreateOrConnectWithoutCustomerInput[]
-    createMany?: ClassCreateManyCustomerInputEnvelope
-    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
   }
 
   export type ChildrenUncheckedCreateNestedManyWithoutCustomerInput = {
@@ -26772,29 +26827,18 @@ export namespace Prisma {
     connect?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
   }
 
+  export type ClassUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput> | ClassCreateWithoutCustomerInput[] | ClassUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ClassCreateOrConnectWithoutCustomerInput | ClassCreateOrConnectWithoutCustomerInput[]
+    createMany?: ClassCreateManyCustomerInputEnvelope
+    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+  }
+
   export type SubscriptionUncheckedCreateNestedManyWithoutCustomerInput = {
     create?: XOR<SubscriptionCreateWithoutCustomerInput, SubscriptionUncheckedCreateWithoutCustomerInput> | SubscriptionCreateWithoutCustomerInput[] | SubscriptionUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutCustomerInput | SubscriptionCreateOrConnectWithoutCustomerInput[]
     createMany?: SubscriptionCreateManyCustomerInputEnvelope
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
-  export type ClassUpdateManyWithoutCustomerNestedInput = {
-    create?: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput> | ClassCreateWithoutCustomerInput[] | ClassUncheckedCreateWithoutCustomerInput[]
-    connectOrCreate?: ClassCreateOrConnectWithoutCustomerInput | ClassCreateOrConnectWithoutCustomerInput[]
-    upsert?: ClassUpsertWithWhereUniqueWithoutCustomerInput | ClassUpsertWithWhereUniqueWithoutCustomerInput[]
-    createMany?: ClassCreateManyCustomerInputEnvelope
-    set?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    disconnect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    delete?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    update?: ClassUpdateWithWhereUniqueWithoutCustomerInput | ClassUpdateWithWhereUniqueWithoutCustomerInput[]
-    updateMany?: ClassUpdateManyWithWhereWithoutCustomerInput | ClassUpdateManyWithWhereWithoutCustomerInput[]
-    deleteMany?: ClassScalarWhereInput | ClassScalarWhereInput[]
   }
 
   export type ChildrenUpdateManyWithoutCustomerNestedInput = {
@@ -26811,6 +26855,20 @@ export namespace Prisma {
     deleteMany?: ChildrenScalarWhereInput | ChildrenScalarWhereInput[]
   }
 
+  export type ClassUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput> | ClassCreateWithoutCustomerInput[] | ClassUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ClassCreateOrConnectWithoutCustomerInput | ClassCreateOrConnectWithoutCustomerInput[]
+    upsert?: ClassUpsertWithWhereUniqueWithoutCustomerInput | ClassUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: ClassCreateManyCustomerInputEnvelope
+    set?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    disconnect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    delete?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    update?: ClassUpdateWithWhereUniqueWithoutCustomerInput | ClassUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: ClassUpdateManyWithWhereWithoutCustomerInput | ClassUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: ClassScalarWhereInput | ClassScalarWhereInput[]
+  }
+
   export type SubscriptionUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<SubscriptionCreateWithoutCustomerInput, SubscriptionUncheckedCreateWithoutCustomerInput> | SubscriptionCreateWithoutCustomerInput[] | SubscriptionUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutCustomerInput | SubscriptionCreateOrConnectWithoutCustomerInput[]
@@ -26823,20 +26881,6 @@ export namespace Prisma {
     update?: SubscriptionUpdateWithWhereUniqueWithoutCustomerInput | SubscriptionUpdateWithWhereUniqueWithoutCustomerInput[]
     updateMany?: SubscriptionUpdateManyWithWhereWithoutCustomerInput | SubscriptionUpdateManyWithWhereWithoutCustomerInput[]
     deleteMany?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
-  }
-
-  export type ClassUncheckedUpdateManyWithoutCustomerNestedInput = {
-    create?: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput> | ClassCreateWithoutCustomerInput[] | ClassUncheckedCreateWithoutCustomerInput[]
-    connectOrCreate?: ClassCreateOrConnectWithoutCustomerInput | ClassCreateOrConnectWithoutCustomerInput[]
-    upsert?: ClassUpsertWithWhereUniqueWithoutCustomerInput | ClassUpsertWithWhereUniqueWithoutCustomerInput[]
-    createMany?: ClassCreateManyCustomerInputEnvelope
-    set?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    disconnect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    delete?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    update?: ClassUpdateWithWhereUniqueWithoutCustomerInput | ClassUpdateWithWhereUniqueWithoutCustomerInput[]
-    updateMany?: ClassUpdateManyWithWhereWithoutCustomerInput | ClassUpdateManyWithWhereWithoutCustomerInput[]
-    deleteMany?: ClassScalarWhereInput | ClassScalarWhereInput[]
   }
 
   export type ChildrenUncheckedUpdateManyWithoutCustomerNestedInput = {
@@ -26853,6 +26897,20 @@ export namespace Prisma {
     deleteMany?: ChildrenScalarWhereInput | ChildrenScalarWhereInput[]
   }
 
+  export type ClassUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput> | ClassCreateWithoutCustomerInput[] | ClassUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ClassCreateOrConnectWithoutCustomerInput | ClassCreateOrConnectWithoutCustomerInput[]
+    upsert?: ClassUpsertWithWhereUniqueWithoutCustomerInput | ClassUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: ClassCreateManyCustomerInputEnvelope
+    set?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    disconnect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    delete?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    update?: ClassUpdateWithWhereUniqueWithoutCustomerInput | ClassUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: ClassUpdateManyWithWhereWithoutCustomerInput | ClassUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: ClassScalarWhereInput | ClassScalarWhereInput[]
+  }
+
   export type SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<SubscriptionCreateWithoutCustomerInput, SubscriptionUncheckedCreateWithoutCustomerInput> | SubscriptionCreateWithoutCustomerInput[] | SubscriptionUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutCustomerInput | SubscriptionCreateOrConnectWithoutCustomerInput[]
@@ -26867,16 +26925,16 @@ export namespace Prisma {
     deleteMany?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
   }
 
-  export type InstructorCreateNestedOneWithoutClassesInput = {
-    create?: XOR<InstructorCreateWithoutClassesInput, InstructorUncheckedCreateWithoutClassesInput>
-    connectOrCreate?: InstructorCreateOrConnectWithoutClassesInput
-    connect?: InstructorWhereUniqueInput
-  }
-
   export type CustomerCreateNestedOneWithoutClassesInput = {
     create?: XOR<CustomerCreateWithoutClassesInput, CustomerUncheckedCreateWithoutClassesInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutClassesInput
     connect?: CustomerWhereUniqueInput
+  }
+
+  export type InstructorCreateNestedOneWithoutClassesInput = {
+    create?: XOR<InstructorCreateWithoutClassesInput, InstructorUncheckedCreateWithoutClassesInput>
+    connectOrCreate?: InstructorCreateOrConnectWithoutClassesInput
+    connect?: InstructorWhereUniqueInput
   }
 
   export type RecurringClassCreateNestedOneWithoutClassesInput = {
@@ -26885,17 +26943,17 @@ export namespace Prisma {
     connect?: RecurringClassWhereUniqueInput
   }
 
+  export type SubscriptionCreateNestedOneWithoutClassInput = {
+    create?: XOR<SubscriptionCreateWithoutClassInput, SubscriptionUncheckedCreateWithoutClassInput>
+    connectOrCreate?: SubscriptionCreateOrConnectWithoutClassInput
+    connect?: SubscriptionWhereUniqueInput
+  }
+
   export type ClassAttendanceCreateNestedManyWithoutClassInput = {
     create?: XOR<ClassAttendanceCreateWithoutClassInput, ClassAttendanceUncheckedCreateWithoutClassInput> | ClassAttendanceCreateWithoutClassInput[] | ClassAttendanceUncheckedCreateWithoutClassInput[]
     connectOrCreate?: ClassAttendanceCreateOrConnectWithoutClassInput | ClassAttendanceCreateOrConnectWithoutClassInput[]
     createMany?: ClassAttendanceCreateManyClassInputEnvelope
     connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-  }
-
-  export type SubscriptionCreateNestedOneWithoutClassInput = {
-    create?: XOR<SubscriptionCreateWithoutClassInput, SubscriptionUncheckedCreateWithoutClassInput>
-    connectOrCreate?: SubscriptionCreateOrConnectWithoutClassInput
-    connect?: SubscriptionWhereUniqueInput
   }
 
   export type ClassAttendanceUncheckedCreateNestedManyWithoutClassInput = {
@@ -26909,6 +26967,14 @@ export namespace Prisma {
     set?: $Enums.Status
   }
 
+  export type CustomerUpdateOneRequiredWithoutClassesNestedInput = {
+    create?: XOR<CustomerCreateWithoutClassesInput, CustomerUncheckedCreateWithoutClassesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutClassesInput
+    upsert?: CustomerUpsertWithoutClassesInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutClassesInput, CustomerUpdateWithoutClassesInput>, CustomerUncheckedUpdateWithoutClassesInput>
+  }
+
   export type InstructorUpdateOneWithoutClassesNestedInput = {
     create?: XOR<InstructorCreateWithoutClassesInput, InstructorUncheckedCreateWithoutClassesInput>
     connectOrCreate?: InstructorCreateOrConnectWithoutClassesInput
@@ -26919,14 +26985,6 @@ export namespace Prisma {
     update?: XOR<XOR<InstructorUpdateToOneWithWhereWithoutClassesInput, InstructorUpdateWithoutClassesInput>, InstructorUncheckedUpdateWithoutClassesInput>
   }
 
-  export type CustomerUpdateOneRequiredWithoutClassesNestedInput = {
-    create?: XOR<CustomerCreateWithoutClassesInput, CustomerUncheckedCreateWithoutClassesInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutClassesInput
-    upsert?: CustomerUpsertWithoutClassesInput
-    connect?: CustomerWhereUniqueInput
-    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutClassesInput, CustomerUpdateWithoutClassesInput>, CustomerUncheckedUpdateWithoutClassesInput>
-  }
-
   export type RecurringClassUpdateOneWithoutClassesNestedInput = {
     create?: XOR<RecurringClassCreateWithoutClassesInput, RecurringClassUncheckedCreateWithoutClassesInput>
     connectOrCreate?: RecurringClassCreateOrConnectWithoutClassesInput
@@ -26935,6 +26993,16 @@ export namespace Prisma {
     delete?: RecurringClassWhereInput | boolean
     connect?: RecurringClassWhereUniqueInput
     update?: XOR<XOR<RecurringClassUpdateToOneWithWhereWithoutClassesInput, RecurringClassUpdateWithoutClassesInput>, RecurringClassUncheckedUpdateWithoutClassesInput>
+  }
+
+  export type SubscriptionUpdateOneWithoutClassNestedInput = {
+    create?: XOR<SubscriptionCreateWithoutClassInput, SubscriptionUncheckedCreateWithoutClassInput>
+    connectOrCreate?: SubscriptionCreateOrConnectWithoutClassInput
+    upsert?: SubscriptionUpsertWithoutClassInput
+    disconnect?: SubscriptionWhereInput | boolean
+    delete?: SubscriptionWhereInput | boolean
+    connect?: SubscriptionWhereUniqueInput
+    update?: XOR<XOR<SubscriptionUpdateToOneWithWhereWithoutClassInput, SubscriptionUpdateWithoutClassInput>, SubscriptionUncheckedUpdateWithoutClassInput>
   }
 
   export type ClassAttendanceUpdateManyWithoutClassNestedInput = {
@@ -26949,16 +27017,6 @@ export namespace Prisma {
     update?: ClassAttendanceUpdateWithWhereUniqueWithoutClassInput | ClassAttendanceUpdateWithWhereUniqueWithoutClassInput[]
     updateMany?: ClassAttendanceUpdateManyWithWhereWithoutClassInput | ClassAttendanceUpdateManyWithWhereWithoutClassInput[]
     deleteMany?: ClassAttendanceScalarWhereInput | ClassAttendanceScalarWhereInput[]
-  }
-
-  export type SubscriptionUpdateOneWithoutClassNestedInput = {
-    create?: XOR<SubscriptionCreateWithoutClassInput, SubscriptionUncheckedCreateWithoutClassInput>
-    connectOrCreate?: SubscriptionCreateOrConnectWithoutClassInput
-    upsert?: SubscriptionUpsertWithoutClassInput
-    disconnect?: SubscriptionWhereInput | boolean
-    delete?: SubscriptionWhereInput | boolean
-    connect?: SubscriptionWhereUniqueInput
-    update?: XOR<XOR<SubscriptionUpdateToOneWithWhereWithoutClassInput, SubscriptionUpdateWithoutClassInput>, SubscriptionUncheckedUpdateWithoutClassInput>
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -27085,24 +27143,16 @@ export namespace Prisma {
     deleteMany?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
   }
 
-  export type ClassCreateNestedOneWithoutClassAttendanceInput = {
-    create?: XOR<ClassCreateWithoutClassAttendanceInput, ClassUncheckedCreateWithoutClassAttendanceInput>
-    connectOrCreate?: ClassCreateOrConnectWithoutClassAttendanceInput
-    connect?: ClassWhereUniqueInput
-  }
-
   export type ChildrenCreateNestedOneWithoutClassAttendanceInput = {
     create?: XOR<ChildrenCreateWithoutClassAttendanceInput, ChildrenUncheckedCreateWithoutClassAttendanceInput>
     connectOrCreate?: ChildrenCreateOrConnectWithoutClassAttendanceInput
     connect?: ChildrenWhereUniqueInput
   }
 
-  export type ClassUpdateOneRequiredWithoutClassAttendanceNestedInput = {
+  export type ClassCreateNestedOneWithoutClassAttendanceInput = {
     create?: XOR<ClassCreateWithoutClassAttendanceInput, ClassUncheckedCreateWithoutClassAttendanceInput>
     connectOrCreate?: ClassCreateOrConnectWithoutClassAttendanceInput
-    upsert?: ClassUpsertWithoutClassAttendanceInput
     connect?: ClassWhereUniqueInput
-    update?: XOR<XOR<ClassUpdateToOneWithWhereWithoutClassAttendanceInput, ClassUpdateWithoutClassAttendanceInput>, ClassUncheckedUpdateWithoutClassAttendanceInput>
   }
 
   export type ChildrenUpdateOneRequiredWithoutClassAttendanceNestedInput = {
@@ -27111,6 +27161,14 @@ export namespace Prisma {
     upsert?: ChildrenUpsertWithoutClassAttendanceInput
     connect?: ChildrenWhereUniqueInput
     update?: XOR<XOR<ChildrenUpdateToOneWithWhereWithoutClassAttendanceInput, ChildrenUpdateWithoutClassAttendanceInput>, ChildrenUncheckedUpdateWithoutClassAttendanceInput>
+  }
+
+  export type ClassUpdateOneRequiredWithoutClassAttendanceNestedInput = {
+    create?: XOR<ClassCreateWithoutClassAttendanceInput, ClassUncheckedCreateWithoutClassAttendanceInput>
+    connectOrCreate?: ClassCreateOrConnectWithoutClassAttendanceInput
+    upsert?: ClassUpsertWithoutClassAttendanceInput
+    connect?: ClassWhereUniqueInput
+    update?: XOR<XOR<ClassUpdateToOneWithWhereWithoutClassAttendanceInput, ClassUpdateWithoutClassAttendanceInput>, ClassUncheckedUpdateWithoutClassAttendanceInput>
   }
 
   export type SubscriptionCreateNestedManyWithoutPlanInput = {
@@ -27155,18 +27213,6 @@ export namespace Prisma {
     deleteMany?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
   }
 
-  export type PlanCreateNestedOneWithoutSubscriptionInput = {
-    create?: XOR<PlanCreateWithoutSubscriptionInput, PlanUncheckedCreateWithoutSubscriptionInput>
-    connectOrCreate?: PlanCreateOrConnectWithoutSubscriptionInput
-    connect?: PlanWhereUniqueInput
-  }
-
-  export type CustomerCreateNestedOneWithoutSubscriptionInput = {
-    create?: XOR<CustomerCreateWithoutSubscriptionInput, CustomerUncheckedCreateWithoutSubscriptionInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutSubscriptionInput
-    connect?: CustomerWhereUniqueInput
-  }
-
   export type ClassCreateNestedManyWithoutSubscriptionInput = {
     create?: XOR<ClassCreateWithoutSubscriptionInput, ClassUncheckedCreateWithoutSubscriptionInput> | ClassCreateWithoutSubscriptionInput[] | ClassUncheckedCreateWithoutSubscriptionInput[]
     connectOrCreate?: ClassCreateOrConnectWithoutSubscriptionInput | ClassCreateOrConnectWithoutSubscriptionInput[]
@@ -27181,6 +27227,18 @@ export namespace Prisma {
     connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
   }
 
+  export type CustomerCreateNestedOneWithoutSubscriptionInput = {
+    create?: XOR<CustomerCreateWithoutSubscriptionInput, CustomerUncheckedCreateWithoutSubscriptionInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutSubscriptionInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type PlanCreateNestedOneWithoutSubscriptionInput = {
+    create?: XOR<PlanCreateWithoutSubscriptionInput, PlanUncheckedCreateWithoutSubscriptionInput>
+    connectOrCreate?: PlanCreateOrConnectWithoutSubscriptionInput
+    connect?: PlanWhereUniqueInput
+  }
+
   export type ClassUncheckedCreateNestedManyWithoutSubscriptionInput = {
     create?: XOR<ClassCreateWithoutSubscriptionInput, ClassUncheckedCreateWithoutSubscriptionInput> | ClassCreateWithoutSubscriptionInput[] | ClassUncheckedCreateWithoutSubscriptionInput[]
     connectOrCreate?: ClassCreateOrConnectWithoutSubscriptionInput | ClassCreateOrConnectWithoutSubscriptionInput[]
@@ -27193,22 +27251,6 @@ export namespace Prisma {
     connectOrCreate?: RecurringClassCreateOrConnectWithoutSubscriptionInput | RecurringClassCreateOrConnectWithoutSubscriptionInput[]
     createMany?: RecurringClassCreateManySubscriptionInputEnvelope
     connect?: RecurringClassWhereUniqueInput | RecurringClassWhereUniqueInput[]
-  }
-
-  export type PlanUpdateOneRequiredWithoutSubscriptionNestedInput = {
-    create?: XOR<PlanCreateWithoutSubscriptionInput, PlanUncheckedCreateWithoutSubscriptionInput>
-    connectOrCreate?: PlanCreateOrConnectWithoutSubscriptionInput
-    upsert?: PlanUpsertWithoutSubscriptionInput
-    connect?: PlanWhereUniqueInput
-    update?: XOR<XOR<PlanUpdateToOneWithWhereWithoutSubscriptionInput, PlanUpdateWithoutSubscriptionInput>, PlanUncheckedUpdateWithoutSubscriptionInput>
-  }
-
-  export type CustomerUpdateOneRequiredWithoutSubscriptionNestedInput = {
-    create?: XOR<CustomerCreateWithoutSubscriptionInput, CustomerUncheckedCreateWithoutSubscriptionInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutSubscriptionInput
-    upsert?: CustomerUpsertWithoutSubscriptionInput
-    connect?: CustomerWhereUniqueInput
-    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutSubscriptionInput, CustomerUpdateWithoutSubscriptionInput>, CustomerUncheckedUpdateWithoutSubscriptionInput>
   }
 
   export type ClassUpdateManyWithoutSubscriptionNestedInput = {
@@ -27239,6 +27281,22 @@ export namespace Prisma {
     deleteMany?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
   }
 
+  export type CustomerUpdateOneRequiredWithoutSubscriptionNestedInput = {
+    create?: XOR<CustomerCreateWithoutSubscriptionInput, CustomerUncheckedCreateWithoutSubscriptionInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutSubscriptionInput
+    upsert?: CustomerUpsertWithoutSubscriptionInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutSubscriptionInput, CustomerUpdateWithoutSubscriptionInput>, CustomerUncheckedUpdateWithoutSubscriptionInput>
+  }
+
+  export type PlanUpdateOneRequiredWithoutSubscriptionNestedInput = {
+    create?: XOR<PlanCreateWithoutSubscriptionInput, PlanUncheckedCreateWithoutSubscriptionInput>
+    connectOrCreate?: PlanCreateOrConnectWithoutSubscriptionInput
+    upsert?: PlanUpsertWithoutSubscriptionInput
+    connect?: PlanWhereUniqueInput
+    update?: XOR<XOR<PlanUpdateToOneWithWhereWithoutSubscriptionInput, PlanUpdateWithoutSubscriptionInput>, PlanUncheckedUpdateWithoutSubscriptionInput>
+  }
+
   export type ClassUncheckedUpdateManyWithoutSubscriptionNestedInput = {
     create?: XOR<ClassCreateWithoutSubscriptionInput, ClassUncheckedCreateWithoutSubscriptionInput> | ClassCreateWithoutSubscriptionInput[] | ClassUncheckedCreateWithoutSubscriptionInput[]
     connectOrCreate?: ClassCreateOrConnectWithoutSubscriptionInput | ClassCreateOrConnectWithoutSubscriptionInput[]
@@ -27267,6 +27325,13 @@ export namespace Prisma {
     deleteMany?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
   }
 
+  export type ClassCreateNestedManyWithoutRecurringClassInput = {
+    create?: XOR<ClassCreateWithoutRecurringClassInput, ClassUncheckedCreateWithoutRecurringClassInput> | ClassCreateWithoutRecurringClassInput[] | ClassUncheckedCreateWithoutRecurringClassInput[]
+    connectOrCreate?: ClassCreateOrConnectWithoutRecurringClassInput | ClassCreateOrConnectWithoutRecurringClassInput[]
+    createMany?: ClassCreateManyRecurringClassInputEnvelope
+    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+  }
+
   export type InstructorCreateNestedOneWithoutRecurringClassesInput = {
     create?: XOR<InstructorCreateWithoutRecurringClassesInput, InstructorUncheckedCreateWithoutRecurringClassesInput>
     connectOrCreate?: InstructorCreateOrConnectWithoutRecurringClassesInput
@@ -27286,7 +27351,7 @@ export namespace Prisma {
     connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
   }
 
-  export type ClassCreateNestedManyWithoutRecurringClassInput = {
+  export type ClassUncheckedCreateNestedManyWithoutRecurringClassInput = {
     create?: XOR<ClassCreateWithoutRecurringClassInput, ClassUncheckedCreateWithoutRecurringClassInput> | ClassCreateWithoutRecurringClassInput[] | ClassUncheckedCreateWithoutRecurringClassInput[]
     connectOrCreate?: ClassCreateOrConnectWithoutRecurringClassInput | ClassCreateOrConnectWithoutRecurringClassInput[]
     createMany?: ClassCreateManyRecurringClassInputEnvelope
@@ -27300,11 +27365,18 @@ export namespace Prisma {
     connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
   }
 
-  export type ClassUncheckedCreateNestedManyWithoutRecurringClassInput = {
+  export type ClassUpdateManyWithoutRecurringClassNestedInput = {
     create?: XOR<ClassCreateWithoutRecurringClassInput, ClassUncheckedCreateWithoutRecurringClassInput> | ClassCreateWithoutRecurringClassInput[] | ClassUncheckedCreateWithoutRecurringClassInput[]
     connectOrCreate?: ClassCreateOrConnectWithoutRecurringClassInput | ClassCreateOrConnectWithoutRecurringClassInput[]
+    upsert?: ClassUpsertWithWhereUniqueWithoutRecurringClassInput | ClassUpsertWithWhereUniqueWithoutRecurringClassInput[]
     createMany?: ClassCreateManyRecurringClassInputEnvelope
+    set?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    disconnect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    delete?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
     connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
+    update?: ClassUpdateWithWhereUniqueWithoutRecurringClassInput | ClassUpdateWithWhereUniqueWithoutRecurringClassInput[]
+    updateMany?: ClassUpdateManyWithWhereWithoutRecurringClassInput | ClassUpdateManyWithWhereWithoutRecurringClassInput[]
+    deleteMany?: ClassScalarWhereInput | ClassScalarWhereInput[]
   }
 
   export type InstructorUpdateOneWithoutRecurringClassesNestedInput = {
@@ -27341,7 +27413,7 @@ export namespace Prisma {
     deleteMany?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
   }
 
-  export type ClassUpdateManyWithoutRecurringClassNestedInput = {
+  export type ClassUncheckedUpdateManyWithoutRecurringClassNestedInput = {
     create?: XOR<ClassCreateWithoutRecurringClassInput, ClassUncheckedCreateWithoutRecurringClassInput> | ClassCreateWithoutRecurringClassInput[] | ClassUncheckedCreateWithoutRecurringClassInput[]
     connectOrCreate?: ClassCreateOrConnectWithoutRecurringClassInput | ClassCreateOrConnectWithoutRecurringClassInput[]
     upsert?: ClassUpsertWithWhereUniqueWithoutRecurringClassInput | ClassUpsertWithWhereUniqueWithoutRecurringClassInput[]
@@ -27369,18 +27441,10 @@ export namespace Prisma {
     deleteMany?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
   }
 
-  export type ClassUncheckedUpdateManyWithoutRecurringClassNestedInput = {
-    create?: XOR<ClassCreateWithoutRecurringClassInput, ClassUncheckedCreateWithoutRecurringClassInput> | ClassCreateWithoutRecurringClassInput[] | ClassUncheckedCreateWithoutRecurringClassInput[]
-    connectOrCreate?: ClassCreateOrConnectWithoutRecurringClassInput | ClassCreateOrConnectWithoutRecurringClassInput[]
-    upsert?: ClassUpsertWithWhereUniqueWithoutRecurringClassInput | ClassUpsertWithWhereUniqueWithoutRecurringClassInput[]
-    createMany?: ClassCreateManyRecurringClassInputEnvelope
-    set?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    disconnect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    delete?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    connect?: ClassWhereUniqueInput | ClassWhereUniqueInput[]
-    update?: ClassUpdateWithWhereUniqueWithoutRecurringClassInput | ClassUpdateWithWhereUniqueWithoutRecurringClassInput[]
-    updateMany?: ClassUpdateManyWithWhereWithoutRecurringClassInput | ClassUpdateManyWithWhereWithoutRecurringClassInput[]
-    deleteMany?: ClassScalarWhereInput | ClassScalarWhereInput[]
+  export type ChildrenCreateNestedOneWithoutRecurringClassAttendanceInput = {
+    create?: XOR<ChildrenCreateWithoutRecurringClassAttendanceInput, ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput>
+    connectOrCreate?: ChildrenCreateOrConnectWithoutRecurringClassAttendanceInput
+    connect?: ChildrenWhereUniqueInput
   }
 
   export type RecurringClassCreateNestedOneWithoutRecurringClassAttendanceInput = {
@@ -27389,10 +27453,12 @@ export namespace Prisma {
     connect?: RecurringClassWhereUniqueInput
   }
 
-  export type ChildrenCreateNestedOneWithoutRecurringClassAttendanceInput = {
+  export type ChildrenUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput = {
     create?: XOR<ChildrenCreateWithoutRecurringClassAttendanceInput, ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput>
     connectOrCreate?: ChildrenCreateOrConnectWithoutRecurringClassAttendanceInput
+    upsert?: ChildrenUpsertWithoutRecurringClassAttendanceInput
     connect?: ChildrenWhereUniqueInput
+    update?: XOR<XOR<ChildrenUpdateToOneWithWhereWithoutRecurringClassAttendanceInput, ChildrenUpdateWithoutRecurringClassAttendanceInput>, ChildrenUncheckedUpdateWithoutRecurringClassAttendanceInput>
   }
 
   export type RecurringClassUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput = {
@@ -27401,14 +27467,6 @@ export namespace Prisma {
     upsert?: RecurringClassUpsertWithoutRecurringClassAttendanceInput
     connect?: RecurringClassWhereUniqueInput
     update?: XOR<XOR<RecurringClassUpdateToOneWithWhereWithoutRecurringClassAttendanceInput, RecurringClassUpdateWithoutRecurringClassAttendanceInput>, RecurringClassUncheckedUpdateWithoutRecurringClassAttendanceInput>
-  }
-
-  export type ChildrenUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput = {
-    create?: XOR<ChildrenCreateWithoutRecurringClassAttendanceInput, ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput>
-    connectOrCreate?: ChildrenCreateOrConnectWithoutRecurringClassAttendanceInput
-    upsert?: ChildrenUpsertWithoutRecurringClassAttendanceInput
-    connect?: ChildrenWhereUniqueInput
-    update?: XOR<XOR<ChildrenUpdateToOneWithWhereWithoutRecurringClassAttendanceInput, ChildrenUpdateWithoutRecurringClassAttendanceInput>, ChildrenUncheckedUpdateWithoutRecurringClassAttendanceInput>
   }
 
   export type EventCreateNestedOneWithoutScheduleInput = {
@@ -27598,6 +27656,11 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -27679,11 +27742,6 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -27773,14 +27831,14 @@ export namespace Prisma {
     dateTime?: Date | string | null
     status: $Enums.Status
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
     customer: CustomerCreateNestedOneWithoutClassesInput
     recurringClass?: RecurringClassCreateNestedOneWithoutClassesInput
-    classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
     subscription?: SubscriptionCreateNestedOneWithoutClassInput
+    classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
   }
 
   export type ClassUncheckedCreateWithoutInstructorInput = {
@@ -27791,9 +27849,9 @@ export namespace Prisma {
     status: $Enums.Status
     subscriptionId?: number | null
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
     classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutClassInput
   }
@@ -27808,30 +27866,21 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type RecurringClassCreateWithoutInstructorInput = {
-    startAt?: Date | string | null
-    endAt?: Date | string | null
-    subscription?: SubscriptionCreateNestedOneWithoutRecurringClassInput
-    recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutRecurringClassInput
-    classes?: ClassCreateNestedManyWithoutRecurringClassInput
+  export type InstructorAbsenceCreateWithoutInstructorInput = {
+    absentAt: Date | string
   }
 
-  export type RecurringClassUncheckedCreateWithoutInstructorInput = {
-    id?: number
-    subscriptionId?: number | null
-    startAt?: Date | string | null
-    endAt?: Date | string | null
-    recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutRecurringClassInput
-    classes?: ClassUncheckedCreateNestedManyWithoutRecurringClassInput
+  export type InstructorAbsenceUncheckedCreateWithoutInstructorInput = {
+    absentAt: Date | string
   }
 
-  export type RecurringClassCreateOrConnectWithoutInstructorInput = {
-    where: RecurringClassWhereUniqueInput
-    create: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput>
+  export type InstructorAbsenceCreateOrConnectWithoutInstructorInput = {
+    where: InstructorAbsenceWhereUniqueInput
+    create: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput>
   }
 
-  export type RecurringClassCreateManyInstructorInputEnvelope = {
-    data: RecurringClassCreateManyInstructorInput | RecurringClassCreateManyInstructorInput[]
+  export type InstructorAbsenceCreateManyInstructorInputEnvelope = {
+    data: InstructorAbsenceCreateManyInstructorInput | InstructorAbsenceCreateManyInstructorInput[]
     skipDuplicates?: boolean
   }
 
@@ -27860,21 +27909,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type InstructorAbsenceCreateWithoutInstructorInput = {
-    absentAt: Date | string
+  export type RecurringClassCreateWithoutInstructorInput = {
+    startAt?: Date | string | null
+    endAt?: Date | string | null
+    classes?: ClassCreateNestedManyWithoutRecurringClassInput
+    subscription?: SubscriptionCreateNestedOneWithoutRecurringClassInput
+    recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutRecurringClassInput
   }
 
-  export type InstructorAbsenceUncheckedCreateWithoutInstructorInput = {
-    absentAt: Date | string
+  export type RecurringClassUncheckedCreateWithoutInstructorInput = {
+    id?: number
+    subscriptionId?: number | null
+    startAt?: Date | string | null
+    endAt?: Date | string | null
+    classes?: ClassUncheckedCreateNestedManyWithoutRecurringClassInput
+    recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutRecurringClassInput
   }
 
-  export type InstructorAbsenceCreateOrConnectWithoutInstructorInput = {
-    where: InstructorAbsenceWhereUniqueInput
-    create: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput>
+  export type RecurringClassCreateOrConnectWithoutInstructorInput = {
+    where: RecurringClassWhereUniqueInput
+    create: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput>
   }
 
-  export type InstructorAbsenceCreateManyInstructorInputEnvelope = {
-    data: InstructorAbsenceCreateManyInstructorInput | InstructorAbsenceCreateManyInstructorInput[]
+  export type RecurringClassCreateManyInstructorInputEnvelope = {
+    data: RecurringClassCreateManyInstructorInput | RecurringClassCreateManyInstructorInput[]
     skipDuplicates?: boolean
   }
 
@@ -27906,37 +27964,34 @@ export namespace Prisma {
     status?: EnumStatusFilter<"Class"> | $Enums.Status
     subscriptionId?: IntNullableFilter<"Class"> | number | null
     rebookableUntil?: DateTimeNullableFilter<"Class"> | Date | string | null
+    classCode?: StringFilter<"Class"> | string
     createdAt?: DateTimeFilter<"Class"> | Date | string
     updatedAt?: DateTimeFilter<"Class"> | Date | string
-    classCode?: StringFilter<"Class"> | string
     isFreeTrial?: BoolFilter<"Class"> | boolean
   }
 
-  export type RecurringClassUpsertWithWhereUniqueWithoutInstructorInput = {
-    where: RecurringClassWhereUniqueInput
-    update: XOR<RecurringClassUpdateWithoutInstructorInput, RecurringClassUncheckedUpdateWithoutInstructorInput>
-    create: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput>
+  export type InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput = {
+    where: InstructorAbsenceWhereUniqueInput
+    update: XOR<InstructorAbsenceUpdateWithoutInstructorInput, InstructorAbsenceUncheckedUpdateWithoutInstructorInput>
+    create: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput>
   }
 
-  export type RecurringClassUpdateWithWhereUniqueWithoutInstructorInput = {
-    where: RecurringClassWhereUniqueInput
-    data: XOR<RecurringClassUpdateWithoutInstructorInput, RecurringClassUncheckedUpdateWithoutInstructorInput>
+  export type InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput = {
+    where: InstructorAbsenceWhereUniqueInput
+    data: XOR<InstructorAbsenceUpdateWithoutInstructorInput, InstructorAbsenceUncheckedUpdateWithoutInstructorInput>
   }
 
-  export type RecurringClassUpdateManyWithWhereWithoutInstructorInput = {
-    where: RecurringClassScalarWhereInput
-    data: XOR<RecurringClassUpdateManyMutationInput, RecurringClassUncheckedUpdateManyWithoutInstructorInput>
+  export type InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput = {
+    where: InstructorAbsenceScalarWhereInput
+    data: XOR<InstructorAbsenceUpdateManyMutationInput, InstructorAbsenceUncheckedUpdateManyWithoutInstructorInput>
   }
 
-  export type RecurringClassScalarWhereInput = {
-    AND?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
-    OR?: RecurringClassScalarWhereInput[]
-    NOT?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
-    id?: IntFilter<"RecurringClass"> | number
-    instructorId?: IntNullableFilter<"RecurringClass"> | number | null
-    subscriptionId?: IntNullableFilter<"RecurringClass"> | number | null
-    startAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
-    endAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
+  export type InstructorAbsenceScalarWhereInput = {
+    AND?: InstructorAbsenceScalarWhereInput | InstructorAbsenceScalarWhereInput[]
+    OR?: InstructorAbsenceScalarWhereInput[]
+    NOT?: InstructorAbsenceScalarWhereInput | InstructorAbsenceScalarWhereInput[]
+    instructorId?: IntFilter<"InstructorAbsence"> | number
+    absentAt?: DateTimeFilter<"InstructorAbsence"> | Date | string
   }
 
   export type InstructorScheduleUpsertWithWhereUniqueWithoutInstructorInput = {
@@ -27966,67 +28021,31 @@ export namespace Prisma {
     timezone?: StringFilter<"InstructorSchedule"> | string
   }
 
-  export type InstructorAbsenceUpsertWithWhereUniqueWithoutInstructorInput = {
-    where: InstructorAbsenceWhereUniqueInput
-    update: XOR<InstructorAbsenceUpdateWithoutInstructorInput, InstructorAbsenceUncheckedUpdateWithoutInstructorInput>
-    create: XOR<InstructorAbsenceCreateWithoutInstructorInput, InstructorAbsenceUncheckedCreateWithoutInstructorInput>
+  export type RecurringClassUpsertWithWhereUniqueWithoutInstructorInput = {
+    where: RecurringClassWhereUniqueInput
+    update: XOR<RecurringClassUpdateWithoutInstructorInput, RecurringClassUncheckedUpdateWithoutInstructorInput>
+    create: XOR<RecurringClassCreateWithoutInstructorInput, RecurringClassUncheckedCreateWithoutInstructorInput>
   }
 
-  export type InstructorAbsenceUpdateWithWhereUniqueWithoutInstructorInput = {
-    where: InstructorAbsenceWhereUniqueInput
-    data: XOR<InstructorAbsenceUpdateWithoutInstructorInput, InstructorAbsenceUncheckedUpdateWithoutInstructorInput>
+  export type RecurringClassUpdateWithWhereUniqueWithoutInstructorInput = {
+    where: RecurringClassWhereUniqueInput
+    data: XOR<RecurringClassUpdateWithoutInstructorInput, RecurringClassUncheckedUpdateWithoutInstructorInput>
   }
 
-  export type InstructorAbsenceUpdateManyWithWhereWithoutInstructorInput = {
-    where: InstructorAbsenceScalarWhereInput
-    data: XOR<InstructorAbsenceUpdateManyMutationInput, InstructorAbsenceUncheckedUpdateManyWithoutInstructorInput>
+  export type RecurringClassUpdateManyWithWhereWithoutInstructorInput = {
+    where: RecurringClassScalarWhereInput
+    data: XOR<RecurringClassUpdateManyMutationInput, RecurringClassUncheckedUpdateManyWithoutInstructorInput>
   }
 
-  export type InstructorAbsenceScalarWhereInput = {
-    AND?: InstructorAbsenceScalarWhereInput | InstructorAbsenceScalarWhereInput[]
-    OR?: InstructorAbsenceScalarWhereInput[]
-    NOT?: InstructorAbsenceScalarWhereInput | InstructorAbsenceScalarWhereInput[]
-    instructorId?: IntFilter<"InstructorAbsence"> | number
-    absentAt?: DateTimeFilter<"InstructorAbsence"> | Date | string
-  }
-
-  export type ClassCreateWithoutCustomerInput = {
-    dateTime?: Date | string | null
-    status: $Enums.Status
-    rebookableUntil?: Date | string | null
-    createdAt?: Date | string
-    updatedAt: Date | string
-    classCode: string
-    isFreeTrial?: boolean
-    instructor?: InstructorCreateNestedOneWithoutClassesInput
-    recurringClass?: RecurringClassCreateNestedOneWithoutClassesInput
-    classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
-    subscription?: SubscriptionCreateNestedOneWithoutClassInput
-  }
-
-  export type ClassUncheckedCreateWithoutCustomerInput = {
-    id?: number
-    instructorId?: number | null
-    recurringClassId?: number | null
-    dateTime?: Date | string | null
-    status: $Enums.Status
-    subscriptionId?: number | null
-    rebookableUntil?: Date | string | null
-    createdAt?: Date | string
-    updatedAt: Date | string
-    classCode: string
-    isFreeTrial?: boolean
-    classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutClassInput
-  }
-
-  export type ClassCreateOrConnectWithoutCustomerInput = {
-    where: ClassWhereUniqueInput
-    create: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput>
-  }
-
-  export type ClassCreateManyCustomerInputEnvelope = {
-    data: ClassCreateManyCustomerInput | ClassCreateManyCustomerInput[]
-    skipDuplicates?: boolean
+  export type RecurringClassScalarWhereInput = {
+    AND?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
+    OR?: RecurringClassScalarWhereInput[]
+    NOT?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
+    id?: IntFilter<"RecurringClass"> | number
+    instructorId?: IntNullableFilter<"RecurringClass"> | number | null
+    subscriptionId?: IntNullableFilter<"RecurringClass"> | number | null
+    startAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
+    endAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
   }
 
   export type ChildrenCreateWithoutCustomerInput = {
@@ -28060,12 +28079,51 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ClassCreateWithoutCustomerInput = {
+    dateTime?: Date | string | null
+    status: $Enums.Status
+    rebookableUntil?: Date | string | null
+    classCode: string
+    createdAt?: Date | string
+    updatedAt: Date | string
+    isFreeTrial?: boolean
+    instructor?: InstructorCreateNestedOneWithoutClassesInput
+    recurringClass?: RecurringClassCreateNestedOneWithoutClassesInput
+    subscription?: SubscriptionCreateNestedOneWithoutClassInput
+    classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
+  }
+
+  export type ClassUncheckedCreateWithoutCustomerInput = {
+    id?: number
+    instructorId?: number | null
+    recurringClassId?: number | null
+    dateTime?: Date | string | null
+    status: $Enums.Status
+    subscriptionId?: number | null
+    rebookableUntil?: Date | string | null
+    classCode: string
+    createdAt?: Date | string
+    updatedAt: Date | string
+    isFreeTrial?: boolean
+    classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutClassInput
+  }
+
+  export type ClassCreateOrConnectWithoutCustomerInput = {
+    where: ClassWhereUniqueInput
+    create: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type ClassCreateManyCustomerInputEnvelope = {
+    data: ClassCreateManyCustomerInput | ClassCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SubscriptionCreateWithoutCustomerInput = {
     startAt: Date | string
     endAt?: Date | string | null
-    plan: PlanCreateNestedOneWithoutSubscriptionInput
     class?: ClassCreateNestedManyWithoutSubscriptionInput
     recurringClass?: RecurringClassCreateNestedManyWithoutSubscriptionInput
+    plan: PlanCreateNestedOneWithoutSubscriptionInput
   }
 
   export type SubscriptionUncheckedCreateWithoutCustomerInput = {
@@ -28085,22 +28143,6 @@ export namespace Prisma {
   export type SubscriptionCreateManyCustomerInputEnvelope = {
     data: SubscriptionCreateManyCustomerInput | SubscriptionCreateManyCustomerInput[]
     skipDuplicates?: boolean
-  }
-
-  export type ClassUpsertWithWhereUniqueWithoutCustomerInput = {
-    where: ClassWhereUniqueInput
-    update: XOR<ClassUpdateWithoutCustomerInput, ClassUncheckedUpdateWithoutCustomerInput>
-    create: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput>
-  }
-
-  export type ClassUpdateWithWhereUniqueWithoutCustomerInput = {
-    where: ClassWhereUniqueInput
-    data: XOR<ClassUpdateWithoutCustomerInput, ClassUncheckedUpdateWithoutCustomerInput>
-  }
-
-  export type ClassUpdateManyWithWhereWithoutCustomerInput = {
-    where: ClassScalarWhereInput
-    data: XOR<ClassUpdateManyMutationInput, ClassUncheckedUpdateManyWithoutCustomerInput>
   }
 
   export type ChildrenUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -28132,6 +28174,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Children"> | Date | string
   }
 
+  export type ClassUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: ClassWhereUniqueInput
+    update: XOR<ClassUpdateWithoutCustomerInput, ClassUncheckedUpdateWithoutCustomerInput>
+    create: XOR<ClassCreateWithoutCustomerInput, ClassUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type ClassUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: ClassWhereUniqueInput
+    data: XOR<ClassUpdateWithoutCustomerInput, ClassUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type ClassUpdateManyWithWhereWithoutCustomerInput = {
+    where: ClassScalarWhereInput
+    data: XOR<ClassUpdateManyMutationInput, ClassUncheckedUpdateManyWithoutCustomerInput>
+  }
+
   export type SubscriptionUpsertWithWhereUniqueWithoutCustomerInput = {
     where: SubscriptionWhereUniqueInput
     update: XOR<SubscriptionUpdateWithoutCustomerInput, SubscriptionUncheckedUpdateWithoutCustomerInput>
@@ -28159,6 +28217,40 @@ export namespace Prisma {
     endAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
   }
 
+  export type CustomerCreateWithoutClassesInput = {
+    name: string
+    email: string
+    password: string
+    prefecture: string
+    emailVerified?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    hasSeenWelcome?: boolean
+    terminationAt?: Date | string | null
+    children?: ChildrenCreateNestedManyWithoutCustomerInput
+    subscription?: SubscriptionCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutClassesInput = {
+    id?: number
+    name: string
+    email: string
+    password: string
+    prefecture: string
+    emailVerified?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    hasSeenWelcome?: boolean
+    terminationAt?: Date | string | null
+    children?: ChildrenUncheckedCreateNestedManyWithoutCustomerInput
+    subscription?: SubscriptionUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutClassesInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutClassesInput, CustomerUncheckedCreateWithoutClassesInput>
+  }
+
   export type InstructorCreateWithoutClassesInput = {
     name: string
     email: string
@@ -28166,22 +28258,23 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
-    recurringClasses?: RecurringClassCreateNestedManyWithoutInstructorInput
-    instructorSchedules?: InstructorScheduleCreateNestedManyWithoutInstructorInput
+    updatedAt?: Date | string
+    isNative: boolean
     instructorAbsences?: InstructorAbsenceCreateNestedManyWithoutInstructorInput
+    instructorSchedules?: InstructorScheduleCreateNestedManyWithoutInstructorInput
+    recurringClasses?: RecurringClassCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedCreateWithoutClassesInput = {
@@ -28192,61 +28285,28 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
-    recurringClasses?: RecurringClassUncheckedCreateNestedManyWithoutInstructorInput
-    instructorSchedules?: InstructorScheduleUncheckedCreateNestedManyWithoutInstructorInput
+    updatedAt?: Date | string
+    isNative: boolean
     instructorAbsences?: InstructorAbsenceUncheckedCreateNestedManyWithoutInstructorInput
+    instructorSchedules?: InstructorScheduleUncheckedCreateNestedManyWithoutInstructorInput
+    recurringClasses?: RecurringClassUncheckedCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorCreateOrConnectWithoutClassesInput = {
     where: InstructorWhereUniqueInput
     create: XOR<InstructorCreateWithoutClassesInput, InstructorUncheckedCreateWithoutClassesInput>
-  }
-
-  export type CustomerCreateWithoutClassesInput = {
-    name: string
-    email: string
-    emailVerified?: Date | string | null
-    password: string
-    prefecture: string
-    hasSeenWelcome?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    terminationAt?: Date | string | null
-    children?: ChildrenCreateNestedManyWithoutCustomerInput
-    subscription?: SubscriptionCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerUncheckedCreateWithoutClassesInput = {
-    id?: number
-    name: string
-    email: string
-    emailVerified?: Date | string | null
-    password: string
-    prefecture: string
-    hasSeenWelcome?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    terminationAt?: Date | string | null
-    children?: ChildrenUncheckedCreateNestedManyWithoutCustomerInput
-    subscription?: SubscriptionUncheckedCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerCreateOrConnectWithoutClassesInput = {
-    where: CustomerWhereUniqueInput
-    create: XOR<CustomerCreateWithoutClassesInput, CustomerUncheckedCreateWithoutClassesInput>
   }
 
   export type RecurringClassCreateWithoutClassesInput = {
@@ -28271,6 +28331,28 @@ export namespace Prisma {
     create: XOR<RecurringClassCreateWithoutClassesInput, RecurringClassUncheckedCreateWithoutClassesInput>
   }
 
+  export type SubscriptionCreateWithoutClassInput = {
+    startAt: Date | string
+    endAt?: Date | string | null
+    recurringClass?: RecurringClassCreateNestedManyWithoutSubscriptionInput
+    customer: CustomerCreateNestedOneWithoutSubscriptionInput
+    plan: PlanCreateNestedOneWithoutSubscriptionInput
+  }
+
+  export type SubscriptionUncheckedCreateWithoutClassInput = {
+    id?: number
+    planId: number
+    customerId: number
+    startAt: Date | string
+    endAt?: Date | string | null
+    recurringClass?: RecurringClassUncheckedCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type SubscriptionCreateOrConnectWithoutClassInput = {
+    where: SubscriptionWhereUniqueInput
+    create: XOR<SubscriptionCreateWithoutClassInput, SubscriptionUncheckedCreateWithoutClassInput>
+  }
+
   export type ClassAttendanceCreateWithoutClassInput = {
     children: ChildrenCreateNestedOneWithoutClassAttendanceInput
   }
@@ -28289,26 +28371,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type SubscriptionCreateWithoutClassInput = {
-    startAt: Date | string
-    endAt?: Date | string | null
-    plan: PlanCreateNestedOneWithoutSubscriptionInput
-    customer: CustomerCreateNestedOneWithoutSubscriptionInput
-    recurringClass?: RecurringClassCreateNestedManyWithoutSubscriptionInput
+  export type CustomerUpsertWithoutClassesInput = {
+    update: XOR<CustomerUpdateWithoutClassesInput, CustomerUncheckedUpdateWithoutClassesInput>
+    create: XOR<CustomerCreateWithoutClassesInput, CustomerUncheckedCreateWithoutClassesInput>
+    where?: CustomerWhereInput
   }
 
-  export type SubscriptionUncheckedCreateWithoutClassInput = {
-    id?: number
-    planId: number
-    customerId: number
-    startAt: Date | string
-    endAt?: Date | string | null
-    recurringClass?: RecurringClassUncheckedCreateNestedManyWithoutSubscriptionInput
+  export type CustomerUpdateToOneWithWhereWithoutClassesInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutClassesInput, CustomerUncheckedUpdateWithoutClassesInput>
   }
 
-  export type SubscriptionCreateOrConnectWithoutClassInput = {
-    where: SubscriptionWhereUniqueInput
-    create: XOR<SubscriptionCreateWithoutClassInput, SubscriptionUncheckedCreateWithoutClassInput>
+  export type CustomerUpdateWithoutClassesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    prefecture?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    children?: ChildrenUpdateManyWithoutCustomerNestedInput
+    subscription?: SubscriptionUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutClassesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    prefecture?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    children?: ChildrenUncheckedUpdateManyWithoutCustomerNestedInput
+    subscription?: SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type InstructorUpsertWithoutClassesInput = {
@@ -28329,22 +28429,23 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    recurringClasses?: RecurringClassUpdateManyWithoutInstructorNestedInput
-    instructorSchedules?: InstructorScheduleUpdateManyWithoutInstructorNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     instructorAbsences?: InstructorAbsenceUpdateManyWithoutInstructorNestedInput
+    instructorSchedules?: InstructorScheduleUpdateManyWithoutInstructorNestedInput
+    recurringClasses?: RecurringClassUpdateManyWithoutInstructorNestedInput
   }
 
   export type InstructorUncheckedUpdateWithoutClassesInput = {
@@ -28355,62 +28456,23 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
-    instructorSchedules?: InstructorScheduleUncheckedUpdateManyWithoutInstructorNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     instructorAbsences?: InstructorAbsenceUncheckedUpdateManyWithoutInstructorNestedInput
-  }
-
-  export type CustomerUpsertWithoutClassesInput = {
-    update: XOR<CustomerUpdateWithoutClassesInput, CustomerUncheckedUpdateWithoutClassesInput>
-    create: XOR<CustomerCreateWithoutClassesInput, CustomerUncheckedCreateWithoutClassesInput>
-    where?: CustomerWhereInput
-  }
-
-  export type CustomerUpdateToOneWithWhereWithoutClassesInput = {
-    where?: CustomerWhereInput
-    data: XOR<CustomerUpdateWithoutClassesInput, CustomerUncheckedUpdateWithoutClassesInput>
-  }
-
-  export type CustomerUpdateWithoutClassesInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    password?: StringFieldUpdateOperationsInput | string
-    prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    children?: ChildrenUpdateManyWithoutCustomerNestedInput
-    subscription?: SubscriptionUpdateManyWithoutCustomerNestedInput
-  }
-
-  export type CustomerUncheckedUpdateWithoutClassesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    password?: StringFieldUpdateOperationsInput | string
-    prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    children?: ChildrenUncheckedUpdateManyWithoutCustomerNestedInput
-    subscription?: SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput
+    instructorSchedules?: InstructorScheduleUncheckedUpdateManyWithoutInstructorNestedInput
+    recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
   }
 
   export type RecurringClassUpsertWithoutClassesInput = {
@@ -28441,6 +28503,34 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassNestedInput
   }
 
+  export type SubscriptionUpsertWithoutClassInput = {
+    update: XOR<SubscriptionUpdateWithoutClassInput, SubscriptionUncheckedUpdateWithoutClassInput>
+    create: XOR<SubscriptionCreateWithoutClassInput, SubscriptionUncheckedCreateWithoutClassInput>
+    where?: SubscriptionWhereInput
+  }
+
+  export type SubscriptionUpdateToOneWithWhereWithoutClassInput = {
+    where?: SubscriptionWhereInput
+    data: XOR<SubscriptionUpdateWithoutClassInput, SubscriptionUncheckedUpdateWithoutClassInput>
+  }
+
+  export type SubscriptionUpdateWithoutClassInput = {
+    startAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    recurringClass?: RecurringClassUpdateManyWithoutSubscriptionNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutSubscriptionNestedInput
+    plan?: PlanUpdateOneRequiredWithoutSubscriptionNestedInput
+  }
+
+  export type SubscriptionUncheckedUpdateWithoutClassInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    planId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    startAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    recurringClass?: RecurringClassUncheckedUpdateManyWithoutSubscriptionNestedInput
+  }
+
   export type ClassAttendanceUpsertWithWhereUniqueWithoutClassInput = {
     where: ClassAttendanceWhereUniqueInput
     update: XOR<ClassAttendanceUpdateWithoutClassInput, ClassAttendanceUncheckedUpdateWithoutClassInput>
@@ -28465,43 +28555,15 @@ export namespace Prisma {
     childrenId?: IntFilter<"ClassAttendance"> | number
   }
 
-  export type SubscriptionUpsertWithoutClassInput = {
-    update: XOR<SubscriptionUpdateWithoutClassInput, SubscriptionUncheckedUpdateWithoutClassInput>
-    create: XOR<SubscriptionCreateWithoutClassInput, SubscriptionUncheckedCreateWithoutClassInput>
-    where?: SubscriptionWhereInput
-  }
-
-  export type SubscriptionUpdateToOneWithWhereWithoutClassInput = {
-    where?: SubscriptionWhereInput
-    data: XOR<SubscriptionUpdateWithoutClassInput, SubscriptionUncheckedUpdateWithoutClassInput>
-  }
-
-  export type SubscriptionUpdateWithoutClassInput = {
-    startAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    plan?: PlanUpdateOneRequiredWithoutSubscriptionNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutSubscriptionNestedInput
-    recurringClass?: RecurringClassUpdateManyWithoutSubscriptionNestedInput
-  }
-
-  export type SubscriptionUncheckedUpdateWithoutClassInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    planId?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    startAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    recurringClass?: RecurringClassUncheckedUpdateManyWithoutSubscriptionNestedInput
-  }
-
   export type CustomerCreateWithoutChildrenInput = {
     name: string
     email: string
-    emailVerified?: Date | string | null
     password: string
     prefecture: string
-    hasSeenWelcome?: boolean
+    emailVerified?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
     classes?: ClassCreateNestedManyWithoutCustomerInput
     subscription?: SubscriptionCreateNestedManyWithoutCustomerInput
@@ -28511,12 +28573,12 @@ export namespace Prisma {
     id?: number
     name: string
     email: string
-    emailVerified?: Date | string | null
     password: string
     prefecture: string
-    hasSeenWelcome?: boolean
+    emailVerified?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
     classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
     subscription?: SubscriptionUncheckedCreateNestedManyWithoutCustomerInput
@@ -28577,12 +28639,12 @@ export namespace Prisma {
   export type CustomerUpdateWithoutChildrenInput = {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     password?: StringFieldUpdateOperationsInput | string
     prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     classes?: ClassUpdateManyWithoutCustomerNestedInput
     subscription?: SubscriptionUpdateManyWithoutCustomerNestedInput
@@ -28592,12 +28654,12 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     password?: StringFieldUpdateOperationsInput | string
     prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
     subscription?: SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput
@@ -28643,40 +28705,6 @@ export namespace Prisma {
     childrenId?: IntFilter<"RecurringClassAttendance"> | number
   }
 
-  export type ClassCreateWithoutClassAttendanceInput = {
-    dateTime?: Date | string | null
-    status: $Enums.Status
-    rebookableUntil?: Date | string | null
-    createdAt?: Date | string
-    updatedAt: Date | string
-    classCode: string
-    isFreeTrial?: boolean
-    instructor?: InstructorCreateNestedOneWithoutClassesInput
-    customer: CustomerCreateNestedOneWithoutClassesInput
-    recurringClass?: RecurringClassCreateNestedOneWithoutClassesInput
-    subscription?: SubscriptionCreateNestedOneWithoutClassInput
-  }
-
-  export type ClassUncheckedCreateWithoutClassAttendanceInput = {
-    id?: number
-    instructorId?: number | null
-    customerId: number
-    recurringClassId?: number | null
-    dateTime?: Date | string | null
-    status: $Enums.Status
-    subscriptionId?: number | null
-    rebookableUntil?: Date | string | null
-    createdAt?: Date | string
-    updatedAt: Date | string
-    classCode: string
-    isFreeTrial?: boolean
-  }
-
-  export type ClassCreateOrConnectWithoutClassAttendanceInput = {
-    where: ClassWhereUniqueInput
-    create: XOR<ClassCreateWithoutClassAttendanceInput, ClassUncheckedCreateWithoutClassAttendanceInput>
-  }
-
   export type ChildrenCreateWithoutClassAttendanceInput = {
     name: string
     birthdate?: Date | string | null
@@ -28703,44 +28731,38 @@ export namespace Prisma {
     create: XOR<ChildrenCreateWithoutClassAttendanceInput, ChildrenUncheckedCreateWithoutClassAttendanceInput>
   }
 
-  export type ClassUpsertWithoutClassAttendanceInput = {
-    update: XOR<ClassUpdateWithoutClassAttendanceInput, ClassUncheckedUpdateWithoutClassAttendanceInput>
+  export type ClassCreateWithoutClassAttendanceInput = {
+    dateTime?: Date | string | null
+    status: $Enums.Status
+    rebookableUntil?: Date | string | null
+    classCode: string
+    createdAt?: Date | string
+    updatedAt: Date | string
+    isFreeTrial?: boolean
+    customer: CustomerCreateNestedOneWithoutClassesInput
+    instructor?: InstructorCreateNestedOneWithoutClassesInput
+    recurringClass?: RecurringClassCreateNestedOneWithoutClassesInput
+    subscription?: SubscriptionCreateNestedOneWithoutClassInput
+  }
+
+  export type ClassUncheckedCreateWithoutClassAttendanceInput = {
+    id?: number
+    instructorId?: number | null
+    customerId: number
+    recurringClassId?: number | null
+    dateTime?: Date | string | null
+    status: $Enums.Status
+    subscriptionId?: number | null
+    rebookableUntil?: Date | string | null
+    classCode: string
+    createdAt?: Date | string
+    updatedAt: Date | string
+    isFreeTrial?: boolean
+  }
+
+  export type ClassCreateOrConnectWithoutClassAttendanceInput = {
+    where: ClassWhereUniqueInput
     create: XOR<ClassCreateWithoutClassAttendanceInput, ClassUncheckedCreateWithoutClassAttendanceInput>
-    where?: ClassWhereInput
-  }
-
-  export type ClassUpdateToOneWithWhereWithoutClassAttendanceInput = {
-    where?: ClassWhereInput
-    data: XOR<ClassUpdateWithoutClassAttendanceInput, ClassUncheckedUpdateWithoutClassAttendanceInput>
-  }
-
-  export type ClassUpdateWithoutClassAttendanceInput = {
-    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
-    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
-    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
-    instructor?: InstructorUpdateOneWithoutClassesNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutClassesNestedInput
-    recurringClass?: RecurringClassUpdateOneWithoutClassesNestedInput
-    subscription?: SubscriptionUpdateOneWithoutClassNestedInput
-  }
-
-  export type ClassUncheckedUpdateWithoutClassAttendanceInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
-    customerId?: IntFieldUpdateOperationsInput | number
-    recurringClassId?: NullableIntFieldUpdateOperationsInput | number | null
-    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
-    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
-    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
-    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ChildrenUpsertWithoutClassAttendanceInput = {
@@ -28775,12 +28797,52 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput
   }
 
+  export type ClassUpsertWithoutClassAttendanceInput = {
+    update: XOR<ClassUpdateWithoutClassAttendanceInput, ClassUncheckedUpdateWithoutClassAttendanceInput>
+    create: XOR<ClassCreateWithoutClassAttendanceInput, ClassUncheckedCreateWithoutClassAttendanceInput>
+    where?: ClassWhereInput
+  }
+
+  export type ClassUpdateToOneWithWhereWithoutClassAttendanceInput = {
+    where?: ClassWhereInput
+    data: XOR<ClassUpdateWithoutClassAttendanceInput, ClassUncheckedUpdateWithoutClassAttendanceInput>
+  }
+
+  export type ClassUpdateWithoutClassAttendanceInput = {
+    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
+    customer?: CustomerUpdateOneRequiredWithoutClassesNestedInput
+    instructor?: InstructorUpdateOneWithoutClassesNestedInput
+    recurringClass?: RecurringClassUpdateOneWithoutClassesNestedInput
+    subscription?: SubscriptionUpdateOneWithoutClassNestedInput
+  }
+
+  export type ClassUncheckedUpdateWithoutClassAttendanceInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
+    customerId?: IntFieldUpdateOperationsInput | number
+    recurringClassId?: NullableIntFieldUpdateOperationsInput | number | null
+    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
+    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
+  }
+
   export type SubscriptionCreateWithoutPlanInput = {
     startAt: Date | string
     endAt?: Date | string | null
-    customer: CustomerCreateNestedOneWithoutSubscriptionInput
     class?: ClassCreateNestedManyWithoutSubscriptionInput
     recurringClass?: RecurringClassCreateNestedManyWithoutSubscriptionInput
+    customer: CustomerCreateNestedOneWithoutSubscriptionInput
   }
 
   export type SubscriptionUncheckedCreateWithoutPlanInput = {
@@ -28818,74 +28880,16 @@ export namespace Prisma {
     data: XOR<SubscriptionUpdateManyMutationInput, SubscriptionUncheckedUpdateManyWithoutPlanInput>
   }
 
-  export type PlanCreateWithoutSubscriptionInput = {
-    name: string
-    weeklyClassTimes: number
-    description: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    terminationAt?: Date | string | null
-  }
-
-  export type PlanUncheckedCreateWithoutSubscriptionInput = {
-    id?: number
-    name: string
-    weeklyClassTimes: number
-    description: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    terminationAt?: Date | string | null
-  }
-
-  export type PlanCreateOrConnectWithoutSubscriptionInput = {
-    where: PlanWhereUniqueInput
-    create: XOR<PlanCreateWithoutSubscriptionInput, PlanUncheckedCreateWithoutSubscriptionInput>
-  }
-
-  export type CustomerCreateWithoutSubscriptionInput = {
-    name: string
-    email: string
-    emailVerified?: Date | string | null
-    password: string
-    prefecture: string
-    hasSeenWelcome?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    terminationAt?: Date | string | null
-    classes?: ClassCreateNestedManyWithoutCustomerInput
-    children?: ChildrenCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerUncheckedCreateWithoutSubscriptionInput = {
-    id?: number
-    name: string
-    email: string
-    emailVerified?: Date | string | null
-    password: string
-    prefecture: string
-    hasSeenWelcome?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    terminationAt?: Date | string | null
-    classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
-    children?: ChildrenUncheckedCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerCreateOrConnectWithoutSubscriptionInput = {
-    where: CustomerWhereUniqueInput
-    create: XOR<CustomerCreateWithoutSubscriptionInput, CustomerUncheckedCreateWithoutSubscriptionInput>
-  }
-
   export type ClassCreateWithoutSubscriptionInput = {
     dateTime?: Date | string | null
     status: $Enums.Status
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
-    instructor?: InstructorCreateNestedOneWithoutClassesInput
     customer: CustomerCreateNestedOneWithoutClassesInput
+    instructor?: InstructorCreateNestedOneWithoutClassesInput
     recurringClass?: RecurringClassCreateNestedOneWithoutClassesInput
     classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
   }
@@ -28898,9 +28902,9 @@ export namespace Prisma {
     dateTime?: Date | string | null
     status: $Enums.Status
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
     classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutClassInput
   }
@@ -28918,9 +28922,9 @@ export namespace Prisma {
   export type RecurringClassCreateWithoutSubscriptionInput = {
     startAt?: Date | string | null
     endAt?: Date | string | null
+    classes?: ClassCreateNestedManyWithoutRecurringClassInput
     instructor?: InstructorCreateNestedOneWithoutRecurringClassesInput
     recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutRecurringClassInput
-    classes?: ClassCreateNestedManyWithoutRecurringClassInput
   }
 
   export type RecurringClassUncheckedCreateWithoutSubscriptionInput = {
@@ -28928,8 +28932,8 @@ export namespace Prisma {
     instructorId?: number | null
     startAt?: Date | string | null
     endAt?: Date | string | null
-    recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutRecurringClassInput
     classes?: ClassUncheckedCreateNestedManyWithoutRecurringClassInput
+    recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutRecurringClassInput
   }
 
   export type RecurringClassCreateOrConnectWithoutSubscriptionInput = {
@@ -28942,74 +28946,64 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type PlanUpsertWithoutSubscriptionInput = {
-    update: XOR<PlanUpdateWithoutSubscriptionInput, PlanUncheckedUpdateWithoutSubscriptionInput>
-    create: XOR<PlanCreateWithoutSubscriptionInput, PlanUncheckedCreateWithoutSubscriptionInput>
-    where?: PlanWhereInput
+  export type CustomerCreateWithoutSubscriptionInput = {
+    name: string
+    email: string
+    password: string
+    prefecture: string
+    emailVerified?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    hasSeenWelcome?: boolean
+    terminationAt?: Date | string | null
+    children?: ChildrenCreateNestedManyWithoutCustomerInput
+    classes?: ClassCreateNestedManyWithoutCustomerInput
   }
 
-  export type PlanUpdateToOneWithWhereWithoutSubscriptionInput = {
-    where?: PlanWhereInput
-    data: XOR<PlanUpdateWithoutSubscriptionInput, PlanUncheckedUpdateWithoutSubscriptionInput>
+  export type CustomerUncheckedCreateWithoutSubscriptionInput = {
+    id?: number
+    name: string
+    email: string
+    password: string
+    prefecture: string
+    emailVerified?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    hasSeenWelcome?: boolean
+    terminationAt?: Date | string | null
+    children?: ChildrenUncheckedCreateNestedManyWithoutCustomerInput
+    classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
   }
 
-  export type PlanUpdateWithoutSubscriptionInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type PlanUncheckedUpdateWithoutSubscriptionInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type CustomerUpsertWithoutSubscriptionInput = {
-    update: XOR<CustomerUpdateWithoutSubscriptionInput, CustomerUncheckedUpdateWithoutSubscriptionInput>
+  export type CustomerCreateOrConnectWithoutSubscriptionInput = {
+    where: CustomerWhereUniqueInput
     create: XOR<CustomerCreateWithoutSubscriptionInput, CustomerUncheckedCreateWithoutSubscriptionInput>
-    where?: CustomerWhereInput
   }
 
-  export type CustomerUpdateToOneWithWhereWithoutSubscriptionInput = {
-    where?: CustomerWhereInput
-    data: XOR<CustomerUpdateWithoutSubscriptionInput, CustomerUncheckedUpdateWithoutSubscriptionInput>
+  export type PlanCreateWithoutSubscriptionInput = {
+    name: string
+    description: string
+    weeklyClassTimes: number
+    createdAt?: Date | string
+    terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
   }
 
-  export type CustomerUpdateWithoutSubscriptionInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    password?: StringFieldUpdateOperationsInput | string
-    prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    classes?: ClassUpdateManyWithoutCustomerNestedInput
-    children?: ChildrenUpdateManyWithoutCustomerNestedInput
+  export type PlanUncheckedCreateWithoutSubscriptionInput = {
+    id?: number
+    name: string
+    description: string
+    weeklyClassTimes: number
+    createdAt?: Date | string
+    terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
   }
 
-  export type CustomerUncheckedUpdateWithoutSubscriptionInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    password?: StringFieldUpdateOperationsInput | string
-    prefecture?: StringFieldUpdateOperationsInput | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
-    children?: ChildrenUncheckedUpdateManyWithoutCustomerNestedInput
+  export type PlanCreateOrConnectWithoutSubscriptionInput = {
+    where: PlanWhereUniqueInput
+    create: XOR<PlanCreateWithoutSubscriptionInput, PlanUncheckedCreateWithoutSubscriptionInput>
   }
 
   export type ClassUpsertWithWhereUniqueWithoutSubscriptionInput = {
@@ -29044,6 +29038,117 @@ export namespace Prisma {
     data: XOR<RecurringClassUpdateManyMutationInput, RecurringClassUncheckedUpdateManyWithoutSubscriptionInput>
   }
 
+  export type CustomerUpsertWithoutSubscriptionInput = {
+    update: XOR<CustomerUpdateWithoutSubscriptionInput, CustomerUncheckedUpdateWithoutSubscriptionInput>
+    create: XOR<CustomerCreateWithoutSubscriptionInput, CustomerUncheckedCreateWithoutSubscriptionInput>
+    where?: CustomerWhereInput
+  }
+
+  export type CustomerUpdateToOneWithWhereWithoutSubscriptionInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutSubscriptionInput, CustomerUncheckedUpdateWithoutSubscriptionInput>
+  }
+
+  export type CustomerUpdateWithoutSubscriptionInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    prefecture?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    children?: ChildrenUpdateManyWithoutCustomerNestedInput
+    classes?: ClassUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutSubscriptionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    prefecture?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    children?: ChildrenUncheckedUpdateManyWithoutCustomerNestedInput
+    classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type PlanUpsertWithoutSubscriptionInput = {
+    update: XOR<PlanUpdateWithoutSubscriptionInput, PlanUncheckedUpdateWithoutSubscriptionInput>
+    create: XOR<PlanCreateWithoutSubscriptionInput, PlanUncheckedCreateWithoutSubscriptionInput>
+    where?: PlanWhereInput
+  }
+
+  export type PlanUpdateToOneWithWhereWithoutSubscriptionInput = {
+    where?: PlanWhereInput
+    data: XOR<PlanUpdateWithoutSubscriptionInput, PlanUncheckedUpdateWithoutSubscriptionInput>
+  }
+
+  export type PlanUpdateWithoutSubscriptionInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type PlanUncheckedUpdateWithoutSubscriptionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    weeklyClassTimes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type ClassCreateWithoutRecurringClassInput = {
+    dateTime?: Date | string | null
+    status: $Enums.Status
+    rebookableUntil?: Date | string | null
+    classCode: string
+    createdAt?: Date | string
+    updatedAt: Date | string
+    isFreeTrial?: boolean
+    customer: CustomerCreateNestedOneWithoutClassesInput
+    instructor?: InstructorCreateNestedOneWithoutClassesInput
+    subscription?: SubscriptionCreateNestedOneWithoutClassInput
+    classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
+  }
+
+  export type ClassUncheckedCreateWithoutRecurringClassInput = {
+    id?: number
+    instructorId?: number | null
+    customerId: number
+    dateTime?: Date | string | null
+    status: $Enums.Status
+    subscriptionId?: number | null
+    rebookableUntil?: Date | string | null
+    classCode: string
+    createdAt?: Date | string
+    updatedAt: Date | string
+    isFreeTrial?: boolean
+    classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutClassInput
+  }
+
+  export type ClassCreateOrConnectWithoutRecurringClassInput = {
+    where: ClassWhereUniqueInput
+    create: XOR<ClassCreateWithoutRecurringClassInput, ClassUncheckedCreateWithoutRecurringClassInput>
+  }
+
+  export type ClassCreateManyRecurringClassInputEnvelope = {
+    data: ClassCreateManyRecurringClassInput | ClassCreateManyRecurringClassInput[]
+    skipDuplicates?: boolean
+  }
+
   export type InstructorCreateWithoutRecurringClassesInput = {
     name: string
     email: string
@@ -29051,22 +29156,23 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     classes?: ClassCreateNestedManyWithoutInstructorInput
-    instructorSchedules?: InstructorScheduleCreateNestedManyWithoutInstructorInput
     instructorAbsences?: InstructorAbsenceCreateNestedManyWithoutInstructorInput
+    instructorSchedules?: InstructorScheduleCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedCreateWithoutRecurringClassesInput = {
@@ -29077,22 +29183,23 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     classes?: ClassUncheckedCreateNestedManyWithoutInstructorInput
-    instructorSchedules?: InstructorScheduleUncheckedCreateNestedManyWithoutInstructorInput
     instructorAbsences?: InstructorAbsenceUncheckedCreateNestedManyWithoutInstructorInput
+    instructorSchedules?: InstructorScheduleUncheckedCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorCreateOrConnectWithoutRecurringClassesInput = {
@@ -29103,9 +29210,9 @@ export namespace Prisma {
   export type SubscriptionCreateWithoutRecurringClassInput = {
     startAt: Date | string
     endAt?: Date | string | null
-    plan: PlanCreateNestedOneWithoutSubscriptionInput
-    customer: CustomerCreateNestedOneWithoutSubscriptionInput
     class?: ClassCreateNestedManyWithoutSubscriptionInput
+    customer: CustomerCreateNestedOneWithoutSubscriptionInput
+    plan: PlanCreateNestedOneWithoutSubscriptionInput
   }
 
   export type SubscriptionUncheckedCreateWithoutRecurringClassInput = {
@@ -29140,43 +29247,20 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ClassCreateWithoutRecurringClassInput = {
-    dateTime?: Date | string | null
-    status: $Enums.Status
-    rebookableUntil?: Date | string | null
-    createdAt?: Date | string
-    updatedAt: Date | string
-    classCode: string
-    isFreeTrial?: boolean
-    instructor?: InstructorCreateNestedOneWithoutClassesInput
-    customer: CustomerCreateNestedOneWithoutClassesInput
-    classAttendance?: ClassAttendanceCreateNestedManyWithoutClassInput
-    subscription?: SubscriptionCreateNestedOneWithoutClassInput
-  }
-
-  export type ClassUncheckedCreateWithoutRecurringClassInput = {
-    id?: number
-    instructorId?: number | null
-    customerId: number
-    dateTime?: Date | string | null
-    status: $Enums.Status
-    subscriptionId?: number | null
-    rebookableUntil?: Date | string | null
-    createdAt?: Date | string
-    updatedAt: Date | string
-    classCode: string
-    isFreeTrial?: boolean
-    classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutClassInput
-  }
-
-  export type ClassCreateOrConnectWithoutRecurringClassInput = {
+  export type ClassUpsertWithWhereUniqueWithoutRecurringClassInput = {
     where: ClassWhereUniqueInput
+    update: XOR<ClassUpdateWithoutRecurringClassInput, ClassUncheckedUpdateWithoutRecurringClassInput>
     create: XOR<ClassCreateWithoutRecurringClassInput, ClassUncheckedCreateWithoutRecurringClassInput>
   }
 
-  export type ClassCreateManyRecurringClassInputEnvelope = {
-    data: ClassCreateManyRecurringClassInput | ClassCreateManyRecurringClassInput[]
-    skipDuplicates?: boolean
+  export type ClassUpdateWithWhereUniqueWithoutRecurringClassInput = {
+    where: ClassWhereUniqueInput
+    data: XOR<ClassUpdateWithoutRecurringClassInput, ClassUncheckedUpdateWithoutRecurringClassInput>
+  }
+
+  export type ClassUpdateManyWithWhereWithoutRecurringClassInput = {
+    where: ClassScalarWhereInput
+    data: XOR<ClassUpdateManyMutationInput, ClassUncheckedUpdateManyWithoutRecurringClassInput>
   }
 
   export type InstructorUpsertWithoutRecurringClassesInput = {
@@ -29197,22 +29281,23 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     classes?: ClassUpdateManyWithoutInstructorNestedInput
-    instructorSchedules?: InstructorScheduleUpdateManyWithoutInstructorNestedInput
     instructorAbsences?: InstructorAbsenceUpdateManyWithoutInstructorNestedInput
+    instructorSchedules?: InstructorScheduleUpdateManyWithoutInstructorNestedInput
   }
 
   export type InstructorUncheckedUpdateWithoutRecurringClassesInput = {
@@ -29223,22 +29308,23 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     classes?: ClassUncheckedUpdateManyWithoutInstructorNestedInput
-    instructorSchedules?: InstructorScheduleUncheckedUpdateManyWithoutInstructorNestedInput
     instructorAbsences?: InstructorAbsenceUncheckedUpdateManyWithoutInstructorNestedInput
+    instructorSchedules?: InstructorScheduleUncheckedUpdateManyWithoutInstructorNestedInput
   }
 
   export type SubscriptionUpsertWithoutRecurringClassInput = {
@@ -29255,9 +29341,9 @@ export namespace Prisma {
   export type SubscriptionUpdateWithoutRecurringClassInput = {
     startAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    plan?: PlanUpdateOneRequiredWithoutSubscriptionNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutSubscriptionNestedInput
     class?: ClassUpdateManyWithoutSubscriptionNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutSubscriptionNestedInput
+    plan?: PlanUpdateOneRequiredWithoutSubscriptionNestedInput
   }
 
   export type SubscriptionUncheckedUpdateWithoutRecurringClassInput = {
@@ -29283,44 +29369,6 @@ export namespace Prisma {
   export type RecurringClassAttendanceUpdateManyWithWhereWithoutRecurringClassInput = {
     where: RecurringClassAttendanceScalarWhereInput
     data: XOR<RecurringClassAttendanceUpdateManyMutationInput, RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassInput>
-  }
-
-  export type ClassUpsertWithWhereUniqueWithoutRecurringClassInput = {
-    where: ClassWhereUniqueInput
-    update: XOR<ClassUpdateWithoutRecurringClassInput, ClassUncheckedUpdateWithoutRecurringClassInput>
-    create: XOR<ClassCreateWithoutRecurringClassInput, ClassUncheckedCreateWithoutRecurringClassInput>
-  }
-
-  export type ClassUpdateWithWhereUniqueWithoutRecurringClassInput = {
-    where: ClassWhereUniqueInput
-    data: XOR<ClassUpdateWithoutRecurringClassInput, ClassUncheckedUpdateWithoutRecurringClassInput>
-  }
-
-  export type ClassUpdateManyWithWhereWithoutRecurringClassInput = {
-    where: ClassScalarWhereInput
-    data: XOR<ClassUpdateManyMutationInput, ClassUncheckedUpdateManyWithoutRecurringClassInput>
-  }
-
-  export type RecurringClassCreateWithoutRecurringClassAttendanceInput = {
-    startAt?: Date | string | null
-    endAt?: Date | string | null
-    instructor?: InstructorCreateNestedOneWithoutRecurringClassesInput
-    subscription?: SubscriptionCreateNestedOneWithoutRecurringClassInput
-    classes?: ClassCreateNestedManyWithoutRecurringClassInput
-  }
-
-  export type RecurringClassUncheckedCreateWithoutRecurringClassAttendanceInput = {
-    id?: number
-    instructorId?: number | null
-    subscriptionId?: number | null
-    startAt?: Date | string | null
-    endAt?: Date | string | null
-    classes?: ClassUncheckedCreateNestedManyWithoutRecurringClassInput
-  }
-
-  export type RecurringClassCreateOrConnectWithoutRecurringClassAttendanceInput = {
-    where: RecurringClassWhereUniqueInput
-    create: XOR<RecurringClassCreateWithoutRecurringClassAttendanceInput, RecurringClassUncheckedCreateWithoutRecurringClassAttendanceInput>
   }
 
   export type ChildrenCreateWithoutRecurringClassAttendanceInput = {
@@ -29349,32 +29397,26 @@ export namespace Prisma {
     create: XOR<ChildrenCreateWithoutRecurringClassAttendanceInput, ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput>
   }
 
-  export type RecurringClassUpsertWithoutRecurringClassAttendanceInput = {
-    update: XOR<RecurringClassUpdateWithoutRecurringClassAttendanceInput, RecurringClassUncheckedUpdateWithoutRecurringClassAttendanceInput>
+  export type RecurringClassCreateWithoutRecurringClassAttendanceInput = {
+    startAt?: Date | string | null
+    endAt?: Date | string | null
+    classes?: ClassCreateNestedManyWithoutRecurringClassInput
+    instructor?: InstructorCreateNestedOneWithoutRecurringClassesInput
+    subscription?: SubscriptionCreateNestedOneWithoutRecurringClassInput
+  }
+
+  export type RecurringClassUncheckedCreateWithoutRecurringClassAttendanceInput = {
+    id?: number
+    instructorId?: number | null
+    subscriptionId?: number | null
+    startAt?: Date | string | null
+    endAt?: Date | string | null
+    classes?: ClassUncheckedCreateNestedManyWithoutRecurringClassInput
+  }
+
+  export type RecurringClassCreateOrConnectWithoutRecurringClassAttendanceInput = {
+    where: RecurringClassWhereUniqueInput
     create: XOR<RecurringClassCreateWithoutRecurringClassAttendanceInput, RecurringClassUncheckedCreateWithoutRecurringClassAttendanceInput>
-    where?: RecurringClassWhereInput
-  }
-
-  export type RecurringClassUpdateToOneWithWhereWithoutRecurringClassAttendanceInput = {
-    where?: RecurringClassWhereInput
-    data: XOR<RecurringClassUpdateWithoutRecurringClassAttendanceInput, RecurringClassUncheckedUpdateWithoutRecurringClassAttendanceInput>
-  }
-
-  export type RecurringClassUpdateWithoutRecurringClassAttendanceInput = {
-    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    instructor?: InstructorUpdateOneWithoutRecurringClassesNestedInput
-    subscription?: SubscriptionUpdateOneWithoutRecurringClassNestedInput
-    classes?: ClassUpdateManyWithoutRecurringClassNestedInput
-  }
-
-  export type RecurringClassUncheckedUpdateWithoutRecurringClassAttendanceInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
-    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    classes?: ClassUncheckedUpdateManyWithoutRecurringClassNestedInput
   }
 
   export type ChildrenUpsertWithoutRecurringClassAttendanceInput = {
@@ -29407,6 +29449,34 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput
+  }
+
+  export type RecurringClassUpsertWithoutRecurringClassAttendanceInput = {
+    update: XOR<RecurringClassUpdateWithoutRecurringClassAttendanceInput, RecurringClassUncheckedUpdateWithoutRecurringClassAttendanceInput>
+    create: XOR<RecurringClassCreateWithoutRecurringClassAttendanceInput, RecurringClassUncheckedCreateWithoutRecurringClassAttendanceInput>
+    where?: RecurringClassWhereInput
+  }
+
+  export type RecurringClassUpdateToOneWithWhereWithoutRecurringClassAttendanceInput = {
+    where?: RecurringClassWhereInput
+    data: XOR<RecurringClassUpdateWithoutRecurringClassAttendanceInput, RecurringClassUncheckedUpdateWithoutRecurringClassAttendanceInput>
+  }
+
+  export type RecurringClassUpdateWithoutRecurringClassAttendanceInput = {
+    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classes?: ClassUpdateManyWithoutRecurringClassNestedInput
+    instructor?: InstructorUpdateOneWithoutRecurringClassesNestedInput
+    subscription?: SubscriptionUpdateOneWithoutRecurringClassNestedInput
+  }
+
+  export type RecurringClassUncheckedUpdateWithoutRecurringClassAttendanceInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
+    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
+    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classes?: ClassUncheckedUpdateManyWithoutRecurringClassNestedInput
   }
 
   export type EventCreateWithoutScheduleInput = {
@@ -29498,22 +29568,23 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     classes?: ClassCreateNestedManyWithoutInstructorInput
-    recurringClasses?: RecurringClassCreateNestedManyWithoutInstructorInput
     instructorAbsences?: InstructorAbsenceCreateNestedManyWithoutInstructorInput
+    recurringClasses?: RecurringClassCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedCreateWithoutInstructorSchedulesInput = {
@@ -29524,22 +29595,23 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     classes?: ClassUncheckedCreateNestedManyWithoutInstructorInput
-    recurringClasses?: RecurringClassUncheckedCreateNestedManyWithoutInstructorInput
     instructorAbsences?: InstructorAbsenceUncheckedCreateNestedManyWithoutInstructorInput
+    recurringClasses?: RecurringClassUncheckedCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorCreateOrConnectWithoutInstructorSchedulesInput = {
@@ -29585,22 +29657,23 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     classes?: ClassUpdateManyWithoutInstructorNestedInput
-    recurringClasses?: RecurringClassUpdateManyWithoutInstructorNestedInput
     instructorAbsences?: InstructorAbsenceUpdateManyWithoutInstructorNestedInput
+    recurringClasses?: RecurringClassUpdateManyWithoutInstructorNestedInput
   }
 
   export type InstructorUncheckedUpdateWithoutInstructorSchedulesInput = {
@@ -29611,22 +29684,23 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     classes?: ClassUncheckedUpdateManyWithoutInstructorNestedInput
-    recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
     instructorAbsences?: InstructorAbsenceUncheckedUpdateManyWithoutInstructorNestedInput
+    recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
   }
 
   export type InstructorSlotUpsertWithWhereUniqueWithoutScheduleInput = {
@@ -29707,22 +29781,23 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     classes?: ClassCreateNestedManyWithoutInstructorInput
-    recurringClasses?: RecurringClassCreateNestedManyWithoutInstructorInput
     instructorSchedules?: InstructorScheduleCreateNestedManyWithoutInstructorInput
+    recurringClasses?: RecurringClassCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedCreateWithoutInstructorAbsencesInput = {
@@ -29733,22 +29808,23 @@ export namespace Prisma {
     classURL: string
     icon: string
     nickname: string
-    birthdate: Date | string
-    lifeHistory: string
-    favoriteFood: string
-    hobby: string
-    messageForChildren: string
-    workingTime: string
-    skill: string
     meetingId: string
     passcode: string
     introductionURL: string
     createdAt?: Date | string
-    updatedAt?: Date | string
+    birthdate: Date | string
+    favoriteFood: string
+    hobby: string
+    lifeHistory: string
+    messageForChildren: string
+    skill: string
+    workingTime: string
     terminationAt?: Date | string | null
+    updatedAt?: Date | string
+    isNative: boolean
     classes?: ClassUncheckedCreateNestedManyWithoutInstructorInput
-    recurringClasses?: RecurringClassUncheckedCreateNestedManyWithoutInstructorInput
     instructorSchedules?: InstructorScheduleUncheckedCreateNestedManyWithoutInstructorInput
+    recurringClasses?: RecurringClassUncheckedCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorCreateOrConnectWithoutInstructorAbsencesInput = {
@@ -29774,22 +29850,23 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     classes?: ClassUpdateManyWithoutInstructorNestedInput
-    recurringClasses?: RecurringClassUpdateManyWithoutInstructorNestedInput
     instructorSchedules?: InstructorScheduleUpdateManyWithoutInstructorNestedInput
+    recurringClasses?: RecurringClassUpdateManyWithoutInstructorNestedInput
   }
 
   export type InstructorUncheckedUpdateWithoutInstructorAbsencesInput = {
@@ -29800,22 +29877,23 @@ export namespace Prisma {
     classURL?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
-    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
-    lifeHistory?: StringFieldUpdateOperationsInput | string
-    favoriteFood?: StringFieldUpdateOperationsInput | string
-    hobby?: StringFieldUpdateOperationsInput | string
-    messageForChildren?: StringFieldUpdateOperationsInput | string
-    workingTime?: StringFieldUpdateOperationsInput | string
-    skill?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
     introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
+    favoriteFood?: StringFieldUpdateOperationsInput | string
+    hobby?: StringFieldUpdateOperationsInput | string
+    lifeHistory?: StringFieldUpdateOperationsInput | string
+    messageForChildren?: StringFieldUpdateOperationsInput | string
+    skill?: StringFieldUpdateOperationsInput | string
+    workingTime?: StringFieldUpdateOperationsInput | string
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isNative?: BoolFieldUpdateOperationsInput | boolean
     classes?: ClassUncheckedUpdateManyWithoutInstructorNestedInput
-    recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
     instructorSchedules?: InstructorScheduleUncheckedUpdateManyWithoutInstructorNestedInput
+    recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
   }
 
   export type ClassCreateManyInstructorInput = {
@@ -29826,17 +29904,14 @@ export namespace Prisma {
     status: $Enums.Status
     subscriptionId?: number | null
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
   }
 
-  export type RecurringClassCreateManyInstructorInput = {
-    id?: number
-    subscriptionId?: number | null
-    startAt?: Date | string | null
-    endAt?: Date | string | null
+  export type InstructorAbsenceCreateManyInstructorInput = {
+    absentAt: Date | string
   }
 
   export type InstructorScheduleCreateManyInstructorInput = {
@@ -29846,22 +29921,25 @@ export namespace Prisma {
     timezone: string
   }
 
-  export type InstructorAbsenceCreateManyInstructorInput = {
-    absentAt: Date | string
+  export type RecurringClassCreateManyInstructorInput = {
+    id?: number
+    subscriptionId?: number | null
+    startAt?: Date | string | null
+    endAt?: Date | string | null
   }
 
   export type ClassUpdateWithoutInstructorInput = {
     dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
     customer?: CustomerUpdateOneRequiredWithoutClassesNestedInput
     recurringClass?: RecurringClassUpdateOneWithoutClassesNestedInput
-    classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
     subscription?: SubscriptionUpdateOneWithoutClassNestedInput
+    classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
   }
 
   export type ClassUncheckedUpdateWithoutInstructorInput = {
@@ -29872,9 +29950,9 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
     classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutClassNestedInput
   }
@@ -29887,34 +29965,22 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type RecurringClassUpdateWithoutInstructorInput = {
-    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    subscription?: SubscriptionUpdateOneWithoutRecurringClassNestedInput
-    recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutRecurringClassNestedInput
-    classes?: ClassUpdateManyWithoutRecurringClassNestedInput
+  export type InstructorAbsenceUpdateWithoutInstructorInput = {
+    absentAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RecurringClassUncheckedUpdateWithoutInstructorInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
-    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassNestedInput
-    classes?: ClassUncheckedUpdateManyWithoutRecurringClassNestedInput
+  export type InstructorAbsenceUncheckedUpdateWithoutInstructorInput = {
+    absentAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RecurringClassUncheckedUpdateManyWithoutInstructorInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
-    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type InstructorAbsenceUncheckedUpdateManyWithoutInstructorInput = {
+    absentAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InstructorScheduleUpdateWithoutInstructorInput = {
@@ -29939,30 +30005,28 @@ export namespace Prisma {
     timezone?: StringFieldUpdateOperationsInput | string
   }
 
-  export type InstructorAbsenceUpdateWithoutInstructorInput = {
-    absentAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type RecurringClassUpdateWithoutInstructorInput = {
+    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classes?: ClassUpdateManyWithoutRecurringClassNestedInput
+    subscription?: SubscriptionUpdateOneWithoutRecurringClassNestedInput
+    recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutRecurringClassNestedInput
   }
 
-  export type InstructorAbsenceUncheckedUpdateWithoutInstructorInput = {
-    absentAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type RecurringClassUncheckedUpdateWithoutInstructorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
+    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classes?: ClassUncheckedUpdateManyWithoutRecurringClassNestedInput
+    recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassNestedInput
   }
 
-  export type InstructorAbsenceUncheckedUpdateManyWithoutInstructorInput = {
-    absentAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ClassCreateManyCustomerInput = {
-    id?: number
-    instructorId?: number | null
-    recurringClassId?: number | null
-    dateTime?: Date | string | null
-    status: $Enums.Status
-    subscriptionId?: number | null
-    rebookableUntil?: Date | string | null
-    createdAt?: Date | string
-    updatedAt: Date | string
-    classCode: string
-    isFreeTrial?: boolean
+  export type RecurringClassUncheckedUpdateManyWithoutInstructorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
+    startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ChildrenCreateManyCustomerInput = {
@@ -29974,54 +30038,25 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ClassCreateManyCustomerInput = {
+    id?: number
+    instructorId?: number | null
+    recurringClassId?: number | null
+    dateTime?: Date | string | null
+    status: $Enums.Status
+    subscriptionId?: number | null
+    rebookableUntil?: Date | string | null
+    classCode: string
+    createdAt?: Date | string
+    updatedAt: Date | string
+    isFreeTrial?: boolean
+  }
+
   export type SubscriptionCreateManyCustomerInput = {
     id?: number
     planId: number
     startAt: Date | string
     endAt?: Date | string | null
-  }
-
-  export type ClassUpdateWithoutCustomerInput = {
-    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
-    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
-    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
-    instructor?: InstructorUpdateOneWithoutClassesNestedInput
-    recurringClass?: RecurringClassUpdateOneWithoutClassesNestedInput
-    classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
-    subscription?: SubscriptionUpdateOneWithoutClassNestedInput
-  }
-
-  export type ClassUncheckedUpdateWithoutCustomerInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
-    recurringClassId?: NullableIntFieldUpdateOperationsInput | number | null
-    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
-    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
-    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
-    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
-    classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutClassNestedInput
-  }
-
-  export type ClassUncheckedUpdateManyWithoutCustomerInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
-    recurringClassId?: NullableIntFieldUpdateOperationsInput | number | null
-    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
-    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
-    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
-    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ChildrenUpdateWithoutCustomerInput = {
@@ -30054,12 +30089,55 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ClassUpdateWithoutCustomerInput = {
+    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
+    instructor?: InstructorUpdateOneWithoutClassesNestedInput
+    recurringClass?: RecurringClassUpdateOneWithoutClassesNestedInput
+    subscription?: SubscriptionUpdateOneWithoutClassNestedInput
+    classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
+  }
+
+  export type ClassUncheckedUpdateWithoutCustomerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
+    recurringClassId?: NullableIntFieldUpdateOperationsInput | number | null
+    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
+    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
+    classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutClassNestedInput
+  }
+
+  export type ClassUncheckedUpdateManyWithoutCustomerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
+    recurringClassId?: NullableIntFieldUpdateOperationsInput | number | null
+    dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
+    rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
+  }
+
   export type SubscriptionUpdateWithoutCustomerInput = {
     startAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    plan?: PlanUpdateOneRequiredWithoutSubscriptionNestedInput
     class?: ClassUpdateManyWithoutSubscriptionNestedInput
     recurringClass?: RecurringClassUpdateManyWithoutSubscriptionNestedInput
+    plan?: PlanUpdateOneRequiredWithoutSubscriptionNestedInput
   }
 
   export type SubscriptionUncheckedUpdateWithoutCustomerInput = {
@@ -30136,9 +30214,9 @@ export namespace Prisma {
   export type SubscriptionUpdateWithoutPlanInput = {
     startAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    customer?: CustomerUpdateOneRequiredWithoutSubscriptionNestedInput
     class?: ClassUpdateManyWithoutSubscriptionNestedInput
     recurringClass?: RecurringClassUpdateManyWithoutSubscriptionNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutSubscriptionNestedInput
   }
 
   export type SubscriptionUncheckedUpdateWithoutPlanInput = {
@@ -30165,9 +30243,9 @@ export namespace Prisma {
     dateTime?: Date | string | null
     status: $Enums.Status
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
   }
 
@@ -30182,12 +30260,12 @@ export namespace Prisma {
     dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
-    instructor?: InstructorUpdateOneWithoutClassesNestedInput
     customer?: CustomerUpdateOneRequiredWithoutClassesNestedInput
+    instructor?: InstructorUpdateOneWithoutClassesNestedInput
     recurringClass?: RecurringClassUpdateOneWithoutClassesNestedInput
     classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
   }
@@ -30200,9 +30278,9 @@ export namespace Prisma {
     dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
     classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutClassNestedInput
   }
@@ -30215,18 +30293,18 @@ export namespace Prisma {
     dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type RecurringClassUpdateWithoutSubscriptionInput = {
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classes?: ClassUpdateManyWithoutRecurringClassNestedInput
     instructor?: InstructorUpdateOneWithoutRecurringClassesNestedInput
     recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutRecurringClassNestedInput
-    classes?: ClassUpdateManyWithoutRecurringClassNestedInput
   }
 
   export type RecurringClassUncheckedUpdateWithoutSubscriptionInput = {
@@ -30234,8 +30312,8 @@ export namespace Prisma {
     instructorId?: NullableIntFieldUpdateOperationsInput | number | null
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassNestedInput
     classes?: ClassUncheckedUpdateManyWithoutRecurringClassNestedInput
+    recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassNestedInput
   }
 
   export type RecurringClassUncheckedUpdateManyWithoutSubscriptionInput = {
@@ -30243,10 +30321,6 @@ export namespace Prisma {
     instructorId?: NullableIntFieldUpdateOperationsInput | number | null
     startAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type RecurringClassAttendanceCreateManyRecurringClassInput = {
-    childrenId: number
   }
 
   export type ClassCreateManyRecurringClassInput = {
@@ -30257,36 +30331,28 @@ export namespace Prisma {
     status: $Enums.Status
     subscriptionId?: number | null
     rebookableUntil?: Date | string | null
+    classCode: string
     createdAt?: Date | string
     updatedAt: Date | string
-    classCode: string
     isFreeTrial?: boolean
   }
 
-  export type RecurringClassAttendanceUpdateWithoutRecurringClassInput = {
-    children?: ChildrenUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
-  }
-
-  export type RecurringClassAttendanceUncheckedUpdateWithoutRecurringClassInput = {
-    childrenId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassInput = {
-    childrenId?: IntFieldUpdateOperationsInput | number
+  export type RecurringClassAttendanceCreateManyRecurringClassInput = {
+    childrenId: number
   }
 
   export type ClassUpdateWithoutRecurringClassInput = {
     dateTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
-    instructor?: InstructorUpdateOneWithoutClassesNestedInput
     customer?: CustomerUpdateOneRequiredWithoutClassesNestedInput
-    classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
+    instructor?: InstructorUpdateOneWithoutClassesNestedInput
     subscription?: SubscriptionUpdateOneWithoutClassNestedInput
+    classAttendance?: ClassAttendanceUpdateManyWithoutClassNestedInput
   }
 
   export type ClassUncheckedUpdateWithoutRecurringClassInput = {
@@ -30297,9 +30363,9 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
     classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutClassNestedInput
   }
@@ -30312,10 +30378,22 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     subscriptionId?: NullableIntFieldUpdateOperationsInput | number | null
     rebookableUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classCode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classCode?: StringFieldUpdateOperationsInput | string
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RecurringClassAttendanceUpdateWithoutRecurringClassInput = {
+    children?: ChildrenUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
+  }
+
+  export type RecurringClassAttendanceUncheckedUpdateWithoutRecurringClassInput = {
+    childrenId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassInput = {
+    childrenId?: IntFieldUpdateOperationsInput | number
   }
 
   export type ScheduleCreateManyEventInput = {
