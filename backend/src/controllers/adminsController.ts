@@ -336,6 +336,7 @@ export const getAllInstructorsController = async (
         No: number + 1,
         ID: id,
         Instructor: nickname,
+        English: instructor.isNative ? "Native" : "Non-native",
         "Full Name": name,
         Email: email,
       };

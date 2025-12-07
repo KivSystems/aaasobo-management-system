@@ -178,6 +178,7 @@ export const InstructorListItem = z.object({
   No: z.number(),
   ID: z.number(),
   Instructor: z.string(),
+  English: z.string(),
   "Full Name": z.string(),
   Email: z.string(),
 });
