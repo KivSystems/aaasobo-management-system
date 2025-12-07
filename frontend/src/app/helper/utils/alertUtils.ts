@@ -4,7 +4,11 @@ export const confirmAlert: (text: string) => Promise<boolean> = (
   text: string,
 ) => {
   const result = Swal.fire({
-    text: text,
+    html: `
+      <div style="display:block; text-align:left;">
+        ${text}
+      </div>
+    `,
     icon: "warning",
     confirmButtonText: "OK",
     cancelButtonText: "Cancel",
@@ -28,7 +32,11 @@ export const successAlert: (text: string) => Promise<void> = async (
   text: string,
 ) => {
   Swal.fire({
-    text: text,
+    html: `
+      <div style="display:block; text-align:left;">
+        ${text}
+      </div>
+    `,
     icon: "success",
     confirmButtonText: "OK",
     showConfirmButton: true,
@@ -43,7 +51,11 @@ export const errorAlert: (text: string) => Promise<void> = async (
   text: string,
 ) => {
   Swal.fire({
-    text: text,
+    html: `
+      <div style="display:block; text-align:left;">
+        ${text}
+      </div>
+    `,
     icon: "error",
     confirmButtonText: "OK",
     showConfirmButton: true,
@@ -58,7 +70,11 @@ export const warningAlert: (text: string) => Promise<void> = async (
   text: string,
 ) => {
   Swal.fire({
-    text: text,
+    html: `
+      <div style="display:block; text-align:left;">
+        ${text}
+      </div>
+    `,
     icon: "warning",
     confirmButtonText: "OK",
     showConfirmButton: true,
