@@ -4,8 +4,6 @@ type Events = {
   end: string;
 };
 
-type UserStatus = "active" | "leaving";
-
 type Instructors = {
   data: Instructor[];
 };
@@ -229,6 +227,7 @@ type ForgotPasswordFormState = {
 type RegisterFormState = {
   password?: string;
   name?: string;
+  isNative?: string;
   email?: string;
   passConfirmation?: string;
   prefecture?: string;
@@ -247,6 +246,7 @@ type RegisterFormState = {
 
 type UpdateFormState = {
   name?: string;
+  isNative?: string;
   nickname?: string;
   email?: string;
   classURL?: string;

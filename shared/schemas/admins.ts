@@ -83,6 +83,7 @@ export const UpdateInstructorRequest = z.object({
   meetingId: z.string().min(1, "Meeting ID is required"),
   passcode: z.string().min(1, "Passcode is required"),
   introductionURL: z.string().min(1, "Introduction URL is required"),
+  isNative: z.enum(["true", "false"]),
 });
 
 // Plan schemas

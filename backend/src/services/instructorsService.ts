@@ -138,6 +138,7 @@ export const updateInstructor = async (
   meetingId: string,
   passcode: string,
   introductionURL: string,
+  isNative: boolean,
 ) => {
   try {
     // Fetch the previous instructor data.
@@ -190,6 +191,7 @@ export const updateInstructor = async (
         terminationAt: leavingDate
           ? convertToUTCDate(leavingDate, "Asia/Tokyo")
           : null,
+        isNative,
       },
     });
     return instructor;

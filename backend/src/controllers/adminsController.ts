@@ -512,6 +512,7 @@ export const updateInstructorProfileController = async (
     meetingId,
     passcode,
     introductionURL,
+    isNative,
   } = req.body;
 
   // Normalize email
@@ -588,6 +589,7 @@ export const updateInstructorProfileController = async (
       meetingId,
       passcode,
       introductionURL,
+      isNative === "true",
     );
 
     // Create a new instructor object with the updated termination date (JST).
