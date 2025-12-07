@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useFormState } from "react-dom";
 import { updateInstructorAction } from "@/app/actions/updateUser";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import UserStatusSwitcher from "@/app/components/elements/UserStatusSwitcher/UserStatusSwitcher";
+import StatusSwitcher from "@/app/components/elements/StatusSwitcher/StatusSwitcher";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import {
@@ -39,6 +39,7 @@ import { confirmAlert } from "@/app/helper/utils/alertUtils";
 // Define the specific string fields that are editable in this component
 type EditableInstructorFields =
   | "name"
+  | "isNative"
   | "nickname"
   | "birthdate"
   | "workingTime"
@@ -75,6 +76,8 @@ function InstructorProfile({
     if (updateResultState) {
       const newMessages: Record<string, string> = {};
       if (updateResultState.name) newMessages.name = updateResultState.name;
+      if (updateResultState.isNative)
+        newMessages.isNative = updateResultState.isNative;
       if (updateResultState.nickname)
         newMessages.nickname = updateResultState.nickname;
       if (updateResultState.email) newMessages.email = updateResultState.email;
@@ -113,8 +116,8 @@ function InstructorProfile({
     Instructor | InstructorProfile | null
   >(typeof instructor !== "string" ? instructor : null);
   const [isEditing, setIsEditing] = useState(false);
-  const [confirmResult, setConfirmResult] = useState<boolean>(false);
-  const [status, setStatus] = useState<UserStatus>("active");
+  const [userStatus, setUserStatus] = useState<string>("Active");
+  const [nativeStatus, setNativeStatus] = useState<string>("Non-native");
   const [leavingDate, setLeavingDate] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
@@ -147,21 +150,17 @@ function InstructorProfile({
   const submissionConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (leavingDate && !leavingDate.includes("T") && status === "leaving") {
+    let confirmed = true;
+    if (leavingDate && !leavingDate.includes("T") && userStatus === "Leaving") {
       const updatedDate = leavingDate.replace(/-/g, "/");
-      const confirmed = await confirmAlert(
+      confirmed = await confirmAlert(
         `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
       );
       if (!confirmed) return;
-    } else {
-      setConfirmResult(true);
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
 
     if (formRef.current) {
       const formData = new FormData(formRef.current);
-      formData.set("confirmResult", confirmResult.toString());
       formAction(formData);
     } else {
       console.error("formRef is null");
@@ -216,7 +215,7 @@ function InstructorProfile({
           >
             <Image
               src={
-                latestInstructor.icon.url === defaultUserImageUrl
+                latestInstructor.icon.url.includes(defaultUserImageUrl)
                   ? defaultUserImageUrl
                   : latestInstructor.icon.url
               }
@@ -229,12 +228,17 @@ function InstructorProfile({
             />
 
             {/* User Status Switcher */}
-            <UserStatusSwitcher
+            <StatusSwitcher
               isEditing={isEditing}
+              statusOptions={["Active", "Leaving"]}
+              currentStatus={
+                latestInstructor.terminationAt === null ? "Active" : "Leaving"
+              }
               leavingDate={latestInstructor.terminationAt}
+              title="Status"
               onStatusChange={(newStatus, newDate) => {
-                setStatus(newStatus);
-                setLeavingDate(newDate);
+                setUserStatus(newStatus);
+                setLeavingDate(newDate ?? null);
               }}
             />
 
@@ -271,13 +275,11 @@ function InstructorProfile({
                 <p className={styles.instructorName__text}>
                   {language === "en" ? "Name" : "名前"}
                 </p>
-                {latestInstructor.isNative ? (
+                {!isEditing && latestInstructor.isNative ? (
                   <div className={styles.instructorName__isNativeFlag}>
                     Native
                   </div>
-                ) : (
-                  <></>
-                )}
+                ) : null}
               </div>
               {isEditing ? (
                 <InputField
@@ -294,6 +296,20 @@ function InstructorProfile({
                 </>
               )}
             </div>
+
+            {/* Native Type Switcher */}
+            <StatusSwitcher
+              isEditing={isEditing}
+              statusOptions={["Non-native", "Native"]}
+              currentStatus={
+                latestInstructor.isNative ? "Native" : "Non-native"
+              }
+              width="220px"
+              title="Non-native / Native"
+              onStatusChange={(newStatus) => {
+                setNativeStatus(newStatus);
+              }}
+            />
 
             {/* Nickname Hobby, Message For Children, Skill */}
             <div className={styles.insideContainer}>
@@ -679,6 +695,7 @@ function InstructorProfile({
               name="icon"
               value={latestInstructor.icon.url}
             />
+            <input type="hidden" name="nativeStatus" value={nativeStatus} />
 
             {/* Action buttons for only admin */}
             {userSessionType === "admin" &&

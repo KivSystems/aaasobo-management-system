@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "./UserStatusSwitcher.module.scss";
+import styles from "./StatusSwitcher.module.scss";
 import { useState, useEffect } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { getLongMonth, nDaysLater } from "@/app/helper/utils/dateUtils";
@@ -8,18 +8,24 @@ import InputField from "@/app/components/elements/inputField/InputField";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { TWO_WEEKS_TO_LEAVE } from "@/app/helper/data/data";
 
-const UserStatusSwitcher = ({
+const StatusSwitcher = ({
   isEditing,
+  statusOptions,
+  currentStatus,
   leavingDate,
+  title,
+  width = "180px",
   onStatusChange,
 }: {
   isEditing: boolean;
-  leavingDate: string | null;
-  onStatusChange: (status: UserStatus, date: string | null) => void;
+  statusOptions: string[];
+  currentStatus: string;
+  leavingDate?: string | null;
+  title: string;
+  width?: string;
+  onStatusChange: (status: string, date?: string | null) => void;
 }) => {
-  const [userStatus, setUserStatus] = useState<UserStatus>(
-    leavingDate !== null ? "leaving" : "active",
-  );
+  const [status, setStatus] = useState<string>(currentStatus);
   const [updatedLeavingDate, setUpdatedLeavingDate] = useState<string | null>(
     leavingDate ? leavingDate : null,
   );
@@ -34,13 +40,14 @@ const UserStatusSwitcher = ({
     year: 0,
     isPast: false,
   });
+  const capitalizeFirst = (str: string): string => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
   const { language } = useLanguage();
 
   useEffect(() => {
-    // Update user status and leaving date
-    const newStatus = leavingDate ? "leaving" : "active";
-    setUserStatus(newStatus);
-    setUpdatedLeavingDate(leavingDate);
+    setUpdatedLeavingDate(leavingDate ? leavingDate : null);
 
     // Set date info
     if (leavingDate) {
@@ -54,42 +61,46 @@ const UserStatusSwitcher = ({
   }, [leavingDate]);
 
   useEffect(() => {
-    onStatusChange(userStatus, updatedLeavingDate);
-  }, [userStatus, updatedLeavingDate, onStatusChange]);
+    onStatusChange(status, updatedLeavingDate);
+  }, [status, updatedLeavingDate, onStatusChange]);
 
   return (
     <>
       {isEditing ? (
         <>
-          <p className={styles.userStatus__text}>Status</p>
+          <p className={styles.userStatus__text}>{title}</p>
           <div className={styles.switchContainer}>
             <div
               className={styles.userStatusSwitcher}
+              style={{ width: width }}
               onClick={() => {
-                setUserStatus(userStatus === "active" ? "leaving" : "active");
+                const currentIndex = statusOptions.indexOf(status);
+                const nextIndex = (currentIndex + 1) % statusOptions.length;
+                setStatus(statusOptions[nextIndex]);
               }}
             >
               <div
                 className={`${styles.switch} ${
-                  userStatus === "leaving" ? styles.leaving : ""
+                  status === statusOptions[1] ? styles.leaving : ""
                 }`}
               ></div>
               <span
                 className={`${styles.status} ${
-                  userStatus === "active" && styles["status--active"]
+                  status === statusOptions[0] ? styles["status--active"] : ""
                 }`}
               >
-                Active
+                {capitalizeFirst(statusOptions[0])}
               </span>
               <span
                 className={`${styles.status} ${
-                  userStatus === "leaving" && styles["status--active"]
+                  status === statusOptions[1] ? styles["status--active"] : ""
                 }`}
               >
-                Leaving
+                {capitalizeFirst(statusOptions[1])}
               </span>
             </div>
-            {userStatus === "leaving" && (
+
+            {status === "Leaving" && (
               <>
                 <InputField
                   name="leavingDate"
@@ -131,4 +142,4 @@ const UserStatusSwitcher = ({
   );
 };
 
-export default UserStatusSwitcher;
+export default StatusSwitcher;

@@ -336,6 +336,7 @@ export const getAllInstructorsController = async (
         No: number + 1,
         ID: id,
         Instructor: nickname,
+        English: instructor.isNative ? "Native" : "Non-native",
         "Full Name": name,
         Email: email,
       };
@@ -512,6 +513,7 @@ export const updateInstructorProfileController = async (
     meetingId,
     passcode,
     introductionURL,
+    isNative,
   } = req.body;
 
   // Normalize email
@@ -588,6 +590,7 @@ export const updateInstructorProfileController = async (
       meetingId,
       passcode,
       introductionURL,
+      isNative === "true",
     );
 
     // Create a new instructor object with the updated termination date (JST).

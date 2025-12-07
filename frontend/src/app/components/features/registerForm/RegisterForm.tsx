@@ -29,6 +29,7 @@ import { registerUser } from "@/app/actions/registerUser";
 import { registerContent } from "@/app/actions/registerContent";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
+import StatusSwitcher from "@/app/components/elements/StatusSwitcher/StatusSwitcher";
 import { defaultColor } from "@/app/helper/data/data";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 import Uploader from "./uploadImages/Uploader";
@@ -57,7 +58,7 @@ const RegisterForm = ({
     useFormMessages(registerResultState);
   const { passwordStrength } = usePasswordStrength(password);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isNative, setIsNative] = useState<boolean>();
+  const [nativeStatus, setNativeStatus] = useState<string>("Non-native");
 
   return (
     <form action={formAction} className={styles.form}>
@@ -315,6 +316,19 @@ const RegisterForm = ({
                 />
               </div>
 
+              {/* Native Type Switcher */}
+              <StatusSwitcher
+                isEditing={true}
+                statusOptions={["Non-native", "Native"]}
+                currentStatus={"Non-native"}
+                width="220px"
+                title="Non-native / Native"
+                onStatusChange={(nativeStatus) => {
+                  setNativeStatus(nativeStatus);
+                }}
+              />
+              <input type="hidden" name="nativeStatus" value={nativeStatus} />
+
               {/* Image File */}
               <input
                 type="file"
@@ -337,16 +351,6 @@ const RegisterForm = ({
                 }}
                 label={"Instructor profile image"}
               />
-
-              {/* Native flag */}
-              <label className={styles.checkLabel}>
-                <input
-                  type="checkbox"
-                  name={"isNative"}
-                  onChange={() => setIsNative(!isNative)}
-                />
-                <p>Is Native</p>
-              </label>
             </>
           )}
         </>
@@ -400,15 +404,6 @@ const RegisterForm = ({
             error={localMessages.description}
             onChange={() => clearErrorMessage("description")}
           />{" "}
-          {/* Native flag */}
-          <label className={styles.checkLabel}>
-            <input
-              type="checkbox"
-              name={"isNative"}
-              onChange={() => setIsNative(!isNative)}
-            />
-            <p>Is Native</p>
-          </label>
         </>
       )}
 

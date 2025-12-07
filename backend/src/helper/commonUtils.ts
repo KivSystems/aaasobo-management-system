@@ -69,7 +69,7 @@ export const validateUserImageUrl = async (url: string, id: number) => {
     return { url: cached.url };
   }
 
-  let blobUrl = defaultUserImageUrl;
+  let blobUrl = defaultUserImageUrl + `?id=${id}`;
   // Validate the URL against the token-specific letters
   if (tokenSpecificLetters && !url.includes(tokenSpecificLetters)) {
     cache.set(url, { url: blobUrl, checkedAt: now });
