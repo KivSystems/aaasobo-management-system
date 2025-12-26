@@ -29,7 +29,7 @@ Or temporarily remove `**/test.bak/**` from the exclude list in `vitest.config.m
 - [x] events (migrated to `src/test/events.test.ts`)
 - [x] plans (migrated to `src/test/plans.test.ts`)
 - [x] recurringClass (migrated to `src/test/recurringClasses.test.ts`)
-- [ ] subscriptions
+- [x] subscriptions (migrated to `src/test/subscriptions.test.ts`)
 - [ ] jobs
 
 Once all tests are migrated, this directory can be deleted.
