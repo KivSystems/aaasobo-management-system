@@ -170,7 +170,9 @@ describe("POST /recurring-classes", () => {
       })
       .expect(400);
 
-    expect(response.body.message).toBe("Regular class already exists at this time slot");
+    expect(response.body.message).toBe(
+      "Regular class already exists at this time slot",
+    );
     expect(await prisma.recurringClass.count()).toBe(1);
   });
 
@@ -463,9 +465,7 @@ describe("GET /recurring-classes/by-instructorId", () => {
   });
 
   it("return 400 when instructorId is missing", async () => {
-    await request(server)
-      .get(`/recurring-classes/by-instructorId`)
-      .expect(400);
+    await request(server).get(`/recurring-classes/by-instructorId`).expect(400);
   });
 
   it("return 400 for invalid instructorId", async () => {
@@ -546,7 +546,9 @@ describe("PUT /recurring-classes/:id", () => {
     const reloadedOld = await prisma.recurringClass.findUnique({
       where: { id: oldRecurringClass.id },
     });
-    expect(reloadedOld?.endAt?.toISOString()).toBe(firstOccurrence.toISOString());
+    expect(reloadedOld?.endAt?.toISOString()).toBe(
+      firstOccurrence.toISOString(),
+    );
 
     const stillExists = await prisma.class.findUnique({
       where: { id: oldClassToBeDeleted.id },
@@ -572,4 +574,3 @@ describe("PUT /recurring-classes/:id", () => {
       .expect(400);
   });
 });
-
