@@ -1,15 +1,12 @@
 import { afterAll, beforeEach } from "vitest";
-import {
-  PostgreSqlContainer,
-  StartedPostgreSqlContainer,
-} from "@testcontainers/postgresql";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../generated/prisma/client";
 import { execSync } from "child_process";
+import { readFile } from "fs/promises";
+import path from "path";
 
 const { faker } = require("@faker-js/faker");
 
-let postgresContainer: StartedPostgreSqlContainer | undefined;
 let prisma!: PrismaClient;
 let prismaInitialized = false;
 
@@ -19,25 +16,17 @@ let prismaInitialized = false;
 // correct connection string immediately.
 await (async () => {
   try {
-    // Check if TEST_DATABASE_URL is provided
-    if (process.env.TEST_DATABASE_URL) {
-      // Use provided test database
-      process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
-      process.env.POSTGRES_PRISMA_URL = process.env.TEST_DATABASE_URL;
-      console.log("Using provided TEST_DATABASE_URL for tests");
-    } else {
-      // Using PostgreSQL 16 to match Vercel Postgres production version (16.9)
-      console.log("Starting PostgreSQL container...");
-      postgresContainer = await new PostgreSqlContainer("postgres:16-alpine")
-        .withDatabase("test_db")
-        .withUsername("test_user")
-        .withPassword("test_password")
-        .start();
+    const baseDatabaseUrl = await getBaseDatabaseUrl();
+    const workerId =
+      process.env.VITEST_WORKER_ID ?? process.env.VITEST_POOL_ID ?? "0";
+    const workerDbName = `aaasobo_test_${workerId}`;
+    requireSafeDbName(workerDbName);
 
-      process.env.DATABASE_URL = postgresContainer.getConnectionUri();
-      process.env.POSTGRES_PRISMA_URL = postgresContainer.getConnectionUri();
-      console.log("PostgreSQL container started");
-    }
+    const workerDatabaseUrl = withDatabase(baseDatabaseUrl, workerDbName);
+    process.env.DATABASE_URL = workerDatabaseUrl;
+    process.env.POSTGRES_PRISMA_URL = workerDatabaseUrl;
+
+    await ensureDatabaseExists(baseDatabaseUrl, workerDbName);
 
     // Initialize Prisma client (engineType="client" requires a driver adapter)
     const adapter = new PrismaPg({
@@ -45,18 +34,14 @@ await (async () => {
     });
     prisma = new PrismaClient({ adapter });
 
-    // Apply Prisma schema using db push
-    console.log("Applying Prisma schema...");
-    execSync("npx prisma db push --accept-data-loss", {
+    execSync("npx prisma migrate deploy", {
       stdio: "inherit",
       env: process.env,
     });
-    console.log("Prisma schema applied");
 
     // Connect Prisma client
     await prisma.$connect();
     prismaInitialized = true;
-    console.log("Prisma client connected");
 
     // Set consistent seed for reproducible test data
     faker.seed(12345);
@@ -67,6 +52,7 @@ await (async () => {
         "Test database setup failed.",
         message,
         "Fix: start Docker, or set TEST_DATABASE_URL to a reachable PostgreSQL instance.",
+        "Note: the configured DB user must be able to create/drop databases for parallel tests.",
       ].join("\n"),
       { cause: error },
     );
@@ -83,13 +69,6 @@ afterAll(async () => {
   // Disconnect Prisma client
   if (prismaInitialized) {
     await prisma.$disconnect();
-    console.log("Prisma client disconnected");
-  }
-
-  // Stop the container if we started it
-  if (postgresContainer) {
-    await postgresContainer.stop();
-    console.log("PostgreSQL container stopped");
   }
 });
 
@@ -110,6 +89,67 @@ async function truncateAllTables() {
 
   // Re-enable foreign key checks
   await prisma.$executeRaw`SET session_replication_role = DEFAULT;`;
+}
+
+async function getBaseDatabaseUrl() {
+  if (process.env.TEST_DATABASE_URL) return process.env.TEST_DATABASE_URL;
+
+  const stateDir = path.join(process.cwd(), ".vitest");
+  const baseDatabaseUrlFile = path.join(stateDir, "base-database-url.txt");
+  try {
+    const baseDatabaseUrl = await readFile(baseDatabaseUrlFile, "utf8");
+    return baseDatabaseUrl.trim();
+  } catch {
+    throw new Error(
+      [
+        "TEST_DATABASE_URL is not set and Vitest global setup did not provide a database URL.",
+        "Fix: run tests via `cd backend && npm run test`, or set TEST_DATABASE_URL to a reachable PostgreSQL instance.",
+      ].join("\n"),
+    );
+  }
+}
+
+function withDatabase(databaseUrl: string, databaseName: string) {
+  requireSafeDbName(databaseName);
+  const url = new URL(databaseUrl);
+  url.pathname = `/${databaseName}`;
+  return url.toString();
+}
+
+function requireSafeDbName(dbName: string) {
+  if (!/^[a-z0-9_]+$/i.test(dbName)) {
+    throw new Error(`Unsafe database name: ${dbName}`);
+  }
+}
+
+function quotedIdentifier(id: string) {
+  requireSafeDbName(id);
+  return `"${id.replaceAll('"', '""')}"`;
+}
+
+function asAdminDatabaseUrl(databaseUrl: string) {
+  const url = new URL(databaseUrl);
+  url.pathname = "/postgres";
+  return url.toString();
+}
+
+async function ensureDatabaseExists(baseDatabaseUrl: string, dbName: string) {
+  requireSafeDbName(dbName);
+  const adminUrl = asAdminDatabaseUrl(baseDatabaseUrl);
+  const adapter = new PrismaPg({ connectionString: adminUrl });
+  const adminPrisma = new PrismaClient({ adapter });
+  await adminPrisma.$connect();
+  try {
+    const rows = await adminPrisma.$queryRaw<Array<{ exists: number }>>`
+      SELECT 1 as exists FROM pg_database WHERE datname = ${dbName}
+    `;
+    if (rows.length > 0) return;
+    await adminPrisma.$executeRawUnsafe(
+      `CREATE DATABASE ${quotedIdentifier(dbName)}`,
+    );
+  } finally {
+    await adminPrisma.$disconnect();
+  }
 }
 
 // Export prisma instance for use in tests

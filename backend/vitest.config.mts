@@ -8,7 +8,8 @@ export default defineConfig({
     environment: "node",
     silent: false, // Keep test output visible
     logHeapUsage: false,
-    fileParallelism: false, // Avoid concurrent Testcontainers startups (Ryuk/Reaper)
+    include: ["src/test/**/*.test.ts"],
+    globalSetup: ["./src/test/globalSetup.ts"],
     setupFiles: ["./src/test/setup.ts"],
     exclude: ["**/node_modules/**", "**/test.bak/**"],
     env: {
@@ -16,13 +17,7 @@ export default defineConfig({
       AUTH_SALT: "test-auth-salt",
       AUTH_SECRET: "test-auth-secret",
     },
-    // Run tests sequentially to avoid database conflicts
     pool: "forks",
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
     // Suppress console output during tests for cleaner output
     onConsoleLog: (log, type) => {
       // Suppress error logs during tests but keep other logs
