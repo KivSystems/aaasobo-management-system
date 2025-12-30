@@ -13,7 +13,7 @@ export const eventsRouter = express.Router();
 // Individual route configurations
 const getEventConfig = {
   method: "get" as const,
-  middlewares: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: getEventController,
   paramsSchema: EventIdParams,
   openapi: {
