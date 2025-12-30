@@ -12,9 +12,11 @@ describe("GET /admins/admin-list", () => {
   it("succeed with multiple admins", async () => {
     const admin1 = await createAdmin();
     const admin2 = await createAdmin();
+    const authCookie = await generateAuthCookie(admin1.id, "admin");
 
     const response = await request(server)
       .get("/admins/admin-list")
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.data).toEqual([
@@ -26,10 +28,13 @@ describe("GET /admins/admin-list", () => {
 
 describe("GET /admins/admin-list/:id", () => {
   it("succeed with valid ID", async () => {
+    const authAdmin = await createAdmin();
+    const authCookie = await generateAuthCookie(authAdmin.id, "admin");
     const admin = await createAdmin();
 
     const response = await request(server)
       .get(`/admins/admin-list/${admin.id}`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body).toEqual({
@@ -42,11 +47,21 @@ describe("GET /admins/admin-list/:id", () => {
   });
 
   it("fail with invalid ID parameter", async () => {
-    await request(server).get("/admins/admin-list/invalid").expect(400);
+    const authAdmin = await createAdmin();
+    const authCookie = await generateAuthCookie(authAdmin.id, "admin");
+    await request(server)
+      .get("/admins/admin-list/invalid")
+      .set("Cookie", authCookie)
+      .expect(400);
   });
 
   it("fail for non-existent admin", async () => {
-    await request(server).get("/admins/admin-list/999").expect(404);
+    const authAdmin = await createAdmin();
+    const authCookie = await generateAuthCookie(authAdmin.id, "admin");
+    await request(server)
+      .get("/admins/admin-list/999")
+      .set("Cookie", authCookie)
+      .expect(404);
   });
 });
 

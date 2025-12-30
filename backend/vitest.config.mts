@@ -8,6 +8,7 @@ export default defineConfig({
     environment: "node",
     silent: false, // Keep test output visible
     logHeapUsage: false,
+    fileParallelism: false, // Avoid concurrent Testcontainers startups (Ryuk/Reaper)
     setupFiles: ["./src/test/setup.ts"],
     exclude: ["**/node_modules/**", "**/test.bak/**"],
     env: {

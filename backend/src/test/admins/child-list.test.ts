@@ -1,16 +1,24 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import { server } from "../../server";
-import { createCustomer, createChild } from "../testUtils";
+import {
+  createAdmin,
+  createCustomer,
+  createChild,
+  generateAuthCookie,
+} from "../testUtils";
 
 describe("GET /admins/child-list", () => {
   it("succeed with multiple children", async () => {
+    const admin = await createAdmin();
+    const authCookie = await generateAuthCookie(admin.id, "admin");
     const customer = await createCustomer();
     const child1 = await createChild(customer.id);
     const child2 = await createChild(customer.id);
 
     const response = await request(server)
       .get("/admins/child-list")
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.data).toEqual([
