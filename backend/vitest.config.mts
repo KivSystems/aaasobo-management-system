@@ -11,7 +11,7 @@ export default defineConfig({
     include: ["src/test/**/*.test.ts"],
     globalSetup: ["./src/test/globalSetup.ts"],
     setupFiles: ["./src/test/setup.ts"],
-    exclude: ["**/node_modules/**", "**/test.bak/**"],
+    exclude: ["**/node_modules/**"],
     env: {
       NODE_ENV: "development",
       AUTH_SALT: "test-auth-salt",

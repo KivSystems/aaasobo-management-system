@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": ["generated/**", "prisma.config.ts", "src/test.bak/**"],
-  "ignoreDependencies": ["@prisma/client"],
+  "ignore": ["generated/**", "prisma.config.ts"],
+  "ignoreDependencies": ["@prisma/client", "@prisma/client-runtime-utils"],
   "prisma": {
     "config": ["package.json"]
   }
