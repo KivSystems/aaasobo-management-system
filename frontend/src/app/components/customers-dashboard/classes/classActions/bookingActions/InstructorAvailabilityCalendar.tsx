@@ -74,6 +74,7 @@ const createInstructorProfile = (
   nickname: instructorName,
   icon: "",
   introductionURL: "",
+  isNative: false,
 });
 
 export default function InstructorAvailabilityCalendar({

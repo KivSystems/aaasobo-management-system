@@ -540,26 +540,3 @@ export const getSubscriptionByRecurringClassId = async (
     throw new Error("Failed to get subscription by recurring class ID.");
   }
 };
-
-// Delete the recurring class if it hasn't started yet.
-export const deleteRecurringClass = async (
-  tx: Prisma.TransactionClient,
-  recurringClassId: number,
-) => {
-  try {
-    const recurringClass = await tx.recurringClass.findUnique({
-      where: { id: recurringClassId },
-    });
-
-    if (recurringClass && recurringClass.startAt === null) {
-      return await tx.recurringClass.delete({
-        where: { id: recurringClassId },
-      });
-    }
-
-    return recurringClass;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to delete recurring class.");
-  }
-};

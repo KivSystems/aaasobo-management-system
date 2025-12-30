@@ -99,7 +99,7 @@ export async function createInstructor(data: any = generateTestInstructor()) {
 /**
  * Generate a test plan
  */
-export function generateTestPlan() {
+function generateTestPlan() {
   const planNameJpn = faker.lorem.words(2);
   const planNameEng = faker.commerce.productName();
   return {
@@ -147,7 +147,7 @@ export async function createChild(
 /**
  * Generate a test event
  */
-export function generateTestEvent() {
+function generateTestEvent() {
   return {
     name: `イベント / Event${faker.number.int({ min: 1000, max: 9999 })}`,
     color: faker.color.rgb(),
