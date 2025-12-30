@@ -114,9 +114,9 @@ export const ClassProfile = z
       })
       .optional(),
     status: z.string(),
-    recurringClassId: z.number().optional(),
-    rebookableUntil: z.string().optional(),
-    updatedAt: z.string().optional(),
+    recurringClassId: z.number().nullable().optional(),
+    rebookableUntil: z.string().nullable().optional(),
+    updatedAt: z.string().nullable().optional(),
     classCode: z.string().optional(),
     classAttendance: z
       .object({
@@ -144,8 +144,8 @@ export const CreateClassesResponse = z.object({
     z.object({
       id: z.number(),
       instructorId: z.number().nullable(),
-      startAt: z.date().nullable(),
-      endAt: z.date().nullable(),
+      startAt: z.string().nullable(),
+      endAt: z.string().nullable(),
       subscriptionId: z.number().nullable(),
       subscription: z
         .object({
@@ -168,7 +168,7 @@ export const CheckChildConflictsResponse = z.array(z.string());
 
 export const DeleteClassResponse = z.object({
   id: z.number(),
-  dateTime: z.date().nullable(),
+  dateTime: z.string().nullable(),
   instructorId: z.number().nullable(),
   customerId: z.number(),
   status: z.enum([
@@ -180,9 +180,9 @@ export const DeleteClassResponse = z.object({
     "rebooked",
     "declined",
   ]),
-  rebookableUntil: z.date().nullable(),
+  rebookableUntil: z.string().nullable(),
   classCode: z.string(),
-  updatedAt: z.date(),
+  updatedAt: z.string(),
   isFreeTrial: z.boolean(),
   subscriptionId: z.number().nullable(),
   recurringClassId: z.number().nullable(),
