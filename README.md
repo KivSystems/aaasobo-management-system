@@ -75,6 +75,15 @@ npm run db:start
 npm run prisma:init
 ```
 
+#### Tests
+
+```sh
+cd backend
+npm run test
+```
+
+Tests run in parallel using one PostgreSQL instance with one database per Vitest worker (databases are named `aaasobo_test_<workerId>` and are created/dropped automatically). Use Docker (Testcontainers), or set `TEST_DATABASE_URL` (or `POSTGRES_PRISMA_URL`/`DATABASE_URL` via `backend/.env`) to a reachable PostgreSQL instance; the configured DB user must be able to create/drop databases.
+
 #### Start Server
 
 ```sh
