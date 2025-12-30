@@ -11,12 +11,15 @@ import {
 
 describe("GET /instructors/:id/absences", () => {
   it("succeed returning instructor absences", async () => {
+    const admin = await createAdmin();
+    const authCookie = await generateAuthCookie(admin.id, "admin");
     const instructor = await createInstructor();
     const absenceDate = new Date("2024-06-15");
     await createInstructorAbsence(instructor.id, absenceDate);
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/absences`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.data).toHaveLength(1);

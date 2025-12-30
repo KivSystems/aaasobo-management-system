@@ -11,6 +11,8 @@ import { prisma } from "../setup";
 
 describe("GET /admins/business-schedule", () => {
   it("succeed with multiple schedules", async () => {
+    const admin = await createAdmin();
+    const authCookie = await generateAuthCookie(admin.id, "admin");
     const event1 = await createEvent();
     const event2 = await createEvent();
     const date1 = new Date("2025-01-15");
@@ -20,6 +22,7 @@ describe("GET /admins/business-schedule", () => {
 
     const response = await request(server)
       .get("/admins/business-schedule")
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.organizedData).toEqual([

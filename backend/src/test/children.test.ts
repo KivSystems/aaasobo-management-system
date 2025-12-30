@@ -4,21 +4,30 @@ const { faker } = require("@faker-js/faker");
 import { server } from "../server";
 import { prisma } from "./setup";
 import {
+  createAdmin,
   createCustomer,
   createChild,
   createInstructor,
   createClass,
   createClassAttendance,
+  generateAuthCookie,
 } from "./testUtils";
+
+async function createAdminAuthCookie() {
+  const admin = await createAdmin();
+  return await generateAuthCookie(admin.id, "admin");
+}
 
 describe("GET /children", () => {
   it("succeed with valid customerId", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     await createChild(customer.id);
     await createChild(customer.id);
 
     const response = await request(server)
       .get("/children")
+      .set("Cookie", authCookie)
       .query({ customerId: customer.id.toString() })
       .expect(200);
 
@@ -29,6 +38,7 @@ describe("GET /children", () => {
 
 describe("POST /children", () => {
   it("succeed with valid data", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const childData = {
       name: faker.person.fullName(),
@@ -37,7 +47,11 @@ describe("POST /children", () => {
       customerId: customer.id,
     };
 
-    await request(server).post("/children").send(childData).expect(200);
+    await request(server)
+      .post("/children")
+      .set("Cookie", authCookie)
+      .send(childData)
+      .expect(200);
 
     // Verify child was created
     const child = await prisma.children.findFirst({
@@ -53,11 +67,13 @@ describe("POST /children", () => {
 
 describe("GET /children/:id", () => {
   it("succeed with valid child ID", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const child = await createChild(customer.id);
 
     const response = await request(server)
       .get(`/children/${child.id}`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.id).toBe(child.id);
@@ -68,6 +84,7 @@ describe("GET /children/:id", () => {
 
 describe("PATCH /children/:id", () => {
   it("succeed with valid update data", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const child = await createChild(customer.id);
     const updateData = {
@@ -79,6 +96,7 @@ describe("PATCH /children/:id", () => {
 
     await request(server)
       .patch(`/children/${child.id}`)
+      .set("Cookie", authCookie)
       .send(updateData)
       .expect(200);
 
@@ -96,10 +114,14 @@ describe("PATCH /children/:id", () => {
 
 describe("DELETE /children/:id", () => {
   it("succeed with valid ID and no class conflicts", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const child = await createChild(customer.id);
 
-    await request(server).delete(`/children/${child.id}`).expect(200);
+    await request(server)
+      .delete(`/children/${child.id}`)
+      .set("Cookie", authCookie)
+      .expect(200);
 
     // Verify child was deleted
     const deletedChild = await prisma.children.findUnique({
@@ -109,6 +131,7 @@ describe("DELETE /children/:id", () => {
   });
 
   it("fail when child has completed classes", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const child = await createChild(customer.id);
     const instructor = await createInstructor();
@@ -121,7 +144,10 @@ describe("DELETE /children/:id", () => {
     // Create completed class attendance
     await createClassAttendance(classInstance.id, child.id);
 
-    await request(server).delete(`/children/${child.id}`).expect(409);
+    await request(server)
+      .delete(`/children/${child.id}`)
+      .set("Cookie", authCookie)
+      .expect(409);
 
     // Verify child was not deleted
     const stillExists = await prisma.children.findUnique({
@@ -131,6 +157,7 @@ describe("DELETE /children/:id", () => {
   });
 
   it("fail when child has booked classes", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const child = await createChild(customer.id);
     const instructor = await createInstructor();
@@ -144,7 +171,10 @@ describe("DELETE /children/:id", () => {
     // Create booked class attendance
     await createClassAttendance(classInstance.id, child.id);
 
-    await request(server).delete(`/children/${child.id}`).expect(409);
+    await request(server)
+      .delete(`/children/${child.id}`)
+      .set("Cookie", authCookie)
+      .expect(409);
 
     // Verify child was not deleted
     const stillExists = await prisma.children.findUnique({

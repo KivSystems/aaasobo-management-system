@@ -55,6 +55,7 @@ export function generateTestInstructor() {
     meetingId: faker.string.numeric(11),
     passcode: faker.string.alphanumeric(8),
     introductionURL: faker.internet.url(),
+    isNative: false,
   };
 }
 
@@ -98,11 +99,14 @@ export async function createInstructor(data: any = generateTestInstructor()) {
 /**
  * Generate a test plan
  */
-export function generateTestPlan() {
+function generateTestPlan() {
+  const planNameJpn = faker.lorem.words(2);
+  const planNameEng = faker.commerce.productName();
   return {
-    name: faker.commerce.productName(),
+    name: `${planNameJpn} / ${planNameEng}`,
     weeklyClassTimes: faker.number.int({ min: 1, max: 5 }),
     description: faker.lorem.sentence(),
+    isNative: false,
   };
 }
 
@@ -143,7 +147,7 @@ export async function createChild(
 /**
  * Generate a test event
  */
-export function generateTestEvent() {
+function generateTestEvent() {
   return {
     name: `イベント / Event${faker.number.int({ min: 1000, max: 9999 })}`,
     color: faker.color.rgb(),

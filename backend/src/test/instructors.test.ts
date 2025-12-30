@@ -11,8 +11,8 @@ import {
 
 describe("GET /instructors/all-profiles", () => {
   it("succeed returning detailed instructor profiles", async () => {
-    const admin = await createAdmin();
-    const authCookie = await generateAuthCookie(admin.id, "admin");
+    const customer = await createCustomer();
+    const authCookie = await generateAuthCookie(customer.id, "customer");
     await createInstructor();
     await createInstructor();
 
@@ -31,6 +31,8 @@ describe("GET /instructors/all-profiles", () => {
 
 describe("GET /instructors/class/:id", () => {
   it("succeed returning instructor ID for valid class", async () => {
+    const admin = await createAdmin();
+    const authCookie = await generateAuthCookie(admin.id, "admin");
     const customer = await createCustomer();
     const instructor = await createInstructor();
     const classInstance = await createClass(
@@ -41,6 +43,7 @@ describe("GET /instructors/class/:id", () => {
 
     const response = await request(server)
       .get(`/instructors/class/${classInstance.id}`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.instructorId).toBe(instructor.id);
@@ -49,11 +52,14 @@ describe("GET /instructors/class/:id", () => {
 
 describe("GET /instructors/profiles", () => {
   it("succeed returning public instructor profiles", async () => {
+    const customer = await createCustomer();
+    const authCookie = await generateAuthCookie(customer.id, "customer");
     await createInstructor();
     await createInstructor();
 
     const response = await request(server)
       .get("/instructors/profiles")
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body).toHaveLength(2);
@@ -63,9 +69,11 @@ describe("GET /instructors/profiles", () => {
 describe("GET /instructors/:id", () => {
   it("succeed with valid instructor ID", async () => {
     const instructor = await createInstructor();
+    const authCookie = await generateAuthCookie(instructor.id, "instructor");
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.instructor.id).toBe(instructor.id);
@@ -77,9 +85,11 @@ describe("GET /instructors/:id", () => {
 describe("GET /instructors/:id/calendar-classes", () => {
   it("succeed with valid instructor ID", async () => {
     const instructor = await createInstructor();
+    const authCookie = await generateAuthCookie(instructor.id, "instructor");
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/calendar-classes`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     // Instructor has no classes, should return empty array
@@ -91,6 +101,7 @@ describe("GET /instructors/:id/classes/:classId/same-date", () => {
   it("succeed returning same-date classes", async () => {
     const customer = await createCustomer();
     const instructor = await createInstructor();
+    const authCookie = await generateAuthCookie(instructor.id, "instructor");
     const dateTime = new Date("2024-06-15T10:00:00Z");
     const classInstance = await createClass(
       customer.id,
@@ -102,6 +113,7 @@ describe("GET /instructors/:id/classes/:classId/same-date", () => {
       .get(
         `/instructors/${instructor.id}/classes/${classInstance.id}/same-date`,
       )
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.selectedClassDetails.id).toBe(classInstance.id);
@@ -111,9 +123,11 @@ describe("GET /instructors/:id/classes/:classId/same-date", () => {
 describe("GET /instructors/:id/profile", () => {
   it("succeed with valid instructor ID", async () => {
     const instructor = await createInstructor();
+    const authCookie = await generateAuthCookie(instructor.id, "instructor");
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/profile`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.id).toBe(instructor.id);

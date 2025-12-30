@@ -11,26 +11,31 @@ import { prisma } from "../setup";
 
 describe("GET /admins/instructor-list", () => {
   it("succeed with multiple instructors", async () => {
+    const admin = await createAdmin();
+    const authCookie = await generateAuthCookie(admin.id, "admin");
     const instructor1 = await createInstructor();
     const instructor2 = await createInstructor();
 
     const response = await request(server)
       .get("/admins/instructor-list")
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.data).toEqual([
       {
         No: 1,
         ID: instructor1.id,
-        Instructor: instructor1.name,
-        Nickname: instructor1.nickname,
+        Instructor: instructor1.nickname,
+        English: instructor1.isNative ? "Native" : "Non-native",
+        "Full Name": instructor1.name,
         Email: instructor1.email,
       },
       {
         No: 2,
         ID: instructor2.id,
-        Instructor: instructor2.name,
-        Nickname: instructor2.nickname,
+        Instructor: instructor2.nickname,
+        English: instructor2.isNative ? "Native" : "Non-native",
+        "Full Name": instructor2.name,
         Email: instructor2.email,
       },
     ]);
@@ -46,7 +51,7 @@ describe("POST /admins/instructor-list/register", () => {
     await request(server)
       .post("/admins/instructor-list/register")
       .set("Cookie", authCookie)
-      .send(instructorData)
+      .send({ ...instructorData, isNative: "false" })
       .expect(201);
 
     const createdInstructor = await prisma.instructor.findUnique({
@@ -60,7 +65,7 @@ describe("POST /admins/instructor-list/register", () => {
 
     await request(server)
       .post("/admins/instructor-list/register")
-      .send(instructorData)
+      .send({ ...instructorData, isNative: "false" })
       .expect(401);
   });
 });
@@ -76,9 +81,22 @@ describe("PATCH /admins/instructor-list/update/:id", () => {
       .patch(`/admins/instructor-list/update/${instructor.id}`)
       .set("Cookie", authCookie)
       .send({
-        ...instructor,
         name: updatedName,
+        leavingDate: null,
+        email: instructor.email,
+        nickname: instructor.nickname,
         birthdate: instructor.birthdate.toISOString().split("T")[0],
+        workingTime: instructor.workingTime,
+        lifeHistory: instructor.lifeHistory,
+        favoriteFood: instructor.favoriteFood,
+        hobby: instructor.hobby,
+        messageForChildren: instructor.messageForChildren,
+        skill: instructor.skill,
+        classURL: instructor.classURL,
+        meetingId: instructor.meetingId,
+        passcode: instructor.passcode,
+        introductionURL: instructor.introductionURL,
+        isNative: instructor.isNative ? "true" : "false",
       })
       .expect(200);
 

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 const { faker } = require("@faker-js/faker");
 import { server } from "../../server";
@@ -168,6 +168,12 @@ describe("POST /instructors/:id/schedules", () => {
 });
 
 describe("GET /instructors/:id/available-slots - Active Schedule", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const customer = await createCustomer();
+    authCookie = await generateAuthCookie(customer.id, "customer");
+  });
   /*
    * Interval Overlap Patterns
    *
@@ -193,6 +199,7 @@ describe("GET /instructors/:id/available-slots - Active Schedule", () => {
 
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-01", end: "2025-06-30", timezone: "Asia/Tokyo" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
@@ -208,6 +215,7 @@ describe("GET /instructors/:id/available-slots - Active Schedule", () => {
 
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-01", end: "2025-07-01", timezone: "Asia/Tokyo" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
@@ -225,6 +233,7 @@ describe("GET /instructors/:id/available-slots - Active Schedule", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-01", end: "2025-07-02", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -252,6 +261,7 @@ describe("GET /instructors/:id/available-slots - Active Schedule", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-07-01", end: "2025-07-08", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -283,6 +293,7 @@ describe("GET /instructors/:id/available-slots - Active Schedule", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-07-10", end: "2025-07-15", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -298,6 +309,12 @@ describe("GET /instructors/:id/available-slots - Active Schedule", () => {
 });
 
 describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const customer = await createCustomer();
+    authCookie = await generateAuthCookie(customer.id, "customer");
+  });
   /*
    * Interval Overlap Patterns with effectiveTo (finite schedule)
    *
@@ -330,6 +347,7 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-01", end: "2025-06-30", timezone: "Asia/Tokyo" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
@@ -345,6 +363,7 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-01", end: "2025-07-01", timezone: "Asia/Tokyo" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
@@ -368,6 +387,7 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-25", end: "2025-07-10", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -403,6 +423,7 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-07-05", end: "2025-07-12", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -436,6 +457,7 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-15", end: "2025-07-30", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -475,6 +497,7 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-07-10", end: "2025-07-20", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -498,6 +521,7 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-07-15", end: "2025-07-25", timezone: "Asia/Tokyo" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
@@ -513,6 +537,7 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 
     await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-07-20", end: "2025-07-30", timezone: "Asia/Tokyo" })
       .expect(200)
       .expect((res) => expect(res.body.data).toEqual([]));
@@ -520,6 +545,12 @@ describe("GET /instructors/:id/available-slots - Schedule End Date", () => {
 });
 
 describe("GET /instructors/:id/available-slots - Multiple Schedules Adjacent", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const customer = await createCustomer();
+    authCookie = await generateAuthCookie(customer.id, "customer");
+  });
   /*
    * Multi-Schedule Interaction Patterns (Adjacent Schedules)
    *
@@ -553,6 +584,7 @@ describe("GET /instructors/:id/available-slots - Multiple Schedules Adjacent", (
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-25", end: "2025-07-10", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -588,6 +620,7 @@ describe("GET /instructors/:id/available-slots - Multiple Schedules Adjacent", (
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-05-01", end: "2025-07-05", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -608,6 +641,12 @@ describe("GET /instructors/:id/available-slots - Multiple Schedules Adjacent", (
 });
 
 describe("GET /instructors/:id/available-slots - Multiple Schedules Gap", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const customer = await createCustomer();
+    authCookie = await generateAuthCookie(customer.id, "customer");
+  });
   /*
    * Multi-Schedule Interaction Patterns (Schedules with Gap)
    *
@@ -642,6 +681,7 @@ describe("GET /instructors/:id/available-slots - Multiple Schedules Gap", () => 
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-15", end: "2025-07-15", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -673,6 +713,7 @@ describe("GET /instructors/:id/available-slots - Multiple Schedules Gap", () => 
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-05-25", end: "2025-07-12", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -704,6 +745,7 @@ describe("GET /instructors/:id/available-slots - Multiple Schedules Gap", () => 
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-25", end: "2025-07-05", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -727,6 +769,7 @@ describe("GET /instructors/:id/available-slots - Multiple Schedules Gap", () => 
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-06-20", end: "2025-07-10", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -735,6 +778,12 @@ describe("GET /instructors/:id/available-slots - Multiple Schedules Gap", () => 
 });
 
 describe("GET /instructors/:id/available-slots - With Absences", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const customer = await createCustomer();
+    authCookie = await generateAuthCookie(customer.id, "customer");
+  });
   it("succeed filtering out absent slots and ignoring absences outside query range", async () => {
     const instructor = await createInstructor();
     const schedule = await createInstructorSchedule(instructor.id, {
@@ -758,6 +807,7 @@ describe("GET /instructors/:id/available-slots - With Absences", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/available-slots`)
+      .set("Cookie", authCookie)
       .query({ start: "2025-07-07", end: "2025-07-09", timezone: "Asia/Tokyo" })
       .expect(200);
 
@@ -766,6 +816,12 @@ describe("GET /instructors/:id/available-slots - With Absences", () => {
 });
 
 describe("GET /instructors/available-slots - All Available Slots", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const customer = await createCustomer();
+    authCookie = await generateAuthCookie(customer.id, "customer");
+  });
   it("succeed returning available slots grouped by time with instructor lists", async () => {
     const instructor1 = await createInstructor();
     const instructor2 = await createInstructor();
@@ -810,10 +866,12 @@ describe("GET /instructors/available-slots - All Available Slots", () => {
 
     const response = await request(server)
       .get("/instructors/available-slots")
+      .set("Cookie", authCookie)
       .query({
         start: "2025-08-04",
         end: "2025-08-05",
         timezone: "Asia/Tokyo",
+        isNative: "false",
       })
       .expect(200);
 
@@ -832,10 +890,12 @@ describe("GET /instructors/available-slots - All Available Slots", () => {
   it("succeed handling empty results when no instructors are available", async () => {
     const response = await request(server)
       .get("/instructors/available-slots")
+      .set("Cookie", authCookie)
       .query({
         start: "2025-08-04",
         end: "2025-08-05",
         timezone: "Asia/Tokyo",
+        isNative: "false",
       })
       .expect(200);
 
@@ -844,6 +904,12 @@ describe("GET /instructors/available-slots - All Available Slots", () => {
 });
 
 describe("GET /instructors/:id/schedules", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const admin = await createAdmin();
+    authCookie = await generateAuthCookie(admin.id, "admin");
+  });
   it("succeed returning instructor schedules", async () => {
     const instructor = await createInstructor();
     await createInstructorSchedule(instructor.id, {
@@ -857,6 +923,7 @@ describe("GET /instructors/:id/schedules", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/schedules`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.data).toHaveLength(2);
@@ -864,6 +931,12 @@ describe("GET /instructors/:id/schedules", () => {
 });
 
 describe("GET /instructors/:id/schedules/active", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const customer = await createCustomer();
+    authCookie = await generateAuthCookie(customer.id, "customer");
+  });
   it("succeed with valid effective date", async () => {
     const instructor = await createInstructor();
     const schedule = await createInstructorSchedule(instructor.id, {
@@ -878,6 +951,7 @@ describe("GET /instructors/:id/schedules/active", () => {
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/schedules/active`)
+      .set("Cookie", authCookie)
       .query({ effectiveDate: "2024-06-15" })
       .expect(200);
 
@@ -886,12 +960,19 @@ describe("GET /instructors/:id/schedules/active", () => {
 });
 
 describe("GET /instructors/:id/schedules/:scheduleId", () => {
+  let authCookie: string;
+
+  beforeEach(async () => {
+    const admin = await createAdmin();
+    authCookie = await generateAuthCookie(admin.id, "admin");
+  });
   it("succeed with valid schedule ID", async () => {
     const instructor = await createInstructor();
     const schedule = await createInstructorSchedule(instructor.id);
 
     const response = await request(server)
       .get(`/instructors/${instructor.id}/schedules/${schedule.id}`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.data.id).toBe(schedule.id);

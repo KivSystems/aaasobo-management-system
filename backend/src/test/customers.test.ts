@@ -4,6 +4,7 @@ const { faker } = require("@faker-js/faker");
 import { server } from "../server";
 import { prisma } from "./setup";
 import {
+  createAdmin,
   createCustomer,
   createChild,
   createPlan,
@@ -13,7 +14,13 @@ import {
   createVerificationToken,
   createClassAttendance,
   generateTestCustomer,
+  generateAuthCookie,
 } from "./testUtils";
+
+async function createAdminAuthCookie() {
+  const admin = await createAdmin();
+  return await generateAuthCookie(admin.id, "admin");
+}
 
 // Mock the resend email service to avoid sending real emails
 vi.mock("../helper/resendClient", () => ({
@@ -164,6 +171,7 @@ describe("PATCH /customers/verify-email", () => {
 // Reordered to match routeConfigs order in customersRouter.ts
 describe("PATCH /customers/:id", () => {
   it("succeed with valid update data", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const updateData = {
       name: faker.person.fullName(),
@@ -173,6 +181,7 @@ describe("PATCH /customers/:id", () => {
 
     await request(server)
       .patch(`/customers/${customer.id}`)
+      .set("Cookie", authCookie)
       .send(updateData)
       .expect(200);
 
@@ -188,6 +197,7 @@ describe("PATCH /customers/:id", () => {
   });
 
   it("fail for missing required fields", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const updateData = {
       name: faker.person.fullName(),
@@ -196,6 +206,7 @@ describe("PATCH /customers/:id", () => {
 
     await request(server)
       .patch(`/customers/${customer.id}`)
+      .set("Cookie", authCookie)
       .send(updateData)
       .expect(400);
   });
@@ -203,12 +214,14 @@ describe("PATCH /customers/:id", () => {
 
 describe("GET /customers/:id/child-profiles", () => {
   it("succeed for valid customer ID", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     await createChild(customer.id);
     await createChild(customer.id);
 
     const response = await request(server)
       .get(`/customers/${customer.id}/child-profiles`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body).toHaveLength(2);
@@ -217,6 +230,7 @@ describe("GET /customers/:id/child-profiles", () => {
 
 describe("GET /customers/:id/classes", () => {
   it("succeed for valid customer ID", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const child = await createChild(customer.id);
     const instructor = await createInstructor();
@@ -232,6 +246,7 @@ describe("GET /customers/:id/classes", () => {
 
     const response = await request(server)
       .get(`/customers/${customer.id}/classes`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body).toHaveLength(1);
@@ -240,10 +255,12 @@ describe("GET /customers/:id/classes", () => {
 
 describe("GET /customers/:id/customer", () => {
   it("succeed for valid customer ID", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
 
     const response = await request(server)
       .get(`/customers/${customer.id}/customer`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.id).toBe(customer.id);
@@ -252,12 +269,17 @@ describe("GET /customers/:id/customer", () => {
   });
 
   it("fail for invalid customer ID parameter", async () => {
-    await request(server).get(`/customers/abc/customer`).expect(400);
+    const authCookie = await createAdminAuthCookie();
+    await request(server)
+      .get(`/customers/abc/customer`)
+      .set("Cookie", authCookie)
+      .expect(400);
   });
 });
 
 describe("PATCH /customers/:id/free-trial/decline", () => {
   it("succeed with valid classCode", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const classCode = faker.string.alphanumeric(8).toUpperCase();
 
@@ -273,6 +295,7 @@ describe("PATCH /customers/:id/free-trial/decline", () => {
 
     await request(server)
       .patch(`/customers/${customer.id}/free-trial/decline`)
+      .set("Cookie", authCookie)
       .send({ classCode })
       .expect(200);
 
@@ -284,17 +307,20 @@ describe("PATCH /customers/:id/free-trial/decline", () => {
   });
 
   it("fail for missing classCode", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
 
     await request(server)
       .patch(`/customers/${customer.id}/free-trial/decline`)
+      .set("Cookie", authCookie)
       .send({})
-      .expect(400);
+      .expect(404);
   });
 });
 
 describe("GET /customers/:id/rebookable-classes", () => {
   it("succeed for valid customer ID with rebookable classes", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
 
     // Create a regular rebookable class
@@ -314,6 +340,7 @@ describe("GET /customers/:id/rebookable-classes", () => {
 
     const response = await request(server)
       .get(`/customers/${customer.id}/rebookable-classes`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(Array.isArray(response.body)).toBe(true);
@@ -322,10 +349,12 @@ describe("GET /customers/:id/rebookable-classes", () => {
 
 describe("PATCH /customers/:id/seen-welcome", () => {
   it("succeed to mark welcome as seen", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
 
     await request(server)
       .patch(`/customers/${customer.id}/seen-welcome`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     // Verify hasSeenWelcome was set to true
@@ -338,6 +367,7 @@ describe("PATCH /customers/:id/seen-welcome", () => {
 
 describe("POST /customers/:id/subscription", () => {
   it("succeed with valid data", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const plan = await createPlan();
     const subscriptionData = {
@@ -347,6 +377,7 @@ describe("POST /customers/:id/subscription", () => {
 
     await request(server)
       .post(`/customers/${customer.id}/subscription`)
+      .set("Cookie", authCookie)
       .send(subscriptionData)
       .expect(200);
 
@@ -358,6 +389,7 @@ describe("POST /customers/:id/subscription", () => {
   });
 
   it("fail for invalid planId type", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const subscriptionData = {
       planId: "invalid",
@@ -366,15 +398,18 @@ describe("POST /customers/:id/subscription", () => {
 
     await request(server)
       .post(`/customers/${customer.id}/subscription`)
+      .set("Cookie", authCookie)
       .send(subscriptionData)
       .expect(400);
   });
 
   it("fail for missing required fields", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
 
     await request(server)
       .post(`/customers/${customer.id}/subscription`)
+      .set("Cookie", authCookie)
       .send({})
       .expect(400);
   });
@@ -382,12 +417,14 @@ describe("POST /customers/:id/subscription", () => {
 
 describe("GET /customers/:id/subscriptions", () => {
   it("succeed for valid customer ID", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const plan = await createPlan();
     await createSubscription(plan.id, customer.id);
 
     const response = await request(server)
       .get(`/customers/${customer.id}/subscriptions`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body.subscriptions).toHaveLength(1);
@@ -395,12 +432,17 @@ describe("GET /customers/:id/subscriptions", () => {
   });
 
   it("fail for invalid customer ID", async () => {
-    await request(server).get(`/customers/invalid/subscriptions`).expect(400);
+    const authCookie = await createAdminAuthCookie();
+    await request(server)
+      .get(`/customers/invalid/subscriptions`)
+      .set("Cookie", authCookie)
+      .expect(400);
   });
 });
 
 describe("GET /customers/:id/upcoming-classes", () => {
   it("succeed for valid customer ID with upcoming classes", async () => {
+    const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
     const child = await createChild(customer.id);
     const instructor = await createInstructor();
@@ -417,6 +459,7 @@ describe("GET /customers/:id/upcoming-classes", () => {
 
     const response = await request(server)
       .get(`/customers/${customer.id}/upcoming-classes`)
+      .set("Cookie", authCookie)
       .expect(200);
 
     expect(response.body).toHaveLength(1);

@@ -1,6 +1,8 @@
 {
-  "project": ["src/**/*.ts", "api/**/*.ts"],
-  "vitest": {
-    "config": ["vitest.config.mts"]
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": ["generated/**", "prisma.config.ts"],
+  "ignoreDependencies": ["@prisma/client"],
+  "prisma": {
+    "config": ["package.json"]
   }
 }
