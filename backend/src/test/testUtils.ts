@@ -2,7 +2,7 @@ const { faker } = require("@faker-js/faker");
 import { hashPasswordSync } from "../helper/commonUtils";
 import { prisma } from "./setup";
 import { SignJWT } from "jose";
-import { Status } from "@prisma/client";
+import { Status } from "../../generated/prisma";
 
 /**
  * Generate a test admin
