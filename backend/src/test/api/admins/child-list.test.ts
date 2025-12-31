@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../../server";
+import { server } from "../../../server";
 import {
   createAdmin,
   createCustomer,
   createChild,
   generateAuthCookie,
-} from "../testUtils";
+} from "../../testUtils";
 
 describe("GET /admins/child-list", () => {
   it("succeed with multiple children", async () => {

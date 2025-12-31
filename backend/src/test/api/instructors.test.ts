@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../server";
+import { server } from "../../server";
 import {
   createInstructor,
   createAdmin,
   createCustomer,
   createClass,
   generateAuthCookie,
-} from "./testUtils";
+} from "../testUtils";
 
 describe("GET /instructors/all-profiles", () => {
   it("succeed returning detailed instructor profiles", async () => {

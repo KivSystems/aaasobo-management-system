@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 const { faker } = require("@faker-js/faker");
-import { server } from "../../server";
-import { prisma } from "../setup";
+import { server } from "../../../server";
+import { prisma } from "../../setup";
 import {
   createInstructor,
   createAdmin,
@@ -13,7 +13,7 @@ import {
   createCustomer,
   generateAuthCookie,
   generateTestInstructor,
-} from "../testUtils";
+} from "../../testUtils";
 
 /**
  * Creates a time-only ISO string

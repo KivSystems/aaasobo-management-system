@@ -1,7 +1,11 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../../server";
-import { createAdmin, createCustomer, generateAuthCookie } from "../testUtils";
+import { server } from "../../../server";
+import {
+  createAdmin,
+  createCustomer,
+  generateAuthCookie,
+} from "../../testUtils";
 
 describe("GET /admins/customer-list", () => {
   it("succeed with multiple customers", async () => {

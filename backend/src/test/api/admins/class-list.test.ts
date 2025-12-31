@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../../server";
+import { server } from "../../../server";
 import {
   createAdmin,
   createCustomer,
   createInstructor,
   createClass,
   generateAuthCookie,
-} from "../testUtils";
+} from "../../testUtils";
 
 describe("GET /admins/class-list", () => {
   it("succeed with multiple classes", async () => {

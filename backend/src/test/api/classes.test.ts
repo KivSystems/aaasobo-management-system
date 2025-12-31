@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../server";
-import { prisma } from "./setup";
+import { server } from "../../server";
+import { prisma } from "../setup";
 import {
   createAdmin,
   createChild,
@@ -12,7 +12,7 @@ import {
   createPlan,
   createSubscription,
   generateAuthCookie,
-} from "./testUtils";
+} from "../testUtils";
 
 const daysFromNow = (days: number) =>
   new Date(Date.now() + days * 24 * 60 * 60 * 1000);

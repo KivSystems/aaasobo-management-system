@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../../server";
+import { server } from "../../../server";
 import {
   createAdmin,
   createEvent,
   createSchedule,
   generateAuthCookie,
-} from "../testUtils";
-import { prisma } from "../setup";
+} from "../../testUtils";
+import { prisma } from "../../setup";
 
 describe("GET /admins/business-schedule", () => {
   it("succeed with multiple schedules", async () => {

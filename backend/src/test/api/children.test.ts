@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 const { faker } = require("@faker-js/faker");
-import { server } from "../server";
-import { prisma } from "./setup";
+import { server } from "../../server";
+import { prisma } from "../setup";
 import {
   createAdmin,
   createCustomer,
@@ -11,7 +11,7 @@ import {
   createClass,
   createClassAttendance,
   generateAuthCookie,
-} from "./testUtils";
+} from "../testUtils";
 
 async function createAdminAuthCookie() {
   const admin = await createAdmin();

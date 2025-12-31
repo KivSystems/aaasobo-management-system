@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../server";
-import { createAdmin, createEvent, generateAuthCookie } from "./testUtils";
+import { server } from "../../server";
+import { createAdmin, createEvent, generateAuthCookie } from "../testUtils";
 
 async function createAdminAuthCookie() {
   const admin = await createAdmin();

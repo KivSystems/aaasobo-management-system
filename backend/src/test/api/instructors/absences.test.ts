@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../../server";
-import { prisma } from "../setup";
+import { server } from "../../../server";
+import { prisma } from "../../setup";
 import {
   createInstructor,
   createAdmin,
   createInstructorAbsence,
   generateAuthCookie,
-} from "../testUtils";
+} from "../../testUtils";
 
 describe("GET /instructors/:id/absences", () => {
   it("succeed returning instructor absences", async () => {

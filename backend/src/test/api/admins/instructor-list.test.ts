@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../../server";
+import { server } from "../../../server";
 import {
   createAdmin,
   createInstructor,
   generateTestInstructor,
   generateAuthCookie,
-} from "../testUtils";
-import { prisma } from "../setup";
+} from "../../testUtils";
+import { prisma } from "../../setup";
 
 describe("GET /admins/instructor-list", () => {
   it("succeed with multiple instructors", async () => {

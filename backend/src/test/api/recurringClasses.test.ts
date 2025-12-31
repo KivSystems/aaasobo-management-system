@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../server";
-import { prisma } from "./setup";
+import { server } from "../../server";
+import { prisma } from "../setup";
 import {
   createCustomer,
   createPlan,
@@ -13,7 +13,7 @@ import {
   createInstructorAbsence,
   createClass,
   generateAuthCookie,
-} from "./testUtils";
+} from "../testUtils";
 
 function time(strings: TemplateStringsArray, ...values: any[]): Date {
   const input = strings[0] + (values[0] || "");
