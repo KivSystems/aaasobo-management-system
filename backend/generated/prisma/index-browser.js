@@ -130,7 +130,6 @@ exports.Prisma.InstructorScalarFieldEnum = {
   nickname: 'nickname',
   meetingId: 'meetingId',
   passcode: 'passcode',
-  introductionURL: 'introductionURL',
   createdAt: 'createdAt',
   birthdate: 'birthdate',
   favoriteFood: 'favoriteFood',

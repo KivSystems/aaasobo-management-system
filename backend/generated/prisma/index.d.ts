@@ -2795,7 +2795,6 @@ export namespace Prisma {
     nickname: string | null
     meetingId: string | null
     passcode: string | null
-    introductionURL: string | null
     createdAt: Date | null
     birthdate: Date | null
     favoriteFood: string | null
@@ -2819,7 +2818,6 @@ export namespace Prisma {
     nickname: string | null
     meetingId: string | null
     passcode: string | null
-    introductionURL: string | null
     createdAt: Date | null
     birthdate: Date | null
     favoriteFood: string | null
@@ -2843,7 +2841,6 @@ export namespace Prisma {
     nickname: number
     meetingId: number
     passcode: number
-    introductionURL: number
     createdAt: number
     birthdate: number
     favoriteFood: number
@@ -2877,7 +2874,6 @@ export namespace Prisma {
     nickname?: true
     meetingId?: true
     passcode?: true
-    introductionURL?: true
     createdAt?: true
     birthdate?: true
     favoriteFood?: true
@@ -2901,7 +2897,6 @@ export namespace Prisma {
     nickname?: true
     meetingId?: true
     passcode?: true
-    introductionURL?: true
     createdAt?: true
     birthdate?: true
     favoriteFood?: true
@@ -2925,7 +2920,6 @@ export namespace Prisma {
     nickname?: true
     meetingId?: true
     passcode?: true
-    introductionURL?: true
     createdAt?: true
     birthdate?: true
     favoriteFood?: true
@@ -3036,7 +3030,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt: Date
     birthdate: Date
     favoriteFood: string
@@ -3079,7 +3072,6 @@ export namespace Prisma {
     nickname?: boolean
     meetingId?: boolean
     passcode?: boolean
-    introductionURL?: boolean
     createdAt?: boolean
     birthdate?: boolean
     favoriteFood?: boolean
@@ -3108,7 +3100,6 @@ export namespace Prisma {
     nickname?: boolean
     meetingId?: boolean
     passcode?: boolean
-    introductionURL?: boolean
     createdAt?: boolean
     birthdate?: boolean
     favoriteFood?: boolean
@@ -3132,7 +3123,6 @@ export namespace Prisma {
     nickname?: boolean
     meetingId?: boolean
     passcode?: boolean
-    introductionURL?: boolean
     createdAt?: boolean
     birthdate?: boolean
     favoriteFood?: boolean
@@ -3156,7 +3146,6 @@ export namespace Prisma {
     nickname?: boolean
     meetingId?: boolean
     passcode?: boolean
-    introductionURL?: boolean
     createdAt?: boolean
     birthdate?: boolean
     favoriteFood?: boolean
@@ -3170,7 +3159,7 @@ export namespace Prisma {
     isNative?: boolean
   }
 
-  export type InstructorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "classURL" | "icon" | "nickname" | "meetingId" | "passcode" | "introductionURL" | "createdAt" | "birthdate" | "favoriteFood" | "hobby" | "lifeHistory" | "messageForChildren" | "skill" | "workingTime" | "terminationAt" | "updatedAt" | "isNative", ExtArgs["result"]["instructor"]>
+  export type InstructorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "classURL" | "icon" | "nickname" | "meetingId" | "passcode" | "createdAt" | "birthdate" | "favoriteFood" | "hobby" | "lifeHistory" | "messageForChildren" | "skill" | "workingTime" | "terminationAt" | "updatedAt" | "isNative", ExtArgs["result"]["instructor"]>
   export type InstructorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     classes?: boolean | Instructor$classesArgs<ExtArgs>
     instructorAbsences?: boolean | Instructor$instructorAbsencesArgs<ExtArgs>
@@ -3199,7 +3188,6 @@ export namespace Prisma {
       nickname: string
       meetingId: string
       passcode: string
-      introductionURL: string
       createdAt: Date
       birthdate: Date
       favoriteFood: string
@@ -3647,7 +3635,6 @@ export namespace Prisma {
     readonly nickname: FieldRef<"Instructor", 'String'>
     readonly meetingId: FieldRef<"Instructor", 'String'>
     readonly passcode: FieldRef<"Instructor", 'String'>
-    readonly introductionURL: FieldRef<"Instructor", 'String'>
     readonly createdAt: FieldRef<"Instructor", 'DateTime'>
     readonly birthdate: FieldRef<"Instructor", 'DateTime'>
     readonly favoriteFood: FieldRef<"Instructor", 'String'>
@@ -22966,7 +22953,6 @@ export namespace Prisma {
     nickname: 'nickname',
     meetingId: 'meetingId',
     passcode: 'passcode',
-    introductionURL: 'introductionURL',
     createdAt: 'createdAt',
     birthdate: 'birthdate',
     favoriteFood: 'favoriteFood',
@@ -23292,7 +23278,6 @@ export namespace Prisma {
     nickname?: StringFilter<"Instructor"> | string
     meetingId?: StringFilter<"Instructor"> | string
     passcode?: StringFilter<"Instructor"> | string
-    introductionURL?: StringFilter<"Instructor"> | string
     createdAt?: DateTimeFilter<"Instructor"> | Date | string
     birthdate?: DateTimeFilter<"Instructor"> | Date | string
     favoriteFood?: StringFilter<"Instructor"> | string
@@ -23320,7 +23305,6 @@ export namespace Prisma {
     nickname?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
-    introductionURL?: SortOrder
     createdAt?: SortOrder
     birthdate?: SortOrder
     favoriteFood?: SortOrder
@@ -23346,7 +23330,6 @@ export namespace Prisma {
     nickname?: string
     meetingId?: string
     passcode?: string
-    introductionURL?: string
     AND?: InstructorWhereInput | InstructorWhereInput[]
     OR?: InstructorWhereInput[]
     NOT?: InstructorWhereInput | InstructorWhereInput[]
@@ -23367,7 +23350,7 @@ export namespace Prisma {
     instructorAbsences?: InstructorAbsenceListRelationFilter
     instructorSchedules?: InstructorScheduleListRelationFilter
     recurringClasses?: RecurringClassListRelationFilter
-  }, "id" | "email" | "classURL" | "icon" | "nickname" | "meetingId" | "passcode" | "introductionURL">
+  }, "id" | "email" | "classURL" | "icon" | "nickname" | "meetingId" | "passcode">
 
   export type InstructorOrderByWithAggregationInput = {
     id?: SortOrder
@@ -23379,7 +23362,6 @@ export namespace Prisma {
     nickname?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
-    introductionURL?: SortOrder
     createdAt?: SortOrder
     birthdate?: SortOrder
     favoriteFood?: SortOrder
@@ -23411,7 +23393,6 @@ export namespace Prisma {
     nickname?: StringWithAggregatesFilter<"Instructor"> | string
     meetingId?: StringWithAggregatesFilter<"Instructor"> | string
     passcode?: StringWithAggregatesFilter<"Instructor"> | string
-    introductionURL?: StringWithAggregatesFilter<"Instructor"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Instructor"> | Date | string
     birthdate?: DateTimeWithAggregatesFilter<"Instructor"> | Date | string
     favoriteFood?: StringWithAggregatesFilter<"Instructor"> | string
@@ -24445,7 +24426,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -24473,7 +24453,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -24500,7 +24479,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -24528,7 +24506,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -24556,7 +24533,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -24579,7 +24555,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -24603,7 +24578,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -25681,7 +25655,6 @@ export namespace Prisma {
     nickname?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
-    introductionURL?: SortOrder
     createdAt?: SortOrder
     birthdate?: SortOrder
     favoriteFood?: SortOrder
@@ -25709,7 +25682,6 @@ export namespace Prisma {
     nickname?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
-    introductionURL?: SortOrder
     createdAt?: SortOrder
     birthdate?: SortOrder
     favoriteFood?: SortOrder
@@ -25733,7 +25705,6 @@ export namespace Prisma {
     nickname?: SortOrder
     meetingId?: SortOrder
     passcode?: SortOrder
-    introductionURL?: SortOrder
     createdAt?: SortOrder
     birthdate?: SortOrder
     favoriteFood?: SortOrder
@@ -28260,7 +28231,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -28287,7 +28257,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -28431,7 +28400,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -28458,7 +28426,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -29158,7 +29125,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -29185,7 +29151,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -29283,7 +29248,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -29310,7 +29274,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -29570,7 +29533,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -29597,7 +29559,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -29659,7 +29620,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -29686,7 +29646,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -29783,7 +29742,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -29810,7 +29768,6 @@ export namespace Prisma {
     nickname: string
     meetingId: string
     passcode: string
-    introductionURL: string
     createdAt?: Date | string
     birthdate: Date | string
     favoriteFood: string
@@ -29852,7 +29809,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string
@@ -29879,7 +29835,6 @@ export namespace Prisma {
     nickname?: StringFieldUpdateOperationsInput | string
     meetingId?: StringFieldUpdateOperationsInput | string
     passcode?: StringFieldUpdateOperationsInput | string
-    introductionURL?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     favoriteFood?: StringFieldUpdateOperationsInput | string

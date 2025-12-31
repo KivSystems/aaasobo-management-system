@@ -28,8 +28,6 @@ async function insertInstructors() {
         passcode: "helen",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=129259",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -50,8 +48,6 @@ async function insertInstructors() {
         passcode: "elian",
         password:
           "$2b$12$pNrLSRYlTIwTl//Tz3KMA.K2gdqRWA2/aikJ9ilr0ItQZWe1bJoay", // password: AaasoBo!Elian
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=127929",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -72,8 +68,6 @@ async function insertInstructors() {
         passcode: "lori",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=404241&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -94,8 +88,6 @@ async function insertInstructors() {
         passcode: "kaori",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=399447&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -116,8 +108,6 @@ async function insertInstructors() {
         passcode: "winnie",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=401099&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -138,8 +128,6 @@ async function insertInstructors() {
         passcode: "claude",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=326768&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -160,8 +148,6 @@ async function insertInstructors() {
         passcode: "jdy",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=384411&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -182,8 +168,6 @@ async function insertInstructors() {
         passcode: "mae",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=383552&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -204,8 +188,6 @@ async function insertInstructors() {
         passcode: "eiyd",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=383555&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -226,8 +208,6 @@ async function insertInstructors() {
         passcode: "kechia",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=317400&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -248,8 +228,6 @@ async function insertInstructors() {
         passcode: "yasmin",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=384405&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -270,8 +248,6 @@ async function insertInstructors() {
         passcode: "dani",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=372623&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -292,8 +268,6 @@ async function insertInstructors() {
         passcode: "angela",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=359230&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -314,8 +288,6 @@ async function insertInstructors() {
         passcode: "ronilo",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu",
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=359243&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -336,8 +308,6 @@ async function insertInstructors() {
         passcode: "sheryll",
         password:
           "$2b$12$KIe8onrscIo38gG7qugTuOgx5CY7JQ6VkvFKh/skOwkw1tNWdpVlu", // AaasoBo!Helen
-        introductionURL:
-          "https://select-type.com/rsv/?id=9krPgyM7znE&c_id=350273&w_flg=1",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -358,7 +328,6 @@ async function insertInstructors() {
         meetingId: "rina 123 111",
         passcode: "rina",
         password: "$2b$12$WzRinaExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400001",
         createdAt: "2024-08-01T00:00:00.000Z",
         isNative: false,
       },
@@ -379,7 +348,6 @@ async function insertInstructors() {
         meetingId: "tina 123 222",
         passcode: "tina",
         password: "$2b$12$WzTinaExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400002",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-08-27T00:00:00.000Z",
         isNative: false,
@@ -400,7 +368,6 @@ async function insertInstructors() {
         meetingId: "mark 123 333",
         passcode: "mark",
         password: "$2b$12$WzMarkExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400003",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-08-27T00:00:00.000Z",
         isNative: false,
@@ -421,7 +388,6 @@ async function insertInstructors() {
         meetingId: "liza 414 141",
         passcode: "liza",
         password: "$2b$12$WzLizaExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400004",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-09-27T00:00:00.000Z",
         isNative: false,
@@ -442,7 +408,6 @@ async function insertInstructors() {
         meetingId: "paolo 515 151",
         passcode: "paolo",
         password: "$2b$12$WzPaoloExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400005",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-04-27T00:00:00.000Z",
         isNative: false,
@@ -463,7 +428,6 @@ async function insertInstructors() {
         meetingId: "marie 616 161",
         passcode: "marie",
         password: "$2b$12$WzMarieExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400006",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-06-27T00:00:00.000Z",
         isNative: false,
@@ -485,7 +449,6 @@ async function insertInstructors() {
         passcode: "justin",
         password:
           "$2b$12$WzJustinExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400007",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2024-08-27T00:00:00.000Z",
         isNative: false,
@@ -506,7 +469,6 @@ async function insertInstructors() {
         meetingId: "carla 818 181",
         passcode: "carla",
         password: "$2b$12$WzCarlaExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400008",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-08-31T00:00:00.000Z",
         isNative: false,
@@ -527,7 +489,6 @@ async function insertInstructors() {
         meetingId: "gem 919 191",
         passcode: "gem",
         password: "$2b$12$WzGemExampleHash000000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400009",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-08-07T00:00:00.000Z",
         isNative: false,
@@ -549,7 +510,6 @@ async function insertInstructors() {
         passcode: "aileen",
         password:
           "$2b$12$WzAileenExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400010",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-04-27T00:00:00.000Z",
         isNative: false,
@@ -571,7 +531,6 @@ async function insertInstructors() {
         passcode: "niko",
         password:
           "$2b$12$WzNikoExampleHash000000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400011",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-06-27T00:00:00.000Z",
         isNative: false,
@@ -592,7 +551,6 @@ async function insertInstructors() {
         meetingId: "jonah 404 404",
         passcode: "jonah",
         password: "$2b$12$WzJonahExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400012",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-03-11T00:00:00.000Z",
         isNative: false,
@@ -613,7 +571,6 @@ async function insertInstructors() {
         meetingId: "grace 505 505",
         passcode: "grace",
         password: "$2b$12$WzGraceExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=500013",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-01-27T00:00:00.000Z",
         isNative: false,
@@ -634,7 +591,6 @@ async function insertInstructors() {
         meetingId: "andy 606 606",
         passcode: "andy",
         password: "$2b$12$WzAndyExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400013",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2025-02-27T00:00:00.000Z",
         isNative: false,
@@ -655,7 +611,6 @@ async function insertInstructors() {
         meetingId: "fame 707 707",
         passcode: "fame",
         password: "$2b$12$WzFameExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400015",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2024-12-27T00:00:00.000Z",
         isNative: false,
@@ -676,7 +631,6 @@ async function insertInstructors() {
         meetingId: "faith 707 707",
         passcode: "faith",
         password: "$2b$12$WzFaithExampleHash0000000000000000000000000000000000",
-        introductionURL: "https://select-type.com/rsv/?id=example&c_id=400014",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: "2024-12-27T00:00:00.000Z",
         isNative: false,
@@ -697,8 +651,6 @@ async function insertInstructors() {
         meetingId: "81001 001 001",
         passcode: "yuki",
         password: "$2b$12$WzYukiExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500001",
         createdAt: "2024-08-01T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -720,8 +672,6 @@ async function insertInstructors() {
         meetingId: "82002 002 002",
         passcode: "alex",
         password: "$2b$12$WzAlexExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500002",
         createdAt: "2024-08-02T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -743,8 +693,6 @@ async function insertInstructors() {
         meetingId: "83003 003 003",
         passcode: "mina",
         password: "$2b$12$WzMinaExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500003",
         createdAt: "2024-08-03T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -766,8 +714,6 @@ async function insertInstructors() {
         passcode: "daniel",
         password:
           "$2b$12$WzDanielExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500004",
         createdAt: "2024-08-04T00:00:00.000Z",
         terminationAt: "2025-03-30T00:00:00.000Z",
         isNative: false,
@@ -790,8 +736,6 @@ async function insertInstructors() {
         passcode: "haruka",
         password:
           "$2b$12$WzHarukaExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500005",
         createdAt: "2024-08-05T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -813,8 +757,6 @@ async function insertInstructors() {
         meetingId: "86006 006 006",
         passcode: "ryan",
         password: "$2b$12$WzRyanExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500006",
         createdAt: "2024-08-06T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -836,8 +778,6 @@ async function insertInstructors() {
         meetingId: "87007 007 007",
         passcode: "kana",
         password: "$2b$12$WzKanaExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500007",
         createdAt: "2024-08-07T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -860,8 +800,6 @@ async function insertInstructors() {
         passcode: "thomas",
         password:
           "$2b$12$WzThomasExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500008",
         createdAt: "2024-08-08T00:00:00.000Z",
         terminationAt: "2025-02-14T00:00:00.000Z",
         isNative: false,
@@ -882,8 +820,6 @@ async function insertInstructors() {
         meetingId: "89009 009 009",
         passcode: "miyu",
         password: "$2b$12$WzMiyuExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500009",
         createdAt: "2024-08-09T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -904,8 +840,6 @@ async function insertInstructors() {
         meetingId: "90010 010 010",
         passcode: "ethan",
         password: "$2b$12$WzEthanExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500010",
         createdAt: "2024-08-10T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -927,8 +861,6 @@ async function insertInstructors() {
         meetingId: "91011 011 011",
         passcode: "aoi",
         password: "$2b$12$WzAoiExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500011",
         createdAt: "2024-08-11T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -950,8 +882,6 @@ async function insertInstructors() {
         meetingId: "92012 012 012",
         passcode: "logan",
         password: "$2b$12$WzLoganExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500012",
         createdAt: "2024-08-12T00:00:00.000Z",
         terminationAt: "2025-06-01T00:00:00.000Z",
         isNative: false,
@@ -973,8 +903,6 @@ async function insertInstructors() {
         passcode: "sayaka",
         password:
           "$2b$12$WzSayakaExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500013",
         createdAt: "2024-08-13T00:00:00.000Z",
         terminationAt: null,
         isNative: false,
@@ -997,8 +925,6 @@ async function insertInstructors() {
         passcode: "george",
         password:
           "$2b$12$WzGeorgeExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500014",
         createdAt: "2024-08-14T00:00:00.000Z",
         terminationAt: null,
         isNative: true,
@@ -1020,8 +946,6 @@ async function insertInstructors() {
         meetingId: "95015 015 015",
         passcode: "emi",
         password: "$2b$12$WzEmiExampleHash0000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500015",
         createdAt: "2024-08-15T00:00:00.000Z",
         isNative: true,
       },
@@ -1042,8 +966,6 @@ async function insertInstructors() {
         passcode: "niki",
         password:
           "$2b$12$WzNikiExampleHash000000000000000000000000000000000000",
-        introductionURL:
-          "https://select-type.com/rsv/?id=instructor&c_id=500022",
         createdAt: "2024-08-22T00:00:00.000Z",
         isNative: true,
       },

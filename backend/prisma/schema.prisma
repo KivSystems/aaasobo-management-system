@@ -18,7 +18,6 @@ model Instructor {
   nickname            String               @unique
   meetingId           String               @unique
   passcode            String               @unique
-  introductionURL     String               @unique
   createdAt           DateTime             @default(now())
   birthdate           DateTime
   favoriteFood        String
