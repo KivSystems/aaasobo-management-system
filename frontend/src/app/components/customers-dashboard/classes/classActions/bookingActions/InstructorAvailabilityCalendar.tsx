@@ -73,7 +73,6 @@ const createInstructorProfile = (
   name: instructorName,
   nickname: instructorName,
   icon: "",
-  introductionURL: "",
   isNative: false,
 });
 

@@ -95,7 +95,6 @@ describe("PATCH /admins/instructor-list/update/:id", () => {
         classURL: instructor.classURL,
         meetingId: instructor.meetingId,
         passcode: instructor.passcode,
-        introductionURL: instructor.introductionURL,
         isNative: instructor.isNative ? "true" : "false",
       })
       .expect(200);

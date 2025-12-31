@@ -39,7 +39,6 @@ export const MaskInstructorsResponse = z.array(
     classURL: z.string().describe("Masked class URL"),
     meetingId: z.string().describe("Masked meeting ID"),
     passcode: z.string().describe("Masked passcode"),
-    introductionURL: z.string().describe("Masked introduction URL"),
   }),
 );
 

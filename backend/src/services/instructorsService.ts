@@ -30,7 +30,6 @@ export const registerInstructor = async (data: {
   classURL: string;
   meetingId: string;
   passcode: string;
-  introductionURL: string;
   isNative: boolean;
 }) => {
   const hashedPassword = await hashPassword(data.password);
@@ -64,7 +63,6 @@ export const registerInstructor = async (data: {
       classURL: data.classURL,
       meetingId: data.meetingId,
       passcode: data.passcode,
-      introductionURL: data.introductionURL,
       isNative: data.isNative,
     },
   });
@@ -137,7 +135,6 @@ export const updateInstructor = async (
   classURL: string,
   meetingId: string,
   passcode: string,
-  introductionURL: string,
   isNative: boolean,
 ) => {
   try {
@@ -186,7 +183,6 @@ export const updateInstructor = async (
         classURL,
         meetingId,
         passcode,
-        introductionURL,
         icon: blob.url,
         terminationAt: leavingDate
           ? convertToUTCDate(leavingDate, "Asia/Tokyo")
@@ -246,15 +242,6 @@ export const getInstructorByPasscode = async (
   });
 };
 
-// Fetch the instructor by the introduction URL
-export const getInstructorByIntroductionURL = async (
-  introductionURL: string,
-): Promise<Instructor | null> => {
-  return await prisma.instructor.findUnique({
-    where: { introductionURL },
-  });
-};
-
 export async function getInstructorProfile(instructorId: number) {
   const instructorProfile = await prisma.instructor.findUnique({
     where: { id: instructorId },
@@ -296,7 +283,6 @@ export const getInstructorProfiles = async () => {
     name: instructor.name,
     nickname: instructor.nickname,
     icon: instructor.icon,
-    introductionURL: instructor.introductionURL,
     isNative: instructor.isNative,
   }));
 
@@ -319,7 +305,6 @@ export const getNativeInstructorProfiles = async () => {
     name: instructor.name,
     nickname: instructor.nickname,
     icon: instructor.icon,
-    introductionURL: instructor.introductionURL,
     isNative: instructor.isNative,
   }));
 
@@ -342,7 +327,6 @@ export const getNonNativeInstructorProfiles = async () => {
     name: instructor.name,
     nickname: instructor.nickname,
     icon: instructor.icon,
-    introductionURL: instructor.introductionURL,
     isNative: instructor.isNative,
   }));
 
@@ -421,7 +405,6 @@ export const maskInstructors = async (instructors: Instructor[]) => {
             classURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             meetingId: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             passcode: `${maskedHeadLetters}_${suffix}${instructor.id}`,
-            introductionURL: `${maskedHeadLetters}_${suffix}${instructor.id}`,
             isNative: false,
           },
         }),

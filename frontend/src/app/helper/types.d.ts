@@ -252,7 +252,6 @@ type UpdateFormState = {
   classURL?: string;
   meetingId?: string;
   passcode?: string;
-  introductionURL?: string;
   color?: string;
   eventId?: string;
   errorMessage?: string;

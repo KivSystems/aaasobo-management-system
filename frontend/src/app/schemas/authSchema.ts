@@ -73,16 +73,6 @@ export const instructorRegisterSchema = z
       ),
     meetingId: z.string().min(1, "Meeting ID is required."),
     passcode: z.string().min(1, "Passcode is required."),
-    introductionURL: z
-      .string()
-      .url("Invalid URL format.")
-      .min(1, "Introduction URL is required.")
-      .refine(
-        (url) => url.startsWith("http://") || url.startsWith("https://"),
-        {
-          message: "URL must start with http:// or https://",
-        },
-      ),
     userType: z.enum(["admin", "customer", "instructor"], {
       message: "Invalid user type.",
     }),
@@ -226,12 +216,6 @@ export const instructorUpdateSchema = z.object({
     }),
   meetingId: z.string().min(1, "Meeting ID is required."),
   passcode: z.string().min(1, "Passcode is required."),
-  introductionURL: z
-    .string()
-    .url("Invalid URL format.")
-    .refine((url) => url.startsWith("http://") || url.startsWith("https://"), {
-      message: "URL must start with http:// or https://",
-    }),
 });
 
 export const instructorIconUpdateSchema = z.object({

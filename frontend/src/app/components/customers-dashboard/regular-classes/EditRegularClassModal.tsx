@@ -80,7 +80,6 @@ export default function EditRegularClassModal({
         classURL: recurringClass.instructor.classURL || "",
         meetingId: recurringClass.instructor.meetingId || "",
         passcode: recurringClass.instructor.passcode || "",
-        introductionURL: "",
         isNative: recurringClass.instructor.isNative || false,
       };
       setSelectedInstructor(currentInstructor);
@@ -158,7 +157,6 @@ export default function EditRegularClassModal({
       classURL: recurringClass.instructor!.classURL || "",
       meetingId: recurringClass.instructor!.meetingId || "",
       passcode: recurringClass.instructor!.passcode || "",
-      introductionURL: "",
       isNative: recurringClass.instructor!.isNative || false,
     };
 

@@ -210,18 +210,6 @@ const RegisterForm = ({
                 onChange={() => clearErrorMessage("passcode")}
               />
 
-              {/* Introduction URL */}
-              <TextInput
-                id="introductionURL"
-                label="Introduction URL"
-                type="text"
-                name="introductionURL"
-                placeholder="e.g., https://..."
-                icon={<DocumentTextIcon className={styles.icon} />}
-                inputRequired
-                onChange={() => clearErrorMessage("introductionURL")}
-              />
-
               {/* Available Class */}
               <label className={styles.label}>Available Class</label>
               <div className={styles.textareaContainer}>

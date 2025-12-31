@@ -33,7 +33,8 @@ export default function RebookableInstructorItem({
       <div className={styles.instructorItem__actions}>
         <ExternalLinkComponent
           linkName={language === "ja" ? "プロフィール" : "Profile"}
-          url={instructor.introductionURL}
+          url={`/instructors/${instructor.id}`}
+          className="instructorProfileLink"
         />
 
         {isRebookable ? (

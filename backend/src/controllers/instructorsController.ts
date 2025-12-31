@@ -88,7 +88,6 @@ export const getInstructor = async (
         classURL: instructor.classURL,
         meetingId: instructor.meetingId,
         passcode: instructor.passcode,
-        introductionURL: instructor.introductionURL,
         terminationAt: terminationAt,
         isNative: instructor.isNative,
       },

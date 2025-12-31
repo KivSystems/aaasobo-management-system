@@ -96,7 +96,6 @@ async function registerInstructor(authCookie: string, seed: number, i: number) {
     skill: "Conversation",
     meetingId: String(10_000_000_000 + i),
     passcode: `PASS${i}`.padEnd(8, "0"),
-    introductionURL: `https://example.com/intro/${i}`,
     isNative: "false",
   };
 

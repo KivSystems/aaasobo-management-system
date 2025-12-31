@@ -69,7 +69,7 @@ export default function InstructorItem({
           </div>
           <div onClick={handleProfileClick} className={styles.instructorName}>
             <a
-              href={instructor.introductionURL}
+              href={`/instructors/${instructor.id}`}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.nameLink}

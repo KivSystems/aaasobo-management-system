@@ -2,6 +2,7 @@ const { faker } = require("@faker-js/faker");
 import { hashPasswordSync } from "../helper/commonUtils";
 import { prisma } from "./setup";
 import { SignJWT } from "jose";
+import { Status } from "@prisma/client";
 
 /**
  * Generate a test admin
@@ -54,7 +55,6 @@ export function generateTestInstructor() {
     skill: faker.lorem.sentence(),
     meetingId: faker.string.numeric(11),
     passcode: faker.string.alphanumeric(8),
-    introductionURL: faker.internet.url(),
     isNative: false,
   };
 }
@@ -221,7 +221,7 @@ function generateTestClass(
     customerId,
     instructorId: instructorId || null,
     dateTime: dateTime || null,
-    status: instructorId ? "booked" : "pending",
+    status: instructorId ? Status.booked : Status.pending,
     classCode: faker.string.alphanumeric(8).toUpperCase(),
     isFreeTrial: false,
     updatedAt: new Date(),

@@ -33,7 +33,6 @@ export async function registerUser(
     const classURL = formData.get("classURL");
     const meetingId = formData.get("meetingId");
     const passcode = formData.get("passcode");
-    const introductionURL = formData.get("introductionURL");
     const passwordStrength = parseInt(
       formData.get("passwordStrength") as string,
       10,
@@ -63,7 +62,6 @@ export async function registerUser(
           classURL,
           meetingId,
           passcode,
-          introductionURL,
           userType,
         });
         if (!parsedForm1.success) {
@@ -86,7 +84,6 @@ export async function registerUser(
         userData.append("classURL", parsedForm1.data.classURL);
         userData.append("meetingId", parsedForm1.data.meetingId);
         userData.append("passcode", parsedForm1.data.passcode);
-        userData.append("introductionURL", parsedForm1.data.introductionURL);
         userData.append("isNative", isNative ? "true" : "false");
 
         // Append the icon file if it exists

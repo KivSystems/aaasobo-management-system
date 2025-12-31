@@ -20,7 +20,6 @@ export const InstructorProfile = z.object({
   name: z.string().min(1).describe("Instructor full name"),
   nickname: z.string().min(1).describe("Instructor nickname"),
   icon: z.string().describe("Instructor profile icon URL from database"),
-  introductionURL: z.string().describe("Instructor introduction video URL"),
   isNative: z.boolean().describe("If it's native or not"),
 });
 
@@ -80,7 +79,6 @@ export const CompleteInstructor = z.object({
   classURL: z.string().nullable().describe("Class meeting URL"),
   meetingId: z.string().nullable().describe("Meeting ID"),
   passcode: z.string().nullable().describe("Meeting passcode"),
-  introductionURL: z.string().nullable().describe("Introduction video URL"),
   terminationAt: z.string().nullable().describe("Termination timestamp (JST)"),
   isNative: z.boolean().describe("If it's native or not"),
 });
