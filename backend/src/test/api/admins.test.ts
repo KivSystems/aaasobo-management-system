@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../server";
-import { createAdmin, generateAuthCookie } from "./testUtils";
-import { prisma } from "./setup";
+import { server } from "../../server";
+import { createAdmin, generateAuthCookie } from "../testUtils";
+import { prisma } from "../setup";
 
 describe("PATCH /admins/:id", () => {
   it("succeed with authenticated admin", async () => {

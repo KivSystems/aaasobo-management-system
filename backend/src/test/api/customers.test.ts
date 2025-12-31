@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
 const { faker } = require("@faker-js/faker");
-import { server } from "../server";
-import { prisma } from "./setup";
+import { server } from "../../server";
+import { prisma } from "../setup";
 import {
   createAdmin,
   createCustomer,
@@ -15,7 +15,7 @@ import {
   createClassAttendance,
   generateTestCustomer,
   generateAuthCookie,
-} from "./testUtils";
+} from "../testUtils";
 
 async function createAdminAuthCookie() {
   const admin = await createAdmin();
@@ -23,7 +23,7 @@ async function createAdminAuthCookie() {
 }
 
 // Mock the resend email service to avoid sending real emails
-vi.mock("../helper/resendClient", () => ({
+vi.mock("../../helper/resendClient", () => ({
   resend: {
     emails: {
       send: vi
@@ -34,8 +34,8 @@ vi.mock("../helper/resendClient", () => ({
 }));
 
 // Mock the mail helper functions
-vi.mock("../helper/mail", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../helper/mail")>();
+vi.mock("../../helper/mail", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../helper/mail")>();
   return {
     ...actual,
     resendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),

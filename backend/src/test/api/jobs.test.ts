@@ -1,18 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import request from "supertest";
-import { server } from "../server";
-import { prisma } from "./setup";
+import { server } from "../../server";
+import { prisma } from "../setup";
 import {
   createCustomer,
   createInstructor,
   createClass,
   createEvent,
-} from "./testUtils";
+} from "../testUtils";
 import {
   convertToISOString,
   getFirstDesignatedDayOfYear,
-} from "../helper/dateUtils";
-import { maskedHeadLetters } from "../helper/commonUtils";
+} from "../../helper/dateUtils";
+import { maskedHeadLetters } from "../../helper/commonUtils";
 
 function cronAuthHeader() {
   process.env.CRON_SECRET = "test-cron-secret";

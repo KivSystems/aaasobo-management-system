@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../../server";
-import { createAdmin, createEvent, generateAuthCookie } from "../testUtils";
-import { prisma } from "../setup";
+import { server } from "../../../server";
+import { createAdmin, createEvent, generateAuthCookie } from "../../testUtils";
+import { prisma } from "../../setup";
 
 describe("GET /admins/event-list", () => {
   it("succeed with multiple events", async () => {

@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../server";
+import { server } from "../../server";
 import {
   createCustomer,
   createPlan,
   createSubscription,
   generateAuthCookie,
-} from "./testUtils";
+} from "../testUtils";
 
 describe("GET /subscriptions/:id", () => {
   it("succeed returning subscription by id (customer auth)", async () => {

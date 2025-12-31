@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { server } from "../../server";
-import { createAdmin, createPlan, generateAuthCookie } from "../testUtils";
-import { prisma } from "../setup";
+import { server } from "../../../server";
+import { createAdmin, createPlan, generateAuthCookie } from "../../testUtils";
+import { prisma } from "../../setup";
 
 describe("GET /admins/plan-list", () => {
   it("succeed with multiple plans", async () => {
