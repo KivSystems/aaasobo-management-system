@@ -63,7 +63,6 @@ export const RegisterInstructorRequest = z.object({
   classURL: z.string().min(1, "Class URL is required"),
   meetingId: z.string().min(1, "Meeting ID is required"),
   passcode: z.string().min(1, "Passcode is required"),
-  introductionURL: z.string().min(1, "Introduction URL is required"),
   isNative: z.string("true") || z.string("false"),
 });
 
@@ -82,7 +81,6 @@ export const UpdateInstructorRequest = z.object({
   classURL: z.string().min(1, "Class URL is required"),
   meetingId: z.string().min(1, "Meeting ID is required"),
   passcode: z.string().min(1, "Passcode is required"),
-  introductionURL: z.string().min(1, "Introduction URL is required"),
   isNative: z.enum(["true", "false"]),
 });
 

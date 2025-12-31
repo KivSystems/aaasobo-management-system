@@ -51,8 +51,7 @@ type EditableInstructorFields =
   | "email"
   | "classURL"
   | "meetingId"
-  | "passcode"
-  | "introductionURL";
+  | "passcode";
 
 function InstructorProfile({
   instructor,
@@ -87,8 +86,6 @@ function InstructorProfile({
         newMessages.meetingId = updateResultState.meetingId;
       if (updateResultState.passcode)
         newMessages.passcode = updateResultState.passcode;
-      if (updateResultState.introductionURL)
-        newMessages.introductionURL = updateResultState.introductionURL;
       if (updateResultState.errorMessage)
         newMessages.errorMessage = updateResultState.errorMessage;
       setLocalMessages(newMessages);
@@ -627,52 +624,6 @@ function InstructorProfile({
                       </p>
                     )}
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* Instructor introduction URL */}
-            {/* TODO: Remove this section in a future version */}
-            {userSessionType === "admin" && (
-              <div className={styles.insideContainer}>
-                <LinkIcon className={styles.icon} />
-                <div className={styles.userInfo}>
-                  <p>Self Introduction URL</p>
-                  {isEditing ? (
-                    <InputField
-                      name="introductionURL"
-                      type="url"
-                      value={
-                        "introductionURL" in latestInstructor
-                          ? latestInstructor.introductionURL || ""
-                          : ""
-                      }
-                      onChange={(e) => handleInputChange(e, "introductionURL")}
-                      error={localMessages.introductionURL}
-                      className={`${styles.selfIntroduction__inputField} ${isEditing ? styles.editable : ""}`}
-                    />
-                  ) : (
-                    <h4>
-                      <a
-                        href={
-                          "introductionURL" in latestInstructor
-                            ? latestInstructor.introductionURL || undefined
-                            : undefined
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.url}
-                      >
-                        {"introductionURL" in latestInstructor
-                          ? latestInstructor.introductionURL?.includes(
-                              MASKED_HEAD_LETTERS,
-                            )
-                            ? MASKED_HEAD_LETTERS
-                            : latestInstructor.introductionURL
-                          : "Not available"}
-                      </a>
-                    </h4>
-                  )}
                 </div>
               </div>
             )}

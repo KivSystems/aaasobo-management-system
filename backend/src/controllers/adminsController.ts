@@ -22,7 +22,6 @@ import {
   getInstructorByClassURL,
   getInstructorByMeetingId,
   getInstructorByPasscode,
-  getInstructorByIntroductionURL,
 } from "../services/instructorsService";
 import { getClassesWithinPeriod } from "../services/classesService";
 import {
@@ -407,7 +406,6 @@ export const registerInstructorController = async (
     classURL,
     meetingId,
     passcode,
-    introductionURL,
     isNative,
   } = req.body;
 
@@ -423,7 +421,6 @@ export const registerInstructorController = async (
     { fn: getInstructorByClassURL, value: classURL },
     { fn: getInstructorByMeetingId, value: meetingId },
     { fn: getInstructorByPasscode, value: passcode },
-    { fn: getInstructorByIntroductionURL, value: introductionURL },
   ];
   let errorItems = "";
 
@@ -441,7 +438,6 @@ export const registerInstructorController = async (
       classURLExists,
       meetingIdExists,
       passcodeExists,
-      introductionURLExists,
     ] = results;
 
     // Make list of error items and set the text including each error item
@@ -450,8 +446,6 @@ export const registerInstructorController = async (
     if (classURLExists) errorItems = errorItems.concat(", ", "Class URL");
     if (meetingIdExists) errorItems = errorItems.concat(", ", "Meeting ID");
     if (passcodeExists) errorItems = errorItems.concat(", ", "Pass Code");
-    if (introductionURLExists)
-      errorItems = errorItems.concat(", ", "Introduction URL");
 
     // Count the number of commas in the errorItems string
     const errorItemCount = (errorItems.match(/,/g) || []).length;
@@ -479,7 +473,6 @@ export const registerInstructorController = async (
       classURL,
       meetingId,
       passcode,
-      introductionURL,
       isNative: isNativeBool,
     });
 
@@ -512,7 +505,6 @@ export const updateInstructorProfileController = async (
     classURL,
     meetingId,
     passcode,
-    introductionURL,
     isNative,
   } = req.body;
 
@@ -532,7 +524,6 @@ export const updateInstructorProfileController = async (
     { fn: getInstructorByClassURL, value: classURL },
     { fn: getInstructorByMeetingId, value: meetingId },
     { fn: getInstructorByPasscode, value: passcode },
-    { fn: getInstructorByIntroductionURL, value: introductionURL },
   ];
   let errorItems: { [key: string]: string } = {};
 
@@ -547,7 +538,6 @@ export const updateInstructorProfileController = async (
       classURLExists,
       meetingIdExists,
       passcodeExists,
-      introductionURLExists,
     ] = results;
 
     if (nicknameExists && nicknameExists.id !== id) {
@@ -564,9 +554,6 @@ export const updateInstructorProfileController = async (
     }
     if (passcodeExists && passcodeExists.id !== id) {
       errorItems.passcode = "The passcode is already in use.";
-    }
-    if (introductionURLExists && introductionURLExists.id !== id) {
-      errorItems.introductionURL = "The introduction URL is already in use.";
     }
     if (Object.keys(errorItems).length > 0) {
       return res.status(400).json(errorItems);
@@ -589,7 +576,6 @@ export const updateInstructorProfileController = async (
       classURL,
       meetingId,
       passcode,
-      introductionURL,
       isNative === "true",
     );
 
