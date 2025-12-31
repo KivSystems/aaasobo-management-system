@@ -1,4 +1,4 @@
-export type SimulationBootstrapScale = {
+type SimulationBootstrapScale = {
   plans: number;
   instructors: number;
   customers: number;

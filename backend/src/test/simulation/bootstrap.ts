@@ -8,7 +8,7 @@ import { generateAuthCookie } from "../testUtils";
 
 type Slot = { weekday: number; startTime: string };
 
-export type SimulationBootstrapState = {
+type SimulationBootstrapState = {
   seed: number;
   admin: { id: number; email: string; authCookie: string };
   plans: Array<{ id: number; name: string }>;
