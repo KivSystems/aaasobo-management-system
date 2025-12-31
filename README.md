@@ -40,7 +40,7 @@ PORT=4000
 KEY1=98b5b9c9ef24f4280561d95beb2ee54c00e81dfa1abc9d008b35b66e6c2095cc
 KEY2=7e3caf8440ad740910137a1890940347c44a5258f73784e822d0d705a1db3b70
 RESEND_API_KEY="Dummy Resend API Key"
-AUTH_SECRET="<random-string>"
+AUTH_SECRET="5e13a7ccb2e88d1a5c21dce34abbdc0c3d70f9c9dea9f994a4af4d5b7383caf5"
 AUTH_SALT="next-auth.session-token"
 ```
 
@@ -63,8 +63,6 @@ or
 ```sh
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
-
-`AUTH_SECRET` should also be a randomly generated string, and it must be the same value in both `backend/.env` and `frontend/.env`.
 
 #### Launch Database
 
@@ -125,7 +123,7 @@ npm install
 Create a `.env` file in the `frontend` directory with the following content:
 
 ```
-AUTH_SECRET="<same-random-string-as-backend>"
+AUTH_SECRET="5e13a7ccb2e88d1a5c21dce34abbdc0c3d70f9c9dea9f994a4af4d5b7383caf5"
 
 # Optional. Default is http://localhost:4000
 NEXT_PUBLIC_BACKEND_ORIGIN=http://localhost:4000
