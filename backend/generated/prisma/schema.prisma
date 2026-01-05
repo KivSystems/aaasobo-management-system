@@ -33,6 +33,8 @@ model Instructor {
   instructorAbsences  InstructorAbsence[]
   instructorSchedules InstructorSchedule[]
   recurringClasses    RecurringClass[]
+
+  @@index([terminationAt])
 }
 
 model Customer {
@@ -49,6 +51,8 @@ model Customer {
   children       Children[]
   classes        Class[]
   subscription   Subscription[]
+
+  @@index([terminationAt])
 }
 
 model Class {
@@ -70,7 +74,17 @@ model Class {
   subscription     Subscription?     @relation(fields: [subscriptionId], references: [id])
   classAttendance  ClassAttendance[]
 
+  @@index([status])
   @@index([dateTime])
+  @@index([customerId])
+  @@index([instructorId])
+  @@index([status, dateTime])
+  @@index([customerId, dateTime])
+  @@index([instructorId, dateTime])
+  @@index([customerId, status, dateTime])
+  @@index([instructorId, status, dateTime])
+  @@index([recurringClassId, dateTime])
+  @@index([rebookableUntil])
 }
 
 model Admins {
@@ -93,6 +107,8 @@ model Children {
   customer                 Customer                   @relation(fields: [customerId], references: [id])
   classAttendance          ClassAttendance[]
   recurringClassAttendance RecurringClassAttendance[]
+
+  @@index([customerId])
 }
 
 model ClassAttendance {
@@ -102,6 +118,8 @@ model ClassAttendance {
   class      Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
 
   @@id([classId, childrenId])
+  @@index([classId])
+  @@index([childrenId])
 }
 
 model Plan {
@@ -126,6 +144,8 @@ model Subscription {
   recurringClass RecurringClass[]
   customer       Customer         @relation(fields: [customerId], references: [id])
   plan           Plan             @relation(fields: [planId], references: [id])
+
+  @@index([customerId])
 }
 
 model RecurringClass {
@@ -138,6 +158,10 @@ model RecurringClass {
   instructor               Instructor?                @relation(fields: [instructorId], references: [id])
   subscription             Subscription?              @relation(fields: [subscriptionId], references: [id])
   recurringClassAttendance RecurringClassAttendance[]
+
+  @@index([instructorId, endAt])
+  @@index([subscriptionId, endAt])
+  @@index([endAt])
 }
 
 model RecurringClassAttendance {
@@ -147,6 +171,7 @@ model RecurringClassAttendance {
   recurringClass   RecurringClass @relation(fields: [recurringClassId], references: [id])
 
   @@id([recurringClassId, childrenId])
+  @@index([childrenId])
 }
 
 model VerificationToken {
@@ -191,6 +216,9 @@ model InstructorSchedule {
   slots         InstructorSlot[]
 
   @@unique([instructorId, effectiveTo])
+  @@index([instructorId, effectiveTo])
+  @@index([instructorId, effectiveFrom])
+  @@index([instructorId, timezone, effectiveFrom])
 }
 
 model InstructorSlot {
@@ -208,6 +236,8 @@ model InstructorAbsence {
   instructor   Instructor @relation(fields: [instructorId], references: [id])
 
   @@id([instructorId, absentAt])
+  @@index([instructorId])
+  @@index([absentAt])
 }
 
 model SystemStatus {
