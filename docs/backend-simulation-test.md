@@ -14,10 +14,19 @@ Stress the backend with many conflicting operations at the same logical time to 
 
 ## Time / Clock
 
-- Read “current time” only via `clock.now()` (avoid scattered `Date.now()` / `new Date()` in business logic)
-- Production: `SystemClock`
-- Tests: replace with a fixed/mutable `TestClock`, and the orchestrator sets time per slot
-  - Because tests are in-process, no “set time” HTTP API is required
+### Time Control (recommended)
+
+Control “current time” in tests via Vitest, without refactoring production code:
+
+- Use `vi.useFakeTimers({ toFake: ["Date"] })` to fake `Date` only (not timeouts/intervals).
+- Use `vi.setSystemTime(fakeNow)` to set the current time per simulation slot.
+- Because tests run in-process (no separate HTTP server process), no “set time” HTTP API is required.
+
+This approach affects both `Date.now()` and `new Date()` in the Node process, which is sufficient for discrete-time, no-wait simulations.
+
+### Important Caveat: Module-level “now” caching
+
+If the codebase contains patterns like `const now = new Date()` evaluated at module load time, changing the system time later will not update that cached value. For simulation/reproducibility, avoid module-level time snapshots; compute “now” inside the function that needs it.
 
 ## Model: Scenario -> Events
 
