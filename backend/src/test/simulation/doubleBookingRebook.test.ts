@@ -80,7 +80,7 @@ describe("double booking", () => {
           childrenIds: args.childrenIds,
         });
 
-    await Promise.all([
+    const responses = await Promise.all([
       postRebook({
         oldClassId: customerA.oldClass.id,
         customerId: customerA.customer.id,
@@ -92,6 +92,13 @@ describe("double booking", () => {
         childrenIds: [customerB.child.id],
       }),
     ]);
+    const statuses = responses.map((r) => r.status).sort();
+    expect(statuses[0]).toBe(201);
+    expect([400, 409]).toContain(statuses[1]);
+    const conflictResponse = responses.find((r) => r.status !== 201);
+    expect(["instructor conflict", "likely instructor conflict"]).toContain(
+      conflictResponse?.body?.errorType,
+    );
 
     const rebookedCount = await prisma.class.count({
       where: {

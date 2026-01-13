@@ -9,6 +9,7 @@ import {
   createClassAttendance,
   createCustomer,
   createInstructor,
+  createInstructorAbsence,
   createPlan,
   createSubscription,
   generateAuthCookie,
@@ -188,6 +189,71 @@ describe("POST /classes/:id/rebook", () => {
         where: { classId: rebookedClass!.id },
       }),
     ).toEqual([expect.objectContaining({ childrenId: child.id })]);
+  });
+
+  it("failed when slot is already booked by instructor", async () => {
+    const admin = await createAdmin();
+    const customer = await createCustomer();
+    const otherCustomer = await createCustomer();
+    const instructor = await createInstructor();
+    const child = await createChild(customer.id);
+
+    const targetDate = daysFromNow(10);
+    await createClass(otherCustomer.id, instructor.id, targetDate);
+
+    const classToRebook = await createClass(customer.id);
+    await prisma.class.update({
+      where: { id: classToRebook.id },
+      data: {
+        isFreeTrial: true,
+        rebookableUntil: daysFromNow(30),
+      },
+    });
+
+    const response = await request(server)
+      .post(`/classes/${classToRebook.id}/rebook`)
+      .set("Cookie", await generateAuthCookie(admin.id, "admin"))
+      .send({
+        dateTime: targetDate.toISOString(),
+        instructorId: instructor.id,
+        customerId: customer.id,
+        childrenIds: [child.id],
+      })
+      .expect(400);
+
+    expect(response.body.errorType).toBe("instructor conflict");
+  });
+
+  it("failed when instructor is absent", async () => {
+    const admin = await createAdmin();
+    const customer = await createCustomer();
+    const instructor = await createInstructor();
+    const child = await createChild(customer.id);
+
+    const targetDate = daysFromNow(10);
+    await createInstructorAbsence(instructor.id, targetDate);
+
+    const classToRebook = await createClass(customer.id);
+    await prisma.class.update({
+      where: { id: classToRebook.id },
+      data: {
+        isFreeTrial: true,
+        rebookableUntil: daysFromNow(30),
+      },
+    });
+
+    const response = await request(server)
+      .post(`/classes/${classToRebook.id}/rebook`)
+      .set("Cookie", await generateAuthCookie(admin.id, "admin"))
+      .send({
+        dateTime: targetDate.toISOString(),
+        instructorId: instructor.id,
+        customerId: customer.id,
+        childrenIds: [child.id],
+      })
+      .expect(400);
+
+    expect(response.body.errorType).toBe("instructor unavailable");
   });
 
   it("fail without authentication", async () => {
