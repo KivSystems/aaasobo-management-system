@@ -1,10 +1,10 @@
 import request from "supertest";
-import { faker } from "@faker-js/faker";
 import { server } from "../../server";
 import { prisma } from "../setup";
 import { hashPasswordSync } from "../../helper/commonUtils";
 import type { SimulationBootstrapConfig } from "./config";
 import { generateAuthCookie } from "../testUtils";
+const { faker } = require("@faker-js/faker");
 
 type Slot = { weekday: number; startTime: string };
 
@@ -230,6 +230,7 @@ export async function bootstrapSimulation(
     instructors.push({ ...instructor, slots: instructorSlots });
   }
 
+  const nextSlotIndexByInstructorId = new Map<number, number>();
   const customers = [];
   for (let i = 0; i < config.scale.customers; i++) {
     const customer = await registerCustomer(config.seed, i);
@@ -254,8 +255,13 @@ export async function bootstrapSimulation(
       subscriptionIds.push(subscription.id);
 
       const chosenInstructor = instructors[(i + r) % instructors.length]!;
-      const slot =
-        chosenInstructor.slots[(i + r) % chosenInstructor.slots.length]!;
+      const nextSlotIndex =
+        nextSlotIndexByInstructorId.get(chosenInstructor.id) ?? 0;
+      const slot = chosenInstructor.slots[nextSlotIndex]!;
+      nextSlotIndexByInstructorId.set(
+        chosenInstructor.id,
+        (nextSlotIndex + 1) % chosenInstructor.slots.length,
+      );
       await createRecurringClass({
         instructorId: chosenInstructor.id,
         customerId: customer.id,

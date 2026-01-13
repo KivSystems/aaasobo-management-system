@@ -10,8 +10,7 @@ import {
 } from "../helper/commonUtils";
 import { convertToUTCDate } from "../helper/dateUtils";
 import { put, del } from "@vercel/blob";
-
-const now = new Date();
+import { randomUUID } from "crypto";
 
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {
@@ -43,7 +42,7 @@ export const registerInstructor = async (data: {
       addRandomSuffix: true,
     });
   } else {
-    blob = { url: `${defaultUserImageUrl}?t=${Date.now()}` };
+    blob = { url: `${defaultUserImageUrl}?t=${Date.now()}&u=${randomUUID()}` };
   }
 
   await prisma.instructor.create({
@@ -269,6 +268,7 @@ export const updateInstructorPassword = async (
 };
 
 export const getInstructorProfiles = async () => {
+  const now = new Date();
   const instructors = await prisma.instructor.findMany({
     where: {
       OR: [
@@ -290,6 +290,7 @@ export const getInstructorProfiles = async () => {
 };
 
 export const getNativeInstructorProfiles = async () => {
+  const now = new Date();
   const instructors = await prisma.instructor.findMany({
     where: {
       OR: [
@@ -312,6 +313,7 @@ export const getNativeInstructorProfiles = async () => {
 };
 
 export const getNonNativeInstructorProfiles = async () => {
+  const now = new Date();
   const instructors = await prisma.instructor.findMany({
     where: {
       OR: [
@@ -346,6 +348,7 @@ export const getInstructorContactById = async (id: number) => {
 // Fetch instructors who will be leaving
 export const getInstructorsToLeave = async () => {
   try {
+    const now = new Date();
     return await prisma.instructor.findMany({
       where: {
         AND: [
@@ -364,6 +367,7 @@ export const getInstructorsToLeave = async () => {
 // Fetch instructors who have left the organization and has not been masked
 export const getInstructorsToMask = async () => {
   try {
+    const now = new Date();
     return await prisma.instructor.findMany({
       where: {
         AND: [

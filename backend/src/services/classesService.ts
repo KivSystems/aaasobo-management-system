@@ -15,6 +15,12 @@ import {
   REGULAR_CLASS_COLOR,
 } from "../helper/colors";
 
+export class InstructorUnavailableError extends Error {
+  constructor() {
+    super("instructor unavailable");
+  }
+}
+
 // Fetch all the classes with related instructors and customers data
 export const getAllClasses = async () => {
   try {
@@ -229,23 +235,6 @@ export const getExcludedClasses = async (
     console.error("Database Error:", error);
     throw new Error("Failed to fetch classes.");
   }
-};
-
-// Check if the instructor is already booked at the specified date and time
-export const checkInstructorConflicts = async (
-  instructorId: number,
-  dateTime: string,
-): Promise<boolean> => {
-  const existingBooking = await prisma.class.findFirst({
-    where: {
-      instructorId,
-      dateTime: new Date(dateTime),
-      status: {
-        in: ["booked", "rebooked"],
-      },
-    },
-  });
-  return existingBooking !== null;
 };
 
 // Check if the selected children have another class with another instructor at the same dateTime
@@ -589,6 +578,9 @@ export const rebookClass = async (
   childrenToAttend: number[],
 ) => {
   return await prisma.$transaction(async (tx) => {
+    await lockInstructorSlot(tx, newClass);
+    await assertInstructorAvailable(tx, newClass);
+
     // Step 1: Update or delete the old class to be rebooked.
     // If the old class status is "canceled", update the rebookableUntil field to null to prevent further rebooking.
     if (
@@ -617,6 +609,33 @@ export const rebookClass = async (
 
     return newRebookedClass;
   });
+};
+
+const lockInstructorSlot = async (
+  tx: Prisma.TransactionClient,
+  newClass: NewClassToRebookType,
+) => {
+  if (!newClass.instructorId || !newClass.dateTime) return;
+  const lockKey = `instructor:${newClass.instructorId}:${new Date(
+    newClass.dateTime,
+  ).toISOString()}`;
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`;
+};
+
+const assertInstructorAvailable = async (
+  tx: Prisma.TransactionClient,
+  newClass: NewClassToRebookType,
+) => {
+  if (!newClass.instructorId || !newClass.dateTime) return;
+  const absence = await tx.instructorAbsence.findFirst({
+    where: {
+      instructorId: newClass.instructorId,
+      absentAt: new Date(newClass.dateTime),
+    },
+  });
+  if (absence) {
+    throw new InstructorUnavailableError();
+  }
 };
 
 export const createFreeTrialClass = async ({

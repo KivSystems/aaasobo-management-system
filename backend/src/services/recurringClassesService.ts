@@ -265,7 +265,7 @@ async function createClassesUntil(
       recurringClassId: recurringClass.id,
       subscriptionId: recurringClass.subscriptionId,
       dateTime,
-      status: "booked" as const,
+      status: "pending" as const,
       rebookableUntil: nDaysLater(180, dateTime),
       updatedAt: new Date(),
       classCode: `${recurringClass.id}-${index}`,
@@ -287,6 +287,7 @@ async function createClassesUntil(
   // Cancel created classes that conflict with existing classes or absences
   await cancelConflictingNewClasses(tx, recurringClass.id);
   await cancelClassesDuringAbsences(tx, recurringClass.id);
+  await markPendingClassesBooked(tx, recurringClass.id);
 
   return createdClasses;
 }
@@ -327,6 +328,22 @@ async function cancelClassesDuringAbsences(
         AND absence."absentAt" = c."dateTime"
     )
   `;
+}
+
+async function markPendingClassesBooked(
+  tx: Prisma.TransactionClient,
+  recurringClassId: number,
+): Promise<void> {
+  await tx.class.updateMany({
+    where: {
+      recurringClassId,
+      status: "pending",
+    },
+    data: {
+      status: "booked",
+      updatedAt: new Date(),
+    },
+  });
 }
 
 export const getRegularClassById = async (recurringClassId: number) => {

@@ -1,7 +1,6 @@
 const { faker } = require("@faker-js/faker");
 import { hashPasswordSync } from "../helper/commonUtils";
 import { prisma } from "./setup";
-import { SignJWT } from "jose";
 import { Status } from "../../generated/prisma";
 
 /**
@@ -355,6 +354,7 @@ async function generateAuthToken(
   userId: number,
   userType: "admin" | "customer" | "instructor",
 ): Promise<string> {
+  const { SignJWT } = await import("jose");
   const secret = process.env.AUTH_SECRET;
   if (!secret) {
     throw new Error("AUTH_SECRET environment variable is not set");

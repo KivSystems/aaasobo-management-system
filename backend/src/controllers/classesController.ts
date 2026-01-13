@@ -1,4 +1,4 @@
-import { Prisma } from "../../generated/prisma";
+import { Prisma, Status } from "../../generated/prisma";
 import { Request, Response } from "express";
 import {
   cancelClassById,
@@ -12,11 +12,10 @@ import {
   getClassesByCustomerId,
   getClassToRebook,
   getExcludedClasses,
-  checkInstructorConflicts,
+  InstructorUnavailableError,
   rebookClass,
   updateClass,
 } from "../services/classesService";
-import { isInstructorAbsent } from "../services/instructorAbsenceService";
 import {
   RequestWithParams,
   RequestWithBody,
@@ -173,172 +172,94 @@ export type NewClassToRebookType = {
   recurringClassId?: number;
 };
 
+type ClassToRebook = {
+  status: Status;
+  recurringClassId?: number | null;
+  rebookableUntil: Date;
+  classCode: string;
+  isFreeTrial: boolean;
+};
+
+class RebookControllerError extends Error {
+  status: number;
+  errorType: string;
+
+  constructor(status: number, errorType: string) {
+    super(errorType);
+    this.status = status;
+    this.errorType = errorType;
+  }
+}
+
+const throwRebookError = (status: number, errorType: string): never => {
+  throw new RebookControllerError(status, errorType);
+};
+
 export const rebookClassController = async (
   req: RequestWith<ClassIdParams, RebookClassRequest>,
   res: Response,
 ) => {
   const classId = req.params.id;
-
   const { dateTime, instructorId, customerId, childrenIds } = req.body;
 
   try {
-    const classToRebook = await getClassToRebook(classId);
-    const {
-      status,
-      recurringClassId,
-      rebookableUntil,
-      classCode,
-      isFreeTrial,
-    } = classToRebook;
-
-    if (!status || !rebookableUntil || !classCode) {
-      return res.status(400).json({
-        errorType: "invalid class data",
-      });
-    }
-
-    // Rebooking deadline: 72 hours before the class starts for free trial classes, and 3 hours before the class starts for regular classes
-    const rebookingDeadline = isFreeTrial
-      ? nHoursBefore(FREE_TRIAL_BOOKING_HOURS, new Date(dateTime))
-      : nHoursBefore(REGULAR_REBOOKING_HOURS, new Date(dateTime));
-    const isPastRebookingDeadline = new Date() > rebookingDeadline;
-
-    if (isPastRebookingDeadline) {
-      return res.status(403).json({
-        errorType: "past rebooking deadline",
-      });
-    }
-
-    // For non-freeTrial classes, check subscription validity
-    let subscription;
-    if (!isFreeTrial) {
-      if (!recurringClassId) {
-        return res.status(400).json({
-          errorType: "invalid class data",
-        });
-      }
-
-      // Check if subscription exists and whether it's ended
-      subscription = await getSubscriptionByRecurringClassId(recurringClassId);
-
-      if (!subscription) {
-        return res.status(404).json({
-          errorType: "no subscription",
-        });
-      }
-
-      const hasEnded = subscription.endAt
-        ? new Date(subscription.endAt) < new Date()
-        : false;
-
-      if (hasEnded) {
-        return res.status(400).json({
-          errorType: "outdated subscription",
-        });
-      }
-    }
-
-    // Check if the selected instructor is already booked at the selected date and time
-    const isInstructorBooked: boolean = await checkInstructorConflicts(
-      instructorId,
-      dateTime,
-    );
-    if (isInstructorBooked) {
-      return res.status(400).json({
-        errorType: "instructor conflict",
-      });
-    }
-
-    // Check if the selected instructor is unavailable at the selected date and time
-    const isInstructorUnavailable: boolean = await isInstructorAbsent(
-      instructorId,
-      dateTime,
-    );
-    if (isInstructorUnavailable) {
-      return res.status(400).json({
-        errorType: "instructor unavailable",
-      });
-    }
-
-    const newClassToRebook: NewClassToRebookType = {
+    const classToRebook = await getRebookTargetClass(classId);
+    const subscription = await getSubscriptionForRebook(classToRebook);
+    const newClassToRebook = buildRebookClass({
+      classToRebook,
       dateTime,
       instructorId,
       customerId,
-      status: "rebooked",
-      rebookableUntil,
-      classCode,
-      updatedAt: new Date(),
-      isFreeTrial: !!isFreeTrial,
-    };
-
-    if (!isFreeTrial) {
-      newClassToRebook.subscriptionId = subscription!.id;
-      newClassToRebook.recurringClassId = recurringClassId!;
-    }
+      subscription,
+    });
 
     const newClass = await rebookClass(
-      { id: classId, status },
+      { id: classId, status: classToRebook.status },
       newClassToRebook,
-      childrenIds,
+      [...childrenIds],
     );
 
-    // Check if the rebooked date is today; if so, send notification emails to the admin and instructor
-    const isSameDay = isSameLocalDate(dateTime, "Asia/Tokyo");
+    await notifySameDayRebookIfNeeded({
+      newClass,
+      childrenIds,
+      dateTime,
+      instructorId,
+    });
 
-    if (isSameDay) {
-      try {
-        const instructor = await getInstructorContactById(
-          newClass.instructorId!, // Guaranteed to exist for a newly created rebooked class
-        );
-        const customer = await getCustomerContactById(newClass.customerId);
-        const children = await getChildrenNamesByIds(childrenIds);
-
-        if (!instructor || !customer || !children) {
-          console.error(
-            "Missing required data for sending same-day rebooking emails",
-            {
-              instructor,
-              customer,
-              children,
-              classId,
-            },
-          );
-          return;
-        }
-
-        await sendAdminSameDayRebookEmail({
-          classCode: newClass.classCode,
-          dateTime: formatYearDateTime(newClass.dateTime!), // Guaranteed to exist for a newly created rebooked class
-          instructorName: instructor.name,
-          instructorEmail: instructor.email,
-          customerName: customer.name,
-          customerEmail: customer.email,
-          children,
+    res.sendStatus(201);
+  } catch (error) {
+    if (error instanceof InstructorUnavailableError) {
+      return res.status(400).json({ errorType: "instructor unavailable" });
+    }
+    if (error instanceof RebookControllerError) {
+      return res.status(error.status).json({ errorType: error.errorType });
+    }
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return res.status(400).json({
+          errorType: "instructor conflict",
         });
-
-        await sendInstructorSameDayRebookEmail({
-          classCode: newClass.classCode,
-          dateTime: formatYearDateTime(newClass.dateTime!, "en-US"), // Guaranteed to exist for a newly created rebooked class
-          instructorName: instructor.name,
-          instructorEmail: instructor.email,
-          children,
-        });
-      } catch (emailError) {
-        console.error("Failed to send same-day rebooking notification email", {
-          emailError,
-          context: {
-            emailError,
-            classId,
-            classDate: dateTime,
-            instructorId,
-            time: new Date().toISOString(),
-          },
+      }
+      if (error.code === "P2034") {
+        return res.status(409).json({
+          errorType: "likely instructor conflict",
         });
       }
     }
 
-    res.sendStatus(201);
-  } catch (error) {
+    const message =
+      typeof error === "object" && error !== null && "message" in error
+        ? String((error as { message?: unknown }).message)
+        : "";
+    if (
+      message.includes("TransactionWriteConflict") ||
+      message.includes("could not serialize access") ||
+      message.includes("SQLSTATE 40001")
+    ) {
+      return res.status(409).json({
+        errorType: "likely instructor conflict",
+      });
+    }
     console.error("Error rebooking a class", {
       error,
       context: {
@@ -348,6 +269,160 @@ export const rebookClassController = async (
       },
     });
     res.sendStatus(500);
+  }
+};
+
+const getRebookTargetClass = async (
+  classId: number,
+): Promise<ClassToRebook> => {
+  const classToRebook = await getClassToRebook(classId);
+  const status = classToRebook.status;
+  const rebookableUntil = classToRebook.rebookableUntil;
+  const classCode = classToRebook.classCode;
+  if (
+    status === undefined ||
+    rebookableUntil == null ||
+    classCode === undefined
+  ) {
+    throwRebookError(400, "invalid class data");
+  }
+
+  return {
+    status: status as Status,
+    recurringClassId: classToRebook.recurringClassId,
+    rebookableUntil: rebookableUntil as Date,
+    classCode: classCode as string,
+    isFreeTrial: !!classToRebook.isFreeTrial,
+  };
+};
+
+const getSubscriptionForRebook = async (classToRebook: ClassToRebook) => {
+  if (classToRebook.isFreeTrial) return null;
+  const recurringClassId = classToRebook.recurringClassId;
+  if (recurringClassId == null) {
+    throwRebookError(400, "invalid class data");
+  }
+
+  const ensuredRecurringClassId = recurringClassId as number;
+  const subscription = await getSubscriptionByRecurringClassId(
+    ensuredRecurringClassId,
+  );
+  const ensuredSubscription =
+    subscription ?? throwRebookError(404, "no subscription");
+
+  const hasEnded = ensuredSubscription.endAt
+    ? new Date(ensuredSubscription.endAt) < new Date()
+    : false;
+  if (hasEnded) {
+    throwRebookError(400, "outdated subscription");
+  }
+
+  return ensuredSubscription;
+};
+
+const buildRebookClass = ({
+  classToRebook,
+  dateTime,
+  instructorId,
+  customerId,
+  subscription,
+}: {
+  classToRebook: ClassToRebook;
+  dateTime: string | Date;
+  instructorId: number;
+  customerId: number;
+  subscription: Awaited<ReturnType<typeof getSubscriptionForRebook>>;
+}): NewClassToRebookType => {
+  const targetDate = new Date(dateTime);
+  const rebookingDeadline = classToRebook.isFreeTrial
+    ? nHoursBefore(FREE_TRIAL_BOOKING_HOURS, targetDate)
+    : nHoursBefore(REGULAR_REBOOKING_HOURS, targetDate);
+  if (new Date() > rebookingDeadline) {
+    throwRebookError(403, "past rebooking deadline");
+  }
+
+  const newClass: NewClassToRebookType = {
+    dateTime,
+    instructorId,
+    customerId,
+    status: "rebooked",
+    rebookableUntil: classToRebook.rebookableUntil,
+    classCode: classToRebook.classCode,
+    updatedAt: new Date(),
+    isFreeTrial: classToRebook.isFreeTrial,
+  };
+
+  if (!classToRebook.isFreeTrial) {
+    const ensuredSubscription =
+      subscription ?? throwRebookError(404, "no subscription");
+    newClass.subscriptionId = ensuredSubscription.id;
+    newClass.recurringClassId = classToRebook.recurringClassId!;
+  }
+
+  return newClass;
+};
+
+const notifySameDayRebookIfNeeded = async ({
+  newClass,
+  childrenIds,
+  dateTime,
+  instructorId,
+}: {
+  newClass: Awaited<ReturnType<typeof rebookClass>>;
+  childrenIds: number[];
+  dateTime: string | Date;
+  instructorId: number;
+}) => {
+  if (!newClass.dateTime) return;
+  const isSameDay = isSameLocalDate(newClass.dateTime, "Asia/Tokyo");
+  if (!isSameDay) return;
+
+  try {
+    const instructor = await getInstructorContactById(newClass.instructorId!);
+    const customer = await getCustomerContactById(newClass.customerId);
+    const children = await getChildrenNamesByIds(childrenIds);
+
+    if (!instructor || !customer || !children) {
+      console.error(
+        "Missing required data for sending same-day rebooking emails",
+        {
+          instructor,
+          customer,
+          children,
+          classId: newClass.id,
+        },
+      );
+      return;
+    }
+
+    await sendAdminSameDayRebookEmail({
+      classCode: newClass.classCode,
+      dateTime: formatYearDateTime(newClass.dateTime),
+      instructorName: instructor.name,
+      instructorEmail: instructor.email,
+      customerName: customer.name,
+      customerEmail: customer.email,
+      children,
+    });
+
+    await sendInstructorSameDayRebookEmail({
+      classCode: newClass.classCode,
+      dateTime: formatYearDateTime(newClass.dateTime, "en-US"),
+      instructorName: instructor.name,
+      instructorEmail: instructor.email,
+      children,
+    });
+  } catch (emailError) {
+    console.error("Failed to send same-day rebooking notification email", {
+      emailError,
+      context: {
+        emailError,
+        classId: newClass.id,
+        classDate: dateTime,
+        instructorId,
+        time: new Date().toISOString(),
+      },
+    });
   }
 };
 
