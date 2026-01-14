@@ -1,4 +1,4 @@
-@import "../../variables.module.scss";
+@use "../../variables.module.scss" as *;
 
 $border_radius: 0.5rem;
 $font_size: 0.9rem;

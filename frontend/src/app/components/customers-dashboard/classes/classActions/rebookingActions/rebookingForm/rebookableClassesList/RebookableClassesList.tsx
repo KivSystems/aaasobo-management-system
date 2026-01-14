@@ -12,8 +12,7 @@ import RebookableClassList from "../../rebookableClassList/RebookableClassList";
 export default function RebookableClassesList({
   customerId,
   rebookableClasses,
-  setClassToRebook,
-  setRebookingStep,
+  onRebookableClassSelect,
   language,
   userSessionType,
   childProfiles,
@@ -63,8 +62,7 @@ export default function RebookableClassesList({
             <RebookableClassList
               customerId={customerId}
               rebookableClasses={rebookableClasses}
-              setClassToRebook={setClassToRebook}
-              setRebookingStep={setRebookingStep}
+              onRebookableClassSelect={onRebookableClassSelect}
               language={language}
               userSessionType={userSessionType}
               childProfiles={childProfiles}

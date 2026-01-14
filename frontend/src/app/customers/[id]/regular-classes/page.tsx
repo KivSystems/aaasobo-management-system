@@ -1,14 +1,15 @@
 "use client";
 
 import RegularClasses from "@/app/components/customers-dashboard/regular-classes/RegularClasses";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import styles from "./page.module.scss";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function Page({ params }: { params: { id: string } }) {
-  const customerId = parseInt(params.id);
+function Page() {
+  const params = useParams<{ id: string }>();
+  const customerId = parseInt(params.id ?? "");
   if (isNaN(customerId)) {
     throw new Error("Invalid customerId");
   }

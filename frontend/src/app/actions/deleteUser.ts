@@ -9,7 +9,7 @@ import {
   revalidateClassList,
   revalidateSubscriptionList,
 } from "./revalidate";
-import { getCookie } from "../../middleware";
+import { getCookie } from "../../proxy";
 import { getUserSession } from "../helper/auth/sessionUtils";
 import { LOGIN_REQUIRED_MESSAGE } from "../helper/messages/customerDashboard";
 import { deleteChild } from "../helper/api/childrenApi";

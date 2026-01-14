@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import zxcvbn from "zxcvbn";
 
 export function usePasswordStrength(password: string) {
-  const [passwordStrength, setPasswordStrength] = useState<number | null>(null);
-  const [passwordFeedback, setPasswordFeedback] = useState<string>("");
-
-  useEffect(() => {
-    if (password) {
-      const result = zxcvbn(password);
-      setPasswordStrength(result.score);
-      setPasswordFeedback(result.feedback.suggestions.join(" "));
-    } else {
-      setPasswordStrength(null);
-      setPasswordFeedback("");
-    }
+  const result = useMemo(() => {
+    if (!password) return null;
+    return zxcvbn(password);
   }, [password]);
 
-  return { passwordStrength, passwordFeedback };
+  return {
+    passwordStrength: result ? result.score : null,
+    passwordFeedback: result ? result.feedback.suggestions.join(" ") : "",
+  };
 }

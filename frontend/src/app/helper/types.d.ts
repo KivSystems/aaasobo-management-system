@@ -254,6 +254,7 @@ type UpdateFormState = {
   passcode?: string;
   color?: string;
   eventId?: string;
+  description?: string;
   errorMessage?: string;
   successMessage?: string;
   skipProcessing?: string;
@@ -392,8 +393,7 @@ type RebookingModalProps = {
 };
 
 type RebookableClassListProps = RebookingModalProps & {
-  setClassToRebook: Dispatch<SetStateAction<number | null>>;
-  setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
+  onRebookableClassSelect: (classId: number) => void;
   language: LanguageType;
   childProfiles: Child[];
 };
@@ -501,8 +501,7 @@ type RebookingFormProps = {
 type RebookableClassesListProps = {
   customerId: number;
   rebookableClasses: RebookableClass[] | [];
-  setClassToRebook: Dispatch<SetStateAction<number | null>>;
-  setRebookingStep: Dispatch<SetStateAction<RebookingSteps>>;
+  onRebookableClassSelect: (classId: number) => void;
   language: LanguageType;
   userSessionType?: UserType;
   childProfiles: Child[];
@@ -566,7 +565,7 @@ type ChildrenProfilesProps = {
 
 type AddChildFormProps = {
   language: LanguageType;
-  action: (payload: FormData) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   customerId: number;
   localMessages: LocalizedMessages;
   userSessionType?: UserType;

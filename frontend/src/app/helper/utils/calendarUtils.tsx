@@ -12,7 +12,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { formatTime24Hour } from "./dateUtils";
 
-export const createRenderEventContent = (userType: UserType) => {
+export const createRenderEventContent = (
+  userType: UserType,
+  cacheBust: string,
+) => {
   const RenderEventContent = (eventInfo: EventContentArg) => {
     const classDateTime = new Date(eventInfo.event.startStr);
     const classTime = formatTime24Hour(classDateTime);
@@ -35,7 +38,7 @@ export const createRenderEventContent = (userType: UserType) => {
         (classStatus === "booked" || classStatus === "rebooked") &&
         instructorIcon ? (
           <Image
-            src={`${instructorIcon}?t=${Date.now()}`}
+            src={`${instructorIcon}?t=${cacheBust}`}
             alt={instructorNickname || "Instructor"}
             width={30}
             height={30}

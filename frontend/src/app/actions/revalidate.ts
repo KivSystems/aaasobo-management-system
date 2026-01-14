@@ -19,37 +19,37 @@ export async function revalidateCustomerCalendar(
 }
 
 export async function revalidateSystemStatus() {
-  revalidateTag("system-status");
+  revalidateTag("system-status", "default");
 }
 
 export async function revalidateAdminList() {
-  revalidateTag("admin-list");
+  revalidateTag("admin-list", "default");
 }
 
 export async function revalidateCustomerList() {
-  revalidateTag("customer-list");
+  revalidateTag("customer-list", "default");
 }
 
 export async function revalidateInstructorList() {
-  revalidateTag("instructor-list");
+  revalidateTag("instructor-list", "default");
 }
 
 export async function revalidatePlanList() {
-  revalidateTag("plan-list");
+  revalidateTag("plan-list", "default");
 }
 
 export async function revalidateEventList() {
-  revalidateTag("event-list");
+  revalidateTag("event-list", "default");
 }
 
 export async function revalidateBusinessSchedule() {
-  revalidateTag("business-schedule");
+  revalidateTag("business-schedule", "default");
 }
 
 export async function revalidateClassList() {
-  revalidateTag("class-list");
+  revalidateTag("class-list", "default");
 }
 
 export async function revalidateSubscriptionList() {
-  revalidateTag("subscription-list");
+  revalidateTag("subscription-list", "default");
 }

@@ -1,14 +1,13 @@
 "use client";
 
 import styles from "./CustomerProfile.module.scss";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   UserCircleIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/solid";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import { useFormState } from "react-dom";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { updateCustomerProfileAction } from "@/app/actions/updateUser";
 import { deactivateCustomerAction } from "@/app/actions/deleteUser";
@@ -28,10 +27,9 @@ function CustomerProfile({
   userSessionType?: UserType;
 }) {
   // Use `useFormState` hook for updating a customer profile
-  const [profileUpdateResult, formAction] = useFormState(
-    updateCustomerProfileAction,
-    undefined,
-  );
+  const [profileUpdateResult, setProfileUpdateResult] = useState<
+    LocalizedMessages | undefined
+  >(undefined);
   // Use `useState` hook and FormData for deactivating a customer profile
   const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
     {},
@@ -39,24 +37,26 @@ function CustomerProfile({
   const [isEditing, setIsEditing] = useState(false);
 
   const { language } = useLanguage();
-  const { localMessages, clearErrorMessage } =
+  const { localMessages, clearErrorMessage, resetMessages } =
     useFormMessages<LocalizedMessages>(profileUpdateResult);
 
   const localizedCustomerPrefecture = getLocalizedText(
     customerProfile.prefecture,
     language,
   );
-  const [dateInfo, setDateInfo] = useState<{
-    fullDate: string;
-    month: number;
-    date: number;
-    year: number;
-  }>({
-    fullDate: "",
-    month: 0,
-    date: 0,
-    year: 0,
-  });
+  const dateInfo = useMemo(() => {
+    if (!customerProfile.terminationAt) {
+      return null;
+    }
+    const fullDate = customerProfile.terminationAt.split("T")[0];
+    const targetDate = new Date(fullDate);
+    return {
+      fullDate,
+      month: targetDate.getMonth(),
+      date: targetDate.getDate(),
+      year: targetDate.getFullYear(),
+    };
+  }, [customerProfile.terminationAt]);
 
   const isError = !!localMessages.errorMessage;
   const isSuccess = !!localMessages.successMessage;
@@ -78,29 +78,19 @@ function CustomerProfile({
     }
   };
 
-  useEffect(() => {
-    // Set date info
-    if (customerProfile.terminationAt) {
-      const fullDate = customerProfile.terminationAt.split("T")[0];
-      const targetDate = new Date(fullDate);
-      const month = targetDate.getMonth();
-      const date = targetDate.getDate();
-      const year = targetDate.getFullYear();
-      setDateInfo({ fullDate, month, date, year });
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    resetMessages();
+    const formData = new FormData(event.currentTarget);
+    const result = await updateCustomerProfileAction(undefined, formData);
+    setProfileUpdateResult(result);
+    if (result?.successMessage) {
+      setIsEditing(false);
     }
-  }, [customerProfile.terminationAt]);
-
-  // If the profile update was successful, exit editing mode.
-  useEffect(() => {
-    if (profileUpdateResult !== undefined) {
-      if (profileUpdateResult.successMessage) {
-        setIsEditing(false);
-      }
-    }
-  }, [profileUpdateResult]);
+  };
 
   return (
-    <form className={styles.profileCard} action={formAction}>
+    <form className={styles.profileCard} onSubmit={handleSubmit}>
       {/* Customer Name */}
       <label className={styles.customerName}>
         <div className={styles.customerName__profileIconContainer}>
@@ -214,7 +204,7 @@ function CustomerProfile({
         </div>
       ) : (
         <>
-          {customerProfile.terminationAt ? (
+          {customerProfile.terminationAt && dateInfo ? (
             <div className={styles.userLeft}>
               <ExclamationTriangleIcon className={styles.userLeft__icon} />
               <p className={styles.userLeft__text}>

@@ -5,7 +5,7 @@ import {
 import RebookingModalController from "./rebookingModalController/RebookingModalController";
 import RebookingForm from "./rebookingForm/RebookingForm";
 import { getInstructorProfiles } from "@/app/helper/api/instructorsApi";
-import { getCookie } from "../../../../../../middleware";
+import { getCookie } from "../../../../../../proxy";
 
 export default async function RebookingActions({
   userSessionType,

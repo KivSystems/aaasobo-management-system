@@ -9,7 +9,7 @@ import type { AvailableSlot } from "@shared/schemas/instructors";
 import Calendar from "@/app/components/features/calendar/Calendar";
 import { EventSourceFuncArg, EventClickArg } from "@fullcalendar/core";
 import styles from "./AllInstructorAvailabilityCalendar.module.scss";
-import variables from "@/app/variables.module.scss";
+import { greenSuccess } from "@/app/styles/colors";
 
 interface CalendarEvent {
   id: string;
@@ -58,7 +58,7 @@ const createCalendarEvent = (
     start,
     end,
     title,
-    color: variables.greenSuccess,
+    color: greenSuccess,
     textColor: "#FFF",
     extendedProps: {
       type: "available" as const,

@@ -1,8 +1,9 @@
 import InstructorProfile from "@/app/components/instructors-dashboard/instructor-profile/InstructorProfile";
 import { getInstructor } from "@/app/helper/api/instructorsApi";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
-async function Page({ params }: { params: { id: string } }) {
+async function Page(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const instructorId = parseInt(params.id);
 
   if (isNaN(instructorId)) {

@@ -2,9 +2,10 @@ import CustomerProfile from "@/app/components/customers-dashboard/profile/Custom
 import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
 import { getCustomerById } from "@/app/helper/api/customersApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
-async function CustomerProfilePage({ params }: { params: { id: string } }) {
+async function CustomerProfilePage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   // Authenticate user session
   await authenticateUserSession("customer", params.id);
   const customerId = parseInt(params.id);

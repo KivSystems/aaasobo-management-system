@@ -13,7 +13,7 @@ import {
   instructorIconUpdateSchema,
 } from "../schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
-import { getCookie } from "../../middleware";
+import { getCookie } from "../../proxy";
 import {
   childProfileSchema,
   customerProfileSchema,

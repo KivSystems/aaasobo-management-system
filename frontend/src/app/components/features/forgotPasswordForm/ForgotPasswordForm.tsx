@@ -1,12 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useActionState } from "react";
 import styles from "./ForgotPasswordForm.module.scss";
-import { useFormState } from "react-dom";
 import TextInput from "../../elements/textInput/TextInput";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import { useFormMessages } from "@/app/hooks/useFormMessages";
 import Link from "next/link";
 import { sendResetEmail } from "@/app/actions/sendResetEmail";
 import { useSearchParams } from "next/navigation";
@@ -18,8 +16,7 @@ export default function ForgotPasswordForm({
 }: {
   language: LanguageType;
 }) {
-  const [resultState, formAction] = useFormState(sendResetEmail, undefined);
-  const { localMessages, clearErrorMessage } = useFormMessages(resultState);
+  const [resultState, formAction] = useActionState(sendResetEmail, undefined);
 
   const searchParams = useSearchParams();
   const userType = searchParams.get("type") as UserType;
@@ -36,7 +33,6 @@ export default function ForgotPasswordForm({
         placeholder={language === "ja" ? "メール" : "e-mail"}
         icon={<EnvelopeIcon className={styles.icon} />}
         required={true}
-        onChange={() => clearErrorMessage("message")}
       />
 
       {/* Hidden input to send necessary data with form submission. */}
@@ -52,16 +48,16 @@ export default function ForgotPasswordForm({
       </div>
 
       <div className={styles.messageWrapper}>
-        {localMessages.errorMessage && (
+        {resultState?.errorMessage && (
           <FormValidationMessage
             type="error"
-            message={localMessages.errorMessage}
+            message={resultState.errorMessage}
           />
         )}
-        {localMessages.successMessage && (
+        {resultState?.successMessage && (
           <FormValidationMessage
             type="success"
-            message={localMessages.successMessage}
+            message={resultState.successMessage}
           />
         )}
       </div>

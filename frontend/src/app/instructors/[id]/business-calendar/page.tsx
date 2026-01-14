@@ -4,9 +4,10 @@ import {
 } from "@/app/helper/api/adminsApi";
 import { businessCalendarValidRange } from "@/app/helper/utils/calendarUtils";
 import BusinessCalendarClient from "@/app/components/admins-dashboard/BusinessCalendarClient";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
-const Page = async ({ params }: { params: { id: string } }) => {
+const Page = async (props: { params: Promise<{ id: string }> }) => {
+  const params = await props.params;
   const instructorId = parseInt(params.id);
   if (isNaN(instructorId)) {
     throw new Error("Invalid instructorId");

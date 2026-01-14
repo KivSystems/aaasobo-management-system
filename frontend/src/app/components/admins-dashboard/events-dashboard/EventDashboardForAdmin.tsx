@@ -1,6 +1,6 @@
 import EventTabs from "@/app/components/admins-dashboard/events-dashboard/EventDashboardClient";
 import { getEventById } from "@/app/helper/api/eventsApi";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
 export default async function EventDashboardForAdmin({
   userId,

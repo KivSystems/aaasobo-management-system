@@ -125,7 +125,7 @@ export const cancelClass = async (classId: number, cookie?: string) => {
 
 // POST create monthly classes
 export const generateClasses = async (
-  year: string,
+  year: number,
   month: string,
   cookie: string,
 ) => {
@@ -142,7 +142,7 @@ export const generateClasses = async (
       body,
     });
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error(`HTTP error. status ${response.status}`);
     }
 

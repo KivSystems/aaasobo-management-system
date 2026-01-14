@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getCookie } from "../../../middleware";
+import { getCookie } from "../../../proxy";
 
 export async function GET(req: NextRequest) {
   // Get information from request headers

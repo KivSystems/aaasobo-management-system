@@ -1,4 +1,4 @@
-@import "../../../../variables.module.scss";
+@use "../../../../variables.module.scss" as *;
 
 .prefectureSelect {
   margin-bottom: 1rem;

@@ -17,7 +17,6 @@ import ActionButton from "@/app/components/elements/buttons/actionButton/ActionB
 import { createCustomerRegisterSchema } from "@/app/schemas/authSchema";
 import { extractRegisterValidationErrors } from "@/app/helper/utils/validationErrorUtils";
 import { checkEmailConflicts } from "@/app/helper/api/customersApi";
-import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { useFormFieldSetter } from "@/app/hooks/useFormFieldSetter";
 
 const RegisterCustomerForm = ({
@@ -29,8 +28,19 @@ const RegisterCustomerForm = ({
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { passwordStrength } = usePasswordStrength(customerData.password);
-  const { localMessages, setLocalMessages, clearErrorMessage } =
-    useFormMessages<StringMessages>();
+  const [localMessages, setLocalMessages] = useState<StringMessages>({});
+
+  const clearErrorMessage = useCallback((field: string) => {
+    setLocalMessages((prev) => {
+      if (field === "all") {
+        return {};
+      }
+      const updatedMessages = { ...prev };
+      delete updatedMessages[field];
+      delete updatedMessages.errorMessage;
+      return updatedMessages;
+    });
+  }, []);
 
   const handleChange = useFormFieldSetter(setCustomerData);
 

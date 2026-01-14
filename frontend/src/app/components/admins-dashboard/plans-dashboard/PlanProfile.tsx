@@ -2,8 +2,7 @@
 
 import styles from "./PlanProfile.module.scss";
 import { toast } from "react-toastify";
-import { useState, useEffect, useCallback } from "react";
-import { useFormState } from "react-dom";
+import { useState, useCallback } from "react";
 import { updatePlanAction } from "@/app/actions/updateContent";
 import { deletePlanAction } from "@/app/actions/deleteContent";
 import InputField from "../../elements/inputField/InputField";
@@ -31,7 +30,9 @@ function PlanProfile({
   userSessionType?: UserType;
 }) {
   // Use `useFormState` hook for updating an plan profile
-  const [updateResultState, formAction] = useFormState(updatePlanAction, {});
+  const [updateResultState, setUpdateResultState] = useState<
+    UpdateFormState | undefined
+  >(undefined);
   // Use `useState` hook and FormData for deleting an plan profile
   const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
     {},
@@ -75,6 +76,14 @@ function PlanProfile({
 
       const result = await deletePlanAction(deleteResultState, formData);
       setDeleteResultState(result);
+      if ("id" in result && result.id) {
+        toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("plan"));
+        setIsEditing(false);
+        setPreviousPlan(null);
+        setLatestPlan(null);
+      } else if ("errorMessage" in result && result.errorMessage) {
+        toast.error(result.errorMessage);
+      }
     }
   };
 
@@ -114,46 +123,43 @@ function PlanProfile({
     }
   };
 
-  useEffect(() => {
-    if (updateResultState !== undefined) {
-      if ("plan" in updateResultState) {
-        const result = updateResultState as { plan: Plan };
-        toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("plan"));
-        setIsEditing(false);
-        setPreviousPlan({
-          ...result.plan,
-          planNameEng: getLocalizedText(result.plan.name, "en"),
-          planNameJpn: getLocalizedText(result.plan.name, "ja"),
-        });
-        setLatestPlan({
-          ...result.plan,
-          planNameEng: getLocalizedText(result.plan.name, "en"),
-          planNameJpn: getLocalizedText(result.plan.name, "ja"),
-        });
-        return;
-
-        // Check if the deleteResultState has changed
-      } else if ("id" in deleteResultState && deleteResultState.id) {
-        toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("plan"));
-        setIsEditing(false);
-        setPreviousPlan(null);
-        setLatestPlan(null);
-        // Clear deleteResultState to avoid re-rendering
-        deleteResultState.id = null;
-        return;
-      } else {
-        const newMessages: Record<string, string> = {};
-        if (updateResultState.planNameJpn)
-          newMessages.planNameJpn = updateResultState.planNameJpn;
-        if (updateResultState.planNameEng)
-          newMessages.planNameEng = updateResultState.planNameEng;
-        if (updateResultState.errorMessage)
-          newMessages.errorMessage = updateResultState.errorMessage;
-        setLocalMessages(newMessages);
-        return;
-      }
+  const buildLocalMessages = (result: UpdateFormState | undefined) => {
+    if (!result) {
+      return {};
     }
-  }, [updateResultState, deleteResultState]);
+    const newMessages: Record<string, string> = {};
+    if (result.planNameJpn) newMessages.planNameJpn = result.planNameJpn;
+    if (result.planNameEng) newMessages.planNameEng = result.planNameEng;
+    if (result.description) newMessages.description = result.description;
+    if (result.errorMessage) newMessages.errorMessage = result.errorMessage;
+    return newMessages;
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const result = await updatePlanAction(undefined, formData);
+    setUpdateResultState(result);
+    setLocalMessages(buildLocalMessages(result));
+
+    if ("plan" in result && result.plan) {
+      const updatedPlan = result.plan as Plan;
+      toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("plan"));
+      setIsEditing(false);
+      setPreviousPlan({
+        ...updatedPlan,
+        planNameEng: getLocalizedText(updatedPlan.name, "en"),
+        planNameJpn: getLocalizedText(updatedPlan.name, "ja"),
+      });
+      setLatestPlan({
+        ...updatedPlan,
+        planNameEng: getLocalizedText(updatedPlan.name, "en"),
+        planNameJpn: getLocalizedText(updatedPlan.name, "ja"),
+      });
+    } else if ("errorMessage" in result && result.errorMessage) {
+      toast.error(result.errorMessage);
+    }
+  };
 
   if (typeof plan === "string") {
     return <p>{plan}</p>;
@@ -167,7 +173,7 @@ function PlanProfile({
     <>
       <div className={styles.container}>
         {latestPlan ? (
-          <form action={formAction} className={styles.profileCard}>
+          <form onSubmit={handleSubmit} className={styles.profileCard}>
             <div className={styles.profileCard}>
               {/* Plan name */}
               <div className={styles.planName__nameSection}>

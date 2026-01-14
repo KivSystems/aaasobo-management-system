@@ -7,7 +7,7 @@ import { getAdminById } from "@/app/helper/api/adminsApi";
 import { getCustomerById } from "@/app/helper/api/customersApi";
 import { getInstructorProfile } from "@/app/helper/api/instructorsApi";
 import LanguageSwitcher from "../../elements/languageSwitcher/LanguageSwitcher";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
 export default async function SideNav({
   userId,

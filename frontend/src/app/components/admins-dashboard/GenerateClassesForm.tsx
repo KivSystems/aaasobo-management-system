@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useActionState, useMemo, useState } from "react";
 import ActionButton from "../elements/buttons/actionButton/ActionButton";
 import Modal from "../elements/modal/Modal";
 import GenerateClassesModal from "./GenerateClassesModal";
-import { useFormState } from "react-dom";
 import { generateClassesAction } from "@/app/actions/updateContent";
 
 function GenerateClassesForm() {
@@ -13,21 +12,17 @@ function GenerateClassesForm() {
     successMessage: "",
   };
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [generateClassesResultState, formAction] = useFormState(
+  const [generateClassesResultState, formAction] = useActionState(
     generateClassesAction,
     initialFormState,
   );
-  const [localState, setLocalState] = useState<{
-    errorMessage: string;
-    successMessage: string;
-  }>(initialFormState);
-
-  useEffect(() => {
-    setLocalState({
+  const localState = useMemo(
+    () => ({
       errorMessage: generateClassesResultState.errorMessage ?? "",
       successMessage: generateClassesResultState.successMessage ?? "",
-    });
-  }, [generateClassesResultState]);
+    }),
+    [generateClassesResultState],
+  );
 
   return (
     <>
@@ -40,7 +35,6 @@ function GenerateClassesForm() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          setLocalState(initialFormState);
         }}
         className="businessCalendarModal"
       >

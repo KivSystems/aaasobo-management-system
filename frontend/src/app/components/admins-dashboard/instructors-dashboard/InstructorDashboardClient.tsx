@@ -6,6 +6,8 @@ import { useTabSelect } from "@/app/hooks/useTabSelect";
 import InstructorSchedule from "./instructor-schedule/InstructorSchedule";
 import AvailabilityCalendar from "./instructor-schedule/AvailabilityCalendar";
 import Loading from "@/app/components/elements/loading/Loading";
+import type { InstructorSchedule as InstructorScheduleType } from "@shared/schemas/instructors";
+import type { InstructorScheduleWithSlots } from "@/app/helper/api/instructorsApi";
 
 export default function InstructorTabs({
   adminId,
@@ -13,6 +15,9 @@ export default function InstructorTabs({
   instructor,
   token,
   userSessionType,
+  initialSchedules,
+  initialSelectedScheduleId,
+  initialSelectedSchedule,
   classScheduleComponent,
 }: {
   adminId: number;
@@ -20,6 +25,9 @@ export default function InstructorTabs({
   instructor: Instructor | string;
   token: string;
   userSessionType: UserType;
+  initialSchedules: InstructorScheduleType[];
+  initialSelectedScheduleId: number | null;
+  initialSelectedSchedule: InstructorScheduleWithSlots | null;
   classScheduleComponent: React.ReactNode;
 }) {
   const nickname = typeof instructor !== "string" ? instructor.nickname : null;
@@ -71,7 +79,14 @@ export default function InstructorTabs({
     },
     {
       label: "Instructor's Schedule",
-      content: <InstructorSchedule instructorId={instructorId} />,
+      content: (
+        <InstructorSchedule
+          instructorId={instructorId}
+          initialSchedules={initialSchedules}
+          initialSelectedScheduleId={initialSelectedScheduleId}
+          initialSelectedSchedule={initialSelectedSchedule}
+        />
+      ),
     },
   ];
 

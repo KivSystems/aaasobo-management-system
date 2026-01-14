@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useId } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -24,6 +25,7 @@ const InstructorCalendarClient = ({
   colorsForEvents,
 }: InstructorCalendarClientProps) => {
   const router = useRouter();
+  const cacheBust = useId();
 
   const handleEventClick = (clickInfo: EventClickArg) => {
     if (clickInfo.event.title === "No booked class") return;
@@ -37,7 +39,10 @@ const InstructorCalendarClient = ({
     router.push(redirectURL);
   };
 
-  const renderInstructorEventContent = createRenderEventContent("instructor");
+  const renderInstructorEventContent = createRenderEventContent(
+    "instructor",
+    cacheBust,
+  );
 
   const classSlotTimes = getClassSlotTimesForCalendar();
 

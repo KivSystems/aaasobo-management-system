@@ -5,7 +5,7 @@ import { getInstructorAvailableSlots } from "@/app/helper/api/instructorsApi";
 import Calendar from "@/app/components/features/calendar/Calendar";
 import { EventSourceFuncArg, EventClickArg } from "@fullcalendar/core";
 import styles from "./InstructorAvailabilityCalendar.module.scss";
-import variables from "@/app/variables.module.scss";
+import { greenSuccess } from "@/app/styles/colors";
 
 interface CalendarEvent {
   id: string;
@@ -54,7 +54,7 @@ const createAvailableSlotEvent = (
     start,
     end,
     title: language === "ja" ? "予約可能" : "Available",
-    color: variables.greenSuccess,
+    color: greenSuccess,
     textColor: "#FFF",
     extendedProps: {
       type: "available" as const,

@@ -5,11 +5,10 @@ import Loading from "@/app/components/elements/loading/Loading";
 import ResetPasswordForm from "@/app/components/features/resetPasswordForm/ResetPasswordForm";
 import { verifyResetToken } from "@/app/helper/api/usersApi";
 
-export default async function ResetPasswordPage({
-  searchParams,
-}: {
-  searchParams: { token: string; type: UserType };
+export default async function ResetPasswordPage(props: {
+  searchParams: Promise<{ token: string; type: UserType }>;
 }) {
+  const searchParams = await props.searchParams;
   const token = searchParams.token;
   const userType = searchParams.type;
 

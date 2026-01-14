@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./RebookingForm.module.scss";
 import RebookingOptions from "./rebookingOptions/RebookingOptions";
 import RebookableInstructorsList from "./rebookableInstructorsList/RebookableInstructorsList";
@@ -38,10 +38,16 @@ export default function RebookingForm({
 
   const { language } = useLanguage();
 
-  useEffect(() => {
-    if (!classToRebook) return;
+  const handleRebookableClassSelect = async (classId: number) => {
+    const selectedClass = rebookableClasses.find(
+      (classItem) => classItem.id === classId,
+    );
+    const isNative = selectedClass?.subscription?.plan?.isNative ?? false;
+    setClassToRebook(classId);
+    setRebookingStep("selectOption");
+    setIsLoading(true);
 
-    const fetchInstructorAvailabilities = async () => {
+    try {
       // Get date range for next 30 days for rebooking
       const REGULAR_REBOOKING_HOURS = 3;
       const INSTRUCTOR_AVAILABILITY_WINDOW_HOURS = 30 * 24;
@@ -51,16 +57,16 @@ export default function RebookingForm({
       const result = await getAllInstructorAvailableSlots(
         startDate.toISOString().split("T")[0],
         endDate.toISOString().split("T")[0],
+        isNative,
       );
 
       if ("data" in result) {
         setInstructorAvailabilities(result.data);
       }
-    };
-    setIsLoading(true);
-    fetchInstructorAvailabilities();
-    setIsLoading(false);
-  }, [classToRebook]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const selectOption = (option: "instructor" | "dateTime") => {
     setRebookingOption(option);
@@ -79,8 +85,7 @@ export default function RebookingForm({
         <RebookableClassesList
           customerId={customerId}
           rebookableClasses={rebookableClasses}
-          setClassToRebook={setClassToRebook}
-          setRebookingStep={setRebookingStep}
+          onRebookableClassSelect={handleRebookableClassSelect}
           language={language}
           userSessionType={userSessionType}
           childProfiles={childProfiles}
@@ -120,6 +125,7 @@ export default function RebookingForm({
 
       {rebookingStep === "confirmRebooking" && (
         <ConfirmRebooking
+          key={`${classToRebook ?? "class"}-${dateTimeToRebook ?? "time"}`}
           instructorToRebook={instructorToRebook!}
           dateTimeToRebook={dateTimeToRebook!}
           rebookingOption={rebookingOption!}

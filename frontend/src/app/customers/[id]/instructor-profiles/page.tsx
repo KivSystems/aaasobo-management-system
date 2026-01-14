@@ -2,9 +2,12 @@ import InstructorsList from "@/app/components/customers-dashboard/instructor-pro
 import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
 import { getAllInstructorProfiles } from "@/app/helper/api/instructorsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
-async function InstructorProfilesPage({ params }: { params: { id: string } }) {
+async function InstructorProfilesPage(props: {
+  params: Promise<{ id: string }>;
+}) {
+  const params = await props.params;
   const customerId = params.id;
   // Authenticate user session
   const userSessionType: UserType = await authenticateUserSession(

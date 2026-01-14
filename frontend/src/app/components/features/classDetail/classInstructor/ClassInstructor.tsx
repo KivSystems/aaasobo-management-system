@@ -1,5 +1,6 @@
 import styles from "./ClassInstructor.module.scss";
 import Image from "next/image";
+import { useId } from "react";
 
 const ClassInstructor = ({
   classStatus,
@@ -16,10 +17,11 @@ const ClassInstructor = ({
   width?: number;
   onClick?: () => void;
 }) => {
+  const cacheBust = useId();
   return (
     <div className={`${styles.instructor} ${className && styles[className]}`}>
       <Image
-        src={`${instructorIcon}?t=${Date.now()}`}
+        src={`${instructorIcon}?t=${cacheBust}`}
         alt={instructorNickname}
         width={width}
         height={width}

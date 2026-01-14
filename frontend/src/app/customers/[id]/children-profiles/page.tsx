@@ -5,9 +5,12 @@ import {
   getChildProfiles,
   getCustomerById,
 } from "@/app/helper/api/customersApi";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
-async function ChildrenProfilesPage({ params }: { params: { id: string } }) {
+async function ChildrenProfilesPage(props: {
+  params: Promise<{ id: string }>;
+}) {
+  const params = await props.params;
   const customerId = parseInt(params.id);
 
   if (isNaN(customerId)) {

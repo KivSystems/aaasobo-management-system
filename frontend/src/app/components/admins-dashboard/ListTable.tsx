@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, useEffect, useMemo, use } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styles from "./ListTable.module.scss";
 import { EyeIcon, PlusIcon } from "@heroicons/react/24/outline";
 import {
-  useReactTable,
+  createTable,
   getCoreRowModel,
   getSortedRowModel,
   getPaginationRowModel,
   flexRender,
-  ColumnDef,
-  SortingState,
+  type ColumnDef,
+  type SortingState,
+  type TableOptions,
+  type TableOptionsResolved,
+  type RowData,
 } from "@tanstack/react-table"; // Tanstack Table: https://tanstack.com/table/latest
 import Link from "next/link";
 import Modal from "@/app/components/elements/modal/Modal";
@@ -19,6 +22,33 @@ import ListPageViewPastModal from "@/app/components/admins-dashboard/ListPageVie
 import ActionButton from "@/app/components/elements/buttons/actionButton/ActionButton";
 import GenerateClassesForm from "./GenerateClassesForm";
 import { OMIT_CLASS_STATUSES, PAGE_SIZE_OPTIONS } from "@/app/helper/data/data";
+
+function useTable<TData extends RowData>(options: TableOptions<TData>) {
+  const resolvedOptions: TableOptionsResolved<TData> = {
+    state: {},
+    onStateChange: () => {},
+    renderFallbackValue: null,
+    ...options,
+  };
+
+  const [table] = useState(() => createTable<TData>(resolvedOptions));
+  const [state, setState] = useState(() => table.initialState);
+
+  table.setOptions((prev) => ({
+    ...prev,
+    ...options,
+    state: {
+      ...state,
+      ...options.state,
+    },
+    onStateChange: (updater) => {
+      setState(updater);
+      options.onStateChange?.(updater);
+    },
+  }));
+
+  return table;
+}
 
 function ListTable({
   listType,
@@ -48,7 +78,23 @@ function ListTable({
     false,
     "",
   ]);
-  const [width, setWidth] = useState("100%");
+
+  // Handle cell click to toggle the expanded state
+  const handleCellClick = (cellId: string) => {
+    setSelectedCellId((prevId) => (prevId === cellId ? null : cellId));
+  };
+
+  const modalWidth = useMemo(() => {
+    switch (listType) {
+      case "Instructor List":
+        return "700px";
+      case "Admin List":
+      case "Plan List":
+        return "500px";
+      default:
+        return "100%";
+    }
+  }, [listType]);
 
   useEffect(() => {
     // Update settings based on the list type
@@ -64,8 +110,6 @@ function ListTable({
         localStorage.setItem("activeInstructorTab", "0");
         // Set the previous list page to instructor list.
         localStorage.setItem("previousListPage", "instructor-list");
-        // Set the width of the modal registration form.
-        setWidth("700px");
         break;
       case "Past Instructor List":
         // Set the active tab to the instructor profile tab.
@@ -88,12 +132,8 @@ function ListTable({
         localStorage.setItem("previousListPage", "child-list");
         break;
       case "Admin List":
-        // Set the width of the modal registration form.
-        setWidth("500px");
         break;
       case "Plan List":
-        // Set the width of the modal registration form.
-        setWidth("500px");
         break;
       case "Subscription List":
         // Set the active tab to the customer regular class tab.
@@ -210,7 +250,7 @@ function ListTable({
   );
 
   // Define the table configuration
-  const table = useReactTable({
+  const table = useTable({
     data: filteredData,
     columns,
     state: {
@@ -223,11 +263,6 @@ function ListTable({
     getPaginationRowModel: getPaginationRowModel(), // Provide a pagination row model
     onPaginationChange: setPagination, // Update the pagination state when internal APIs mutate the pagination state
   });
-
-  // Handle cell click to toggle the expanded state
-  const handleCellClick = (cellId: string) => {
-    setSelectedCellId((prevId) => (prevId === cellId ? null : cellId));
-  };
 
   // Change the option color when selected
   const changeOptionColor = (optionTag: HTMLSelectElement) => {
@@ -252,7 +287,7 @@ function ListTable({
           <ListPageRegistrationModal
             userType={userType}
             categoryType={categoryType}
-            width={width}
+            width={modalWidth}
           />
         );
       case "viewPast":

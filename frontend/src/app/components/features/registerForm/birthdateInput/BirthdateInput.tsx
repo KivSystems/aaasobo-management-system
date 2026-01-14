@@ -1,6 +1,6 @@
 import styles from "./BirthdateInput.module.scss";
 import FormValidationMessage from "@/app/components/elements/formValidationMessage/FormValidationMessage";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const BirthdateInput = ({
   onValidDateChange,
@@ -15,22 +15,21 @@ const BirthdateInput = ({
   const [year, setYear] = useState(defaultYear ?? "");
   const [month, setMonth] = useState(defaultMonth ?? "");
   const [day, setDay] = useState(defaultDay ?? "");
-  const [localIsoDate, setLocalIsoDate] = useState<string | null>(null);
-
   const padZero = (val: string) => val.padStart(2, "0");
 
+  const isoDate = useMemo(() => {
+    if (year === "" || month === "" || day === "") return null;
+    return `${year}-${padZero(month)}-${padZero(day)}`;
+  }, [year, month, day]);
+
   useEffect(() => {
-    if (year === "" || month === "" || day === "") return;
-
-    const iso = `${year}-${padZero(month)}-${padZero(day)}`;
-
+    if (!isoDate) return;
     if (useFormAction) {
       onValidDateChange(undefined);
-      setLocalIsoDate(iso);
     } else {
-      onValidDateChange(iso);
+      onValidDateChange(isoDate);
     }
-  }, [year, month, day, onValidDateChange, useFormAction]);
+  }, [isoDate, onValidDateChange, useFormAction]);
 
   return (
     <fieldset className={styles.birthdateInput}>
@@ -82,8 +81,8 @@ const BirthdateInput = ({
       </div>
 
       {/* Hidden input for form submission */}
-      {useFormAction && localIsoDate && (
-        <input type="hidden" name="birthdate" value={localIsoDate ?? ""} />
+      {useFormAction && isoDate && (
+        <input type="hidden" name="birthdate" value={isoDate ?? ""} />
       )}
 
       {error && (

@@ -1,12 +1,11 @@
 import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/classDetails/ClassDetails";
 import { getSameDateClasses } from "@/app/helper/api/instructorsApi";
-import { getCookie } from "../../../../../middleware";
+import { getCookie } from "../../../../../proxy";
 
-const ClassDetailsPage = async ({
-  params,
-}: {
-  params: { id: string; classId: string };
+const ClassDetailsPage = async (props: {
+  params: Promise<{ id: string; classId: string }>;
 }) => {
+  const params = await props.params;
   const instructorId = parseInt(params.id);
   if (isNaN(instructorId)) {
     throw new Error("Invalid instructorId");

@@ -1,13 +1,12 @@
 import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/classDetails/ClassDetails";
 import { getSameDateClasses } from "@/app/helper/api/instructorsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
-import { getCookie } from "../../../../../../../middleware";
+import { getCookie } from "../../../../../../../proxy";
 
-const Page = async ({
-  params,
-}: {
-  params: { id: string; instructorId: string; classId: string };
+const Page = async (props: {
+  params: Promise<{ id: string; instructorId: string; classId: string }>;
 }) => {
+  const params = await props.params;
   // Authenticate user session
   const userSessionType = await authenticateUserSession("admin", params.id);
   const adminId = parseInt(params.id);

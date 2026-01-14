@@ -1,8 +1,7 @@
 "use client";
 
 import styles from "./InstructorProfile.module.scss";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useFormState } from "react-dom";
+import { useState, useRef, useCallback } from "react";
 import { updateInstructorAction } from "@/app/actions/updateUser";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import StatusSwitcher from "@/app/components/elements/StatusSwitcher/StatusSwitcher";
@@ -62,35 +61,29 @@ function InstructorProfile({
   token?: string;
   userSessionType?: UserType;
 }) {
-  const [updateResultState, formAction] = useFormState(
-    updateInstructorAction,
-    {},
-  );
+  const [updateResultState, setUpdateResultState] = useState<
+    UpdateFormState | undefined
+  >(undefined);
   // Handle form messages manually for UpdateFormState
   const [localMessages, setLocalMessages] = useState<Record<string, string>>(
     {},
   );
 
-  useEffect(() => {
-    if (updateResultState) {
-      const newMessages: Record<string, string> = {};
-      if (updateResultState.name) newMessages.name = updateResultState.name;
-      if (updateResultState.isNative)
-        newMessages.isNative = updateResultState.isNative;
-      if (updateResultState.nickname)
-        newMessages.nickname = updateResultState.nickname;
-      if (updateResultState.email) newMessages.email = updateResultState.email;
-      if (updateResultState.classURL)
-        newMessages.classURL = updateResultState.classURL;
-      if (updateResultState.meetingId)
-        newMessages.meetingId = updateResultState.meetingId;
-      if (updateResultState.passcode)
-        newMessages.passcode = updateResultState.passcode;
-      if (updateResultState.errorMessage)
-        newMessages.errorMessage = updateResultState.errorMessage;
-      setLocalMessages(newMessages);
+  const buildLocalMessages = (result: UpdateFormState | undefined) => {
+    if (!result) {
+      return {};
     }
-  }, [updateResultState]);
+    const newMessages: Record<string, string> = {};
+    if (result.name) newMessages.name = result.name;
+    if (result.isNative) newMessages.isNative = result.isNative;
+    if (result.nickname) newMessages.nickname = result.nickname;
+    if (result.email) newMessages.email = result.email;
+    if (result.classURL) newMessages.classURL = result.classURL;
+    if (result.meetingId) newMessages.meetingId = result.meetingId;
+    if (result.passcode) newMessages.passcode = result.passcode;
+    if (result.errorMessage) newMessages.errorMessage = result.errorMessage;
+    return newMessages;
+  };
 
   const clearErrorMessage = useCallback(
     (field: string | EditableInstructorFields) => {
@@ -156,45 +149,42 @@ function InstructorProfile({
       if (!confirmed) return;
     }
 
-    if (formRef.current) {
-      const formData = new FormData(formRef.current);
-      formAction(formData);
-    } else {
+    if (!formRef.current) {
       console.error("formRef is null");
+      return;
+    }
+
+    const formData = new FormData(formRef.current);
+    const result = await updateInstructorAction(undefined, formData);
+    setUpdateResultState(result);
+    setLocalMessages(buildLocalMessages(result));
+
+    if ("instructor" in result && result.instructor) {
+      toast.success("Profile updated successfully");
+      setIsEditing(false);
+
+      const incomingInstructor = result.instructor;
+      const shouldKeepIcon =
+        typeof incomingInstructor.icon === "string" &&
+        token &&
+        token !== "" &&
+        (incomingInstructor.icon as string).includes(token);
+      const updatedInstructor = {
+        ...incomingInstructor,
+        icon: {
+          url: shouldKeepIcon
+            ? `${incomingInstructor.icon}?t=${Date.now()}`
+            : defaultUserImageUrl,
+        },
+      };
+      setPreviousInstructor(updatedInstructor);
+      setLatestInstructor(updatedInstructor);
+    } else if ("skipProcessing" in result) {
+      return;
+    } else if ("errorMessage" in result && result.errorMessage) {
+      toast.error(result.errorMessage);
     }
   };
-
-  useEffect(() => {
-    if (updateResultState !== undefined) {
-      if ("instructor" in updateResultState && updateResultState.instructor) {
-        toast.success("Profile updated successfully");
-        setIsEditing(false);
-
-        const newInstructor = updateResultState.instructor;
-        if (
-          typeof newInstructor.icon === "string" &&
-          token &&
-          token !== "" &&
-          (newInstructor.icon as string).includes(token)
-        ) {
-          newInstructor.icon = {
-            url: `${newInstructor.icon}?t=${Date.now()}`,
-          };
-        } else {
-          newInstructor.icon = {
-            url: defaultUserImageUrl,
-          };
-        }
-        setPreviousInstructor(newInstructor);
-        setLatestInstructor(newInstructor);
-      } else if ("skipProcessing" in updateResultState) {
-        return;
-      } else {
-        const result = updateResultState as { errorMessage: string };
-        toast.error(result.errorMessage);
-      }
-    }
-  }, [updateResultState, token]);
 
   if (typeof instructor === "string") {
     return <p>{instructor}</p>;
@@ -206,7 +196,6 @@ function InstructorProfile({
         {latestInstructor ? (
           <form
             ref={formRef}
-            action={formAction}
             className={styles.profileCard}
             onSubmit={submissionConfirm}
           >

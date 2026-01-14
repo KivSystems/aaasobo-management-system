@@ -23,8 +23,7 @@ import { errorAlert } from "@/app/helper/utils/alertUtils";
 export default function RebookableClassList({
   customerId,
   rebookableClasses,
-  setClassToRebook,
-  setRebookingStep,
+  onRebookableClassSelect,
   language,
   userSessionType,
   childProfiles,
@@ -52,6 +51,11 @@ export default function RebookableClassList({
           ? FREE_TRIAL_BOOKING_TOO_LATE_NOTICE[language]
           : REBOOKING_TOO_LATE_NOTICE[language],
       );
+    }
+
+    if (!isFreeTrial) {
+      onRebookableClassSelect(id);
+      return;
     }
 
     // Use booking modal for the new flow

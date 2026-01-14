@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { useInput } from "@/app/hooks/useInput";
 import styles from "./RegisterForm.module.scss";
 import {
@@ -24,7 +24,6 @@ import {
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import TextInput from "../../elements/textInput/TextInput";
 import PasswordStrengthMeter from "../../elements/passwordStrengthMeter/PasswordStrengthMeter";
-import { useFormState } from "react-dom";
 import { registerUser } from "@/app/actions/registerUser";
 import { registerContent } from "@/app/actions/registerContent";
 import { useFormMessages } from "@/app/hooks/useFormMessages";
@@ -46,7 +45,7 @@ const RegisterForm = ({
   // Handle the action based on userType and categoryType
   const actionHandler =
     userType === "admin" && categoryType ? registerContent : registerUser;
-  const [registerResultState, formAction] = useFormState(
+  const [registerResultState, formAction] = useActionState(
     actionHandler,
     undefined,
   );
@@ -54,14 +53,18 @@ const RegisterForm = ({
   const [password, onPasswordChange] = useInput();
   const [showPassword, setShowPassword] = useState(false);
   const [colorValue, setColorValue] = useState(defaultColor);
-  const { localMessages, clearErrorMessage } =
+  const { localMessages, clearErrorMessage, resetMessages } =
     useFormMessages(registerResultState);
   const { passwordStrength } = usePasswordStrength(password);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nativeStatus, setNativeStatus] = useState<string>("Non-native");
 
   return (
-    <form action={formAction} className={styles.form}>
+    <form
+      action={formAction}
+      className={styles.form}
+      onSubmit={() => resetMessages()}
+    >
       {/* Hidden fields to include in form submission */}
       <input type="hidden" name="userType" value={userType ?? ""} />
       <input type="hidden" name="categoryType" value={categoryType ?? ""} />
