@@ -1,7 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface LanguageContextProps {
   language: LanguageType;
@@ -11,30 +10,22 @@ interface LanguageContextProps {
 const LanguageContext = createContext<LanguageContextProps | undefined>(
   undefined,
 );
-const Loading = dynamic(
-  () => import("../components/elements/loading/Loading"),
-  { ssr: false },
-);
 
 export const LanguageProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [language, setLanguage] = useState<LanguageType | null>(null);
-
-  useEffect(() => {
-    const browserLang = navigator.language.startsWith("ja") ? "ja" : "en";
-    setLanguage(browserLang);
-  }, []);
+  const [language, setLanguage] = useState<LanguageType>(() => {
+    if (typeof navigator !== "undefined") {
+      return navigator.language.startsWith("ja") ? "ja" : "en";
+    }
+    return "en";
+  });
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "ja" : "en"));
   };
-
-  if (language === null) {
-    return <Loading />;
-  }
 
   return (
     <LanguageContext.Provider value={{ language, toggleLanguage }}>

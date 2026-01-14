@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./StatusSwitcher.module.scss";
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { getLongMonth, nDaysLater } from "@/app/helper/utils/dateUtils";
 import InputField from "@/app/components/elements/inputField/InputField";
@@ -27,37 +27,25 @@ const StatusSwitcher = ({
 }) => {
   const [status, setStatus] = useState<string>(currentStatus);
   const [updatedLeavingDate, setUpdatedLeavingDate] = useState<string | null>(
-    leavingDate ? leavingDate : null,
+    leavingDate ?? null,
   );
-  const [dateInfo, setDateInfo] = useState<{
-    month: number;
-    date: number;
-    year: number;
-    isPast: boolean;
-  }>({
-    month: 0,
-    date: 0,
-    year: 0,
-    isPast: false,
-  });
   const capitalizeFirst = (str: string): string => {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
   const { language } = useLanguage();
 
-  useEffect(() => {
-    setUpdatedLeavingDate(leavingDate ? leavingDate : null);
-
-    // Set date info
-    if (leavingDate) {
-      const targetDate = new Date(leavingDate);
-      const month = targetDate.getMonth();
-      const date = targetDate.getDate();
-      const year = targetDate.getFullYear();
-      const isPast = targetDate < new Date();
-      setDateInfo({ month, date, year, isPast });
+  const dateInfo = useMemo(() => {
+    if (!leavingDate) {
+      return null;
     }
+    const targetDate = new Date(leavingDate);
+    return {
+      month: targetDate.getMonth(),
+      date: targetDate.getDate(),
+      year: targetDate.getFullYear(),
+      isPast: targetDate < new Date(),
+    };
   }, [leavingDate]);
 
   useEffect(() => {
@@ -126,16 +114,18 @@ const StatusSwitcher = ({
         </>
       ) : (
         <>
-          {leavingDate && !isNaN(new Date(leavingDate).getTime()) && (
-            <div className={styles.userLeaving}>
-              <ExclamationTriangleIcon className={styles.userLeaving__icon} />
-              <p className={styles.userLeaving__text}>
-                {language === "en"
-                  ? `${dateInfo.isPast ? "Left" : "Leaving"} on ${getLongMonth(new Date(leavingDate))} ${dateInfo.date}, ${dateInfo.year} (Japan Time)`
-                  : `${dateInfo.year}年${dateInfo.month + 1}月${dateInfo.date}日${dateInfo.isPast ? "退会済み" : "退会予定"} (日本時間)`}
-              </p>
-            </div>
-          )}
+          {leavingDate &&
+            dateInfo &&
+            !isNaN(new Date(leavingDate).getTime()) && (
+              <div className={styles.userLeaving}>
+                <ExclamationTriangleIcon className={styles.userLeaving__icon} />
+                <p className={styles.userLeaving__text}>
+                  {language === "en"
+                    ? `${dateInfo.isPast ? "Left" : "Leaving"} on ${getLongMonth(new Date(leavingDate))} ${dateInfo.date}, ${dateInfo.year} (Japan Time)`
+                    : `${dateInfo.year}年${dateInfo.month + 1}月${dateInfo.date}日${dateInfo.isPast ? "退会済み" : "退会予定"} (日本時間)`}
+                </p>
+              </div>
+            )}
         </>
       )}
     </>

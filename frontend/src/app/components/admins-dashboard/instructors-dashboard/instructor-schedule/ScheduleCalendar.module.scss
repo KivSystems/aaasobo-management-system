@@ -1,13 +1,14 @@
-@import "../../../../variables.module.scss";
-@import "./CalendarVariables.module.scss";
+@use "sass:color";
+@use "../../../../variables.module.scss" as *;
+@use "./CalendarVariables.module.scss" as calendar;
 
 // Import shared calendar styles
-@import "./EditableScheduleCalendar.module.scss";
+@use "./EditableScheduleCalendar.module.scss" as *;
 
 // Read-only scheduled cell specific to ScheduleCalendar
 %cellBaseReadOnly {
   height: 30px;
-  border-bottom: 1px solid $calendar-border-light;
+  border-bottom: 1px solid calendar.$calendar-border-light;
   position: relative;
   cursor: default;
 
@@ -22,7 +23,7 @@
   // Override any inherited hover effects
   &:hover {
     background-color: transparent !important;
-    border-bottom: 1px solid $calendar-border-light !important;
+    border-bottom: 1px solid calendar.$calendar-border-light !important;
     border-top: none !important;
     border-left: none !important;
     border-right: none !important;
@@ -33,7 +34,7 @@
 
 .scheduledCell {
   @extend %cellBaseReadOnly;
-  background-color: lighten($blue_primary, 45%);
+  background-color: color.adjust($blue_primary, $lightness: 45%);
   border: 1px solid $gray-background;
   position: relative;
 

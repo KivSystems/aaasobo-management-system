@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Modal from "@/app/components/elements/modal/Modal";
 import EditableScheduleCalendar from "./EditableScheduleCalendar";
 import { InstructorSlot } from "@/app/helper/api/instructorsApi";
@@ -21,9 +21,6 @@ export default function AddScheduleModal({
   onSubmit,
   initialSlots = [],
 }: AddScheduleModalProps) {
-  const [effectiveFrom, setEffectiveFrom] = useState("");
-  const [editedSlots, setEditedSlots] = useState<Set<string>>(new Set());
-
   const slotsToKeys = (slots: InstructorSlot[]): Set<string> => {
     return new Set(
       slots.map((slot) => {
@@ -44,14 +41,14 @@ export default function AddScheduleModal({
     });
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      setEffectiveFrom(tomorrow.toISOString().split("T")[0]);
-      setEditedSlots(slotsToKeys(initialSlots));
-    }
-  }, [isOpen, initialSlots]);
+  const [effectiveFrom, setEffectiveFrom] = useState(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split("T")[0];
+  });
+  const [editedSlots, setEditedSlots] = useState<Set<string>>(() =>
+    slotsToKeys(initialSlots),
+  );
 
   const toggleSlot = (weekday: number, time: string) => {
     const key = slotToKey(weekday, time);

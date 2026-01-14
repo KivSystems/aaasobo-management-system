@@ -1,5 +1,5 @@
-@import "../../../../variables.module.scss";
-@import "./CalendarVariables.module.scss";
+@use "../../../../variables.module.scss" as *;
+@use "./CalendarVariables.module.scss" as calendar;
 
 .content {
   max-width: 800px;
@@ -8,7 +8,7 @@
 
 .header {
   padding: 20px 24px;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid calendar.$border-light;
 
   h2 {
     margin: 0;
@@ -30,13 +30,13 @@
     flex-direction: column;
     gap: 8px;
     font-weight: 500;
-    color: $text-primary;
+    color: calendar.$text-primary;
   }
 }
 
 .dateInput {
   padding: 10px 12px;
-  border: 2px solid $border-gray;
+  border: 2px solid calendar.$border-gray;
   border-radius: 6px;
   font-size: 16px;
   max-width: 200px;
@@ -52,12 +52,12 @@
   margin-bottom: 24px;
 
   p {
-    color: $text-primary;
+    color: calendar.$text-primary;
     font-weight: 500;
 
     &:nth-of-type(2) {
       margin-bottom: 16px;
-      color: $text-secondary;
+      color: calendar.$text-secondary;
       font-weight: 400;
       font-size: 14px;
     }
@@ -69,9 +69,9 @@
   gap: 20px;
   margin-bottom: 16px;
   padding: 12px;
-  background-color: $bg-light;
+  background-color: calendar.$bg-light;
   border-radius: 8px;
-  border: 1px solid $border-light;
+  border: 1px solid calendar.$border-light;
   flex-wrap: wrap;
 }
 
@@ -80,20 +80,20 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: $text-secondary;
+  color: calendar.$text-secondary;
 }
 
 .legendDot {
   width: 20px;
   height: 16px;
   border-radius: 3px;
-  border: 1px solid $border-light;
-  background-color: $calendar-white;
+  border: 1px solid calendar.$border-light;
+  background-color: calendar.$calendar-white;
   position: relative;
 
   &.unchanged {
-    background-color: $calendar-white;
-    border: 1px solid $border-gray;
+    background-color: calendar.$calendar-white;
+    border: 1px solid calendar.$border-gray;
 
     &::after {
       content: "";
@@ -103,14 +103,14 @@
       transform: translate(-50%, -50%);
       width: 8px;
       height: 8px;
-      background-color: $legend-gray;
+      background-color: calendar.$legend-gray;
       border-radius: 50%;
     }
   }
 
   &.added {
-    background-color: $legend-green-bg;
-    border: 1px solid $border-gray;
+    background-color: calendar.$legend-green-bg;
+    border: 1px solid calendar.$border-gray;
 
     &::after {
       content: "";
@@ -120,14 +120,14 @@
       transform: translate(-50%, -50%);
       width: 8px;
       height: 8px;
-      background-color: $legend-green;
+      background-color: calendar.$legend-green;
       border-radius: 50%;
     }
   }
 
   &.removed {
-    background-color: $legend-red-bg;
-    border: 1px solid $border-gray;
+    background-color: calendar.$legend-red-bg;
+    border: 1px solid calendar.$border-gray;
 
     &::after {
       content: "\00d7"; // Unicode for X mark
@@ -136,31 +136,31 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 12px;
-      color: $legend-red;
+      color: calendar.$legend-red;
       font-weight: bold;
     }
   }
 
   &.disabled {
-    background-color: $bg-gray;
-    border: 1px solid $border-light;
+    background-color: calendar.$bg-gray;
+    border: 1px solid calendar.$border-light;
     opacity: 0.6;
 
     background-image: repeating-linear-gradient(
       45deg,
-      $bg-gray,
-      $bg-gray 2px,
-      $border-light 2px,
-      $border-light 4px
+      calendar.$bg-gray,
+      calendar.$bg-gray 2px,
+      calendar.$border-light 2px,
+      calendar.$border-light 4px
     );
   }
 }
 
 .calendarContainer {
-  border: 1px solid $border-light;
+  border: 1px solid calendar.$border-light;
   border-radius: 8px;
   overflow: hidden;
-  background-color: $calendar-white;
+  background-color: calendar.$calendar-white;
 }
 
 .footer {
@@ -168,23 +168,23 @@
   justify-content: flex-end;
   gap: 12px;
   padding: 20px 24px;
-  border-top: 1px solid $border-light;
-  background-color: $bg-light;
+  border-top: 1px solid calendar.$border-light;
+  background-color: calendar.$bg-light;
 }
 
 .cancelButton {
   padding: 10px 20px;
-  border: 2px solid $border-gray;
-  background-color: $calendar-white;
-  color: $text-secondary;
+  border: 2px solid calendar.$border-gray;
+  background-color: calendar.$calendar-white;
+  color: calendar.$text-secondary;
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    border-color: $text-muted;
-    color: $text-primary;
+    border-color: calendar.$text-muted;
+    color: calendar.$text-primary;
   }
 }
 
@@ -192,7 +192,7 @@
   padding: 10px 20px;
   border: 2px solid $blue_primary;
   background-color: $blue_primary;
-  color: $calendar-white;
+  color: calendar.$calendar-white;
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;

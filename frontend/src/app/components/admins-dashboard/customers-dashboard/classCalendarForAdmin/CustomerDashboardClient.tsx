@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import TabFunction from "@/app/components/admins-dashboard/TabFunction";
 import CustomerProfile from "@/app/components/customers-dashboard/profile/CustomerProfile";
 import ChildrenProfiles from "@/app/components/customers-dashboard/children-profiles/ChildrenProfiles";
@@ -22,39 +23,43 @@ function CustomerDashboardClient({
   customerProfile: CustomerProfile;
   childProfiles: Child[];
 }) {
-  // Get the previous list page from local storage to set the breadcrumb.
-  const previousListPage = localStorage.getItem("previousListPage");
-  let breadcrumb: string[] = [];
-  switch (previousListPage) {
-    case "class-list":
-      breadcrumb = [
-        "Class List",
-        `/admins/${adminId}/class-list`,
-        `Customer Page (${customerProfile.name})`,
-      ];
-      break;
-    case "customer-list":
-      breadcrumb = [
-        "Customer List",
-        `/admins/${adminId}/customer-list`,
-        `Customer Page (${customerProfile.name})`,
-      ];
-      break;
-    case "child-list":
-      breadcrumb = [
-        "Child List",
-        `/admins/${adminId}/child-list`,
-        `Customer Page (${customerProfile.name})`,
-      ];
-      break;
-    case "subscription-list":
-      breadcrumb = [
-        "Subscription List",
-        `/admins/${adminId}/subscription-list`,
-        `Customer Page (${customerProfile.name})`,
-      ];
-      break;
-  }
+  const [previousListPage] = useState<string | null>(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+    return localStorage.getItem("previousListPage");
+  });
+
+  const breadcrumb = useMemo(() => {
+    switch (previousListPage) {
+      case "class-list":
+        return [
+          "Class List",
+          `/admins/${adminId}/class-list`,
+          `Customer Page (${customerProfile.name})`,
+        ];
+      case "customer-list":
+        return [
+          "Customer List",
+          `/admins/${adminId}/customer-list`,
+          `Customer Page (${customerProfile.name})`,
+        ];
+      case "child-list":
+        return [
+          "Child List",
+          `/admins/${adminId}/child-list`,
+          `Customer Page (${customerProfile.name})`,
+        ];
+      case "subscription-list":
+        return [
+          "Subscription List",
+          `/admins/${adminId}/subscription-list`,
+          `Customer Page (${customerProfile.name})`,
+        ];
+      default:
+        return [];
+    }
+  }, [adminId, customerProfile.name, previousListPage]);
 
   // Get the active tab name to set the active tab in the TabFunction component.
   const activeTabName = "activeCustomerTab";

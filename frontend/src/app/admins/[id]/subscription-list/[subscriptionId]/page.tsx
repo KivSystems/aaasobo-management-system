@@ -1,7 +1,10 @@
 import PlanDashboardForAdmin from "@/app/components/admins-dashboard/plans-dashboard/PlanDashboardForAdmin";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
-async function Page({ params }: { params: { id: string; planId: string } }) {
+async function Page(props: {
+  params: Promise<{ id: string; planId: string }>;
+}) {
+  const params = await props.params;
   // Authenticate user session
   const userSessionType: UserType = await authenticateUserSession(
     "admin",

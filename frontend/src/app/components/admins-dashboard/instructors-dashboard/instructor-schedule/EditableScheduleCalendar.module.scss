@@ -1,22 +1,23 @@
-@import "../../../../variables.module.scss";
-@import "./CalendarVariables.module.scss";
+@use "sass:color";
+@use "../../../../variables.module.scss" as *;
+@use "./CalendarVariables.module.scss" as calendar;
 
 .root {
   display: flex;
-  border: 1px solid $calendar-border;
-  background-color: $calendar-white;
+  border: 1px solid calendar.$calendar-border;
+  background-color: calendar.$calendar-white;
   font-family: "Arial", sans-serif;
   user-select: none;
 }
 
 .timeColumn {
-  border-right: 1px solid $calendar-border;
-  background-color: $calendar-header-bg;
+  border-right: 1px solid calendar.$calendar-border;
+  background-color: calendar.$calendar-header-bg;
 }
 
 .column {
   flex: 1;
-  border-right: 1px solid $calendar-border;
+  border-right: 1px solid calendar.$calendar-border;
 
   &:last-child {
     border-right: none;
@@ -29,9 +30,9 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  color: $calendar-header-text;
-  border-bottom: 1px solid $calendar-border;
-  background-color: $calendar-header-bg;
+  color: calendar.$calendar-header-text;
+  border-bottom: 1px solid calendar.$calendar-border;
+  background-color: calendar.$calendar-header-bg;
   margin: 0;
 }
 
@@ -40,7 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid $calendar-border-light;
+  border-bottom: 1px solid calendar.$calendar-border-light;
   padding: 0 8px;
   width: 60px;
 
@@ -51,7 +52,7 @@
 
 %cellBase {
   height: 30px;
-  border-bottom: 1px solid $calendar-border-light;
+  border-bottom: 1px solid calendar.$calendar-border-light;
   transition: all 0.15s ease;
   position: relative;
 
@@ -70,7 +71,7 @@
   @extend %cellBase;
 
   &:hover {
-    background-color: lighten($blue_primary_hover, 40%);
+    background-color: color.adjust($blue_primary_hover, $lightness: 40%);
     border: 1px solid $blue-primary;
   }
 }
@@ -94,13 +95,13 @@
   }
 
   &:hover {
-    background-color: lighten($gray-background-hover, 20%);
+    background-color: color.adjust($gray-background-hover, $lightness: 20%);
   }
 }
 
 .addedCell {
   @extend %cellBase;
-  background-color: lighten($green-success, 20%);
+  background-color: color.adjust($green-success, $lightness: 20%);
   border: 1px solid $gray-background;
   position: relative;
 
@@ -123,7 +124,7 @@
 
 .removedCell {
   @extend %cellBase;
-  background-color: lighten($red-alert, 30%);
+  background-color: color.adjust($red-alert, $lightness: 30%);
   border: 1px solid $gray-background;
   position: relative;
 
@@ -139,7 +140,7 @@
   }
 
   &:hover {
-    background-color: lighten($red-alert, 25%);
+    background-color: color.adjust($red-alert, $lightness: 25%);
   }
 }
 

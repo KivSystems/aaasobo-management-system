@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./InstructorSchedule.module.scss";
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import {
   getInstructorSchedules,
   getInstructorScheduleById,
@@ -18,22 +18,29 @@ import { errorAlert } from "@/app/helper/utils/alertUtils";
 
 export default function InstructorSchedule({
   instructorId,
+  initialSchedules = [],
+  initialSelectedScheduleId = null,
+  initialSelectedSchedule = null,
 }: {
   instructorId: number;
+  initialSchedules?: Schedule[];
+  initialSelectedScheduleId?: number | null;
+  initialSelectedSchedule?: InstructorScheduleWithSlots | null;
 }) {
-  const today = new Date().toISOString().split("T")[0];
-
   // State for versioned schedules
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const inferredScheduleId =
+    initialSelectedScheduleId ??
+    initialSchedules.find((schedule) => schedule.effectiveTo === null)?.id ??
+    null;
+  const [schedules, setSchedules] = useState<Schedule[]>(initialSchedules);
   const [selectedScheduleId, setSelectedScheduleId] = useState<number | null>(
-    null,
+    inferredScheduleId,
   );
   const [selectedSchedule, setSelectedSchedule] =
-    useState<InstructorScheduleWithSlots | null>(null);
+    useState<InstructorScheduleWithSlots | null>(initialSelectedSchedule);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch all schedule versions
-  const fetchSchedules = useCallback(async () => {
+  const loadSchedules = async () => {
     try {
       const response = await getInstructorSchedules(instructorId);
       if ("message" in response) {
@@ -41,54 +48,34 @@ export default function InstructorSchedule({
         return;
       }
       setSchedules(response.schedules);
-
-      // Auto-select the active schedule
-      const activeSchedule = response.schedules.find(
-        (s) => s.effectiveTo === null,
-      );
-      if (activeSchedule) {
-        setSelectedScheduleId(activeSchedule.id);
-      }
     } catch (error) {
       console.error("Failed to fetch schedules:", error);
     }
-  }, [instructorId]);
-
-  // Fetch details for selected schedule
-  const fetchScheduleDetails = useCallback(
-    async (scheduleId: number) => {
-      try {
-        const response = await getInstructorScheduleById(
-          instructorId,
-          scheduleId,
-        );
-        if ("message" in response) {
-          errorAlert(response.message as string);
-          return;
-        }
-        setSelectedSchedule(response.schedule);
-      } catch (error) {
-        console.error("Failed to fetch schedule details:", error);
-      }
-    },
-    [instructorId],
-  );
-
-  // Fetch schedules when component mounts
-  useEffect(() => {
-    fetchSchedules();
-  }, [fetchSchedules]);
-
-  // Fetch schedule details when a schedule is selected
-  useEffect(() => {
-    if (selectedScheduleId) {
-      fetchScheduleDetails(selectedScheduleId);
-    }
-  }, [selectedScheduleId, fetchScheduleDetails]);
+  };
 
   // Handle schedule version selection
-  const handleScheduleSelection = (scheduleId: number) => {
+  const handleScheduleSelection = async (scheduleId: number) => {
+    if (!scheduleId) {
+      setSelectedScheduleId(null);
+      setSelectedSchedule(null);
+      return;
+    }
+
     setSelectedScheduleId(scheduleId);
+
+    try {
+      const response = await getInstructorScheduleById(
+        instructorId,
+        scheduleId,
+      );
+      if ("message" in response) {
+        errorAlert(response.message as string);
+        return;
+      }
+      setSelectedSchedule(response.schedule);
+    } catch (error) {
+      console.error("Failed to fetch schedule details:", error);
+    }
   };
 
   // Handle creating new schedule
@@ -109,8 +96,9 @@ export default function InstructorSchedule({
       }
 
       // Refresh schedules and select the new one
-      await fetchSchedules();
+      await loadSchedules();
       setSelectedScheduleId(response.schedule.id);
+      setSelectedSchedule(response.schedule);
       toast.success("Schedule created successfully.");
     } catch (error) {
       console.error("Failed to create schedule:", error);
@@ -166,12 +154,14 @@ export default function InstructorSchedule({
         </div>
       )}
 
-      <AddScheduleModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreateSchedule}
-        initialSlots={selectedSchedule?.slots || []}
-      />
+      {isModalOpen && (
+        <AddScheduleModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleCreateSchedule}
+          initialSlots={selectedSchedule?.slots || []}
+        />
+      )}
     </>
   );
 }

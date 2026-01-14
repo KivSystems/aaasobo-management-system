@@ -28,7 +28,7 @@ export default function RebookableTimeSlots({
   const rebookableTimeSlots = useMemo(() => {
     if (rebookingOption === "instructor") {
       return instructorAvailabilities
-        .filter((a) => a.instructorId === instructorToRebook.id)
+        .filter((a) => a.availableInstructors.includes(instructorToRebook.id))
         .map((a) => a.dateTime)
         .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
     } else if (rebookingOption === "dateTime") {

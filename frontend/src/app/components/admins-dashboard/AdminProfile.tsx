@@ -1,8 +1,7 @@
 "use client";
 
 import styles from "./AdminProfile.module.scss";
-import { useState, useEffect, useCallback } from "react";
-import { useFormState } from "react-dom";
+import { useState, useCallback } from "react";
 import { updateAdminAction } from "@/app/actions/updateUser";
 import { deleteAdminAction } from "@/app/actions/deleteUser";
 import {
@@ -28,7 +27,9 @@ function AdminProfile({
   userSessionType: UserType;
 }) {
   // Use `useFormState` hook for updating an admin profile
-  const [updateResultState, formAction] = useFormState(updateAdminAction, {});
+  const [updateResultState, setUpdateResultState] = useState<
+    UpdateFormState | undefined
+  >(undefined);
   // Use `useState` hook and FormData for deleting an admin profile
   const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
     {},
@@ -38,16 +39,16 @@ function AdminProfile({
     {},
   );
 
-  useEffect(() => {
-    if (updateResultState) {
-      const newMessages: Record<string, string> = {};
-      if (updateResultState.name) newMessages.name = updateResultState.name;
-      if (updateResultState.email) newMessages.email = updateResultState.email;
-      if (updateResultState.errorMessage)
-        newMessages.errorMessage = updateResultState.errorMessage;
-      setLocalMessages(newMessages);
+  const buildLocalMessages = (result: UpdateFormState | undefined) => {
+    if (!result) {
+      return {};
     }
-  }, [updateResultState]);
+    const newMessages: Record<string, string> = {};
+    if (result.name) newMessages.name = result.name;
+    if (result.email) newMessages.email = result.email;
+    if (result.errorMessage) newMessages.errorMessage = result.errorMessage;
+    return newMessages;
+  };
 
   const clearErrorMessage = useCallback((field: string) => {
     setLocalMessages((prev) => {
@@ -100,40 +101,33 @@ function AdminProfile({
 
       const result = await deleteAdminAction(deleteResultState, formData);
       setDeleteResultState(result);
+      if ("id" in result && result.id) {
+        toast.success(ADMIN_DELETE_SUCCESS_MESSAGE);
+        setIsEditing(false);
+        setLatestAdmin(null);
+      } else if ("errorMessage" in result && result.errorMessage) {
+        toast.error(result.errorMessage);
+      }
     }
   };
 
-  useEffect(() => {
-    // Check if the updateResultState has changed
-    if ("admin" in updateResultState && updateResultState.admin) {
-      const admin = updateResultState.admin as Admin;
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const result = await updateAdminAction(undefined, formData);
+    setUpdateResultState(result);
+    setLocalMessages(buildLocalMessages(result));
+
+    if ("admin" in result && result.admin) {
+      const admin = result.admin as Admin;
       toast.success(ADMIN_UPDATE_SUCCESS_MESSAGE);
       setIsEditing(false);
       setPreviousAdmin(admin);
       setLatestAdmin(admin);
-      // Clear updateResultState to avoid re-rendering
-      updateResultState.admin = null;
-      return;
-
-      // Check if the deleteResultState has changed
-    } else if ("id" in deleteResultState && deleteResultState.id) {
-      toast.success(ADMIN_DELETE_SUCCESS_MESSAGE);
-      setIsEditing(false);
-      setLatestAdmin(null);
-      // Clear deleteResultState to avoid re-rendering
-      deleteResultState.id = null;
-      return;
-
-      // Show an error message if there is an error in either update or delete operation,
-    } else {
-      const updateResult = updateResultState as { errorMessage: string };
-      const deleteResult = deleteResultState as { errorMessage: string };
-      const errorMessage =
-        updateResult.errorMessage || deleteResult.errorMessage;
-      toast.error(errorMessage);
-      return;
+    } else if ("errorMessage" in result && result.errorMessage) {
+      toast.error(result.errorMessage);
     }
-  }, [updateResultState, deleteResultState]);
+  };
 
   // Error message is displayed if the admin data is not found.
   if (typeof admin === "string") {
@@ -145,7 +139,7 @@ function AdminProfile({
     <>
       <div className={styles.container}>
         {latestAdmin ? (
-          <form action={formAction} className={styles.profileCard}>
+          <form onSubmit={handleSubmit} className={styles.profileCard}>
             {/* Admin name */}
             <div className={styles.adminName__nameSection}>
               <p className={styles.adminName__text}>Name</p>

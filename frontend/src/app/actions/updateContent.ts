@@ -18,7 +18,7 @@ import {
   revalidatePlanList,
   revalidateSubscriptionList,
 } from "./revalidate";
-import { getCookie } from "../../middleware";
+import { getCookie } from "../../proxy";
 import { validateSession } from "./validateSession";
 import {
   generateClasses,
@@ -285,7 +285,7 @@ export async function generateClassesAction(
     const cookie = await getCookie();
 
     // Update the business schedule
-    await generateClasses(year, month, cookie);
+    await generateClasses(Number(year), month, cookie);
 
     revalidateClassList();
 

@@ -1,6 +1,6 @@
 import PlanTabs from "@/app/components/admins-dashboard/plans-dashboard/PlanDashboardClient";
 import { getPlanById } from "@/app/helper/api/plansApi";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
 export default async function PlanDashboardForAdmin({
   userId,

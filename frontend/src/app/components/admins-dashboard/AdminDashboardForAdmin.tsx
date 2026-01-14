@@ -1,6 +1,6 @@
 import AdminTabs from "@/app/components/admins-dashboard/AdminDashboardClient";
 import { getAdminById } from "@/app/helper/api/adminsApi";
-import { getCookie } from "../../../middleware";
+import { getCookie } from "../../../proxy";
 
 export default async function AdminDashboardForAdmin({
   userId,

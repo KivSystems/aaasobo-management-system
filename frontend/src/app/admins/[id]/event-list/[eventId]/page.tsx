@@ -1,7 +1,10 @@
 import EventDashboardForAdmin from "@/app/components/admins-dashboard/events-dashboard/EventDashboardForAdmin";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
-async function Page({ params }: { params: { id: string; eventId: string } }) {
+async function Page(props: {
+  params: Promise<{ id: string; eventId: string }>;
+}) {
+  const params = await props.params;
   // Authenticate user session
   const userSessionType: UserType = await authenticateUserSession(
     "admin",

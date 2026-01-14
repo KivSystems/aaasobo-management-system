@@ -1,6 +1,6 @@
 "use server";
 
-import { getCookie } from "../../middleware";
+import { getCookie } from "../../proxy";
 import { revalidatePath } from "next/cache";
 import {
   addInstructorAbsence,

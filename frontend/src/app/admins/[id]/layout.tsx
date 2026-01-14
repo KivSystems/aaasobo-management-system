@@ -2,13 +2,11 @@ import styles from "./layout.module.scss";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
 import { getUserSession } from "@/app/helper/auth/sessionUtils";
 
-export default async function Layout({
-  children,
-  params,
-}: {
+export default async function Layout(props: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = await props.params;
   // Get the admin id from the URL parameters
   let adminId = parseInt(params.id);
   if (isNaN(adminId)) {
@@ -27,7 +25,7 @@ export default async function Layout({
       <div className={styles.sidebar}>
         <SideNav userId={adminId} userType="admin" />
       </div>
-      <div className={styles.content}>{children}</div>
+      <div className={styles.content}>{props.children}</div>
     </div>
   );
 }

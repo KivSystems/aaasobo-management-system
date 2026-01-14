@@ -5,9 +5,10 @@ import {
 import { businessCalendarValidRange } from "@/app/helper/utils/calendarUtils";
 import BusinessCalendarClient from "@/app/components/admins-dashboard/BusinessCalendarClient";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
-const Page = async ({ params }: { params: { id: string } }) => {
+const Page = async (props: { params: Promise<{ id: string }> }) => {
+  const params = await props.params;
   // Authenticate user session
   const adminId = params.id;
   const userSessionType: UserType = await authenticateUserSession(

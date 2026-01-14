@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useActionState, useState } from "react";
 import styles from "./ResetPasswordForm.module.scss";
-import { useFormState } from "react-dom";
 import TextInput from "../../elements/textInput/TextInput";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import { useFormMessages } from "@/app/hooks/useFormMessages";
 import Link from "next/link";
 import { useInput } from "@/app/hooks/useInput";
 import { usePasswordStrength } from "@/app/hooks/usePasswordStrength";
@@ -28,15 +26,12 @@ export default function ResetPasswordForm({
   const [showPassword, setShowPassword] = useState(false);
   const { passwordStrength } = usePasswordStrength(password);
 
-  const [resultState, formAction] = useFormState(resetPassword, undefined);
-
-  const { localMessages, clearErrorMessage } = useFormMessages(resultState);
-
-  const isError = !!localMessages.errorMessage;
+  const [resultState, formAction] = useActionState(resetPassword, undefined);
+  const isError = !!resultState?.errorMessage;
   const isErrorWithLink =
-    !!localMessages.errorMessageWithResetLink ||
+    !!resultState?.errorMessageWithResetLink ||
     !!tokenVerificationResult.needsResetLink;
-  const isSuccess = !!localMessages.successMessage;
+  const isSuccess = !!resultState?.successMessage;
 
   const { language } = useLanguage();
 
@@ -80,12 +75,11 @@ export default function ResetPasswordForm({
           }
           onChange={(event) => {
             onPasswordChange(event);
-            clearErrorMessage("password");
           }}
           icon={<LockClosedIcon className={styles.icon} />}
           required={true}
           minLength={8}
-          error={localMessages.password}
+          error={resultState?.password}
           showPassword={showPassword}
           onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
         />
@@ -103,8 +97,7 @@ export default function ResetPasswordForm({
             language === "ja" ? "パスワード再入力" : "Re-enter password"
           }
           icon={<LockClosedIcon className={styles.icon} />}
-          error={localMessages.passConfirmation}
-          onChange={() => clearErrorMessage("passConfirmation")}
+          error={resultState?.passConfirmation}
           showPassword={showPassword}
           onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
           language={language}
@@ -133,11 +126,11 @@ export default function ResetPasswordForm({
             <FormValidationMessage
               type={isSuccess ? "success" : "error"}
               message={
-                isError
-                  ? localMessages.errorMessage
+                (isError
+                  ? resultState?.errorMessage
                   : isErrorWithLink
-                    ? localMessages.errorMessageWithResetLink
-                    : localMessages.successMessage
+                    ? resultState?.errorMessageWithResetLink
+                    : resultState?.successMessage) ?? ""
               }
             />
           )}

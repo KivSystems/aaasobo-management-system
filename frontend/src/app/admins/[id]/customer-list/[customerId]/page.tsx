@@ -1,11 +1,10 @@
 import CustomerDashboardForAdmin from "@/app/components/admins-dashboard/customers-dashboard/classCalendarForAdmin/CustomerDashboardForAdmin";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
-async function Page({
-  params,
-}: {
-  params: { id: string; customerId: string };
+async function Page(props: {
+  params: Promise<{ id: string; customerId: string }>;
 }) {
+  const params = await props.params;
   // Authenticate user session
   const userSessionType: UserType = await authenticateUserSession(
     "admin",

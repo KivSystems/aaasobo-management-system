@@ -1,4 +1,4 @@
-@import "@/app/variables.module.scss";
+@use "@/app/variables.module.scss" as *;
 
 .dateTimeSelection {
   padding: 1.5rem;

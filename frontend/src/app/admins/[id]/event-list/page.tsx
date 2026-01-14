@@ -1,9 +1,10 @@
 import ListTable from "@/app/components/admins-dashboard/ListTable";
 import { getAllEvents } from "@/app/helper/api/adminsApi";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
-import { getCookie } from "../../../../middleware";
+import { getCookie } from "../../../../proxy";
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   // Authenticate user session
   const adminId = params.id;
   await authenticateUserSession("admin", adminId);

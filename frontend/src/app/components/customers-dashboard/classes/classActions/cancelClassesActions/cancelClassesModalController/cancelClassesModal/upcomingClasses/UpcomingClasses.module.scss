@@ -1,4 +1,4 @@
-@import "../../../../../../../../variables.module.scss";
+@use "../../../../../../../../variables.module.scss" as *;
 
 .upcomingClass {
   transition: background-color 0.3s ease;

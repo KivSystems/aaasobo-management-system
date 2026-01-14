@@ -1,7 +1,8 @@
 import ClassCalendar from "@/app/components/customers-dashboard/classes/ClassCalendar";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
-const ClassesPage = async ({ params }: { params: { id: string } }) => {
+const ClassesPage = async (props: { params: Promise<{ id: string }> }) => {
+  const params = await props.params;
   // Authenticate user session
   const userSessionType: UserType = await authenticateUserSession(
     "customer",

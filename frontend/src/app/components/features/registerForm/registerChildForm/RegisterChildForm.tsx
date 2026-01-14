@@ -10,7 +10,6 @@ import FormValidationMessage from "@/app/components/elements/formValidationMessa
 import { extractRegisterValidationErrors } from "@/app/helper/utils/validationErrorUtils";
 import { registerCustomer } from "@/app/helper/api/customersApi";
 import { createChildRegisterSchema } from "@/app/schemas/authSchema";
-import { useFormMessages } from "@/app/hooks/useFormMessages";
 import { useFormFieldSetter } from "@/app/hooks/useFormFieldSetter";
 import TextAreaInput from "@/app/components/elements/textAreaInput/TextAreaInput";
 
@@ -24,8 +23,19 @@ export default function RegisterChildForm({
 }: RegisterChildProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const { localMessages, setLocalMessages, clearErrorMessage } =
-    useFormMessages<StringMessages>();
+  const [localMessages, setLocalMessages] = useState<StringMessages>({});
+
+  const clearErrorMessage = useCallback((field: string) => {
+    setLocalMessages((prev) => {
+      if (field === "all") {
+        return {};
+      }
+      const updatedMessages = { ...prev };
+      delete updatedMessages[field];
+      delete updatedMessages.errorMessage;
+      return updatedMessages;
+    });
+  }, []);
 
   const handleChange = useFormFieldSetter(setChildData);
 

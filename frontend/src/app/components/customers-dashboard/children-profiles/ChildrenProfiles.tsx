@@ -5,13 +5,12 @@ import {
   PlusIcon,
   UserCircleIcon as UserCircleSolid,
 } from "@heroicons/react/24/solid";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
 import { formatBirthdateToISO } from "@/app/helper/utils/dateUtils";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLanguage } from "@/app/contexts/LanguageContext";
-import { useFormState } from "react-dom";
 import {
   addChildProfileAction,
   updateChildProfileAction,
@@ -41,48 +40,72 @@ function ChildrenProfiles({
   userSessionType,
   terminationAt,
 }: ChildrenProfilesProps) {
-  const [updateResult, updateAction] = useFormState(
-    updateChildProfileAction,
+  const [updateResult, setUpdateResult] = useState<
+    LocalizedMessages | undefined
+  >(undefined);
+  const [addResult, setAddResult] = useState<LocalizedMessages | undefined>(
     undefined,
   );
-  const [addResult, addAction] = useFormState(addChildProfileAction, undefined);
-  const { localMessages, setLocalMessages, clearErrorMessage } =
-    useFormMessages<LocalizedMessages>();
+  const {
+    localMessages: updateMessages,
+    clearErrorMessage: clearUpdateErrorMessage,
+    resetMessages: resetUpdateMessages,
+  } = useFormMessages<LocalizedMessages>(updateResult);
+  const {
+    localMessages: addMessages,
+    clearErrorMessage: clearAddErrorMessage,
+    resetMessages: resetAddMessages,
+  } = useFormMessages<LocalizedMessages>(addResult);
   const [isAddChildModalOpen, setIsAddChildModalOpen] = useState(false);
   const [editingChildId, setEditingChildId] = useState<number | null>(null);
   const [editingSuccessChildId, setEditingSuccessChildId] = useState<
     number | null
   >(null);
   const handleBirthdateChange = useCallback(() => {
-    clearErrorMessage("birthdate");
-  }, [clearErrorMessage]);
+    clearUpdateErrorMessage("birthdate");
+  }, [clearUpdateErrorMessage]);
   const { language } = useLanguage();
-  const isError = !!localMessages.errorMessage;
-  const isSuccess = !!localMessages.successMessage;
+  const isError = !!updateMessages.errorMessage;
+  const isSuccess = !!updateMessages.successMessage;
 
-  useEffect(() => {
-    if (updateResult !== undefined) {
-      setLocalMessages(updateResult);
-      if (updateResult.successMessage) {
-        setEditingSuccessChildId(editingChildId);
-        setEditingChildId(null);
-      }
+  const handleUpdateSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    resetUpdateMessages();
+    const formData = new FormData(event.currentTarget);
+    const result = await updateChildProfileAction(undefined, formData);
+    setUpdateResult(result);
+    if (result?.successMessage) {
+      const submittedChildId = Number(formData.get("id"));
+      setEditingSuccessChildId(
+        Number.isNaN(submittedChildId) ? editingChildId : submittedChildId,
+      );
+      setEditingChildId(null);
     }
-  }, [updateResult, editingChildId, setLocalMessages]);
+  };
 
-  useEffect(() => {
-    if (addResult !== undefined) {
-      setLocalMessages(addResult);
-      if (addResult.successMessage) {
-        toast.success(addResult.successMessage[language]);
-        setIsAddChildModalOpen(false);
-        clearErrorMessage("all");
-      }
+  const handleAddSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    resetAddMessages();
+    const formData = new FormData(event.currentTarget);
+    const result = await addChildProfileAction(undefined, formData);
+    setAddResult(result);
+    if (result?.successMessage) {
+      toast.success(result.successMessage[language]);
+      setIsAddChildModalOpen(false);
+      setAddResult(undefined);
     }
-  }, [addResult, clearErrorMessage, language, setLocalMessages]);
+  };
+
+  const handleAddChildClose = () => {
+    setIsAddChildModalOpen(false);
+    setAddResult(undefined);
+    resetAddMessages();
+  };
 
   const handleDeleteClick = async (childId: number) => {
-    clearErrorMessage("all");
+    clearUpdateErrorMessage("all");
     const hasOnlyOneChild = childProfiles.length === 1;
 
     if (hasOnlyOneChild) {
@@ -114,7 +137,8 @@ function ChildrenProfiles({
             onClick={(e) => {
               e.preventDefault();
               setEditingChildId(null);
-              clearErrorMessage("all");
+              clearUpdateErrorMessage("all");
+              clearAddErrorMessage("all");
               setIsAddChildModalOpen(true);
             }}
           />
@@ -123,17 +147,17 @@ function ChildrenProfiles({
 
       <Modal
         isOpen={isAddChildModalOpen}
-        onClose={() => setIsAddChildModalOpen(false)}
+        onClose={handleAddChildClose}
         className="rebooking"
       >
         <AddChildForm
           language={language}
-          action={addAction}
+          onSubmit={handleAddSubmit}
           customerId={customerId}
-          localMessages={localMessages}
+          localMessages={addMessages}
           userSessionType={userSessionType}
-          isError={isError}
-          clearErrorMessage={clearErrorMessage}
+          isError={!!addMessages.errorMessage}
+          clearErrorMessage={clearAddErrorMessage}
         />
       </Modal>
 
@@ -142,7 +166,7 @@ function ChildrenProfiles({
           <form
             className={styles.childCard}
             key={child.id}
-            action={updateAction}
+            onSubmit={handleUpdateSubmit}
           >
             <div className={styles.childCard__profile}>
               {/* Child Name */}
@@ -167,8 +191,8 @@ function ChildrenProfiles({
                       }
                       defaultValue={child.name}
                       className={styles.childName__inputField}
-                      onChange={() => clearErrorMessage("name")}
-                      error={localMessages.name?.[language]}
+                      onChange={() => clearUpdateErrorMessage("name")}
+                      error={updateMessages.name?.[language]}
                     />
                   ) : (
                     <div className={styles.childName__name}>{child.name}</div>
@@ -187,7 +211,7 @@ function ChildrenProfiles({
                     <BirthdateInput
                       onValidDateChange={handleBirthdateChange}
                       defaultBirthdate={formatBirthdateToISO(child.birthdate)}
-                      error={localMessages.birthdate?.[language]}
+                      error={updateMessages.birthdate?.[language]}
                       language={language}
                       useFormAction={true}
                     />
@@ -220,9 +244,9 @@ function ChildrenProfiles({
                           ? "例. 5 years old, Beginner, Car, Peppapig"
                           : "e.g., 5 years old, Beginner, Car, Peppapig"
                       }
-                      error={localMessages.personalInfo?.[language]}
+                      error={updateMessages.personalInfo?.[language]}
                       onChange={(e) => {
-                        clearErrorMessage("personalInfo");
+                        clearUpdateErrorMessage("personalInfo");
                       }}
                       required
                       language={language}
@@ -247,8 +271,8 @@ function ChildrenProfiles({
                   type={isError ? "error" : "success"}
                   message={
                     isError
-                      ? localMessages.errorMessage[language]
-                      : localMessages.successMessage[language]
+                      ? updateMessages.errorMessage[language]
+                      : updateMessages.successMessage[language]
                   }
                 />
               )}
@@ -263,7 +287,7 @@ function ChildrenProfiles({
                       btnText={language === "ja" ? "キャンセル" : "Cancel"}
                       onClick={(e) => {
                         e.preventDefault();
-                        clearErrorMessage("all");
+                        clearUpdateErrorMessage("all");
                         setEditingChildId(null);
                       }}
                     />
@@ -288,7 +312,7 @@ function ChildrenProfiles({
                       className="editChild"
                       btnText={language === "ja" ? "編集" : "Edit"}
                       onClick={() => {
-                        clearErrorMessage("all");
+                        clearUpdateErrorMessage("all");
                         setEditingChildId(child.id);
                         setEditingSuccessChildId(null);
                       }}

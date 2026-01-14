@@ -5,11 +5,10 @@ import { Suspense } from "react";
 import Loading from "@/app/components/elements/loading/Loading";
 import { verifyCustomerEmail } from "@/app/helper/api/customersApi";
 
-export default async function EmailVerificationPage({
-  params,
-}: {
-  params: { token: string };
+export default async function EmailVerificationPage(props: {
+  params: Promise<{ token: string }>;
 }) {
+  const params = await props.params;
   const token = params.token;
 
   const resultMessage = await verifyCustomerEmail(token);

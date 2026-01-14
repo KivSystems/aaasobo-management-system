@@ -1,6 +1,6 @@
 import CancelClassesModalController from "./cancelClassesModalController/CancelClassesModalController";
 import { getUpcomingClasses } from "@/app/helper/api/customersApi";
-import { getCookie } from "../../../../../../middleware";
+import { getCookie } from "../../../../../../proxy";
 
 export default async function CancelClassesActions({
   customerId,

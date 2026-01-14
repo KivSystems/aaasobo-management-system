@@ -5,10 +5,9 @@ import FullCalendar from "@fullcalendar/react";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateSelectArg } from "@fullcalendar/core";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useFormState } from "react-dom";
 import Modal from "@/app/components/elements/modal/Modal";
 import BusinessCalendarModal from "@/app/components/admins-dashboard/BusinessCalendarModal";
 import { useLanguage } from "@/app/contexts/LanguageContext";
@@ -26,10 +25,6 @@ const BusinessCalendarClient = ({
   userSessionType,
 }: BusinessCalendarClientProps) => {
   const calendarRef = useRef<FullCalendar | null>(null);
-  const [updateResultState, formAction] = useFormState(
-    updateScheduleAction,
-    {},
-  );
   const [businessSchedule, setBusinessSchedule] = useState(
     initialSchedule || [],
   );
@@ -40,17 +35,6 @@ const BusinessCalendarClient = ({
   const [localMessages, setLocalMessages] = useState<Record<string, string>>(
     {},
   );
-
-  useEffect(() => {
-    if (updateResultState) {
-      const newMessages: Record<string, string> = {};
-      if (updateResultState.name) newMessages.name = updateResultState.name;
-      if (updateResultState.color) newMessages.color = updateResultState.color;
-      if (updateResultState.errorMessage)
-        newMessages.errorMessage = updateResultState.errorMessage;
-      setLocalMessages(newMessages);
-    }
-  }, [updateResultState]);
 
   const clearErrorMessage = useCallback((field: string) => {
     setLocalMessages((prev) => {
@@ -147,22 +131,31 @@ const BusinessCalendarClient = ({
     }
   };
 
-  // Handle form submission for updating the schedule
-  useEffect(() => {
-    if ("result" in updateResultState && updateResultState.result) {
-      toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("schedule"));
-      fetchSchedule().then(() => {
-        setIsModalOpen(false);
-        setSelectedDates([]);
-        setScheduleVersion((prev) => prev + 1);
-      });
-    } else if (
-      "errorMessage" in updateResultState &&
-      updateResultState.errorMessage
-    ) {
-      toast.error(updateResultState.errorMessage);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const result = await updateScheduleAction(undefined, formData);
+    const newMessages: Record<string, string> = {};
+
+    if ("eventId" in result && result.eventId) {
+      newMessages.eventId = result.eventId;
     }
-  }, [updateResultState]);
+    if ("errorMessage" in result && result.errorMessage) {
+      newMessages.errorMessage = result.errorMessage;
+    }
+
+    setLocalMessages(newMessages);
+
+    if ("result" in result && result.result) {
+      toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("schedule"));
+      await fetchSchedule();
+      setIsModalOpen(false);
+      setSelectedDates([]);
+      setScheduleVersion((prev) => prev + 1);
+    } else if ("errorMessage" in result && result.errorMessage) {
+      toast.error(result.errorMessage);
+    }
+  };
 
   // Display the failure message if the schedule is not loaded
   if (!businessSchedule || businessSchedule.length === 0 || !events) {
@@ -217,7 +210,7 @@ const BusinessCalendarClient = ({
             onClose={() => setIsModalOpen(false)}
             className="businessCalendarModal"
           >
-            <form action={formAction}>
+            <form onSubmit={handleSubmit}>
               <BusinessCalendarModal
                 selectedDates={selectedDates}
                 events={events}

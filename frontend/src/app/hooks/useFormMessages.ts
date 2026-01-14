@@ -1,32 +1,41 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export function useFormMessages<T extends FormResult>(formResult?: T) {
-  const [localMessages, setLocalMessages] = useState<T>({} as T);
+  const [clearedFields, setClearedFields] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (formResult) {
-      setLocalMessages(formResult);
+  const localMessages = useMemo(() => {
+    const base = (formResult ?? {}) as T;
+    if (clearedFields.size === 0) {
+      return base;
     }
-  }, [formResult]);
+    if (clearedFields.has("all")) {
+      return {} as T;
+    }
+
+    const updated = { ...base };
+    clearedFields.forEach((field) => {
+      delete updated[field];
+      delete updated.errorMessage;
+    });
+
+    return updated;
+  }, [formResult, clearedFields]);
 
   const clearErrorMessage = useCallback((field: string) => {
-    setLocalMessages((prev) => {
+    setClearedFields((prev) => {
       if (field === "all") {
-        return {} as T;
+        return new Set(["all"]);
       }
-
-      if (!prev[field] && !prev.successMessage && !prev.errorMessage) {
-        return prev;
-      }
-
-      const updatedMessages = { ...prev };
-      delete updatedMessages[field];
-      delete updatedMessages.successMessage;
-      delete updatedMessages.errorMessage;
-
-      return updatedMessages;
+      const next = new Set(prev);
+      next.delete("all");
+      next.add(field);
+      return next;
     });
   }, []);
 
-  return { localMessages, setLocalMessages, clearErrorMessage };
+  const resetMessages = useCallback(() => {
+    setClearedFields(new Set());
+  }, []);
+
+  return { localMessages, clearErrorMessage, resetMessages };
 }

@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useActionState, useState } from "react";
 import styles from "./LoginForm.module.scss";
 import { authenticate } from "@/app/actions/authActions";
-import { useFormState } from "react-dom";
 import TextInput from "../../elements/textInput/TextInput";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import { useFormMessages } from "@/app/hooks/useFormMessages";
 import Link from "next/link";
 import FormValidationMessage from "../../elements/formValidationMessage/FormValidationMessage";
 
@@ -18,9 +16,8 @@ export default function LoginForm({
   userType: UserType;
   language: LanguageType;
 }) {
-  const [errorState, formAction] = useFormState(authenticate, undefined);
+  const [errorState, formAction] = useActionState(authenticate, undefined);
   const [showPassword, setShowPassword] = useState(false);
-  const { localMessages, clearErrorMessage } = useFormMessages(errorState);
 
   return (
     <form action={formAction} className={styles.form}>
@@ -31,7 +28,6 @@ export default function LoginForm({
         placeholder={language === "ja" ? "メール" : "e-mail"}
         icon={<EnvelopeIcon className={styles.icon} />}
         required={true}
-        onChange={() => clearErrorMessage("message")}
       />
 
       <TextInput
@@ -43,7 +39,6 @@ export default function LoginForm({
         required={true}
         showPassword={showPassword}
         onTogglePasswordVisibility={() => setShowPassword((prev) => !prev)}
-        onChange={() => clearErrorMessage("message")}
         language={language}
       />
 
@@ -67,10 +62,10 @@ export default function LoginForm({
       </div>
 
       <div className={styles.errorWrapper}>
-        {localMessages.errorMessage && (
+        {errorState?.errorMessage && (
           <FormValidationMessage
             type="error"
-            message={localMessages.errorMessage}
+            message={errorState.errorMessage}
           />
         )}
       </div>

@@ -1,13 +1,11 @@
 import styles from "./layout.module.scss";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
 
-export default function Layout({
-  children,
-  params,
-}: {
+export default async function Layout(props: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = await props.params;
   const customerId = parseInt(params.id);
   if (isNaN(customerId)) {
     throw new Error("Invalid customerId");
@@ -18,7 +16,7 @@ export default function Layout({
       <div className={styles.sidebar}>
         <SideNav userId={customerId} userType="customer" />
       </div>
-      <div className={styles.content}>{children}</div>
+      <div className={styles.content}>{props.children}</div>
     </div>
   );
 }

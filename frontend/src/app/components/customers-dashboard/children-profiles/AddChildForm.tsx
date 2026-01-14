@@ -10,7 +10,7 @@ import styles from "./AddChildForm.module.scss";
 
 const AddChildForm = ({
   language,
-  action,
+  onSubmit,
   customerId,
   localMessages,
   userSessionType,
@@ -18,7 +18,7 @@ const AddChildForm = ({
   clearErrorMessage,
 }: AddChildFormProps) => {
   return (
-    <form className={styles.addChildForm} action={action}>
+    <form className={styles.addChildForm} onSubmit={onSubmit}>
       {/* Child Name */}
       <InputField
         name="name"

@@ -1,11 +1,10 @@
 import InstructorDashboardForAdmin from "@/app/components/admins-dashboard/instructors-dashboard/InstructorDashboardForAdmin";
 import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
 
-async function Page({
-  params,
-}: {
-  params: { id: string; instructorId: string };
+async function Page(props: {
+  params: Promise<{ id: string; instructorId: string }>;
 }) {
+  const params = await props.params;
   // Authenticate user session
   const userSessionType: UserType = await authenticateUserSession(
     "admin",

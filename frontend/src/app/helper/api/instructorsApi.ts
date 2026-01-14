@@ -861,6 +861,7 @@ export const getInstructorAvailableSlots = async (
 export const getAllInstructorAvailableSlots = async (
   startDate: string,
   endDate: string,
+  isNative: boolean,
   cookie?: string,
 ) => {
   try {
@@ -868,6 +869,7 @@ export const getAllInstructorAvailableSlots = async (
       start: startDate,
       end: endDate,
       timezone: "Asia/Tokyo",
+      isNative: String(isNative),
     });
 
     let apiURL;

@@ -8,7 +8,7 @@ import {
   getAllBusinessSchedules,
   getAllEvents,
 } from "@/app/helper/api/adminsApi";
-import { getCookie } from "../../../../../middleware";
+import { getCookie } from "../../../../../proxy";
 
 async function InstructorCalendar({
   adminId,

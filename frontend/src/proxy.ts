@@ -1,8 +1,10 @@
 import NextAuth from "next-auth";
-import { authConfig } from "../auth.config";
 import { headers } from "next/headers";
+import { authConfig } from "../auth.config";
 
-export default NextAuth(authConfig).auth;
+const { auth } = NextAuth(authConfig);
+
+export const proxy = auth;
 
 export const config = {
   matcher: [
@@ -14,7 +16,7 @@ export const config = {
 
 // Get the cookies from the request headers
 export const getCookie = async () => {
-  const cookie = headers().get("cookie");
+  const cookie = (await headers()).get("cookie");
   if (!cookie) {
     throw new Error("No cookies found in the request headers");
   }

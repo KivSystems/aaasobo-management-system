@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import styles from "./GenerateClassesModal.module.scss";
 import ActionButton from "../elements/buttons/actionButton/ActionButton";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
@@ -14,10 +14,9 @@ type GenerateClassesModalProps = {
 function GenerateClassesModal({ error, success }: GenerateClassesModalProps) {
   const defaultValue = "Select Month";
   const [selectedMonth, setSelectedMonth] = useState(defaultValue);
-  const [selectableMonths, setSelectableMonths] = useState<string[]>([]);
   const isSelectMonth = selectedMonth === "" || selectedMonth === defaultValue;
 
-  useEffect(() => {
+  const selectableMonths = useMemo(() => {
     const now = new Date();
     const months = [];
 
@@ -30,7 +29,7 @@ function GenerateClassesModal({ error, success }: GenerateClassesModalProps) {
       months.push(value);
     }
 
-    setSelectableMonths(months);
+    return months;
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {

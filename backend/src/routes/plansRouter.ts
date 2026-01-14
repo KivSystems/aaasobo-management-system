@@ -20,7 +20,7 @@ export const plansRouter = express.Router();
 // Route configurations with Zod validation
 const getAllPlansConfig = {
   method: "get" as const,
-  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: getAllPlansController,
   openapi: {
     summary: "Get all active plans",
@@ -40,7 +40,7 @@ const getAllPlansConfig = {
 
 const getPlanConfig = {
   method: "get" as const,
-  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   handler: getPlanController,
   paramsSchema: PlanIdParams,
   openapi: {

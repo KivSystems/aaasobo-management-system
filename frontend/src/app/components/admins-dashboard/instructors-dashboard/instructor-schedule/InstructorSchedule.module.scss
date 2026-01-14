@@ -1,5 +1,5 @@
-@import "../../../../variables.module.scss";
-@import "./CalendarVariables.module.scss";
+@use "../../../../variables.module.scss" as *;
+@use "./CalendarVariables.module.scss" as calendar;
 
 .dateInput {
   padding-bottom: 1rem;
@@ -17,13 +17,13 @@
   flex-direction: column;
   gap: 8px;
   font-weight: 500;
-  color: $text-primary;
+  color: calendar.$text-primary;
 }
 
 .addButton {
   padding: 0.5rem 1rem;
   background-color: $blue_primary;
-  color: $calendar-white;
+  color: calendar.$calendar-white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -38,7 +38,7 @@
 .input {
   margin-left: 0.5rem;
   padding: 8px 12px;
-  border: 2px solid $border-gray;
+  border: 2px solid calendar.$border-gray;
   border-radius: 6px;
   font-size: 16px;
 
@@ -56,13 +56,13 @@
 .scheduleInfo {
   margin: 1rem 0;
   padding: 1rem;
-  background-color: $bg-light;
+  background-color: calendar.$bg-light;
   border-radius: 4px;
-  border: 1px solid $border-light;
+  border: 1px solid calendar.$border-light;
 
   p {
     margin: 0;
-    color: $text-primary;
+    color: calendar.$text-primary;
   }
 }
 
@@ -71,7 +71,7 @@
   text-align: center;
 
   p {
-    color: $text-secondary;
+    color: calendar.$text-secondary;
     font-style: italic;
   }
 }

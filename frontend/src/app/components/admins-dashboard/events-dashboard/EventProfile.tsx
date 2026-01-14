@@ -1,8 +1,7 @@
 "use client";
 
 import styles from "./EventProfile.module.scss";
-import { useState, useEffect, useCallback } from "react";
-import { useFormState } from "react-dom";
+import { useState, useCallback } from "react";
 import { updateEventAction } from "@/app/actions/updateContent";
 import { deleteEventAction } from "@/app/actions/deleteContent";
 import {
@@ -27,7 +26,9 @@ function EventProfile({
   userSessionType: UserType;
 }) {
   // Use `useFormState` hook for updating an event profile
-  const [updateResultState, formAction] = useFormState(updateEventAction, {});
+  const [updateResultState, setUpdateResultState] = useState<
+    UpdateFormState | undefined
+  >(undefined);
   // Use `useState` hook and FormData for deleting an event profile
   const [deleteResultState, setDeleteResultState] = useState<DeleteFormState>(
     {},
@@ -37,19 +38,17 @@ function EventProfile({
     {},
   );
 
-  useEffect(() => {
-    if (updateResultState) {
-      const newMessages: Record<string, string> = {};
-      if (updateResultState.eventNameJpn)
-        newMessages.eventNameJpn = updateResultState.eventNameJpn;
-      if (updateResultState.eventNameEng)
-        newMessages.eventNameEng = updateResultState.eventNameEng;
-      if (updateResultState.color) newMessages.color = updateResultState.color;
-      if (updateResultState.errorMessage)
-        newMessages.errorMessage = updateResultState.errorMessage;
-      setLocalMessages(newMessages);
+  const buildLocalMessages = (result: UpdateFormState | undefined) => {
+    if (!result) {
+      return {};
     }
-  }, [updateResultState]);
+    const newMessages: Record<string, string> = {};
+    if (result.eventNameJpn) newMessages.eventNameJpn = result.eventNameJpn;
+    if (result.eventNameEng) newMessages.eventNameEng = result.eventNameEng;
+    if (result.color) newMessages.color = result.color;
+    if (result.errorMessage) newMessages.errorMessage = result.errorMessage;
+    return newMessages;
+  };
 
   const clearErrorMessage = useCallback((field: string) => {
     setLocalMessages((prev) => {
@@ -116,49 +115,41 @@ function EventProfile({
 
       const result = await deleteEventAction(deleteResultState, formData);
       setDeleteResultState(result);
-    }
-  };
-
-  useEffect(() => {
-    if (updateResultState !== undefined) {
-      if ("event" in updateResultState && updateResultState.event) {
-        const event = updateResultState.event as BusinessEventType;
-        toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("event"));
-        setIsEditing(false);
-        setPreviousEvent({
-          ...event,
-          eventNameEng: getLocalizedText(event.name, "en"),
-          eventNameJpn: getLocalizedText(event.name, "ja"),
-        });
-        setLatestEvent({
-          ...event,
-          eventNameEng: getLocalizedText(event.name, "en"),
-          eventNameJpn: getLocalizedText(event.name, "ja"),
-        });
-        // Clear updateResultState to avoid re-rendering
-        updateResultState.event = null;
-        return;
-
-        // Check if the deleteResultState has changed
-      } else if ("id" in deleteResultState && deleteResultState.id) {
+      if ("id" in result && result.id) {
         toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("event"));
         setIsEditing(false);
         setLatestEvent(null);
-        // Clear deleteResultState to avoid re-rendering
-        deleteResultState.id = null;
-        return;
-
-        // Show an error message if there is an error in either update or delete operation,
-      } else {
-        const updateResult = updateResultState as { errorMessage: string };
-        const deleteResult = deleteResultState as { errorMessage: string };
-        const errorMessage =
-          updateResult.errorMessage || deleteResult.errorMessage;
-        toast.error(errorMessage);
-        return;
+      } else if ("errorMessage" in result && result.errorMessage) {
+        toast.error(result.errorMessage);
       }
     }
-  }, [updateResultState, deleteResultState]);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const result = await updateEventAction(undefined, formData);
+    setUpdateResultState(result);
+    setLocalMessages(buildLocalMessages(result));
+
+    if ("event" in result && result.event) {
+      const updatedEvent = result.event as BusinessEventType;
+      toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("event"));
+      setIsEditing(false);
+      setPreviousEvent({
+        ...updatedEvent,
+        eventNameEng: getLocalizedText(updatedEvent.name, "en"),
+        eventNameJpn: getLocalizedText(updatedEvent.name, "ja"),
+      });
+      setLatestEvent({
+        ...updatedEvent,
+        eventNameEng: getLocalizedText(updatedEvent.name, "en"),
+        eventNameJpn: getLocalizedText(updatedEvent.name, "ja"),
+      });
+    } else if ("errorMessage" in result && result.errorMessage) {
+      toast.error(result.errorMessage);
+    }
+  };
 
   if (typeof event === "string") {
     return <p>{event}</p>;
@@ -171,7 +162,7 @@ function EventProfile({
     <>
       <div className={styles.container}>
         {latestEvent && latestEvent.color ? (
-          <form action={formAction} className={styles.profileCard}>
+          <form onSubmit={handleSubmit} className={styles.profileCard}>
             <div className={styles.profileCard}>
               {/* Event name */}
               <div className={styles.eventName__nameSection}>

@@ -6,7 +6,7 @@ import {
   formatTimeWithAddedMinutes,
   formatYearDateTime,
 } from "@/app/helper/utils/dateUtils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   CONFIRM_BOOKING_WITH_CONFLICT_MESSAGE,
   DOUBLE_BOOKING_CONFIRMATION_MESSAGE,
@@ -42,18 +42,13 @@ export default function ConfirmRebooking({
   userSessionType,
   language,
 }: ConfirmRebookingProps) {
-  const [selectedChildrenIds, setSelectedChildrenIds] = useState<number[] | []>(
-    [],
+  const [selectedChildrenIds, setSelectedChildrenIds] = useState<number[]>(() =>
+    childProfiles.map((child) => child.id),
   );
   const [isLoading, setIsLoading] = useState(false);
 
   const previousRebookingStep =
     rebookingOption === "instructor" ? "selectDateTime" : "selectInstructor";
-
-  useEffect(() => {
-    const initialIds = childProfiles.map((child) => child.id);
-    setSelectedChildrenIds(initialIds);
-  }, [childProfiles]);
 
   const handleChildChange = (changedChildId: number) => {
     setSelectedChildrenIds((prev: number[]) => {

@@ -30,12 +30,16 @@ export default function RebookableInstructorsList({
 
   const rebookableInstructorIds = useMemo(() => {
     if (rebookingOption === "instructor") {
-      return [...new Set(instructorAvailabilities.map((a) => a.instructorId))];
+      return [
+        ...new Set(
+          instructorAvailabilities.flatMap((a) => a.availableInstructors),
+        ),
+      ];
     }
     if (rebookingOption === "dateTime") {
       return instructorAvailabilities
         .filter((a) => a.dateTime === dateTimeToRebook)
-        .map((a) => a.instructorId);
+        .flatMap((a) => a.availableInstructors);
     }
     return [];
   }, [rebookingOption, instructorAvailabilities, dateTimeToRebook]);
