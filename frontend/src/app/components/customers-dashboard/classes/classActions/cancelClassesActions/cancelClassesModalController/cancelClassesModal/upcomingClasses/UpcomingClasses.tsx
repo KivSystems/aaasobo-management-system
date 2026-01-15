@@ -75,32 +75,34 @@ export default function UpcomingClasses({
               )}
             </div>
 
-            <div className={`${styles.item} ${styles["item--date"]}`}>
-              <p>{classDate}</p>
-              {pastPrevDayDeadline ? (
-                <InformationCircleIcon className={styles.infoIcon} />
-              ) : null}
-            </div>
+            <div className={styles.details}>
+              <div className={`${styles.item} ${styles["item--date"]}`}>
+                <p>{classDate}</p>
+                {pastPrevDayDeadline ? (
+                  <InformationCircleIcon className={styles.infoIcon} />
+                ) : null}
+              </div>
 
-            <div className={styles.item}>
-              <p>{classTime}</p>
-            </div>
+              <div className={`${styles.item} ${styles["item--time"]}`}>
+                <p>{classTime}</p>
+              </div>
 
-            <div className={`${styles.item} ${styles["item--instructor"]}`}>
-              <Image
-                src={`${eachClass.instructor.icon}?t=${cacheBust}`}
-                alt={eachClass.instructor.nickname}
-                width={40}
-                height={40}
-                priority
-                unoptimized
-                className={styles.instructorIcon}
-              />
-              <p>{eachClass.instructor.nickname}</p>
-            </div>
+              <div className={`${styles.item} ${styles["item--instructor"]}`}>
+                <Image
+                  src={`${eachClass.instructor.icon}?t=${cacheBust}`}
+                  alt={eachClass.instructor.nickname}
+                  width={40}
+                  height={40}
+                  priority
+                  unoptimized
+                  className={styles.instructorIcon}
+                />
+                <p>{eachClass.instructor.nickname}</p>
+              </div>
 
-            <div className={styles.item}>
-              <p>{eachClass.attendingChildren.join(", ")}</p>
+              <div className={`${styles.item} ${styles["item--children"]}`}>
+                <p>{eachClass.attendingChildren.join(", ")}</p>
+              </div>
             </div>
           </div>
         );

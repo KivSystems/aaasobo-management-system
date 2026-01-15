@@ -55,6 +55,10 @@
   }
 }
 
+.details {
+  display: contents;
+}
+
 .infoIcon {
   height: 1.3rem;
   color: $blue-primary;
@@ -63,4 +67,45 @@
 .instructorIcon {
   border-radius: 180px;
   border: 2px solid $gray-background-hover;
+}
+
+@media (max-width: 640px) {
+  .upcomingClass {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 0.6rem;
+    border: 1px solid #e6e9f5;
+    min-height: unset;
+  }
+
+  .checkbox {
+    align-self: flex-start;
+    justify-content: flex-start;
+    padding-top: 0.15rem;
+  }
+
+  .details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+  }
+
+  .item {
+    margin-left: 0;
+
+    p {
+      font-size: 0.85rem;
+    }
+  }
+
+  .item--instructor {
+    gap: 8px;
+  }
+
+  .instructorIcon {
+    width: 32px;
+    height: 32px;
+  }
 }

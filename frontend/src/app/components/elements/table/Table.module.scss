@@ -40,6 +40,19 @@
   }
 }
 
+@media (max-width: 640px) {
+  .cancelClasses {
+    .table__head {
+      display: none;
+    }
+
+    .table__body {
+      gap: 10px;
+      max-height: 60vh;
+    }
+  }
+}
+
 .rebookableClassList {
   flex-grow: 1;
   margin-bottom: 1rem;
