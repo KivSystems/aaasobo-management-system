@@ -1,5 +1,5 @@
-import styles from "./layout.module.scss";
 import SideNav from "@/app/components/layouts/sideNav/SideNav";
+import InstructorLayout from "./InstructorLayout";
 
 export default async function Layout(props: {
   children: React.ReactNode;
@@ -12,11 +12,10 @@ export default async function Layout(props: {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <SideNav userId={instructorId} userType="instructor" />
-      </div>
-      <div className={styles.content}>{props.children}</div>
-    </div>
+    <InstructorLayout
+      sideNav={<SideNav userId={instructorId} userType="instructor" />}
+    >
+      {props.children}
+    </InstructorLayout>
   );
 }

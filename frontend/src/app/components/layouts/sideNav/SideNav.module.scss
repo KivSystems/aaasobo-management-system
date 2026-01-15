@@ -28,6 +28,16 @@
   }
 }
 
+@media (max-width: 640px) {
+  .sideNavLogo {
+    display: none;
+  }
+
+  .sideNavContainer {
+    padding-top: 5.25rem;
+  }
+}
+
 .sideNavUser {
   color: white;
   display: flex;
@@ -36,6 +46,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem;
+  padding-bottom: 0;
   font-size: 0.875rem;
   font-size: 1.1rem;
   font-weight: 400;

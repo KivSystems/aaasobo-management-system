@@ -23,13 +23,18 @@
   margin-bottom: 1rem;
   border-radius: 0.5rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
 }
 
 .userInfo {
   display: block;
   flex: 1;
+  text-align: left;
+
+  p {
+    margin: 0 0 0.35rem 0;
+  }
 }
 
 .icon {
@@ -41,12 +46,19 @@
 .urlInfo {
   display: flex;
   font-size: 0.8rem;
-  margin: 5px 0px 0px 0px;
+  margin: 0;
+  flex-wrap: wrap;
+
+  p {
+    margin: 0;
+  }
 }
 
 .url {
   color: $blue_primary;
   text-decoration: none;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 
   &:hover {
     text-decoration: underline;
@@ -230,4 +242,100 @@
 .addBtn {
   margin-top: 10px;
   margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 16px;
+  }
+
+  .insideContainer {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .icon {
+    grid-column: 1;
+    grid-row: 1;
+    margin-right: 0;
+    align-self: center;
+  }
+
+  .userInfo {
+    display: contents;
+
+    > p {
+      grid-column: 2;
+      margin: 0;
+      align-self: center;
+    }
+
+    > :not(p) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .instructorName__nameSection {
+    margin-right: 0;
+  }
+
+  .instructorName__inputField,
+  .nickname__inputField,
+  .birthdate__inputField,
+  .email__inputField,
+  .classUrl__inputField,
+  .meetingId__inputField,
+  .passcode__inputField {
+    width: 100%;
+    min-width: 0;
+    margin-right: 0;
+  }
+
+  .workingTime__inputField,
+  .lifeHistory__inputField,
+  .favoriteFood__inputField,
+  .hobby__inputField,
+  .messageForChildren__inputField,
+  .skill__inputField {
+    margin-right: 0;
+  }
+
+  .urlInfo {
+    align-items: baseline;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container {
+    padding: 24px;
+  }
+
+  .instructorName__inputField,
+  .nickname__inputField,
+  .birthdate__inputField,
+  .email__inputField,
+  .classUrl__inputField,
+  .meetingId__inputField,
+  .passcode__inputField {
+    width: 100%;
+    min-width: 0;
+    margin-right: 0;
+  }
+
+  .workingTime__inputField,
+  .lifeHistory__inputField,
+  .favoriteFood__inputField,
+  .hobby__inputField,
+  .messageForChildren__inputField,
+  .skill__inputField {
+    margin-right: 0;
+  }
 }
