@@ -31,3 +31,57 @@
   margin: 1rem 0;
   text-align: center;
 }
+
+.calendarShell {
+  :global(.fc) {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .calendarHeader {
+    h3 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+    }
+  }
+
+  .calendarShell {
+    :global(.fc-header-toolbar) {
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    :global(.fc-toolbar-chunk) {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    :global(.fc-toolbar-title) {
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    :global(.fc-button) {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.4rem;
+    }
+
+    :global(.fc-col-header-cell-cushion) {
+      font-size: 0.7rem;
+    }
+
+    :global(.fc-timegrid-slot-label-cushion) {
+      font-size: 0.65rem;
+    }
+  }
+}

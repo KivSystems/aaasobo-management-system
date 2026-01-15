@@ -1,0 +1,61 @@
+@use "../../../../variables.module.scss" as *;
+
+.calendarShell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  :global(.fc) {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .calendarShell {
+    :global(.fc-header-toolbar) {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    :global(.fc-toolbar-chunk) {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    :global(.fc-toolbar-title) {
+      font-size: 1.05rem;
+      text-align: center;
+    }
+
+    :global(.fc-button) {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.55rem;
+    }
+
+    :global(.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr div:nth-child(3)) {
+      width: auto;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .calendarShell {
+    :global(.fc-toolbar-title) {
+      font-size: 0.95rem;
+    }
+
+    :global(.fc-button) {
+      padding: 0.25rem 0.45rem;
+    }
+
+    :global(.fc-col-header-cell-cushion) {
+      font-size: 0.7rem;
+    }
+
+    :global(.fc-daygrid-day-number) {
+      font-size: 0.75rem;
+    }
+  }
+}

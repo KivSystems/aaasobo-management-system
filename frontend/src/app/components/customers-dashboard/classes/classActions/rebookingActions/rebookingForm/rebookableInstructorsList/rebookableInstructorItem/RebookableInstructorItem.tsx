@@ -26,7 +26,7 @@ export default function RebookableInstructorItem({
         classStatus={"freeTrial"}
         instructorIcon={instructor.icon}
         instructorNickname={instructor.nickname}
-        width={110}
+        width={90}
         className="instructorItem"
       />
 

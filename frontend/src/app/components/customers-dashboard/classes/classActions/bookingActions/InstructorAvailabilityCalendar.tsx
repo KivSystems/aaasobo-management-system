@@ -149,14 +149,16 @@ export default function InstructorAvailabilityCalendar({
         </p>
       </div>
 
-      <Calendar
-        height="500px"
-        contentHeight="400px"
-        key={refreshKey}
-        events={fetchCalendarEvents}
-        eventClick={handleSlotClick}
-        selectable={false}
-      />
+      <div className={styles.calendarShell}>
+        <Calendar
+          height="500px"
+          contentHeight="400px"
+          key={refreshKey}
+          events={fetchCalendarEvents}
+          eventClick={handleSlotClick}
+          selectable={false}
+        />
+      </div>
     </div>
   );
 }

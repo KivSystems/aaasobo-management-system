@@ -8,6 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 import { DayCellMountArg, EventClickArg } from "@fullcalendar/core";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import styles from "./CustomerCalendar.module.scss";
 import Modal from "@/app/components/elements/modal/Modal";
 import ClassDetail from "@/app/components/features/classDetail/ClassDetail";
 import {
@@ -54,39 +55,44 @@ export default function CustomerCalendar({
 
   return (
     <>
-      <FullCalendar
-        plugins={[
-          dayGridPlugin,
-          timeGridPlugin,
-          interactionPlugin,
-          momentTimezonePlugin,
-        ]}
-        initialView={"dayGridMonth"}
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "",
-        }}
-        events={classes}
-        eventClick={handleEventClick}
-        eventContent={renderCustomerEventContent}
-        validRange={validRange}
-        locale={language === "ja" ? "ja" : "en"}
-        dayCellContent={(arg) => {
-          return { html: String(arg.date.getDate()) };
-        }}
-        contentHeight="auto"
-        dayMaxEvents={true}
-        editable={false}
-        selectable={false}
-        eventDisplay="block"
-        allDaySlot={false}
-        dayCellDidMount={dayCellColors}
-      />
+      <div className={styles.calendarShell}>
+        <FullCalendar
+          plugins={[
+            dayGridPlugin,
+            timeGridPlugin,
+            interactionPlugin,
+            momentTimezonePlugin,
+          ]}
+          initialView={"dayGridMonth"}
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "",
+          }}
+          events={classes}
+          eventClick={handleEventClick}
+          eventContent={renderCustomerEventContent}
+          validRange={validRange}
+          locale={language === "ja" ? "ja" : "en"}
+          dayCellContent={(arg) => {
+            return { html: String(arg.date.getDate()) };
+          }}
+          contentHeight="auto"
+          dayMaxEvents={true}
+          editable={false}
+          selectable={false}
+          eventDisplay="block"
+          allDaySlot={false}
+          dayCellDidMount={dayCellColors}
+        />
 
-      {colorsForEvents.length > 0 && (
-        <CalendarLegend colorsForEvents={colorsForEvents} language={language} />
-      )}
+        {colorsForEvents.length > 0 && (
+          <CalendarLegend
+            colorsForEvents={colorsForEvents}
+            language={language}
+          />
+        )}
+      </div>
 
       <Modal
         isOpen={isClassDetailModalOpen}

@@ -86,7 +86,7 @@ export default function RebookableTimeSlots({
           )}
 
           <HorizontalScroller>
-            <div>
+            <div className={styles.scroller}>
               <div className={styles.headerRow}>
                 {weekDates.map((date) => {
                   const locale = language === "ja" ? ja : enUS;

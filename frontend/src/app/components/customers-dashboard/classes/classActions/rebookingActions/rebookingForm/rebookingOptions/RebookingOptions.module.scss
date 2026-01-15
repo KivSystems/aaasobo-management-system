@@ -4,12 +4,13 @@
   align-items: center;
   gap: 20px;
   padding: 1.5rem 2rem;
-  width: 80vw;
-  height: 90vh;
+  width: min(720px, 92vw);
+  max-height: 80vh;
 
   &__optionsContainer {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
     flex-grow: 1;
     gap: 3rem;
   }
@@ -27,5 +28,27 @@
     box-shadow:
       rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
       rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  }
+}
+
+@media (max-width: 640px) {
+  .rebookingOptions {
+    padding: 1.5rem 1rem;
+  }
+
+  .rebookingOptions__optionsContainer {
+    gap: 0.75rem;
+  }
+
+  .rebookingOptions__option {
+    width: 100%;
+    height: auto;
+    min-height: 170px;
+    padding: 0.75rem;
+  }
+
+  .image {
+    width: 70px;
+    height: 70px;
   }
 }

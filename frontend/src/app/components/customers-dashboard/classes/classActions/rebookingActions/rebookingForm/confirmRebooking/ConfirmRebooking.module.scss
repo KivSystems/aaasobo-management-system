@@ -5,13 +5,12 @@
   justify-content: space-between;
   gap: 20px;
   padding: 1.5rem 2rem;
-  width: 80vw;
-  height: 90vh;
+  width: min(720px, 92vw);
+  max-height: 80vh;
 
   &__container {
-    width: 350px;
-    height: 450px;
-    overflow: auto;
+    width: min(350px, 100%);
+    overflow: visible;
     padding: 1rem;
     border-radius: 16px;
     box-shadow:
@@ -26,6 +25,7 @@
     display: flex;
     justify-content: center;
     gap: 50px;
+    flex-wrap: wrap;
   }
 
   &__dateTime {
@@ -50,5 +50,16 @@
 
   &__icon {
     width: 1.4rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .rebookingConfirm {
+    padding: 1.5rem 1rem;
+    gap: 1rem;
+  }
+
+  .rebookingConfirm__buttons {
+    gap: 0.75rem;
   }
 }

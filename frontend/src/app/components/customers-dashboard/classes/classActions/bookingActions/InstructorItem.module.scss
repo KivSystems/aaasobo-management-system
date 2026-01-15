@@ -40,7 +40,8 @@
     flex-direction: column;
     align-items: center;
     gap: 0.8rem;
-    width: 160px;
+    width: 100%;
+    max-width: 220px;
     background-color: $background-hover;
     padding: 15px 10px 0 10px;
     border-radius: 6px;
@@ -62,6 +63,58 @@
     flex-direction: column;
     align-items: center;
     gap: 0.3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .instructorItem__actions {
+    max-width: none;
+    padding: 20px 14px 0;
+  }
+
+  .instructorPhoto img,
+  .placeholderImage {
+    width: 96px;
+    height: 96px;
+  }
+
+  .nameLink {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .instructorItem__actions {
+    max-width: 150px;
+    padding: 12px 8px 0;
+    gap: 0.6rem;
+  }
+
+  .instructorPhoto img,
+  .placeholderImage {
+    width: 64px;
+    height: 64px;
+  }
+
+  .nameLink {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .instructorItem__actions {
+    max-width: 140px;
+  }
+}
+
+@media (max-width: 360px) {
+  .instructorItem__actions {
+    max-width: 128px;
+    padding: 10px 6px 0;
+  }
+
+  .nameLink {
+    font-size: 0.9rem;
   }
 }
 

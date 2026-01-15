@@ -65,7 +65,11 @@ Track the responsive design rollout for the customer and instructor dashboards. 
 - 2025-01-14: Stacked instructor class details layout on tablet/mobile
 - 2025-01-14: Adjusted instructor availability schedule calendar typography and title sizing for mobile
 - 2025-01-14: Made business calendar multi-month view responsive with mobile/tablet column counts and compact toolbar
+- 2026-01-15: Made customer class calendar layout responsive (header actions, legend, calendar sizing)
+- 2026-01-15: Reworked cancel classes modal layout for mobile cards and spacing
+- 2026-01-15: Updated customer rebooking modals (options, instructor list, time slots, confirm step) for responsive layouts
+- 2026-01-15: Tuned customer booking flow UI (mode selection cards, instructor grid, calendar toolbar) for mobile/desktop
 
 ## To-Do
 - Validate at mobile/tablet/desktop widths
-- Start customer dashboard rollout
+- Continue customer dashboard rollout (remaining pages + QA)

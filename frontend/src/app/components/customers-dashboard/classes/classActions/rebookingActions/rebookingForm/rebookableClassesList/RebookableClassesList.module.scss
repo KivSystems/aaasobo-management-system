@@ -4,17 +4,29 @@
   justify-content: center;
   padding: 2rem;
   min-height: 150px;
-  width: 620px;
+  width: min(620px, 92vw);
+  max-height: 80vh;
 
   &__title {
     text-align: center;
     font-size: 1.3rem;
     margin-bottom: 1rem;
+    word-break: break-word;
   }
 
   &__backBtn {
     display: flex;
     justify-content: center;
     margin-top: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .modal {
+    padding: 1.5rem 1rem;
+
+    &__title {
+      font-size: 1.05rem;
+    }
   }
 }

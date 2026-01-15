@@ -51,8 +51,7 @@
 
 .instructorItem {
   margin-bottom: 10px;
-  position: absolute;
-  top: 0;
+  position: static;
 
   .instructor__name {
     font-size: 18px;
