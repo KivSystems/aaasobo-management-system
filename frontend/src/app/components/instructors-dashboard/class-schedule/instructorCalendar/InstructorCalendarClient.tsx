@@ -1,19 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId } from "react";
+import { useId, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
-import { EventClickArg } from "@fullcalendar/core";
+import type { CalendarApi, EventClickArg } from "@fullcalendar/core";
 import {
   createRenderEventContent,
   getClassSlotTimesForCalendar,
   getDayCellColorHandler,
 } from "@/app/helper/utils/calendarUtils";
 import CalendarLegend from "@/app/components/features/calendarLegend/CalendarLegend";
+import styles from "./InstructorCalendarClient.module.scss";
 
 const InstructorCalendarClient = ({
   adminId,
@@ -26,6 +27,10 @@ const InstructorCalendarClient = ({
 }: InstructorCalendarClientProps) => {
   const router = useRouter();
   const cacheBust = useId();
+  const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
+  const [currentTitle, setCurrentTitle] = useState("");
+  const [currentView, setCurrentView] = useState("timeGridWeek");
+  const [isTodayInRange, setIsTodayInRange] = useState(false);
 
   const handleEventClick = (clickInfo: EventClickArg) => {
     if (clickInfo.event.title === "No booked class") return;
@@ -48,8 +53,64 @@ const InstructorCalendarClient = ({
 
   const dayCellColors = getDayCellColorHandler(businessSchedule);
 
+  const handleCalendarNav = (action: "prev" | "next" | "today") => {
+    if (!calendarApi) return;
+    if (action === "prev") calendarApi.prev();
+    if (action === "next") calendarApi.next();
+    if (action === "today") calendarApi.today();
+  };
+
+  const handleViewChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextView = event.target.value;
+    setCurrentView(nextView);
+    calendarApi?.changeView(nextView);
+  };
+
   return (
-    <>
+    <div className={styles.calendarContainer}>
+      <div className={styles.mobileToolbar}>
+        <div className={styles.navGroup}>
+          <button
+            type="button"
+            className={`${styles.navButton} fc-button fc-button-primary fc-prev-button`}
+            onClick={() => handleCalendarNav("prev")}
+            aria-label="Previous"
+          >
+            {"<"}
+          </button>
+          <button
+            type="button"
+            className={`${styles.navButton} fc-button fc-button-primary fc-next-button`}
+            onClick={() => handleCalendarNav("next")}
+            aria-label="Next"
+          >
+            {">"}
+          </button>
+          <button
+            type="button"
+            className={`${styles.todayButton} fc-button fc-button-primary fc-today-button${
+              isTodayInRange ? " fc-button-disabled" : ""
+            }`}
+            onClick={() => handleCalendarNav("today")}
+            disabled={isTodayInRange}
+          >
+            today
+          </button>
+        </div>
+        <div className={styles.mobileTitle}>{currentTitle}</div>
+        <div className={styles.actionGroup}>
+          <select
+            className={styles.viewSelect}
+            value={currentView}
+            onChange={handleViewChange}
+            aria-label="Select calendar view"
+          >
+            <option value="dayGridMonth">Month</option>
+            <option value="timeGridWeek">Week</option>
+            <option value="timeGridDay">Day</option>
+          </select>
+        </div>
+      </div>
       <FullCalendar
         plugins={[
           dayGridPlugin,
@@ -84,12 +145,21 @@ const InstructorCalendarClient = ({
           hour12: false,
         }}
         dayCellDidMount={dayCellColors}
+        datesSet={(arg) => {
+          setCalendarApi(arg.view.calendar);
+          setCurrentTitle(arg.view.title);
+          setCurrentView(arg.view.type);
+          const now = new Date();
+          const isInRange =
+            arg.view.currentStart <= now && now < arg.view.currentEnd;
+          setIsTodayInRange(isInRange);
+        }}
       />
 
       {colorsForEvents.length > 0 && (
         <CalendarLegend colorsForEvents={colorsForEvents} language="en" />
       )}
-    </>
+    </div>
   );
 };
 
