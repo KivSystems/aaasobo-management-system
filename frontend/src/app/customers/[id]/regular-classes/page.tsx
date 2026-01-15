@@ -1,7 +1,7 @@
 "use client";
 
 import RegularClasses from "@/app/components/customers-dashboard/regular-classes/RegularClasses";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import styles from "./page.module.scss";
 import { toast } from "react-toastify";
@@ -13,28 +13,33 @@ function Page() {
   if (isNaN(customerId)) {
     throw new Error("Invalid customerId");
   }
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const paramsKey = searchParams.toString();
   const toastDisplayed = useRef(false); // Track whether toast was shown
 
   useEffect(() => {
     if (toastDisplayed.current) return; // Prevent duplicate toasts
 
-    const successMessage = searchParams.get("successMessage");
+    if (!paramsKey) return;
+
+    const urlParams = new URLSearchParams(paramsKey);
+    const successMessage = urlParams.get("successMessage");
     if (successMessage) {
       toast.success(successMessage);
-      toastDisplayed.current = true; // Mark toast as displayed
     }
 
-    const warningMessage = searchParams.get("warningMessage");
+    const warningMessage = urlParams.get("warningMessage");
     if (warningMessage) {
       toast.warning(warningMessage);
-      toastDisplayed.current = true; // Mark toast as displayed
     }
 
-    // clean up the URL
-    const urlWithoutMessage = window.location.pathname;
-    window.history.replaceState({}, document.title, urlWithoutMessage);
-  }, [searchParams]);
+    if (!successMessage && !warningMessage) return;
+
+    toastDisplayed.current = true; // Mark toast as displayed
+    // Clean up the URL only when toast params exist.
+    router.replace(window.location.pathname);
+  }, [paramsKey, router]);
 
   return (
     <div>
