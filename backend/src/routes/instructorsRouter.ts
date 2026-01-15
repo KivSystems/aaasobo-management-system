@@ -40,7 +40,6 @@ import {
   InstructorAbsencesResponse,
   CreateAbsenceResponse,
   DeleteAbsenceResponse,
-  PostTerminationScheduleResponse,
 } from "../../../shared/schemas/instructors";
 import {
   type RequestWithId,
