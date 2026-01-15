@@ -1,21 +1,35 @@
 .calendarHeaderContainer {
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 6px;
+  justify-content: flex-end;
+  width: 100%;
 }
 
 .calendarActions {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 10px;
-  position: absolute;
-  right: 0;
-  top: 5px;
+  width: 100%;
 
   &__container {
     display: flex;
     align-items: flex-end;
     gap: 20px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 1024px) {
+  .calendarHeaderContainer {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .calendarActions__container {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
   }
 }

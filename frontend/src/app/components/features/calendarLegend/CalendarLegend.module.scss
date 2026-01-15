@@ -6,6 +6,12 @@
   flex-wrap: wrap;
 }
 
+@media (max-width: 640px) {
+  .legendContainer {
+    justify-content: flex-start;
+  }
+}
+
 .legendItem {
   display: flex;
   align-items: center;
