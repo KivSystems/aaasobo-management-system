@@ -60,6 +60,7 @@ Track the responsive design rollout for the customer and instructor dashboards. 
 
 ## Work Log
 - 2025-01-14: Created this plan; instructor profile page selected as first target
+- 2025-01-14: Updated instructor profile page for mobile/tablet; added mobile header + drawer toggle; refined item layout and URL rows
 
 ## To-Do
 - Inspect instructor profile page layout and SCSS
