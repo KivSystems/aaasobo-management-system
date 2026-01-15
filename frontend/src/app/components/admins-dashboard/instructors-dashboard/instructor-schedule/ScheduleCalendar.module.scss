@@ -66,3 +66,11 @@
     $gray-background-hover 4px
   );
 }
+
+@media (max-width: 640px) {
+  .emptyCell,
+  .scheduledCell,
+  .disabledCell {
+    height: 24px;
+  }
+}
