@@ -23,3 +23,33 @@
     font-size: 0.6rem !important;
   }
 }
+
+@media (max-width: 640px) {
+  .calendarContainer {
+    :global(.fc-header-toolbar) {
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    :global(.fc-toolbar-title) {
+      font-size: 0.9rem;
+    }
+
+    :global(.fc-button) {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.4rem;
+    }
+
+    :global(.fc-col-header-cell-cushion) {
+      font-size: 0.45rem;
+    }
+
+    :global(.fc-multimonth-title) {
+      font-size: 0.6rem;
+    }
+
+    :global(.fc-daygrid-day-number) {
+      font-size: 0.55rem !important;
+    }
+  }
+}

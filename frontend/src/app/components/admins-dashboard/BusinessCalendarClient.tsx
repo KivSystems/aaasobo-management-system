@@ -5,7 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateSelectArg } from "@fullcalendar/core";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "@/app/components/elements/modal/Modal";
@@ -31,6 +31,7 @@ const BusinessCalendarClient = ({
   const [scheduleVersion, setScheduleVersion] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState<string[] | []>([]);
+  const [maxColumns, setMaxColumns] = useState(4);
   // Handle form messages manually for UpdateFormState
   const [localMessages, setLocalMessages] = useState<Record<string, string>>(
     {},
@@ -48,6 +49,30 @@ const BusinessCalendarClient = ({
     });
   }, []);
   const { language } = useLanguage();
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 640px)");
+    const tabletQuery = window.matchMedia("(max-width: 1024px)");
+
+    const updateColumns = () => {
+      if (mobileQuery.matches) {
+        setMaxColumns(1);
+      } else if (tabletQuery.matches) {
+        setMaxColumns(2);
+      } else {
+        setMaxColumns(4);
+      }
+    };
+
+    updateColumns();
+    mobileQuery.addEventListener("change", updateColumns);
+    tabletQuery.addEventListener("change", updateColumns);
+
+    return () => {
+      mobileQuery.removeEventListener("change", updateColumns);
+      tabletQuery.removeEventListener("change", updateColumns);
+    };
+  }, []);
 
   // Set color for each date in the calendar
   const dayCellColors = getDayCellColorHandler(businessSchedule);
@@ -192,11 +217,11 @@ const BusinessCalendarClient = ({
           contentHeight="auto"
           selectable={userSessionType === "admin"}
           multiMonthMinWidth={100}
-          multiMonthMaxColumns={4}
           showNonCurrentDates={false}
           validRange={validRange}
           dayCellDidMount={dayCellColors}
           select={handleDateSelect}
+          multiMonthMaxColumns={maxColumns}
         />
         {events.length > 0 && (
           <CalendarLegend

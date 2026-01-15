@@ -8,6 +8,7 @@ import {
 } from "@/app/helper/api/instructorsApi";
 import ScheduleCalendar from "@/app/components/admins-dashboard/instructors-dashboard/instructor-schedule/ScheduleCalendar";
 import Loading from "@/app/components/elements/loading/Loading";
+import styles from "./page.module.scss";
 
 const Page = () => {
   const params = useParams();
@@ -56,7 +57,7 @@ const Page = () => {
 
   return (
     <div>
-      <h1>Instructor Schedule Calendar</h1>
+      <h1 className={styles.title}>Instructor Schedule Calendar</h1>
       <p>This shows the current active schedule for this instructor.</p>
       <ScheduleCalendar slots={slots} />
     </div>

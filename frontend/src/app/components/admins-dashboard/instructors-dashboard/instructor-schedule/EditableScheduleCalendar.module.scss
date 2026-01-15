@@ -164,3 +164,24 @@
     box-shadow: none !important;
   }
 }
+
+@media (max-width: 640px) {
+  .header {
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .time {
+    height: 24px;
+    width: 56px;
+    font-size: 12px;
+  }
+
+  .emptyCell,
+  .unchangedCell,
+  .addedCell,
+  .removedCell,
+  .disabledCell {
+    height: 24px;
+  }
+}

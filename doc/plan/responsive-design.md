@@ -63,8 +63,9 @@ Track the responsive design rollout for the customer and instructor dashboards. 
 - 2025-01-14: Updated instructor profile page for mobile/tablet; added mobile header + drawer toggle; refined item layout and URL rows
 - 2025-01-14: Made instructor class schedule calendar toolbar mobile-friendly with compact controls and view dropdown
 - 2025-01-14: Stacked instructor class details layout on tablet/mobile
+- 2025-01-14: Adjusted instructor availability schedule calendar typography and title sizing for mobile
+- 2025-01-14: Made business calendar multi-month view responsive with mobile/tablet column counts and compact toolbar
 
 ## To-Do
 - Validate at mobile/tablet/desktop widths
-- Apply patterns to remaining instructor pages
 - Start customer dashboard rollout
