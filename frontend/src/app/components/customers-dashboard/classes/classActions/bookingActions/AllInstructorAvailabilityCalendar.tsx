@@ -85,7 +85,7 @@ export default function AllInstructorAvailabilityCalendar({
 
   const fetchCalendarEvents = useCallback(
     async (info: EventSourceFuncArg) => {
-      if (isNative === undefined) return;
+      if (isNative === undefined) return [];
       const startStr = formatJSTDate(info.start);
       const exclusiveEnd = new Date(info.end);
       exclusiveEnd.setDate(exclusiveEnd.getDate() + 1);
