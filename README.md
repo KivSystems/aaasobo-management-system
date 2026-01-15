@@ -123,13 +123,20 @@ npm install
 Create a `.env` file in the `frontend` directory with the following content:
 
 ```
-AUTH_SECRET="5e13a7ccb2e88d1a5c21dce34abbdc0c3d70f9c9dea9f994a4af4d5b7383caf5"
+NEXTAUTH_SECRET="915bd2a1349be118cc299fef89b324b42d5c35a8dfabf3c272e96a1fafa05eeb"
+AUTH_SECRET="1d42a8ad0d6e0d143f9a3da2459c8979079281ec97d94b369272daa8ca5497b1"
+AUTH_SALT="798ceed428885abab905b5291e9eb97b"
+AUTH_TRUST_HOST=true
+NEXT_PUBLIC_FRONTEND_ORIGIN="http://localhost:3000"
 
 # Optional. Default is http://localhost:4000
-NEXT_PUBLIC_BACKEND_ORIGIN=http://localhost:4000
+BACKEND_ORIGIN="http://localhost:4000"
+
+# Optional. Default is http://localhost:4000
+NEXT_PUBLIC_BACKEND_ORIGIN="http://localhost:4000"
 ```
 
-`AUTH_SECRET` should be randomly generated. See the backend section above.
+`NEXTAUTH_SECRET` and `AUTH_SECRET` should be randomly generated. See the backend section above.
 
 #### Start Next.js
 
