@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { updateSundayColor } from "@/app/helper/api/calendarsApi";
+import { deleteOldClasses } from "@/app/helper/api/classesApi";
 
 export const runtime = "nodejs";
 
@@ -16,21 +16,18 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log("Cron job (updateSundayColor) started");
-    await updateSundayColor(authorization); // Update next year's all Sunday's color of business calendar
-    console.log("Cron job (updateSundayColor) executed successfully.");
+    console.log("Cron job (deleteOldClasses) started");
+    await deleteOldClasses(authorization); // Delete classes older than 1 year (13 months)
+    console.log("Cron job (deleteOldClasses) executed successfully.");
     return NextResponse.json(
-      { message: "Cron job (updateSundayColor) executed successfully." },
+      { message: "Cron job (deleteOldClasses) executed successfully." },
       { status: 200 },
     );
   } catch (error) {
-    console.error(
-      "Error during cron job (updateSundayColor) execution:",
-      error,
-    );
+    console.error("Error during cron job (deleteOldClasses) execution:", error);
     return NextResponse.json(
       {
-        error: "Cron job (updateSundayColor) failed",
+        error: "Cron job (deleteOldClasses) failed",
         details: (error as Error).message,
       },
       { status: 500 },

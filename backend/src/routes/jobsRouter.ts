@@ -99,7 +99,7 @@ const validatedRouteConfigs = {
   "/mask/instructors": [
     {
       method: "patch",
-      // middleware: [verifyCronJobAuthorization],
+      middleware: [verifyCronJobAuthorization],
       handler: maskInstructorsController,
       openapi: {
         summary: "Mask instructors who have left",
