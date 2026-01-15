@@ -259,7 +259,7 @@ export const updateInstructor = async (
 };
 
 // Mask instructor information (Cron Job use only)
-export const maskInstructors = async (authorization: string): Promise<void> => {
+export const maskInstructor = async (authorization: string): Promise<void> => {
   try {
     // From server component
     const apiURL = `${BACKEND_ORIGIN}/jobs/mask/instructors`;
@@ -762,41 +762,6 @@ export const createInstructorSchedule = async (
     return { schedule: result.data };
   } catch (error) {
     console.error("Failed to create instructor schedule:", error);
-    throw error;
-  }
-};
-
-// Create instructors post termination Schedule (Cron Job use only)
-export const createInstructorPostTerminationSchedule = async (
-  authorization: string,
-) => {
-  try {
-    // From server component
-    const apiURL = `${BASE_URL}/schedules/post-termination`;
-    const method = "POST";
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: authorization,
-    };
-    const response = await fetch(apiURL, {
-      method,
-      headers,
-    });
-
-    if (response.status !== 200) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = (await response.json()) as {
-      data: InstructorScheduleWithSlots;
-    };
-
-    return { schedule: result.data };
-  } catch (error) {
-    console.error(
-      "Failed to create instructor post termination schedule:",
-      error,
-    );
     throw error;
   }
 };

@@ -40,7 +40,6 @@ import {
   InstructorAbsencesResponse,
   CreateAbsenceResponse,
   DeleteAbsenceResponse,
-  PostTerminationScheduleResponse,
 } from "../../../shared/schemas/instructors";
 import {
   type RequestWithId,
@@ -51,7 +50,6 @@ import {
   getInstructorSchedulesController,
   getInstructorScheduleController,
   createInstructorScheduleController,
-  createInstructorPostTerminationScheduleController,
   getInstructorAvailableSlotsController,
   getAllAvailableSlotsController,
   getActiveInstructorScheduleController,
@@ -584,27 +582,6 @@ const deleteAbsenceConfig = {
   },
 } as const;
 
-// Only for cron job use
-const postTerminationScheduleConfig = {
-  method: "post" as const,
-  handler: createInstructorPostTerminationScheduleController,
-  openapi: {
-    summary: "Create post-termination schedules",
-    description:
-      "Create post-termination schedules for all instructors scheduled to leave",
-    responses: {
-      201: {
-        description: "Post-termination schedules created successfully",
-        schema: PostTerminationScheduleResponse,
-      },
-      500: {
-        description: "Internal server error",
-        schema: MessageErrorResponse,
-      },
-    },
-  },
-} as const;
-
 const validatedRouteConfigs = {
   "/all-profiles": [allProfilesConfig],
   "/available-slots": [availableSlotsConfig],
@@ -613,7 +590,6 @@ const validatedRouteConfigs = {
   "/profiles": [profilesConfig],
   "/profiles/native": [nativeProfilesConfig],
   "/profiles/non-native": [nonNativeProfilesConfig],
-  "/schedules/post-termination": [postTerminationScheduleConfig],
   "/:id": [instructorByIdConfig],
   "/:id/absences": [instructorAbsencesConfig, createAbsenceConfig],
   "/:id/absences/:absentAt": [deleteAbsenceConfig],

@@ -345,25 +345,6 @@ export const getInstructorContactById = async (id: number) => {
   });
 };
 
-// Fetch instructors who will be leaving
-export const getInstructorsToLeave = async () => {
-  try {
-    const now = new Date();
-    return await prisma.instructor.findMany({
-      where: {
-        AND: [
-          { terminationAt: { not: null } },
-          { terminationAt: { gt: now } }, // Future termination
-        ],
-      },
-      select: { id: true, terminationAt: true },
-    });
-  } catch (error) {
-    console.error("Error fetching instructors to leave:", error);
-    throw new Error("Failed to fetch instructors to leave");
-  }
-};
-
 // Fetch instructors who have left the organization and has not been masked
 export const getInstructorsToMask = async () => {
   try {
