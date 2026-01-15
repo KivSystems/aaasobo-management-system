@@ -160,15 +160,17 @@ export default function AllInstructorAvailabilityCalendar({
         <div className={styles.errorMessage}>{errorMessage}</div>
       )}
 
-      <Calendar
-        height="500px"
-        contentHeight="400px"
-        key={refreshKey}
-        events={fetchCalendarEvents}
-        eventClick={handleSlotClick}
-        selectable={false}
-        displayEventTime={false}
-      />
+      <div className={styles.calendarShell}>
+        <Calendar
+          height="500px"
+          contentHeight="400px"
+          key={refreshKey}
+          events={fetchCalendarEvents}
+          eventClick={handleSlotClick}
+          selectable={false}
+          displayEventTime={false}
+        />
+      </div>
     </div>
   );
 }

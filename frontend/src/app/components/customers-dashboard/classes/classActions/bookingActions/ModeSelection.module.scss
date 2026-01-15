@@ -12,18 +12,19 @@
 }
 
 .modeCards {
-  display: flex;
-  gap: 1.5rem;
+  display: grid;
+  gap: 1rem;
   justify-content: center;
-  flex-wrap: nowrap;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .modeCard {
   background: $background-light;
   border: 2px solid $border-light;
   border-radius: 8px;
-  padding: 1.5rem;
-  min-width: 240px;
+  padding: 1.25rem;
+  min-width: 0;
+  width: 100%;
   cursor: pointer;
   transition: all 0.3s ease;
 
@@ -49,5 +50,32 @@
     line-height: 1.4;
     margin: 0;
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .modeSelection {
+    padding: 0.5rem;
+  }
+
+  .modeCards {
+    grid-template-columns: 1fr;
+  }
+
+  .modeCard {
+    padding: 1rem;
+  }
+
+  .modeCard .icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .modeCard h3 {
+    font-size: 1rem;
+  }
+
+  .modeCard p {
+    font-size: 0.85rem;
   }
 }
