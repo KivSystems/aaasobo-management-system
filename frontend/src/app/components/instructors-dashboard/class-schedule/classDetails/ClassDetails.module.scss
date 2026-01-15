@@ -52,3 +52,35 @@
     margin-bottom: 1rem;
   }
 }
+
+@media (max-width: 1024px) {
+  .classDetails {
+    &__container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .classItems,
+  .detailsCard {
+    padding: 0.85rem;
+  }
+
+  .classItems {
+    &__title {
+      font-size: 16px;
+
+      span:last-of-type {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .detailsCard {
+    &__title {
+      font-size: 16px;
+    }
+  }
+}

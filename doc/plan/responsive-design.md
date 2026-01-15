@@ -61,11 +61,10 @@ Track the responsive design rollout for the customer and instructor dashboards. 
 ## Work Log
 - 2025-01-14: Created this plan; instructor profile page selected as first target
 - 2025-01-14: Updated instructor profile page for mobile/tablet; added mobile header + drawer toggle; refined item layout and URL rows
+- 2025-01-14: Made instructor class schedule calendar toolbar mobile-friendly with compact controls and view dropdown
+- 2025-01-14: Stacked instructor class details layout on tablet/mobile
 
 ## To-Do
-- Inspect instructor profile page layout and SCSS
-- Define shared responsive utilities if needed (variables/mixins)
-- Implement profile page responsive adjustments
 - Validate at mobile/tablet/desktop widths
 - Apply patterns to remaining instructor pages
 - Start customer dashboard rollout
