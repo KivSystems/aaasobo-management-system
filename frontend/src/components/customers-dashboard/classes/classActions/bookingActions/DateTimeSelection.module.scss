@@ -1,0 +1,61 @@
+@use "@/styles/variables.module.scss" as *;
+
+.dateTimeSelection {
+  padding: 1.5rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  color: $text-dark;
+}
+
+.datePickerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 0.5rem;
+}
+
+.dateLabel {
+  font-size: 1.1rem;
+  color: $text-dark;
+  font-weight: 500;
+}
+
+.datePicker {
+  padding: 0.5rem;
+  border: 2px solid $border-light;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  width: 180px;
+
+  &:focus {
+    outline: none;
+    border-color: $blue_primary;
+  }
+}
+
+.backButton {
+  background: $text-medium;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: auto;
+  align-self: center;
+
+  &:hover {
+    background: $text-dark;
+  }
+}

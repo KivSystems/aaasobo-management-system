@@ -1,6 +1,6 @@
 "use server";
 
-import { rebookClass } from "../helper/api/classesApi";
+import { rebookClass } from "@/lib/api/classesApi";
 import { revalidateCustomerCalendar } from "./revalidate";
 import { validateSession } from "./validateSession";
 import { getCookie } from "../../proxy";

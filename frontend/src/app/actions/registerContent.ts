@@ -1,10 +1,10 @@
 "use server";
 
-import { registerPlan } from "../helper/api/plansApi";
-import { registerEvent } from "../helper/api/eventsApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { extractRegisterValidationErrors } from "../helper/utils/validationErrorUtils";
-import { planRegisterSchema, eventRegisterSchema } from "../schemas/authSchema";
+import { registerPlan } from "@/lib/api/plansApi";
+import { registerEvent } from "@/lib/api/eventsApi";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/messages/formValidation";
+import { extractRegisterValidationErrors } from "@/lib/utils/validationErrorUtils";
+import { planRegisterSchema, eventRegisterSchema } from "@/schemas/authSchema";
 import { revalidatePlanList, revalidateEventList } from "./revalidate";
 import { getCookie } from "../../proxy";
 

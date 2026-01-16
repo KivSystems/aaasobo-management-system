@@ -5,8 +5,8 @@ import { revalidatePath } from "next/cache";
 import {
   addInstructorAbsence,
   deleteInstructorAbsence,
-} from "../helper/api/instructorsApi";
-import { formatYearDateTime } from "../helper/utils/dateUtils";
+} from "@/lib/api/instructorsApi";
+import { formatYearDateTime } from "@/lib/utils/dateUtils";
 
 export type AbsenceChange = {
   dateTime: string;

@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.scss";
 import { ToastContainer } from "react-toastify";
-import { LanguageProvider } from "./contexts/LanguageContext";
-import { getSystemStatus } from "@/app/helper/api/maintenanceApi";
-import SystemStatusWatcher from "@/app/components/features/systemStatusWatcher/SystemStatusWatcher";
-import MaintenancePage from "@/app/components/elements/maintenancePage/MaintenancePage";
+import { LanguageProvider } from "../contexts/LanguageContext";
+import { getSystemStatus } from "@/lib/api/maintenanceApi";
+import SystemStatusWatcher from "@/components/features/systemStatusWatcher/SystemStatusWatcher";
+import MaintenancePage from "@/components/elements/maintenancePage/MaintenancePage";
 
 const poppins = Poppins({
   subsets: ["latin"],

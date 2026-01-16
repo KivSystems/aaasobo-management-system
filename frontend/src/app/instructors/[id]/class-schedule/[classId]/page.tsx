@@ -1,5 +1,5 @@
-import ClassDetails from "@/app/components/instructors-dashboard/class-schedule/classDetails/ClassDetails";
-import { getSameDateClasses } from "@/app/helper/api/instructorsApi";
+import ClassDetails from "@/components/instructors-dashboard/class-schedule/classDetails/ClassDetails";
+import { getSameDateClasses } from "@/lib/api/instructorsApi";
 import { getCookie } from "../../../../../proxy";
 
 const ClassDetailsPage = async (props: {

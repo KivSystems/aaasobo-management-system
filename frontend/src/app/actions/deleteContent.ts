@@ -1,15 +1,15 @@
 "use server";
 
-import { deleteEvent } from "@/app/helper/api/eventsApi";
-import { deletePlan } from "@/app/helper/api/plansApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
+import { deleteEvent } from "@/lib/api/eventsApi";
+import { deletePlan } from "@/lib/api/plansApi";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/messages/formValidation";
 import {
   revalidateEventList,
   revalidatePlanList,
   revalidateSubscriptionList,
 } from "./revalidate";
 import { getCookie } from "../../proxy";
-import { deleteSubscription } from "../helper/api/subscriptionsApi";
+import { deleteSubscription } from "@/lib/api/subscriptionsApi";
 
 export async function deleteEventAction(
   prevState: DeleteFormState | undefined,

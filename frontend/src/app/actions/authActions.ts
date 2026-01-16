@@ -2,10 +2,10 @@
 
 import { AuthError } from "next-auth";
 import { signIn, signOut } from "../../../auth.config";
-import { userLoginSchema } from "../schemas/authSchema";
-import { extractLoginValidationErrors } from "../helper/utils/validationErrorUtils";
-import { authenticateUser } from "../helper/api/usersApi";
-import { UNEXPECTED_ERROR_MESSAGE } from "../helper/messages/formValidation";
+import { userLoginSchema } from "@/schemas/authSchema";
+import { extractLoginValidationErrors } from "@/lib/utils/validationErrorUtils";
+import { authenticateUser } from "@/lib/api/usersApi";
+import { UNEXPECTED_ERROR_MESSAGE } from "@/lib/messages/formValidation";
 
 export async function authenticate(
   prevState: { errorMessage: string } | undefined,

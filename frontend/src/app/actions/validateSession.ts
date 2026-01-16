@@ -1,6 +1,6 @@
 "use server";
 
-import { getUserSession } from "../helper/auth/sessionUtils";
+import { getUserSession } from "@/lib/auth/sessionUtils";
 
 export const validateSession = async (userId?: number) => {
   const session = await getUserSession();

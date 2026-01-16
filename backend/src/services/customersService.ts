@@ -5,7 +5,7 @@ import {
   maskedHeadLetters,
   maskedSuffix,
   maskedBirthdate,
-} from "../helper/commonUtils";
+} from "../utils/commonUtils";
 
 export const getCustomerById = async (customerId: number) => {
   const customer = await prisma.customer.findUnique({

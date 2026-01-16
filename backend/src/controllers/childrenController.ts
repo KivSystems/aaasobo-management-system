@@ -18,7 +18,7 @@ import {
   deleteAttendancesByChildId,
 } from "../services/classAttendancesService";
 import { prisma } from "../../prisma/prismaClient";
-import { convertToISOString } from "../helper/dateUtils";
+import { convertToISOString } from "../utils/dateUtils";
 import type {
   ChildIdParams,
   GetChildrenQuery,

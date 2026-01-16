@@ -1,0 +1,25 @@
+@use "@/styles/variables.module.scss" as *;
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+  max-width: 400px;
+  height: 100vh;
+  margin: 0 auto;
+}
+
+.errorIcon {
+  width: 48px;
+  height: 48px;
+  color: $red-alert;
+}
+
+.errorTitle {
+  text-align: left;
+  font-size: 20px;
+  font-weight: bold;
+}

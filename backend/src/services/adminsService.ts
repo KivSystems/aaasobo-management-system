@@ -1,6 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Admins } from "../../generated/prisma";
-import { hashPassword } from "../helper/commonUtils";
+import { hashPassword } from "../utils/commonUtils";
 
 // Register a new admin in the DB
 export const registerAdmin = async (data: {

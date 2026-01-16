@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { updateSystemStatus } from "@/app/helper/api/maintenanceApi";
+import { updateSystemStatus } from "@/lib/api/maintenanceApi";
 
 export const runtime = "nodejs";
 

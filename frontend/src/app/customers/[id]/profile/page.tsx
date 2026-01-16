@@ -1,7 +1,7 @@
-import CustomerProfile from "@/app/components/customers-dashboard/profile/CustomerProfile";
-import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
-import { getCustomerById } from "@/app/helper/api/customersApi";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import CustomerProfile from "@/components/customers-dashboard/profile/CustomerProfile";
+import Breadcrumb from "@/components/elements/breadcrumb/Breadcrumb";
+import { getCustomerById } from "@/lib/api/customersApi";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 import { getCookie } from "../../../../proxy";
 
 async function CustomerProfilePage(props: { params: Promise<{ id: string }> }) {

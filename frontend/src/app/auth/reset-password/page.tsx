@@ -1,9 +1,9 @@
 import styles from "./page.module.scss";
 import Image from "next/image";
 import { Suspense } from "react";
-import Loading from "@/app/components/elements/loading/Loading";
-import ResetPasswordForm from "@/app/components/features/resetPasswordForm/ResetPasswordForm";
-import { verifyResetToken } from "@/app/helper/api/usersApi";
+import Loading from "@/components/elements/loading/Loading";
+import ResetPasswordForm from "@/components/features/resetPasswordForm/ResetPasswordForm";
+import { verifyResetToken } from "@/lib/api/usersApi";
 
 export default async function ResetPasswordPage(props: {
   searchParams: Promise<{ token: string; type: UserType }>;

@@ -1,0 +1,76 @@
+@use "sass:color";
+@use "@/styles/variables.module.scss" as *;
+@use "./CalendarVariables.module.scss" as calendar;
+
+// Import shared calendar styles
+@use "./EditableScheduleCalendar.module.scss" as *;
+
+// Read-only scheduled cell specific to ScheduleCalendar
+%cellBaseReadOnly {
+  height: 30px;
+  border-bottom: 1px solid calendar.$calendar-border-light;
+  position: relative;
+  cursor: default;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.emptyCell {
+  @extend %cellBaseReadOnly;
+
+  // Override any inherited hover effects
+  &:hover {
+    background-color: transparent !important;
+    border-bottom: 1px solid calendar.$calendar-border-light !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.scheduledCell {
+  @extend %cellBaseReadOnly;
+  background-color: color.adjust($blue_primary, $lightness: 45%);
+  border: 1px solid $gray-background;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background-color: $blue_primary;
+    border-radius: 50%;
+  }
+}
+
+.disabledCell {
+  @extend %cellBaseReadOnly;
+  background-color: $gray-background;
+  border: 1px solid $gray-background-hover;
+  opacity: 0.6;
+  cursor: not-allowed;
+
+  background-image: repeating-linear-gradient(
+    45deg,
+    $gray-background,
+    $gray-background 2px,
+    $gray-background-hover 2px,
+    $gray-background-hover 4px
+  );
+}
+
+@media (max-width: 640px) {
+  .emptyCell,
+  .scheduledCell,
+  .disabledCell {
+    height: 24px;
+  }
+}

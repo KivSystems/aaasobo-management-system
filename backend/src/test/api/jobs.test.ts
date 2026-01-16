@@ -11,8 +11,8 @@ import {
 import {
   convertToISOString,
   getFirstDesignatedDayOfYear,
-} from "../../helper/dateUtils";
-import { maskedHeadLetters } from "../../helper/commonUtils";
+} from "../../utils/dateUtils";
+import { maskedHeadLetters } from "../../utils/commonUtils";
 
 function cronAuthHeader() {
   process.env.CRON_SECRET = "test-cron-secret";

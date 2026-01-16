@@ -8,7 +8,7 @@ import {
 import {
   getFirstDesignatedDayOfYear,
   convertToISOString,
-} from "../helper/dateUtils";
+} from "../utils/dateUtils";
 import { RequestWithBody } from "../middlewares/validationMiddleware";
 import type { UpdateSundayColorRequest } from "../../../shared/schemas/jobs";
 

@@ -1,6 +1,6 @@
 import styles from "./layout.module.scss";
-import SideNav from "@/app/components/layouts/sideNav/SideNav";
-import { getUserSession } from "@/app/helper/auth/sessionUtils";
+import SideNav from "@/components/layouts/sideNav/SideNav";
+import { getUserSession } from "@/lib/auth/sessionUtils";
 
 export default async function Layout(props: {
   children: React.ReactNode;

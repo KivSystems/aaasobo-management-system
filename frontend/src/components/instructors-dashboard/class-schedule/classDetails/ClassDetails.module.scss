@@ -1,0 +1,86 @@
+@use "@/styles/variables.module.scss" as *;
+
+.classDetails {
+  &__container {
+    display: flex;
+    gap: 20px;
+  }
+}
+
+.classItems {
+  flex: 4;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+
+  &__title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+
+    span:first-of-type {
+      color: $blue-primary;
+    }
+
+    span:last-of-type {
+      font-size: 16px;
+      font-weight: 300;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__noClasses {
+    font-size: 16px;
+    font-weight: 400;
+  }
+}
+
+.detailsCard {
+  flex: 6;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+
+  &__title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .classDetails {
+    &__container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .classItems,
+  .detailsCard {
+    padding: 0.85rem;
+  }
+
+  .classItems {
+    &__title {
+      font-size: 16px;
+
+      span:last-of-type {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .detailsCard {
+    &__title {
+      font-size: 16px;
+    }
+  }
+}

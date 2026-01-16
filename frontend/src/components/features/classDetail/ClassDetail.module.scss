@@ -1,0 +1,62 @@
+@use "@/styles/variables.module.scss" as *;
+
+.classCard {
+  padding: 0 25px 15px 25px;
+  width: 470px;
+
+  &.booked {
+    border-top: 17px solid $light-pink-regular-class;
+  }
+  &.rebooked {
+    border-top: 17px solid $light-yellow-rebooked-class;
+  }
+  &.completed {
+    border-top: 17px solid $completed-background-color;
+  }
+  &.canceledByInstructor {
+    border-top: 17px solid $gray-canceled-by-instructor;
+  }
+  &.canceledByCustomer {
+    border-top: 17px solid $gray-background;
+  }
+  &.freeTrial {
+    border-top: 17px solid $green-success;
+  }
+}
+
+.children {
+  display: flex;
+  margin-top: 1.2rem;
+
+  &__iconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__icon {
+    height: 2rem;
+    margin-right: 50px;
+  }
+
+  &__names {
+    font-size: 20px;
+    font-weight: 400;
+  }
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 20px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 5px;
+  font-size: 12px;
+  color: gray;
+}

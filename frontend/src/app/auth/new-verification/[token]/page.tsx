@@ -1,9 +1,9 @@
-import { EmailVerificationForm } from "@/app/components/features/emailVerificationForm/EmailVerificationForm";
+import { EmailVerificationForm } from "@/components/features/emailVerificationForm/EmailVerificationForm";
 import styles from "./page.module.scss";
 import Image from "next/image";
 import { Suspense } from "react";
-import Loading from "@/app/components/elements/loading/Loading";
-import { verifyCustomerEmail } from "@/app/helper/api/customersApi";
+import Loading from "@/components/elements/loading/Loading";
+import { verifyCustomerEmail } from "@/lib/api/customersApi";
 
 export default async function EmailVerificationPage(props: {
   params: Promise<{ token: string }>;

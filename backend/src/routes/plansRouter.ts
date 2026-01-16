@@ -11,7 +11,7 @@ import {
 } from "../../../shared/schemas/plans";
 import { MessageErrorResponse } from "../../../shared/schemas/common";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
-import { AUTH_ROLES } from "../helper/commonUtils";
+import { AUTH_ROLES } from "../utils/commonUtils";
 
 export const plansRouter = express.Router();
 

@@ -1,9 +1,6 @@
-import {
-  getAllBusinessSchedules,
-  getAllEvents,
-} from "@/app/helper/api/adminsApi";
-import { businessCalendarValidRange } from "@/app/helper/utils/calendarUtils";
-import BusinessCalendarClient from "@/app/components/admins-dashboard/BusinessCalendarClient";
+import { getAllBusinessSchedules, getAllEvents } from "@/lib/api/adminsApi";
+import { businessCalendarValidRange } from "@/lib/utils/calendarUtils";
+import BusinessCalendarClient from "@/components/admins-dashboard/BusinessCalendarClient";
 import { getCookie } from "../../../../proxy";
 
 const Page = async (props: { params: Promise<{ id: string }> }) => {

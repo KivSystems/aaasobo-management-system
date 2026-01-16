@@ -1,5 +1,5 @@
-import InstructorCalendarForAdmin from "@/app/components/admins-dashboard/InstructorCalendarForAdmin";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import InstructorCalendarForAdmin from "@/components/admins-dashboard/InstructorCalendarForAdmin";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 
 const Page = async (props: { params: Promise<{ id: string }> }) => {
   const params = await props.params;

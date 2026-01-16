@@ -1,5 +1,5 @@
-import CustomerDashboardForAdmin from "@/app/components/admins-dashboard/customers-dashboard/classCalendarForAdmin/CustomerDashboardForAdmin";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import CustomerDashboardForAdmin from "@/components/admins-dashboard/customers-dashboard/classCalendarForAdmin/CustomerDashboardForAdmin";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 
 async function Page(props: {
   params: Promise<{ id: string; customerId: string }>;

@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cancelClass, cancelClasses } from "../helper/api/classesApi";
-import { getUserSession } from "@/app/helper/auth/sessionUtils";
+import { cancelClass, cancelClasses } from "@/lib/api/classesApi";
+import { getUserSession } from "@/lib/auth/sessionUtils";
 import { getCookie } from "../../proxy";
 
 export const cancelSelectedClasses = async (

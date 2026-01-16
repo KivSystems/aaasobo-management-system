@@ -1,5 +1,5 @@
-import InstructorProfile from "@/app/components/instructors-dashboard/instructor-profile/InstructorProfile";
-import { getInstructor } from "@/app/helper/api/instructorsApi";
+import InstructorProfile from "@/components/instructors-dashboard/instructor-profile/InstructorProfile";
+import { getInstructor } from "@/lib/api/instructorsApi";
 import { getCookie } from "../../../../proxy";
 
 async function Page(props: { params: Promise<{ id: string }> }) {

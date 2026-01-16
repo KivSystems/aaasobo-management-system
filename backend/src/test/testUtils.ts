@@ -1,5 +1,5 @@
 const { faker } = require("@faker-js/faker");
-import { hashPasswordSync } from "../helper/commonUtils";
+import { hashPasswordSync } from "../utils/commonUtils";
 import { prisma } from "./setup";
 import { Status } from "../../generated/prisma";
 

@@ -7,8 +7,8 @@ import {
   maskedHeadLetters,
   maskedSuffix,
   maskedBirthdate,
-} from "../helper/commonUtils";
-import { convertToUTCDate } from "../helper/dateUtils";
+} from "../utils/commonUtils";
+import { convertToUTCDate } from "../utils/dateUtils";
 import { put, del } from "@vercel/blob";
 import { randomUUID } from "crypto";
 

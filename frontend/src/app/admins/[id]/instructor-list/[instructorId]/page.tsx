@@ -1,5 +1,5 @@
-import InstructorDashboardForAdmin from "@/app/components/admins-dashboard/instructors-dashboard/InstructorDashboardForAdmin";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import InstructorDashboardForAdmin from "@/components/admins-dashboard/instructors-dashboard/InstructorDashboardForAdmin";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 
 async function Page(props: {
   params: Promise<{ id: string; instructorId: string }>;

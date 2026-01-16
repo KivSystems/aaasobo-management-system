@@ -1,7 +1,7 @@
 "use server";
 
-import { deleteAdmin } from "@/app/helper/api/adminsApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
+import { deleteAdmin } from "@/lib/api/adminsApi";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/messages/formValidation";
 import {
   revalidateAdminList,
   revalidateCustomerList,
@@ -10,10 +10,10 @@ import {
   revalidateSubscriptionList,
 } from "./revalidate";
 import { getCookie } from "../../proxy";
-import { getUserSession } from "../helper/auth/sessionUtils";
-import { LOGIN_REQUIRED_MESSAGE } from "../helper/messages/customerDashboard";
-import { deleteChild } from "../helper/api/childrenApi";
-import { deactivateCustomer } from "../helper/api/customersApi";
+import { getUserSession } from "@/lib/auth/sessionUtils";
+import { LOGIN_REQUIRED_MESSAGE } from "@/lib/messages/customerDashboard";
+import { deleteChild } from "@/lib/api/childrenApi";
+import { deactivateCustomer } from "@/lib/api/customersApi";
 import { revalidatePath } from "next/cache";
 
 export async function deleteAdminAction(

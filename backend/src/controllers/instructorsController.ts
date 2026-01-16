@@ -6,7 +6,7 @@ import {
   ClassIdParams,
   InstructorClassParams,
 } from "../../../shared/schemas/instructors";
-import { validateUserImageUrl } from "../helper/commonUtils";
+import { validateUserImageUrl } from "../utils/commonUtils";
 import {
   getInstructorById,
   getAllInstructors,
@@ -23,7 +23,7 @@ import {
   getSameDateClasses,
   getClassByClassId,
 } from "../services/classesService";
-import { convertToTimezoneDate } from "../helper/dateUtils";
+import { convertToTimezoneDate } from "../utils/dateUtils";
 
 function setErrorResponse(res: Response, error: unknown) {
   return res

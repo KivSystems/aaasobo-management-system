@@ -1,0 +1,106 @@
+"use client";
+
+import TabFunction from "@/components/admins-dashboard/TabFunction";
+import InstructorProfile from "@/components/instructors-dashboard/instructor-profile/InstructorProfile";
+import { useTabSelect } from "@/hooks/useTabSelect";
+import InstructorSchedule from "./instructor-schedule/InstructorSchedule";
+import AvailabilityCalendar from "./instructor-schedule/AvailabilityCalendar";
+import Loading from "@/components/elements/loading/Loading";
+import type { InstructorSchedule as InstructorScheduleType } from "@shared/schemas/instructors";
+import type { InstructorScheduleWithSlots } from "@/lib/api/instructorsApi";
+
+export default function InstructorTabs({
+  adminId,
+  instructorId,
+  instructor,
+  token,
+  userSessionType,
+  initialSchedules,
+  initialSelectedScheduleId,
+  initialSelectedSchedule,
+  classScheduleComponent,
+}: {
+  adminId: number;
+  instructorId: number;
+  instructor: Instructor | string;
+  token: string;
+  userSessionType: UserType;
+  initialSchedules: InstructorScheduleType[];
+  initialSelectedScheduleId: number | null;
+  initialSelectedSchedule: InstructorScheduleWithSlots | null;
+  classScheduleComponent: React.ReactNode;
+}) {
+  const nickname = typeof instructor !== "string" ? instructor.nickname : null;
+  // Get the previous list page from local storage to set the breadcrumb.
+  const previousListPage = localStorage.getItem("previousListPage");
+  let breadcrumb: string[] = [];
+  switch (previousListPage) {
+    case "instructor-list":
+      breadcrumb = [
+        "Instructor List",
+        `/admins/${adminId}/instructor-list`,
+        `Instructor Page (${nickname || "Unknown"})`,
+      ];
+      break;
+    case "class-list":
+      breadcrumb = [
+        "Class List",
+        `/admins/${adminId}/class-list`,
+        `Instructor Page (${nickname || "Unknown"})`,
+      ];
+      break;
+  }
+  const activeTabName = "activeInstructorTab";
+
+  // Get the active tab from the local storage.
+  const { initialActiveTab, isTabInitialized } = useTabSelect(
+    "activeInstructorTab",
+  );
+
+  // Tabs with labels and content
+  const tabs = [
+    {
+      label: "Class Schedule",
+      content: classScheduleComponent,
+    },
+    {
+      label: "Instructor's Profile",
+      content: (
+        <InstructorProfile
+          instructor={instructor}
+          token={token}
+          userSessionType={userSessionType}
+        />
+      ),
+    },
+    {
+      label: "Instructor's Availability",
+      content: <AvailabilityCalendar instructorId={instructorId} />,
+    },
+    {
+      label: "Instructor's Schedule",
+      content: (
+        <InstructorSchedule
+          instructorId={instructorId}
+          initialSchedules={initialSchedules}
+          initialSelectedScheduleId={initialSelectedScheduleId}
+          initialSelectedSchedule={initialSelectedSchedule}
+        />
+      ),
+    },
+  ];
+
+  // Display a loading message while initializing the tab.
+  if (!isTabInitialized) {
+    return <Loading />;
+  }
+
+  return (
+    <TabFunction
+      tabs={tabs}
+      breadcrumb={breadcrumb}
+      activeTabName={activeTabName}
+      initialActiveTab={initialActiveTab}
+    />
+  );
+}

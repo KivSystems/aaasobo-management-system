@@ -1,10 +1,7 @@
-import ChildrenProfiles from "@/app/components/customers-dashboard/children-profiles/ChildrenProfiles";
-import { INVALID_CUSTOMER_ID } from "@/app/helper/messages/customerDashboard";
-import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
-import {
-  getChildProfiles,
-  getCustomerById,
-} from "@/app/helper/api/customersApi";
+import ChildrenProfiles from "@/components/customers-dashboard/children-profiles/ChildrenProfiles";
+import { INVALID_CUSTOMER_ID } from "@/lib/messages/customerDashboard";
+import Breadcrumb from "@/components/elements/breadcrumb/Breadcrumb";
+import { getChildProfiles, getCustomerById } from "@/lib/api/customersApi";
 import { getCookie } from "../../../../proxy";
 
 async function ChildrenProfilesPage(props: {

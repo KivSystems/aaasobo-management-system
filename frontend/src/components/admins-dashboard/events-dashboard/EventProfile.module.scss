@@ -1,0 +1,124 @@
+@use "@/styles/variables.module.scss" as *;
+
+.container {
+  padding: 30px;
+  border: 1px solid $gray-background;
+  border-radius: 0.5rem;
+  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+  width: 100%;
+
+  .pic {
+    padding: 1rem;
+    width: 150px;
+    height: 150px;
+  }
+
+  h3 {
+    margin-bottom: 1rem;
+  }
+}
+
+.insideContainer {
+  background-color: #f9fafb;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 1rem;
+}
+
+// name
+.eventName {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 66px;
+  margin-bottom: 24px;
+
+  &__nameSection {
+    width: 100%;
+    margin-right: 10px;
+  }
+  &__text {
+    font-size: 16px;
+    font-weight: 300;
+    width: 100%;
+  }
+  &__inputField {
+    margin: 0px 50px 10px 0px;
+    font-size: 20px;
+    font-weight: 500;
+    padding: 3px 6px;
+    border-radius: 6px;
+    width: 95%;
+    max-width: 600px;
+  }
+
+  &__name {
+    font-size: 24px;
+    font-weight: 500;
+  }
+}
+
+// Color
+.eventColor {
+  display: flex;
+
+  &__colorBox {
+    width: 25px;
+    height: 25px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 8px;
+  }
+
+  &__inputField {
+    margin: 0px 10px 5px 0px;
+    padding: 3px 6px;
+    font-size: 19px;
+    font-weight: 500;
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    width: 400px;
+    height: 35px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+
+  &__editText {
+    height: 35px;
+    width: 120px;
+    font-size: 19px;
+    font-weight: 500;
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    padding: 0.15rem 0.75rem;
+  }
+
+  &__displayText {
+    font-size: 20px;
+    font-weight: 400;
+  }
+}
+
+// buttons
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.addBtn {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
