@@ -76,7 +76,7 @@ describe("DELETE /admins/admin-list/:id", () => {
       .set("Cookie", authCookie)
       .expect(200);
 
-    const deletedAdmin = await prisma.admins.findUnique({
+    const deletedAdmin = await prisma.admin.findUnique({
       where: { id: targetAdmin.id },
     });
     expect(deletedAdmin).toBeNull();
@@ -106,7 +106,7 @@ describe("POST /admins/admin-list/register", () => {
       .expect(201);
 
     // Verify admin was created in database
-    const createdAdmin = await prisma.admins.findUnique({
+    const createdAdmin = await prisma.admin.findUnique({
       where: { email: newAdminData.email },
     });
     expect(createdAdmin).toBeTruthy();

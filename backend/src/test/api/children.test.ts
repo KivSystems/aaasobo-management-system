@@ -54,7 +54,7 @@ describe("POST /children", () => {
       .expect(200);
 
     // Verify child was created
-    const child = await prisma.children.findFirst({
+    const child = await prisma.child.findFirst({
       where: { customerId: customer.id, name: childData.name },
     });
     expect(child).toBeTruthy();
@@ -101,7 +101,7 @@ describe("PATCH /children/:id", () => {
       .expect(200);
 
     // Verify child was updated
-    const updatedChild = await prisma.children.findUnique({
+    const updatedChild = await prisma.child.findUnique({
       where: { id: child.id },
     });
     expect(updatedChild?.name).toBe(updateData.name);
@@ -124,7 +124,7 @@ describe("DELETE /children/:id", () => {
       .expect(200);
 
     // Verify child was deleted
-    const deletedChild = await prisma.children.findUnique({
+    const deletedChild = await prisma.child.findUnique({
       where: { id: child.id },
     });
     expect(deletedChild).toBeNull();
@@ -150,7 +150,7 @@ describe("DELETE /children/:id", () => {
       .expect(409);
 
     // Verify child was not deleted
-    const stillExists = await prisma.children.findUnique({
+    const stillExists = await prisma.child.findUnique({
       where: { id: child.id },
     });
     expect(stillExists).toBeTruthy();
@@ -177,7 +177,7 @@ describe("DELETE /children/:id", () => {
       .expect(409);
 
     // Verify child was not deleted
-    const stillExists = await prisma.children.findUnique({
+    const stillExists = await prisma.child.findUnique({
       where: { id: child.id },
     });
     expect(stillExists).toBeTruthy();

@@ -40,7 +40,7 @@ async function seedAdmin(seed: number) {
   const name = `Sim Admin ${seed}`;
   const password = `sim-admin-password-${seed}`;
 
-  const admin = await prisma.admins.create({
+  const admin = await prisma.admin.create({
     data: {
       email,
       name,
@@ -234,7 +234,7 @@ export async function bootstrapSimulation(
   const customers = [];
   for (let i = 0; i < config.scale.customers; i++) {
     const customer = await registerCustomer(config.seed, i);
-    const children = await prisma.children.findMany({
+    const children = await prisma.child.findMany({
       where: { customerId: customer.id },
       orderBy: { id: "asc" },
     });

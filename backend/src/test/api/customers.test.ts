@@ -94,7 +94,7 @@ describe("POST /customers/register", () => {
     expect(customer?.emailVerified).toBeNull();
 
     // Verify child was created
-    const child = await prisma.children.findFirst({
+    const child = await prisma.child.findFirst({
       where: { customerId: customer!.id },
     });
     expect(child).toBeTruthy();

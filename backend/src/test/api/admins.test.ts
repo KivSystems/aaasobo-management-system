@@ -16,7 +16,7 @@ describe("PATCH /admins/:id", () => {
       .send({ name: updatedName, email: admin.email })
       .expect(200);
 
-    const updatedAdmin = await prisma.admins.findUnique({
+    const updatedAdmin = await prisma.admin.findUnique({
       where: { id: admin.id },
     });
     expect(updatedAdmin?.name).toBe(updatedName);

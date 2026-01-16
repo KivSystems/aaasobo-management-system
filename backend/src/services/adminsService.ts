@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/prismaClient";
-import { Admins } from "../../generated/prisma";
+import { Admin } from "../../generated/prisma";
 import { hashPassword } from "../utils/commonUtils";
 
 // Register a new admin in the DB
@@ -10,7 +10,7 @@ export const registerAdmin = async (data: {
 }) => {
   const hashedPassword = await hashPassword(data.password);
 
-  await prisma.admins.create({
+  await prisma.admin.create({
     data: {
       name: data.name,
       email: data.email,
@@ -25,7 +25,7 @@ export const registerAdmin = async (data: {
 export const updateAdmin = async (id: number, name: string, email: string) => {
   try {
     // Update the admin data.
-    const admin = await prisma.admins.update({
+    const admin = await prisma.admin.update({
       where: {
         id,
       },
@@ -43,7 +43,7 @@ export const updateAdmin = async (id: number, name: string, email: string) => {
 
 // Update the admin password
 export const updateAdminPassword = async (id: number, newPassword: string) => {
-  return await prisma.admins.update({
+  return await prisma.admin.update({
     where: { id },
     data: { password: newPassword },
   });
@@ -53,7 +53,7 @@ export const updateAdminPassword = async (id: number, newPassword: string) => {
 export const deleteAdmin = async (adminId: number) => {
   try {
     // Delete the Admin data.
-    const admin = await prisma.admins.delete({
+    const admin = await prisma.admin.delete({
       where: { id: adminId },
     });
 
@@ -67,7 +67,7 @@ export const deleteAdmin = async (adminId: number) => {
 // Fetch all admins information
 export const getAllAdmins = async () => {
   try {
-    return await prisma.admins.findMany({
+    return await prisma.admin.findMany({
       orderBy: {
         id: "asc",
       },
@@ -79,10 +79,8 @@ export const getAllAdmins = async () => {
 };
 
 // Fetch the admin using the email
-export const getAdminByEmail = async (
-  email: string,
-): Promise<Admins | null> => {
-  return await prisma.admins.findUnique({
+export const getAdminByEmail = async (email: string): Promise<Admin | null> => {
+  return await prisma.admin.findUnique({
     where: { email },
   });
 };
@@ -90,7 +88,7 @@ export const getAdminByEmail = async (
 // Fetch the admin using the ID
 export async function getAdminById(id: number) {
   try {
-    return prisma.admins.findUnique({
+    return prisma.admin.findUnique({
       where: { id },
     });
   } catch (error) {

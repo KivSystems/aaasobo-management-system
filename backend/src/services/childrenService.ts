@@ -4,7 +4,7 @@ import { prisma } from "../../prisma/prismaClient";
 export const getChildren = async (customerId: string) => {
   // Fetch the Children data from the DB
   try {
-    const children = await prisma.children.findMany({
+    const children = await prisma.child.findMany({
       where: { customerId: parseInt(customerId) },
       include: { customer: true },
       orderBy: { id: "asc" },
@@ -26,7 +26,7 @@ export const registerChild = async (
 ) => {
   const db = tx ?? prisma;
 
-  const child = await db.children.create({
+  const child = await db.child.create({
     data: {
       name,
       birthdate,
@@ -47,7 +47,7 @@ export const updateChildProfile = async (
     customerId: number;
   },
 ) => {
-  const child = await prisma.children.update({
+  const child = await prisma.child.update({
     where: {
       id: childId,
     },
@@ -61,7 +61,7 @@ export const deleteChild = async (
   tx: Prisma.TransactionClient,
   childId: number,
 ) => {
-  const child = await tx.children.delete({
+  const child = await tx.child.delete({
     where: { id: childId },
   });
 
@@ -69,7 +69,7 @@ export const deleteChild = async (
 };
 
 export const getChildById = async (id: number) => {
-  const child = await prisma.children.findUnique({
+  const child = await prisma.child.findUnique({
     where: { id },
   });
 
@@ -79,7 +79,7 @@ export const getChildById = async (id: number) => {
 export const getAllChildren = async () => {
   // Fetch the Children data from the DB
   try {
-    const children = await prisma.children.findMany({
+    const children = await prisma.child.findMany({
       include: { customer: true },
       orderBy: { id: "asc" },
     });
@@ -92,7 +92,7 @@ export const getAllChildren = async () => {
 };
 
 export const getChildProfiles = async (customerId: number) => {
-  const children = await prisma.children.findMany({
+  const children = await prisma.child.findMany({
     where: { customerId },
     orderBy: { id: "asc" },
   });
@@ -109,7 +109,7 @@ export const getChildProfiles = async (customerId: number) => {
 export const getChildrenNamesByIds = async (
   childrenIds: number[],
 ): Promise<string> => {
-  const children = await prisma.children.findMany({
+  const children = await prisma.child.findMany({
     where: {
       id: {
         in: childrenIds,
