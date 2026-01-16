@@ -1575,7 +1575,7 @@ async function insertCustomers() {
 }
 
 async function insertAdmins() {
-  await prisma.admins.createMany({
+  await prisma.admin.createMany({
     data: [
       {
         name: "Admin",
@@ -1998,7 +1998,7 @@ async function insertChildren() {
   const alice = await getCustomer("Alice");
   const bob = await getCustomer("Bob");
 
-  await prisma.children.createMany({
+  await prisma.child.createMany({
     data: [
       {
         name: "Peppa",
@@ -2028,7 +2028,7 @@ async function insertChildren() {
 async function insertClassAttendance() {
   const customers = await prisma.customer.findMany();
   const classes = await prisma.class.findMany();
-  const children = await prisma.children.findMany();
+  const children = await prisma.child.findMany();
 
   // if (classes.length < 4 || children.length < 1) {
   //   throw new Error("Not enough classes or children found");
@@ -3403,14 +3403,14 @@ async function main() {
     await deleteAll("instructorSlot");
 
     // Dependent on the below
-    await deleteAll("children");
+    await deleteAll("child");
     await deleteAll("subscription");
     await deleteAll("instructorSchedule");
     await deleteAll("schedule");
     await deleteAll("instructorAbsence");
 
     // Independent
-    await deleteAll("admins");
+    await deleteAll("admin");
     await deleteAll("instructor");
     await deleteAll("customer");
     await deleteAll("plan");
