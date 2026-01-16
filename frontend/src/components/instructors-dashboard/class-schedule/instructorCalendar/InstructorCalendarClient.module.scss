@@ -1,0 +1,122 @@
+@use "@/styles/variables.module.scss" as *;
+
+.calendarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  :global(.fc) {
+    width: 100%;
+  }
+}
+
+.mobileToolbar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .mobileToolbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .navGroup,
+  .actionGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  :global(.fc-button) {
+    border-width: 1px;
+  }
+
+  :global(.fc-button.fc-button-disabled) {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .navButton {
+    height: 32px;
+    min-width: 32px;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .todayButton {
+    height: 32px;
+    padding: 0 0.6rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .viewSelect {
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid $blue_primary;
+    background: #ffffff;
+    color: $blue_primary;
+    font-size: 0.75rem;
+    padding: 0 0.45rem;
+  }
+
+  .mobileTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 1024px) {
+  .calendarContainer {
+    :global(.fc-header-toolbar) {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    :global(.fc-toolbar-chunk) {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    :global(.fc-toolbar-title) {
+      font-size: 1.05rem;
+      text-align: center;
+    }
+
+    :global(.fc-button) {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.55rem;
+    }
+
+    :global(.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr div:nth-child(3)) {
+      width: auto;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .calendarContainer {
+    :global(.fc-header-toolbar) {
+      display: none;
+    }
+
+    :global(.fc-col-header-cell-cushion) {
+      font-size: 0.7rem;
+    }
+
+    :global(.fc-timegrid-axis-cushion),
+    :global(.fc-timegrid-slot-label-cushion) {
+      font-size: 0.65rem;
+    }
+  }
+}

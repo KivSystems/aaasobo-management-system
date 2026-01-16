@@ -1,31 +1,31 @@
 "use server";
 
-import { updateAdmin } from "@/app/helper/api/adminsApi";
-import { updateInstructor } from "@/app/helper/api/instructorsApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
+import { updateAdmin } from "@/lib/api/adminsApi";
+import { updateInstructor } from "@/lib/api/instructorsApi";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/messages/formValidation";
 import {
   extractProfileUpdateErrors,
   extractUpdateValidationErrors,
-} from "../helper/utils/validationErrorUtils";
+} from "@/lib/utils/validationErrorUtils";
 import {
   adminUpdateSchema,
   instructorUpdateSchema,
   instructorIconUpdateSchema,
-} from "../schemas/authSchema";
+} from "@/schemas/authSchema";
 import { revalidateAdminList, revalidateInstructorList } from "./revalidate";
 import { getCookie } from "../../proxy";
 import {
   childProfileSchema,
   customerProfileSchema,
-} from "../schemas/customerDashboardSchemas";
-import { updateCustomerProfile } from "../helper/api/customersApi";
+} from "@/schemas/customerDashboardSchemas";
+import { updateCustomerProfile } from "@/lib/api/customersApi";
 import { revalidatePath } from "next/cache";
 import {
   LOGIN_REQUIRED_MESSAGE,
   NO_CHANGES_MADE_MESSAGE,
-} from "../helper/messages/customerDashboard";
-import { getUserSession } from "@/app/helper/auth/sessionUtils";
-import { addChild, updateChildProfile } from "../helper/api/childrenApi";
+} from "@/lib/messages/customerDashboard";
+import { getUserSession } from "@/lib/auth/sessionUtils";
+import { addChild, updateChildProfile } from "@/lib/api/childrenApi";
 
 export async function updateAdminAction(
   prevState: UpdateFormState | undefined,

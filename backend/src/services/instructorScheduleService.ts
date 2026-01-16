@@ -1,6 +1,6 @@
 import { prisma } from "../../prisma/prismaClient";
 import { Prisma } from "../../generated/prisma";
-import { nDaysLater } from "../helper/dateUtils";
+import { nDaysLater } from "../utils/dateUtils";
 
 export const getInstructorSchedules = async (instructorId: number) => {
   try {

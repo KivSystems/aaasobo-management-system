@@ -1,0 +1,187 @@
+@use "sass:color";
+@use "@/styles/variables.module.scss" as *;
+@use "./CalendarVariables.module.scss" as calendar;
+
+.root {
+  display: flex;
+  border: 1px solid calendar.$calendar-border;
+  background-color: calendar.$calendar-white;
+  font-family: "Arial", sans-serif;
+  user-select: none;
+}
+
+.timeColumn {
+  border-right: 1px solid calendar.$calendar-border;
+  background-color: calendar.$calendar-header-bg;
+}
+
+.column {
+  flex: 1;
+  border-right: 1px solid calendar.$calendar-border;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.header {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: calendar.$calendar-header-text;
+  border-bottom: 1px solid calendar.$calendar-border;
+  background-color: calendar.$calendar-header-bg;
+  margin: 0;
+}
+
+.time {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid calendar.$calendar-border-light;
+  padding: 0 8px;
+  width: 60px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+%cellBase {
+  height: 30px;
+  border-bottom: 1px solid calendar.$calendar-border-light;
+  transition: all 0.15s ease;
+  position: relative;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover:not(.disabledCell) {
+    transform: scale(1.02);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+  }
+}
+
+.emptyCell {
+  @extend %cellBase;
+
+  &:hover {
+    background-color: color.adjust($blue_primary_hover, $lightness: 40%);
+    border: 1px solid $blue-primary;
+  }
+}
+
+.unchangedCell {
+  @extend %cellBase;
+  background-color: $white-background;
+  border: 1px solid $gray-background;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background-color: $gray-background-hover;
+    border-radius: 50%;
+  }
+
+  &:hover {
+    background-color: color.adjust($gray-background-hover, $lightness: 20%);
+  }
+}
+
+.addedCell {
+  @extend %cellBase;
+  background-color: color.adjust($green-success, $lightness: 20%);
+  border: 1px solid $gray-background;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background-color: $green-success-hover;
+    border-radius: 50%;
+  }
+
+  &:hover {
+    background-color: $green-success;
+  }
+}
+
+.removedCell {
+  @extend %cellBase;
+  background-color: color.adjust($red-alert, $lightness: 30%);
+  border: 1px solid $gray-background;
+  position: relative;
+
+  &::after {
+    content: "\00d7"; // Unicode for X mark
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: $red-alert;
+    font-weight: bold;
+  }
+
+  &:hover {
+    background-color: color.adjust($red-alert, $lightness: 25%);
+  }
+}
+
+.disabledCell {
+  @extend %cellBase;
+  background-color: $gray-background;
+  border: 1px solid $gray-background-hover;
+  opacity: 0.6;
+  cursor: not-allowed !important;
+
+  background-image: repeating-linear-gradient(
+    45deg,
+    $gray-background,
+    $gray-background 2px,
+    $gray-background-hover 2px,
+    $gray-background-hover 4px
+  );
+
+  &:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .time {
+    height: 24px;
+    width: 56px;
+    font-size: 12px;
+  }
+
+  .emptyCell,
+  .unchangedCell,
+  .addedCell,
+  .removedCell,
+  .disabledCell {
+    height: 24px;
+  }
+}

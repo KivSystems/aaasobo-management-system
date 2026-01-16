@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { maskInstructor } from "@/app/helper/api/instructorsApi";
+import { maskInstructor } from "@/lib/api/instructorsApi";
 
 export const runtime = "nodejs";
 

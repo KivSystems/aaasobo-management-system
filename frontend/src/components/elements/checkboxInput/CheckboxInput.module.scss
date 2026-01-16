@@ -1,0 +1,19 @@
+@use "@/styles/variables.module.scss" as *;
+
+.label {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+
+  input {
+    margin-right: 0.25rem;
+  }
+}
+
+// Individual styles for each class
+.isAgreed,
+.classItemForAdmin {
+  .label {
+    font-size: 0.9rem;
+  }
+}

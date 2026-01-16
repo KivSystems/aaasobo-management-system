@@ -15,7 +15,7 @@ import {
 import { ErrorResponse } from "../../../shared/schemas/common";
 import { RouteConfig } from "../openapi/routerRegistry";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
-import { AUTH_ROLES } from "../helper/commonUtils";
+import { AUTH_ROLES } from "../utils/commonUtils";
 
 export const subscriptionsRouter = express.Router();
 

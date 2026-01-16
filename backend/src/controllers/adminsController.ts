@@ -47,8 +47,8 @@ import {
   days,
   convertToISOString,
   convertToTimezoneDate,
-} from "../helper/dateUtils";
-import { EVENT_CONFLICT_ITEMS } from "../helper/commonUtils";
+} from "../utils/dateUtils";
+import { EVENT_CONFLICT_ITEMS } from "../utils/commonUtils";
 import type {
   AdminIdParams,
   CustomerIdParams,

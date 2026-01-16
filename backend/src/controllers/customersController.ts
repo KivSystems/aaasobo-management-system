@@ -25,11 +25,14 @@ import {
   generateVerificationToken,
   getVerificationTokenByToken,
 } from "../services/verificationTokensService";
-import { resendVerificationEmail, sendVerificationEmail } from "../helper/mail";
+import {
+  resendVerificationEmail,
+  sendVerificationEmail,
+} from "../lib/email/mail";
 import { prisma } from "../../prisma/prismaClient";
 import { deleteChild, registerChild } from "../services/childrenService";
 import { getChildProfiles } from "../services/childrenService";
-import { convertToISOString, convertToTimezoneDate } from "../helper/dateUtils";
+import { convertToISOString, convertToTimezoneDate } from "../utils/dateUtils";
 import {
   RequestWithParams,
   RequestWithBody,

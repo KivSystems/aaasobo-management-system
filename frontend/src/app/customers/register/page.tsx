@@ -4,10 +4,10 @@ import React, { useState } from "react";
 import styles from "./page.module.scss";
 import Image from "next/image";
 import Link from "next/link";
-import { useLanguage } from "@/app/contexts/LanguageContext";
-import RegisterCustomerForm from "@/app/components/features/registerForm/registerCustomerForm/RegisterCustomerForm";
-import RegisterChildForm from "@/app/components/features/registerForm/registerChildForm/RegisterChildForm";
-import RegisterCompleteMessage from "@/app/components/features/registerForm/registerCompleteMessage/RegisterCompleteMessage";
+import { useLanguage } from "@/contexts/LanguageContext";
+import RegisterCustomerForm from "@/components/features/registerForm/registerCustomerForm/RegisterCustomerForm";
+import RegisterChildForm from "@/components/features/registerForm/registerChildForm/RegisterChildForm";
+import RegisterCompleteMessage from "@/components/features/registerForm/registerCompleteMessage/RegisterCompleteMessage";
 
 function RegisterCustomerPage() {
   const [registrationStep, setRegistrationStep] = useState<

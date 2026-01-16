@@ -5,9 +5,9 @@ import { useParams } from "next/navigation";
 import {
   getActiveInstructorSchedule,
   InstructorSlot,
-} from "@/app/helper/api/instructorsApi";
-import ScheduleCalendar from "@/app/components/admins-dashboard/instructors-dashboard/instructor-schedule/ScheduleCalendar";
-import Loading from "@/app/components/elements/loading/Loading";
+} from "@/lib/api/instructorsApi";
+import ScheduleCalendar from "@/components/admins-dashboard/instructors-dashboard/instructor-schedule/ScheduleCalendar";
+import Loading from "@/components/elements/loading/Loading";
 import styles from "./page.module.scss";
 
 const Page = () => {

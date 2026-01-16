@@ -1,5 +1,5 @@
-import PlanDashboardForAdmin from "@/app/components/admins-dashboard/plans-dashboard/PlanDashboardForAdmin";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import PlanDashboardForAdmin from "@/components/admins-dashboard/plans-dashboard/PlanDashboardForAdmin";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 
 async function Page(props: {
   params: Promise<{ id: string; planId: string }>;

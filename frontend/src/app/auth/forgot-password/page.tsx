@@ -3,10 +3,10 @@
 import styles from "./page.module.scss";
 import Image from "next/image";
 import { Suspense } from "react";
-import Loading from "@/app/components/elements/loading/Loading";
-import ForgotPasswordForm from "@/app/components/features/forgotPasswordForm/ForgotPasswordForm";
-import { PASSWORD_RESET_INSTRUCTION } from "@/app/helper/messages/formValidation";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import Loading from "@/components/elements/loading/Loading";
+import ForgotPasswordForm from "@/components/features/forgotPasswordForm/ForgotPasswordForm";
+import { PASSWORD_RESET_INSTRUCTION } from "@/lib/messages/formValidation";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ForgotPasswordPage() {
   const { language } = useLanguage();

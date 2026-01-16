@@ -1,14 +1,14 @@
 "use server";
 
-import { registerInstructor } from "../helper/api/instructorsApi";
-import { registerAdmin } from "../helper/api/adminsApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { extractRegisterValidationErrors } from "../helper/utils/validationErrorUtils";
+import { registerInstructor } from "@/lib/api/instructorsApi";
+import { registerAdmin } from "@/lib/api/adminsApi";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/messages/formValidation";
+import { extractRegisterValidationErrors } from "@/lib/utils/validationErrorUtils";
 import {
   instructorRegisterSchema,
   instructorIconRegisterSchema,
   adminRegisterSchema,
-} from "../schemas/authSchema";
+} from "@/schemas/authSchema";
 import { revalidateInstructorList, revalidateAdminList } from "./revalidate";
 import { getCookie } from "../../proxy";
 

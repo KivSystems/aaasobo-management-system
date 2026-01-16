@@ -1,6 +1,6 @@
 "use client";
 
-import RegularClasses from "@/app/components/customers-dashboard/regular-classes/RegularClasses";
+import RegularClasses from "@/components/customers-dashboard/regular-classes/RegularClasses";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import styles from "./page.module.scss";

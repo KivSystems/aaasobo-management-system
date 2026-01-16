@@ -1,7 +1,7 @@
-import InstructorsList from "@/app/components/customers-dashboard/instructor-profiles/InstructorsList";
-import Breadcrumb from "@/app/components/elements/breadcrumb/Breadcrumb";
-import { getAllInstructorProfiles } from "@/app/helper/api/instructorsApi";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import InstructorsList from "@/components/customers-dashboard/instructor-profiles/InstructorsList";
+import Breadcrumb from "@/components/elements/breadcrumb/Breadcrumb";
+import { getAllInstructorProfiles } from "@/lib/api/instructorsApi";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 import { getCookie } from "../../../../proxy";
 
 async function InstructorProfilesPage(props: {

@@ -60,7 +60,7 @@ import {
   addInstructorAbsenceController,
   removeInstructorAbsenceController,
 } from "../../src/controllers/instructorAbsenceController";
-import { AUTH_ROLES } from "../helper/commonUtils";
+import { AUTH_ROLES } from "../utils/commonUtils";
 
 const profilesConfig = {
   method: "get" as const,

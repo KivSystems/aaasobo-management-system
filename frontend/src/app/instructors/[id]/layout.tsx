@@ -1,4 +1,4 @@
-import SideNav from "@/app/components/layouts/sideNav/SideNav";
+import SideNav from "@/components/layouts/sideNav/SideNav";
 import InstructorLayout from "./InstructorLayout";
 
 export default async function Layout(props: {

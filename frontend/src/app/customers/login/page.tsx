@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import styles from "./page.module.scss";
-import LoginForm from "@/app/components/features/loginForm/LoginForm";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import LoginForm from "@/components/features/loginForm/LoginForm";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LoginPage() {
   const { language } = useLanguage();

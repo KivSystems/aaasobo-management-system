@@ -1,4 +1,4 @@
-import SideNav from "@/app/components/layouts/sideNav/SideNav";
+import SideNav from "@/components/layouts/sideNav/SideNav";
 import CustomerLayout from "./CustomerLayout";
 
 export default async function Layout(props: {

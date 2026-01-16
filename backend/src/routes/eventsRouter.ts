@@ -4,7 +4,7 @@ import { registerRoutes } from "../middlewares/validationMiddleware";
 import { EventIdParams, EventResponse } from "../../../shared/schemas/events";
 import { MessageErrorResponse } from "../../../shared/schemas/common";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
-import { AUTH_ROLES } from "../helper/commonUtils";
+import { AUTH_ROLES } from "../utils/commonUtils";
 
 export const eventsRouter = express.Router();
 

@@ -1,7 +1,7 @@
 "use client";
 
-import ErrorPage from "@/app/components/elements/errorPage/ErrorPage";
-import { useLanguage } from "@/app/contexts/LanguageContext";
+import ErrorPage from "@/components/elements/errorPage/ErrorPage";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Error({
   error,

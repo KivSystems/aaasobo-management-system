@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../../prisma/prismaClient";
-import { nHoursLater } from "../helper/dateUtils";
+import { nHoursLater } from "../utils/dateUtils";
 
 export const generatePasswordResetToken = async (email: string) => {
   const token = uuidv4();

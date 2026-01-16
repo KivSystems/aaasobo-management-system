@@ -35,7 +35,7 @@ import {
 } from "../../../shared/schemas/customers";
 import { ErrorResponse } from "../../../shared/schemas/common";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
-import { AUTH_ROLES } from "../helper/commonUtils";
+import { AUTH_ROLES } from "../utils/commonUtils";
 
 export const customersRouter = express.Router();
 

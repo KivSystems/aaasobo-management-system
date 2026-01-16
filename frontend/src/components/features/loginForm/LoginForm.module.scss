@@ -1,0 +1,42 @@
+@use "@/styles/variables.module.scss" as *;
+
+.buttonWrapper {
+  display: flex;
+  justify-content: center;
+  margin: 1rem;
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.form {
+  width: 100%;
+}
+
+.errorWrapper {
+  color: $red-alert;
+  display: flex;
+  gap: 0.2rem;
+}
+
+.errorIcon {
+  height: 1.2rem;
+  width: 1.2rem;
+  min-width: 1.2rem;
+}
+
+.errorText {
+  font-size: 0.8rem;
+  margin-bottom: unset !important;
+}
+
+.resetLink {
+  font-size: 0.9rem;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

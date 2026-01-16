@@ -1,12 +1,12 @@
 "use server";
 
-import { updateUserPassword } from "../helper/api/usersApi";
-import { UNEXPECTED_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { extractPasswordResetValidationErrors } from "../helper/utils/validationErrorUtils";
+import { updateUserPassword } from "@/lib/api/usersApi";
+import { UNEXPECTED_ERROR_MESSAGE } from "@/lib/messages/formValidation";
+import { extractPasswordResetValidationErrors } from "@/lib/utils/validationErrorUtils";
 import {
   resetPasswordFormSchema,
   resetPasswordFormSchemaJa,
-} from "../schemas/authSchema";
+} from "@/schemas/authSchema";
 import { getCookie } from "../../proxy";
 
 export async function resetPassword(

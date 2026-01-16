@@ -1,19 +1,19 @@
 import { Prisma, Status } from "../../generated/prisma";
 import { prisma } from "../../prisma/prismaClient";
-import { getJstDayRange, nHoursLater } from "../helper/dateUtils";
+import { getJstDayRange, nHoursLater } from "../utils/dateUtils";
 import { NewClassToRebookType } from "../controllers/classesController";
 import {
   FREE_TRIAL_BOOKING_HOURS,
   REGULAR_REBOOKING_HOURS,
   MONTHS_TO_DELETE_CLASSES,
-} from "../helper/commonUtils";
+} from "../utils/commonUtils";
 import {
   CANCELED_CLASS_COLOR,
   COMPLETED_CLASS_COLOR,
   FREE_TRIAL_CLASS_COLOR,
   REBOOKED_CLASS_COLOR,
   REGULAR_CLASS_COLOR,
-} from "../helper/colors";
+} from "../utils/colors";
 
 export class InstructorUnavailableError extends Error {
   constructor() {

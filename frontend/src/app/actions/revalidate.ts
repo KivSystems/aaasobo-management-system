@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
-import { getUserSession } from "@/app/helper/auth/sessionUtils";
+import { getUserSession } from "@/lib/auth/sessionUtils";
 
 export async function revalidateCustomerCalendar(
   customerId: number,

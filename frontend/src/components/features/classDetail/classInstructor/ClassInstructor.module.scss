@@ -1,0 +1,78 @@
+@use "@/styles/variables.module.scss" as *;
+
+.instructor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+
+  &__icon {
+    border-radius: 180px;
+
+    &.booked {
+      border: 3px solid $light-pink-regular-class;
+    }
+    &.rebooked {
+      border: 3px solid $light-yellow-rebooked-class;
+    }
+    &.completed {
+      border: 3px solid $completed-background-color;
+    }
+    &.canceledByInstructor {
+      border: 3px solid $gray-canceled-by-instructor;
+    }
+    &.canceledByCustomer {
+      border: 3px solid $gray-background;
+    }
+    &.freeTrial {
+      border: 3px solid $green-success;
+    }
+    &.none {
+      border: 3px solid $green-success;
+    }
+  }
+
+  &__name {
+    font-size: 26px;
+    font-weight: 500;
+    margin-top: 5px;
+  }
+}
+
+// Individual styles for each class
+.rebookingModal {
+  margin-bottom: 10px;
+
+  .instructor__name {
+    font-size: 22px;
+    font-weight: 500;
+  }
+}
+
+.instructorItem {
+  margin-bottom: 10px;
+  position: static;
+
+  .instructor__name {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+.instructorCursorItem {
+  width: 160px;
+  margin: 20px 0 10px 5px;
+  position: block;
+  top: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+
+  .instructor__name {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}

@@ -1,5 +1,5 @@
-import InstructorCalendar from "@/app/components/instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendar";
-import { INVALID_INSTRUCTOR_ID } from "@/app/helper/messages/instructorDashboard";
+import InstructorCalendar from "@/components/instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendar";
+import { INVALID_INSTRUCTOR_ID } from "@/lib/messages/instructorDashboard";
 
 const ClassSchedulePage = async (props: {
   params: Promise<{ id: string }>;

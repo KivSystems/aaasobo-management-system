@@ -70,7 +70,7 @@ import {
   InstructorUpdateErrorResponse,
 } from "../../../shared/schemas/admins";
 
-import { AUTH_ROLES } from "../helper/commonUtils";
+import { AUTH_ROLES } from "../utils/commonUtils";
 import { verifyAuthentication } from "../middlewares/auth.middleware";
 import upload from "../middlewares/upload.middleware";
 

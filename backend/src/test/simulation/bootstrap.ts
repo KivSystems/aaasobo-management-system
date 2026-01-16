@@ -1,7 +1,7 @@
 import request from "supertest";
 import { server } from "../../server";
 import { prisma } from "../setup";
-import { hashPasswordSync } from "../../helper/commonUtils";
+import { hashPasswordSync } from "../../utils/commonUtils";
 import type { SimulationBootstrapConfig } from "./config";
 import { generateAuthCookie } from "../testUtils";
 const { faker } = require("@faker-js/faker");

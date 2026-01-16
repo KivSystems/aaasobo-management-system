@@ -1,16 +1,15 @@
 "use server";
 
-import { sendUserResetEmail } from "../helper/api/usersApi";
+import { sendUserResetEmail } from "@/lib/api/usersApi";
 import {
   GENERAL_ERROR_MESSAGE,
   UNEXPECTED_ERROR_MESSAGE,
-} from "../helper/messages/formValidation";
-import { extractResetRequestValidationErrors } from "../helper/utils/validationErrorUtils";
+} from "@/lib/messages/formValidation";
+import { extractResetRequestValidationErrors } from "@/lib/utils/validationErrorUtils";
 import {
   forgotPasswordFormSchema,
   forgotPasswordFormSchemaJa,
-} from "../schemas/authSchema";
-
+} from "@/schemas/authSchema";
 export async function sendResetEmail(
   prevState: ForgotPasswordFormState | undefined,
   formData: FormData,

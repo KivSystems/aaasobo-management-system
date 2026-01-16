@@ -1,5 +1,5 @@
-import EventDashboardForAdmin from "@/app/components/admins-dashboard/events-dashboard/EventDashboardForAdmin";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import EventDashboardForAdmin from "@/components/admins-dashboard/events-dashboard/EventDashboardForAdmin";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 
 async function Page(props: {
   params: Promise<{ id: string; eventId: string }>;

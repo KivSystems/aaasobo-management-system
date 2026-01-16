@@ -45,18 +45,18 @@ import {
   getMonthNumber,
   isSameLocalDate,
   nHoursBefore,
-} from "../helper/dateUtils";
+} from "../utils/dateUtils";
 import { getInstructorContactById } from "../services/instructorsService";
 import { getCustomerContactById } from "../services/customersService";
 import { getChildrenNamesByIds } from "../services/childrenService";
 import {
   sendAdminSameDayRebookEmail,
   sendInstructorSameDayRebookEmail,
-} from "../helper/mail";
+} from "../lib/email/mail";
 import {
   FREE_TRIAL_BOOKING_HOURS,
   REGULAR_REBOOKING_HOURS,
-} from "../helper/commonUtils";
+} from "../utils/commonUtils";
 import {
   createAttendances,
   deleteAttendancesByClassId,

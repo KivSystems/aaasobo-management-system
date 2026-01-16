@@ -1,6 +1,6 @@
-import ListTable from "@/app/components/admins-dashboard/ListTable";
-import { getAllEvents } from "@/app/helper/api/adminsApi";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import ListTable from "@/components/admins-dashboard/ListTable";
+import { getAllEvents } from "@/lib/api/adminsApi";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 import { getCookie } from "../../../../proxy";
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {

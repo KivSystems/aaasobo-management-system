@@ -1,0 +1,24 @@
+@use "@/styles/variables.module.scss" as *;
+
+.modalContent {
+  display: flex;
+  background-color: #fff;
+  height: 99vh;
+  width: 110vh;
+  overflow-x: hidden;
+
+  h2 {
+    align-self: center;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+  }
+
+  .actionButton {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 20px 0 20px 0;
+  }
+}

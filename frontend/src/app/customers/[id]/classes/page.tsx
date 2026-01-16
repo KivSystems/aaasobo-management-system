@@ -1,5 +1,5 @@
-import ClassCalendar from "@/app/components/customers-dashboard/classes/ClassCalendar";
-import { authenticateUserSession } from "@/app/helper/auth/sessionUtils";
+import ClassCalendar from "@/components/customers-dashboard/classes/ClassCalendar";
+import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 
 const ClassesPage = async (props: { params: Promise<{ id: string }> }) => {
   const params = await props.params;

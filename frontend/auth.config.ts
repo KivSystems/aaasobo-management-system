@@ -2,7 +2,7 @@ import type { NextAuthConfig } from "next-auth";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { SignJWT, jwtVerify } from "jose";
-import { convertToSingular } from "./src/app/helper/utils/stringUtils";
+import { convertToSingular } from "@/lib/utils/stringUtils";
 
 export const authConfig: NextAuthConfig = {
   pages: {

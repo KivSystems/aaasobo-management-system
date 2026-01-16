@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { deleteOldClasses } from "@/app/helper/api/classesApi";
+import { deleteOldClasses } from "@/lib/api/classesApi";
 
 export const runtime = "nodejs";
 

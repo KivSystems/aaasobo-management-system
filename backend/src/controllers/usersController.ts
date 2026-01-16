@@ -21,13 +21,13 @@ import {
   resendVerificationEmail,
   sendPasswordResetEmail,
   UserType,
-} from "../helper/mail";
+} from "../lib/email/mail";
 import {
   deletePasswordResetToken,
   generatePasswordResetToken,
   getPasswordResetTokenByToken,
 } from "../services/passwordResetTokensService";
-import { hashPassword } from "../helper/commonUtils";
+import { hashPassword } from "../utils/commonUtils";
 import { Customer } from "../../generated/prisma";
 import {
   AuthenticateRequest,

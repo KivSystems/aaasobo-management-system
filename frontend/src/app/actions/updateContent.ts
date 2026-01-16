@@ -1,16 +1,16 @@
 "use server";
 
-import { updateEvent } from "@/app/helper/api/eventsApi";
-import { updatePlan } from "@/app/helper/api/plansApi";
-import { updateBusinessSchedule } from "@/app/helper/api/calendarsApi";
-import { GENERAL_ERROR_MESSAGE } from "../helper/messages/formValidation";
-import { extractUpdateValidationErrors } from "../helper/utils/validationErrorUtils";
+import { updateEvent } from "@/lib/api/eventsApi";
+import { updatePlan } from "@/lib/api/plansApi";
+import { updateBusinessSchedule } from "@/lib/api/calendarsApi";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/messages/formValidation";
+import { extractUpdateValidationErrors } from "@/lib/utils/validationErrorUtils";
 import {
   eventUpdateSchema,
   planUpdateSchema,
   generateClassesSchema,
   scheduleUpdateSchema,
-} from "../schemas/authSchema";
+} from "@/schemas/authSchema";
 import {
   revalidateEventList,
   revalidateBusinessSchedule,
@@ -24,12 +24,12 @@ import {
   generateClasses,
   updateAttendance,
   updateClassStatus,
-} from "../helper/api/classesApi";
+} from "@/lib/api/classesApi";
 import { revalidatePath } from "next/cache";
 import {
   updateSubscriptionToAddClass,
   updateSubscriptionToTerminateClass,
-} from "../helper/api/subscriptionsApi";
+} from "@/lib/api/subscriptionsApi";
 import {
   UpdateSubscriptionToAddClassRequest,
   UpdateSubscriptionToTerminateClassRequest,
