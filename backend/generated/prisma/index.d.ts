@@ -21983,7 +21983,7 @@ export namespace Prisma {
     personalInfo?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    Customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
     classAttendance?: boolean | Child$classAttendanceArgs<ExtArgs>
     recurringClassAttendance?: boolean | Child$recurringClassAttendanceArgs<ExtArgs>
     _count?: boolean | ChildCountOutputTypeDefaultArgs<ExtArgs>
@@ -21997,7 +21997,7 @@ export namespace Prisma {
     personalInfo?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    Customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["child"]>
 
   export type ChildSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -22008,7 +22008,7 @@ export namespace Prisma {
     personalInfo?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    Customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["child"]>
 
   export type ChildSelectScalar = {
@@ -22023,22 +22023,22 @@ export namespace Prisma {
 
   export type ChildOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "name" | "birthdate" | "personalInfo" | "createdAt" | "updatedAt", ExtArgs["result"]["child"]>
   export type ChildInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
     classAttendance?: boolean | Child$classAttendanceArgs<ExtArgs>
     recurringClassAttendance?: boolean | Child$recurringClassAttendanceArgs<ExtArgs>
     _count?: boolean | ChildCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ChildIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
   }
   export type ChildIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
   }
 
   export type $ChildPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Child"
     objects: {
-      Customer: Prisma.$CustomerPayload<ExtArgs>
+      customer: Prisma.$CustomerPayload<ExtArgs>
       classAttendance: Prisma.$ClassAttendancePayload<ExtArgs>[]
       recurringClassAttendance: Prisma.$RecurringClassAttendancePayload<ExtArgs>[]
     }
@@ -22444,7 +22444,7 @@ export namespace Prisma {
    */
   export interface Prisma__ChildClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    Customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     classAttendance<T extends Child$classAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Child$classAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     recurringClassAttendance<T extends Child$recurringClassAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Child$recurringClassAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -24371,7 +24371,7 @@ export namespace Prisma {
     personalInfo?: StringNullableFilter<"Child"> | string | null
     createdAt?: DateTimeFilter<"Child"> | Date | string
     updatedAt?: DateTimeFilter<"Child"> | Date | string
-    Customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     classAttendance?: ClassAttendanceListRelationFilter
     recurringClassAttendance?: RecurringClassAttendanceListRelationFilter
   }
@@ -24384,7 +24384,7 @@ export namespace Prisma {
     personalInfo?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    Customer?: CustomerOrderByWithRelationInput
+    customer?: CustomerOrderByWithRelationInput
     classAttendance?: ClassAttendanceOrderByRelationAggregateInput
     recurringClassAttendance?: RecurringClassAttendanceOrderByRelationAggregateInput
   }
@@ -24400,7 +24400,7 @@ export namespace Prisma {
     personalInfo?: StringNullableFilter<"Child"> | string | null
     createdAt?: DateTimeFilter<"Child"> | Date | string
     updatedAt?: DateTimeFilter<"Child"> | Date | string
-    Customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     classAttendance?: ClassAttendanceListRelationFilter
     recurringClassAttendance?: RecurringClassAttendanceListRelationFilter
   }, "id">
@@ -25495,7 +25495,7 @@ export namespace Prisma {
     personalInfo?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    Customer: CustomerCreateNestedOneWithoutChildrenInput
+    customer: CustomerCreateNestedOneWithoutChildrenInput
     classAttendance?: ClassAttendanceCreateNestedManyWithoutChildrenInput
     recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutChildrenInput
   }
@@ -25518,7 +25518,7 @@ export namespace Prisma {
     personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    Customer?: CustomerUpdateOneRequiredWithoutChildrenNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutChildrenNestedInput
     classAttendance?: ClassAttendanceUpdateManyWithoutChildrenNestedInput
     recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutChildrenNestedInput
   }
@@ -28544,7 +28544,7 @@ export namespace Prisma {
     personalInfo?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    Customer: CustomerCreateNestedOneWithoutChildrenInput
+    customer: CustomerCreateNestedOneWithoutChildrenInput
     recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutChildrenInput
   }
 
@@ -28615,7 +28615,7 @@ export namespace Prisma {
     personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    Customer?: CustomerUpdateOneRequiredWithoutChildrenNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutChildrenNestedInput
     recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutChildrenNestedInput
   }
 
@@ -29214,7 +29214,7 @@ export namespace Prisma {
     personalInfo?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    Customer: CustomerCreateNestedOneWithoutChildrenInput
+    customer: CustomerCreateNestedOneWithoutChildrenInput
     classAttendance?: ClassAttendanceCreateNestedManyWithoutChildrenInput
   }
 
@@ -29273,7 +29273,7 @@ export namespace Prisma {
     personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    Customer?: CustomerUpdateOneRequiredWithoutChildrenNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutChildrenNestedInput
     classAttendance?: ClassAttendanceUpdateManyWithoutChildrenNestedInput
   }
 

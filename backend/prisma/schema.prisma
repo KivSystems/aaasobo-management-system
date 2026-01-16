@@ -241,7 +241,7 @@ model Child {
   personalInfo             String?
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @default(now())
-  Customer                 Customer                   @relation(fields: [customerId], references: [id])
+  customer                 Customer                   @relation(fields: [customerId], references: [id])
   classAttendance          ClassAttendance[]
   recurringClassAttendance RecurringClassAttendance[]
 
