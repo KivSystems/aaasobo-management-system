@@ -62,7 +62,7 @@ export function generateTestInstructor() {
  * Create an admin in the database
  */
 export async function createAdmin(data = generateTestAdmin()) {
-  return await prisma.admins.create({
+  return await prisma.admin.create({
     data: {
       ...data,
       password: hashPasswordSync(data.password),
@@ -135,7 +135,7 @@ export async function createChild(
   customerId: number,
   data?: Partial<ReturnType<typeof generateTestChild>>,
 ) {
-  return await prisma.children.create({
+  return await prisma.child.create({
     data: {
       ...generateTestChild(customerId),
       ...data,

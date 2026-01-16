@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.0.1
- * Query Engine version: f09f2815f091dbba658cdcd2264306d88bb5bda6
+ * Prisma Client JS version: 7.2.0
+ * Query Engine version: 0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
  */
 Prisma.prismaVersion = {
-  client: "7.0.1",
-  engine: "f09f2815f091dbba658cdcd2264306d88bb5bda6"
+  client: "7.2.0",
+  engine: "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -171,25 +171,6 @@ exports.Prisma.ClassScalarFieldEnum = {
   isFreeTrial: 'isFreeTrial'
 };
 
-exports.Prisma.AdminsScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  password: 'password',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ChildrenScalarFieldEnum = {
-  id: 'id',
-  customerId: 'customerId',
-  name: 'name',
-  birthdate: 'birthdate',
-  personalInfo: 'personalInfo',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.ClassAttendanceScalarFieldEnum = {
   classId: 'classId',
   childrenId: 'childrenId'
@@ -279,6 +260,25 @@ exports.Prisma.SystemStatusScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AdminScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ChildScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  name: 'name',
+  birthdate: 'birthdate',
+  personalInfo: 'personalInfo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -307,8 +307,6 @@ exports.Prisma.ModelName = {
   Instructor: 'Instructor',
   Customer: 'Customer',
   Class: 'Class',
-  Admins: 'Admins',
-  Children: 'Children',
   ClassAttendance: 'ClassAttendance',
   Plan: 'Plan',
   Subscription: 'Subscription',
@@ -321,7 +319,9 @@ exports.Prisma.ModelName = {
   InstructorSchedule: 'InstructorSchedule',
   InstructorSlot: 'InstructorSlot',
   InstructorAbsence: 'InstructorAbsence',
-  SystemStatus: 'SystemStatus'
+  SystemStatus: 'SystemStatus',
+  Admin: 'Admin',
+  Child: 'Child'
 };
 
 /**

@@ -22,7 +22,7 @@ vi.mock("../../helper/resendClient", () => ({
 }));
 
 vi.mock("../../helper/mail", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../lib/mail")>();
+  const actual = await importOriginal<typeof import("../../lib/email/mail")>();
   return {
     ...actual,
     resendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),

@@ -47,7 +47,7 @@ export const deactivateCustomer = async (id: number) => {
   // Use a transaction to ensure both customer and children are updated atomically
   const deactivatedUsers = await prisma.$transaction(async (tx) => {
     // Fetch the applicable children ids and names
-    const children = await tx.children.findMany({
+    const children = await tx.child.findMany({
       where: { customerId: id },
       select: { name: true, id: true },
     });
@@ -78,7 +78,7 @@ export const deactivateCustomer = async (id: number) => {
     // Mask the children information
     const deactivatedChildren = await Promise.all(
       updatedChildrenNames.map((child) =>
-        tx.children.update({
+        tx.child.update({
           where: { id: child.id },
           data: {
             birthdate: maskedBirthdate,

@@ -29,16 +29,6 @@ export type Customer = $Result.DefaultSelection<Prisma.$CustomerPayload>
  */
 export type Class = $Result.DefaultSelection<Prisma.$ClassPayload>
 /**
- * Model Admins
- * 
- */
-export type Admins = $Result.DefaultSelection<Prisma.$AdminsPayload>
-/**
- * Model Children
- * 
- */
-export type Children = $Result.DefaultSelection<Prisma.$ChildrenPayload>
-/**
  * Model ClassAttendance
  * 
  */
@@ -103,6 +93,16 @@ export type InstructorAbsence = $Result.DefaultSelection<Prisma.$InstructorAbsen
  * 
  */
 export type SystemStatus = $Result.DefaultSelection<Prisma.$SystemStatusPayload>
+/**
+ * Model Admin
+ * 
+ */
+export type Admin = $Result.DefaultSelection<Prisma.$AdminPayload>
+/**
+ * Model Child
+ * 
+ */
+export type Child = $Result.DefaultSelection<Prisma.$ChildPayload>
 
 /**
  * Enums
@@ -138,7 +138,7 @@ export const Status: typeof $Enums.Status
  * ```
  *
  *
- * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+ * Read more in our [docs](https://pris.ly/d/client).
  */
 export class PrismaClient<
   ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
@@ -159,7 +159,7 @@ export class PrismaClient<
    * ```
    *
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+   * Read more in our [docs](https://pris.ly/d/client).
    */
 
   constructor(optionsArg ?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
@@ -182,7 +182,7 @@ export class PrismaClient<
    * const result = await prisma.$executeRaw`UPDATE User SET cool = ${true} WHERE email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -194,7 +194,7 @@ export class PrismaClient<
    * const result = await prisma.$executeRawUnsafe('UPDATE User SET cool = $1 WHERE email = $2 ;', true, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -205,7 +205,7 @@ export class PrismaClient<
    * const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${1} OR email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -217,7 +217,7 @@ export class PrismaClient<
    * const result = await prisma.$queryRawUnsafe('SELECT * FROM User WHERE id = $1 OR email = $2;', 1, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -272,26 +272,6 @@ export class PrismaClient<
     * ```
     */
   get class(): Prisma.ClassDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.admins`: Exposes CRUD operations for the **Admins** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Admins
-    * const admins = await prisma.admins.findMany()
-    * ```
-    */
-  get admins(): Prisma.AdminsDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.children`: Exposes CRUD operations for the **Children** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Children
-    * const children = await prisma.children.findMany()
-    * ```
-    */
-  get children(): Prisma.ChildrenDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.classAttendance`: Exposes CRUD operations for the **ClassAttendance** model.
@@ -422,6 +402,26 @@ export class PrismaClient<
     * ```
     */
   get systemStatus(): Prisma.SystemStatusDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.admin`: Exposes CRUD operations for the **Admin** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Admins
+    * const admins = await prisma.admin.findMany()
+    * ```
+    */
+  get admin(): Prisma.AdminDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.child`: Exposes CRUD operations for the **Child** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Children
+    * const children = await prisma.child.findMany()
+    * ```
+    */
+  get child(): Prisma.ChildDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -472,8 +472,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.0.1
-   * Query Engine version: f09f2815f091dbba658cdcd2264306d88bb5bda6
+   * Prisma Client JS version: 7.2.0
+   * Query Engine version: 0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
    */
   export type PrismaVersion = {
     client: string
@@ -859,8 +859,6 @@ export namespace Prisma {
     Instructor: 'Instructor',
     Customer: 'Customer',
     Class: 'Class',
-    Admins: 'Admins',
-    Children: 'Children',
     ClassAttendance: 'ClassAttendance',
     Plan: 'Plan',
     Subscription: 'Subscription',
@@ -873,7 +871,9 @@ export namespace Prisma {
     InstructorSchedule: 'InstructorSchedule',
     InstructorSlot: 'InstructorSlot',
     InstructorAbsence: 'InstructorAbsence',
-    SystemStatus: 'SystemStatus'
+    SystemStatus: 'SystemStatus',
+    Admin: 'Admin',
+    Child: 'Child'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -889,7 +889,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "instructor" | "customer" | "class" | "admins" | "children" | "classAttendance" | "plan" | "subscription" | "recurringClass" | "recurringClassAttendance" | "verificationToken" | "passwordResetToken" | "schedule" | "event" | "instructorSchedule" | "instructorSlot" | "instructorAbsence" | "systemStatus"
+      modelProps: "instructor" | "customer" | "class" | "classAttendance" | "plan" | "subscription" | "recurringClass" | "recurringClassAttendance" | "verificationToken" | "passwordResetToken" | "schedule" | "event" | "instructorSchedule" | "instructorSlot" | "instructorAbsence" | "systemStatus" | "admin" | "child"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1112,154 +1112,6 @@ export namespace Prisma {
           count: {
             args: Prisma.ClassCountArgs<ExtArgs>
             result: $Utils.Optional<ClassCountAggregateOutputType> | number
-          }
-        }
-      }
-      Admins: {
-        payload: Prisma.$AdminsPayload<ExtArgs>
-        fields: Prisma.AdminsFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.AdminsFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.AdminsFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>
-          }
-          findFirst: {
-            args: Prisma.AdminsFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.AdminsFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>
-          }
-          findMany: {
-            args: Prisma.AdminsFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>[]
-          }
-          create: {
-            args: Prisma.AdminsCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>
-          }
-          createMany: {
-            args: Prisma.AdminsCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.AdminsCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>[]
-          }
-          delete: {
-            args: Prisma.AdminsDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>
-          }
-          update: {
-            args: Prisma.AdminsUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>
-          }
-          deleteMany: {
-            args: Prisma.AdminsDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.AdminsUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.AdminsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>[]
-          }
-          upsert: {
-            args: Prisma.AdminsUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AdminsPayload>
-          }
-          aggregate: {
-            args: Prisma.AdminsAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateAdmins>
-          }
-          groupBy: {
-            args: Prisma.AdminsGroupByArgs<ExtArgs>
-            result: $Utils.Optional<AdminsGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.AdminsCountArgs<ExtArgs>
-            result: $Utils.Optional<AdminsCountAggregateOutputType> | number
-          }
-        }
-      }
-      Children: {
-        payload: Prisma.$ChildrenPayload<ExtArgs>
-        fields: Prisma.ChildrenFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.ChildrenFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.ChildrenFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>
-          }
-          findFirst: {
-            args: Prisma.ChildrenFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.ChildrenFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>
-          }
-          findMany: {
-            args: Prisma.ChildrenFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>[]
-          }
-          create: {
-            args: Prisma.ChildrenCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>
-          }
-          createMany: {
-            args: Prisma.ChildrenCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.ChildrenCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>[]
-          }
-          delete: {
-            args: Prisma.ChildrenDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>
-          }
-          update: {
-            args: Prisma.ChildrenUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>
-          }
-          deleteMany: {
-            args: Prisma.ChildrenDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.ChildrenUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.ChildrenUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>[]
-          }
-          upsert: {
-            args: Prisma.ChildrenUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChildrenPayload>
-          }
-          aggregate: {
-            args: Prisma.ChildrenAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateChildren>
-          }
-          groupBy: {
-            args: Prisma.ChildrenGroupByArgs<ExtArgs>
-            result: $Utils.Optional<ChildrenGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.ChildrenCountArgs<ExtArgs>
-            result: $Utils.Optional<ChildrenCountAggregateOutputType> | number
           }
         }
       }
@@ -2225,6 +2077,154 @@ export namespace Prisma {
           }
         }
       }
+      Admin: {
+        payload: Prisma.$AdminPayload<ExtArgs>
+        fields: Prisma.AdminFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AdminFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AdminFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>
+          }
+          findFirst: {
+            args: Prisma.AdminFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AdminFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>
+          }
+          findMany: {
+            args: Prisma.AdminFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>[]
+          }
+          create: {
+            args: Prisma.AdminCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>
+          }
+          createMany: {
+            args: Prisma.AdminCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AdminCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>[]
+          }
+          delete: {
+            args: Prisma.AdminDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>
+          }
+          update: {
+            args: Prisma.AdminUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>
+          }
+          deleteMany: {
+            args: Prisma.AdminDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AdminUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AdminUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>[]
+          }
+          upsert: {
+            args: Prisma.AdminUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminPayload>
+          }
+          aggregate: {
+            args: Prisma.AdminAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAdmin>
+          }
+          groupBy: {
+            args: Prisma.AdminGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AdminGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AdminCountArgs<ExtArgs>
+            result: $Utils.Optional<AdminCountAggregateOutputType> | number
+          }
+        }
+      }
+      Child: {
+        payload: Prisma.$ChildPayload<ExtArgs>
+        fields: Prisma.ChildFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ChildFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ChildFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>
+          }
+          findFirst: {
+            args: Prisma.ChildFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ChildFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>
+          }
+          findMany: {
+            args: Prisma.ChildFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>[]
+          }
+          create: {
+            args: Prisma.ChildCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>
+          }
+          createMany: {
+            args: Prisma.ChildCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ChildCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>[]
+          }
+          delete: {
+            args: Prisma.ChildDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>
+          }
+          update: {
+            args: Prisma.ChildUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>
+          }
+          deleteMany: {
+            args: Prisma.ChildDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ChildUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ChildUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>[]
+          }
+          upsert: {
+            args: Prisma.ChildUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChildPayload>
+          }
+          aggregate: {
+            args: Prisma.ChildAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateChild>
+          }
+          groupBy: {
+            args: Prisma.ChildGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ChildGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ChildCountArgs<ExtArgs>
+            result: $Utils.Optional<ChildCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2279,7 +2279,7 @@ export namespace Prisma {
      *  { emit: 'stdout', level: 'error' }
      * 
      * ```
-     * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
+     * Read more in our [docs](https://pris.ly/d/logging).
      */
     log?: (LogLevel | LogDefinition)[]
     /**
@@ -2315,13 +2315,27 @@ export namespace Prisma {
      * ```
      */
     omit?: Prisma.GlobalOmitConfig
+    /**
+     * SQL commenter plugins that add metadata to SQL queries as comments.
+     * Comments follow the sqlcommenter format: https://google.github.io/sqlcommenter/
+     * 
+     * @example
+     * ```
+     * const prisma = new PrismaClient({
+     *   adapter,
+     *   comments: [
+     *     traceContext(),
+     *     queryInsights(),
+     *   ],
+     * })
+     * ```
+     */
+    comments?: runtime.SqlCommenterPlugin[]
   }
   export type GlobalOmitConfig = {
     instructor?: InstructorOmit
     customer?: CustomerOmit
     class?: ClassOmit
-    admins?: AdminsOmit
-    children?: ChildrenOmit
     classAttendance?: ClassAttendanceOmit
     plan?: PlanOmit
     subscription?: SubscriptionOmit
@@ -2335,6 +2349,8 @@ export namespace Prisma {
     instructorSlot?: InstructorSlotOmit
     instructorAbsence?: InstructorAbsenceOmit
     systemStatus?: SystemStatusOmit
+    admin?: AdminOmit
+    child?: ChildOmit
   }
 
   /* Types for Logging */
@@ -2499,7 +2515,7 @@ export namespace Prisma {
    * CustomerCountOutputType without action
    */
   export type CustomerCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ChildrenWhereInput
+    where?: ChildWhereInput
   }
 
   /**
@@ -2545,46 +2561,6 @@ export namespace Prisma {
    */
   export type ClassCountOutputTypeCountClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClassAttendanceWhereInput
-  }
-
-
-  /**
-   * Count Type ChildrenCountOutputType
-   */
-
-  export type ChildrenCountOutputType = {
-    classAttendance: number
-    recurringClassAttendance: number
-  }
-
-  export type ChildrenCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    classAttendance?: boolean | ChildrenCountOutputTypeCountClassAttendanceArgs
-    recurringClassAttendance?: boolean | ChildrenCountOutputTypeCountRecurringClassAttendanceArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * ChildrenCountOutputType without action
-   */
-  export type ChildrenCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ChildrenCountOutputType
-     */
-    select?: ChildrenCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * ChildrenCountOutputType without action
-   */
-  export type ChildrenCountOutputTypeCountClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ClassAttendanceWhereInput
-  }
-
-  /**
-   * ChildrenCountOutputType without action
-   */
-  export type ChildrenCountOutputTypeCountRecurringClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RecurringClassAttendanceWhereInput
   }
 
 
@@ -2758,6 +2734,46 @@ export namespace Prisma {
    */
   export type InstructorScheduleCountOutputTypeCountSlotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: InstructorSlotWhereInput
+  }
+
+
+  /**
+   * Count Type ChildCountOutputType
+   */
+
+  export type ChildCountOutputType = {
+    classAttendance: number
+    recurringClassAttendance: number
+  }
+
+  export type ChildCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    classAttendance?: boolean | ChildCountOutputTypeCountClassAttendanceArgs
+    recurringClassAttendance?: boolean | ChildCountOutputTypeCountRecurringClassAttendanceArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ChildCountOutputType without action
+   */
+  export type ChildCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChildCountOutputType
+     */
+    select?: ChildCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ChildCountOutputType without action
+   */
+  export type ChildCountOutputTypeCountClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClassAttendanceWhereInput
+  }
+
+  /**
+   * ChildCountOutputType without action
+   */
+  export type ChildCountOutputTypeCountRecurringClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RecurringClassAttendanceWhereInput
   }
 
 
@@ -4444,7 +4460,7 @@ export namespace Prisma {
   export type $CustomerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Customer"
     objects: {
-      children: Prisma.$ChildrenPayload<ExtArgs>[]
+      children: Prisma.$ChildPayload<ExtArgs>[]
       classes: Prisma.$ClassPayload<ExtArgs>[]
       subscription: Prisma.$SubscriptionPayload<ExtArgs>[]
     }
@@ -4853,7 +4869,7 @@ export namespace Prisma {
    */
   export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    children<T extends Customer$childrenArgs<ExtArgs> = {}>(args?: Subset<T, Customer$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    children<T extends Customer$childrenArgs<ExtArgs> = {}>(args?: Subset<T, Customer$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     classes<T extends Customer$classesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$classesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subscription<T extends Customer$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, Customer$subscriptionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -5287,23 +5303,23 @@ export namespace Prisma {
    */
   export type Customer$childrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Children
+     * Select specific fields to fetch from the Child
      */
-    select?: ChildrenSelect<ExtArgs> | null
+    select?: ChildSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Children
+     * Omit specific fields from the Child
      */
-    omit?: ChildrenOmit<ExtArgs> | null
+    omit?: ChildOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChildrenInclude<ExtArgs> | null
-    where?: ChildrenWhereInput
-    orderBy?: ChildrenOrderByWithRelationInput | ChildrenOrderByWithRelationInput[]
-    cursor?: ChildrenWhereUniqueInput
+    include?: ChildInclude<ExtArgs> | null
+    where?: ChildWhereInput
+    orderBy?: ChildOrderByWithRelationInput | ChildOrderByWithRelationInput[]
+    cursor?: ChildWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: ChildrenScalarFieldEnum | ChildrenScalarFieldEnum[]
+    distinct?: ChildScalarFieldEnum | ChildScalarFieldEnum[]
   }
 
   /**
@@ -6684,2228 +6700,6 @@ export namespace Prisma {
 
 
   /**
-   * Model Admins
-   */
-
-  export type AggregateAdmins = {
-    _count: AdminsCountAggregateOutputType | null
-    _avg: AdminsAvgAggregateOutputType | null
-    _sum: AdminsSumAggregateOutputType | null
-    _min: AdminsMinAggregateOutputType | null
-    _max: AdminsMaxAggregateOutputType | null
-  }
-
-  export type AdminsAvgAggregateOutputType = {
-    id: number | null
-  }
-
-  export type AdminsSumAggregateOutputType = {
-    id: number | null
-  }
-
-  export type AdminsMinAggregateOutputType = {
-    id: number | null
-    name: string | null
-    email: string | null
-    password: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type AdminsMaxAggregateOutputType = {
-    id: number | null
-    name: string | null
-    email: string | null
-    password: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type AdminsCountAggregateOutputType = {
-    id: number
-    name: number
-    email: number
-    password: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type AdminsAvgAggregateInputType = {
-    id?: true
-  }
-
-  export type AdminsSumAggregateInputType = {
-    id?: true
-  }
-
-  export type AdminsMinAggregateInputType = {
-    id?: true
-    name?: true
-    email?: true
-    password?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type AdminsMaxAggregateInputType = {
-    id?: true
-    name?: true
-    email?: true
-    password?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type AdminsCountAggregateInputType = {
-    id?: true
-    name?: true
-    email?: true
-    password?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type AdminsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Admins to aggregate.
-     */
-    where?: AdminsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Admins to fetch.
-     */
-    orderBy?: AdminsOrderByWithRelationInput | AdminsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: AdminsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Admins from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Admins.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Admins
-    **/
-    _count?: true | AdminsCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: AdminsAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: AdminsSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: AdminsMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: AdminsMaxAggregateInputType
-  }
-
-  export type GetAdminsAggregateType<T extends AdminsAggregateArgs> = {
-        [P in keyof T & keyof AggregateAdmins]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateAdmins[P]>
-      : GetScalarType<T[P], AggregateAdmins[P]>
-  }
-
-
-
-
-  export type AdminsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AdminsWhereInput
-    orderBy?: AdminsOrderByWithAggregationInput | AdminsOrderByWithAggregationInput[]
-    by: AdminsScalarFieldEnum[] | AdminsScalarFieldEnum
-    having?: AdminsScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: AdminsCountAggregateInputType | true
-    _avg?: AdminsAvgAggregateInputType
-    _sum?: AdminsSumAggregateInputType
-    _min?: AdminsMinAggregateInputType
-    _max?: AdminsMaxAggregateInputType
-  }
-
-  export type AdminsGroupByOutputType = {
-    id: number
-    name: string
-    email: string
-    password: string
-    createdAt: Date
-    updatedAt: Date
-    _count: AdminsCountAggregateOutputType | null
-    _avg: AdminsAvgAggregateOutputType | null
-    _sum: AdminsSumAggregateOutputType | null
-    _min: AdminsMinAggregateOutputType | null
-    _max: AdminsMaxAggregateOutputType | null
-  }
-
-  type GetAdminsGroupByPayload<T extends AdminsGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<AdminsGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof AdminsGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], AdminsGroupByOutputType[P]>
-            : GetScalarType<T[P], AdminsGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type AdminsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    email?: boolean
-    password?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["admins"]>
-
-  export type AdminsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    email?: boolean
-    password?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["admins"]>
-
-  export type AdminsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    email?: boolean
-    password?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["admins"]>
-
-  export type AdminsSelectScalar = {
-    id?: boolean
-    name?: boolean
-    email?: boolean
-    password?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-  export type AdminsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["admins"]>
-
-  export type $AdminsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Admins"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      id: number
-      name: string
-      email: string
-      password: string
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["admins"]>
-    composites: {}
-  }
-
-  type AdminsGetPayload<S extends boolean | null | undefined | AdminsDefaultArgs> = $Result.GetResult<Prisma.$AdminsPayload, S>
-
-  type AdminsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<AdminsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: AdminsCountAggregateInputType | true
-    }
-
-  export interface AdminsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Admins'], meta: { name: 'Admins' } }
-    /**
-     * Find zero or one Admins that matches the filter.
-     * @param {AdminsFindUniqueArgs} args - Arguments to find a Admins
-     * @example
-     * // Get one Admins
-     * const admins = await prisma.admins.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends AdminsFindUniqueArgs>(args: SelectSubset<T, AdminsFindUniqueArgs<ExtArgs>>): Prisma__AdminsClient<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Admins that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {AdminsFindUniqueOrThrowArgs} args - Arguments to find a Admins
-     * @example
-     * // Get one Admins
-     * const admins = await prisma.admins.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends AdminsFindUniqueOrThrowArgs>(args: SelectSubset<T, AdminsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AdminsClient<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Admins that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AdminsFindFirstArgs} args - Arguments to find a Admins
-     * @example
-     * // Get one Admins
-     * const admins = await prisma.admins.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends AdminsFindFirstArgs>(args?: SelectSubset<T, AdminsFindFirstArgs<ExtArgs>>): Prisma__AdminsClient<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Admins that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AdminsFindFirstOrThrowArgs} args - Arguments to find a Admins
-     * @example
-     * // Get one Admins
-     * const admins = await prisma.admins.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends AdminsFindFirstOrThrowArgs>(args?: SelectSubset<T, AdminsFindFirstOrThrowArgs<ExtArgs>>): Prisma__AdminsClient<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Admins that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AdminsFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Admins
-     * const admins = await prisma.admins.findMany()
-     * 
-     * // Get first 10 Admins
-     * const admins = await prisma.admins.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const adminsWithIdOnly = await prisma.admins.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends AdminsFindManyArgs>(args?: SelectSubset<T, AdminsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Admins.
-     * @param {AdminsCreateArgs} args - Arguments to create a Admins.
-     * @example
-     * // Create one Admins
-     * const Admins = await prisma.admins.create({
-     *   data: {
-     *     // ... data to create a Admins
-     *   }
-     * })
-     * 
-     */
-    create<T extends AdminsCreateArgs>(args: SelectSubset<T, AdminsCreateArgs<ExtArgs>>): Prisma__AdminsClient<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Admins.
-     * @param {AdminsCreateManyArgs} args - Arguments to create many Admins.
-     * @example
-     * // Create many Admins
-     * const admins = await prisma.admins.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends AdminsCreateManyArgs>(args?: SelectSubset<T, AdminsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Admins and returns the data saved in the database.
-     * @param {AdminsCreateManyAndReturnArgs} args - Arguments to create many Admins.
-     * @example
-     * // Create many Admins
-     * const admins = await prisma.admins.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Admins and only return the `id`
-     * const adminsWithIdOnly = await prisma.admins.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends AdminsCreateManyAndReturnArgs>(args?: SelectSubset<T, AdminsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Admins.
-     * @param {AdminsDeleteArgs} args - Arguments to delete one Admins.
-     * @example
-     * // Delete one Admins
-     * const Admins = await prisma.admins.delete({
-     *   where: {
-     *     // ... filter to delete one Admins
-     *   }
-     * })
-     * 
-     */
-    delete<T extends AdminsDeleteArgs>(args: SelectSubset<T, AdminsDeleteArgs<ExtArgs>>): Prisma__AdminsClient<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Admins.
-     * @param {AdminsUpdateArgs} args - Arguments to update one Admins.
-     * @example
-     * // Update one Admins
-     * const admins = await prisma.admins.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends AdminsUpdateArgs>(args: SelectSubset<T, AdminsUpdateArgs<ExtArgs>>): Prisma__AdminsClient<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Admins.
-     * @param {AdminsDeleteManyArgs} args - Arguments to filter Admins to delete.
-     * @example
-     * // Delete a few Admins
-     * const { count } = await prisma.admins.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends AdminsDeleteManyArgs>(args?: SelectSubset<T, AdminsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Admins.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AdminsUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Admins
-     * const admins = await prisma.admins.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends AdminsUpdateManyArgs>(args: SelectSubset<T, AdminsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Admins and returns the data updated in the database.
-     * @param {AdminsUpdateManyAndReturnArgs} args - Arguments to update many Admins.
-     * @example
-     * // Update many Admins
-     * const admins = await prisma.admins.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Admins and only return the `id`
-     * const adminsWithIdOnly = await prisma.admins.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends AdminsUpdateManyAndReturnArgs>(args: SelectSubset<T, AdminsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Admins.
-     * @param {AdminsUpsertArgs} args - Arguments to update or create a Admins.
-     * @example
-     * // Update or create a Admins
-     * const admins = await prisma.admins.upsert({
-     *   create: {
-     *     // ... data to create a Admins
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Admins we want to update
-     *   }
-     * })
-     */
-    upsert<T extends AdminsUpsertArgs>(args: SelectSubset<T, AdminsUpsertArgs<ExtArgs>>): Prisma__AdminsClient<$Result.GetResult<Prisma.$AdminsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Admins.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AdminsCountArgs} args - Arguments to filter Admins to count.
-     * @example
-     * // Count the number of Admins
-     * const count = await prisma.admins.count({
-     *   where: {
-     *     // ... the filter for the Admins we want to count
-     *   }
-     * })
-    **/
-    count<T extends AdminsCountArgs>(
-      args?: Subset<T, AdminsCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], AdminsCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Admins.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AdminsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends AdminsAggregateArgs>(args: Subset<T, AdminsAggregateArgs>): Prisma.PrismaPromise<GetAdminsAggregateType<T>>
-
-    /**
-     * Group by Admins.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AdminsGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends AdminsGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: AdminsGroupByArgs['orderBy'] }
-        : { orderBy?: AdminsGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, AdminsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdminsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Admins model
-   */
-  readonly fields: AdminsFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Admins.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__AdminsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Admins model
-   */
-  interface AdminsFieldRefs {
-    readonly id: FieldRef<"Admins", 'Int'>
-    readonly name: FieldRef<"Admins", 'String'>
-    readonly email: FieldRef<"Admins", 'String'>
-    readonly password: FieldRef<"Admins", 'String'>
-    readonly createdAt: FieldRef<"Admins", 'DateTime'>
-    readonly updatedAt: FieldRef<"Admins", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Admins findUnique
-   */
-  export type AdminsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * Filter, which Admins to fetch.
-     */
-    where: AdminsWhereUniqueInput
-  }
-
-  /**
-   * Admins findUniqueOrThrow
-   */
-  export type AdminsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * Filter, which Admins to fetch.
-     */
-    where: AdminsWhereUniqueInput
-  }
-
-  /**
-   * Admins findFirst
-   */
-  export type AdminsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * Filter, which Admins to fetch.
-     */
-    where?: AdminsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Admins to fetch.
-     */
-    orderBy?: AdminsOrderByWithRelationInput | AdminsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Admins.
-     */
-    cursor?: AdminsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Admins from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Admins.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Admins.
-     */
-    distinct?: AdminsScalarFieldEnum | AdminsScalarFieldEnum[]
-  }
-
-  /**
-   * Admins findFirstOrThrow
-   */
-  export type AdminsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * Filter, which Admins to fetch.
-     */
-    where?: AdminsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Admins to fetch.
-     */
-    orderBy?: AdminsOrderByWithRelationInput | AdminsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Admins.
-     */
-    cursor?: AdminsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Admins from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Admins.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Admins.
-     */
-    distinct?: AdminsScalarFieldEnum | AdminsScalarFieldEnum[]
-  }
-
-  /**
-   * Admins findMany
-   */
-  export type AdminsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * Filter, which Admins to fetch.
-     */
-    where?: AdminsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Admins to fetch.
-     */
-    orderBy?: AdminsOrderByWithRelationInput | AdminsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Admins.
-     */
-    cursor?: AdminsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Admins from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Admins.
-     */
-    skip?: number
-    distinct?: AdminsScalarFieldEnum | AdminsScalarFieldEnum[]
-  }
-
-  /**
-   * Admins create
-   */
-  export type AdminsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * The data needed to create a Admins.
-     */
-    data: XOR<AdminsCreateInput, AdminsUncheckedCreateInput>
-  }
-
-  /**
-   * Admins createMany
-   */
-  export type AdminsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Admins.
-     */
-    data: AdminsCreateManyInput | AdminsCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Admins createManyAndReturn
-   */
-  export type AdminsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * The data used to create many Admins.
-     */
-    data: AdminsCreateManyInput | AdminsCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Admins update
-   */
-  export type AdminsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * The data needed to update a Admins.
-     */
-    data: XOR<AdminsUpdateInput, AdminsUncheckedUpdateInput>
-    /**
-     * Choose, which Admins to update.
-     */
-    where: AdminsWhereUniqueInput
-  }
-
-  /**
-   * Admins updateMany
-   */
-  export type AdminsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Admins.
-     */
-    data: XOR<AdminsUpdateManyMutationInput, AdminsUncheckedUpdateManyInput>
-    /**
-     * Filter which Admins to update
-     */
-    where?: AdminsWhereInput
-    /**
-     * Limit how many Admins to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Admins updateManyAndReturn
-   */
-  export type AdminsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * The data used to update Admins.
-     */
-    data: XOR<AdminsUpdateManyMutationInput, AdminsUncheckedUpdateManyInput>
-    /**
-     * Filter which Admins to update
-     */
-    where?: AdminsWhereInput
-    /**
-     * Limit how many Admins to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Admins upsert
-   */
-  export type AdminsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * The filter to search for the Admins to update in case it exists.
-     */
-    where: AdminsWhereUniqueInput
-    /**
-     * In case the Admins found by the `where` argument doesn't exist, create a new Admins with this data.
-     */
-    create: XOR<AdminsCreateInput, AdminsUncheckedCreateInput>
-    /**
-     * In case the Admins was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<AdminsUpdateInput, AdminsUncheckedUpdateInput>
-  }
-
-  /**
-   * Admins delete
-   */
-  export type AdminsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-    /**
-     * Filter which Admins to delete.
-     */
-    where: AdminsWhereUniqueInput
-  }
-
-  /**
-   * Admins deleteMany
-   */
-  export type AdminsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Admins to delete
-     */
-    where?: AdminsWhereInput
-    /**
-     * Limit how many Admins to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Admins without action
-   */
-  export type AdminsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Admins
-     */
-    select?: AdminsSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Admins
-     */
-    omit?: AdminsOmit<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Children
-   */
-
-  export type AggregateChildren = {
-    _count: ChildrenCountAggregateOutputType | null
-    _avg: ChildrenAvgAggregateOutputType | null
-    _sum: ChildrenSumAggregateOutputType | null
-    _min: ChildrenMinAggregateOutputType | null
-    _max: ChildrenMaxAggregateOutputType | null
-  }
-
-  export type ChildrenAvgAggregateOutputType = {
-    id: number | null
-    customerId: number | null
-  }
-
-  export type ChildrenSumAggregateOutputType = {
-    id: number | null
-    customerId: number | null
-  }
-
-  export type ChildrenMinAggregateOutputType = {
-    id: number | null
-    customerId: number | null
-    name: string | null
-    birthdate: Date | null
-    personalInfo: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type ChildrenMaxAggregateOutputType = {
-    id: number | null
-    customerId: number | null
-    name: string | null
-    birthdate: Date | null
-    personalInfo: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type ChildrenCountAggregateOutputType = {
-    id: number
-    customerId: number
-    name: number
-    birthdate: number
-    personalInfo: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type ChildrenAvgAggregateInputType = {
-    id?: true
-    customerId?: true
-  }
-
-  export type ChildrenSumAggregateInputType = {
-    id?: true
-    customerId?: true
-  }
-
-  export type ChildrenMinAggregateInputType = {
-    id?: true
-    customerId?: true
-    name?: true
-    birthdate?: true
-    personalInfo?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type ChildrenMaxAggregateInputType = {
-    id?: true
-    customerId?: true
-    name?: true
-    birthdate?: true
-    personalInfo?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type ChildrenCountAggregateInputType = {
-    id?: true
-    customerId?: true
-    name?: true
-    birthdate?: true
-    personalInfo?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type ChildrenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Children to aggregate.
-     */
-    where?: ChildrenWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Children to fetch.
-     */
-    orderBy?: ChildrenOrderByWithRelationInput | ChildrenOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: ChildrenWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Children from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Children.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Children
-    **/
-    _count?: true | ChildrenCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: ChildrenAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: ChildrenSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: ChildrenMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: ChildrenMaxAggregateInputType
-  }
-
-  export type GetChildrenAggregateType<T extends ChildrenAggregateArgs> = {
-        [P in keyof T & keyof AggregateChildren]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateChildren[P]>
-      : GetScalarType<T[P], AggregateChildren[P]>
-  }
-
-
-
-
-  export type ChildrenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ChildrenWhereInput
-    orderBy?: ChildrenOrderByWithAggregationInput | ChildrenOrderByWithAggregationInput[]
-    by: ChildrenScalarFieldEnum[] | ChildrenScalarFieldEnum
-    having?: ChildrenScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: ChildrenCountAggregateInputType | true
-    _avg?: ChildrenAvgAggregateInputType
-    _sum?: ChildrenSumAggregateInputType
-    _min?: ChildrenMinAggregateInputType
-    _max?: ChildrenMaxAggregateInputType
-  }
-
-  export type ChildrenGroupByOutputType = {
-    id: number
-    customerId: number
-    name: string
-    birthdate: Date | null
-    personalInfo: string | null
-    createdAt: Date
-    updatedAt: Date
-    _count: ChildrenCountAggregateOutputType | null
-    _avg: ChildrenAvgAggregateOutputType | null
-    _sum: ChildrenSumAggregateOutputType | null
-    _min: ChildrenMinAggregateOutputType | null
-    _max: ChildrenMaxAggregateOutputType | null
-  }
-
-  type GetChildrenGroupByPayload<T extends ChildrenGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<ChildrenGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof ChildrenGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], ChildrenGroupByOutputType[P]>
-            : GetScalarType<T[P], ChildrenGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type ChildrenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    customerId?: boolean
-    name?: boolean
-    birthdate?: boolean
-    personalInfo?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
-    classAttendance?: boolean | Children$classAttendanceArgs<ExtArgs>
-    recurringClassAttendance?: boolean | Children$recurringClassAttendanceArgs<ExtArgs>
-    _count?: boolean | ChildrenCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["children"]>
-
-  export type ChildrenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    customerId?: boolean
-    name?: boolean
-    birthdate?: boolean
-    personalInfo?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["children"]>
-
-  export type ChildrenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    customerId?: boolean
-    name?: boolean
-    birthdate?: boolean
-    personalInfo?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["children"]>
-
-  export type ChildrenSelectScalar = {
-    id?: boolean
-    customerId?: boolean
-    name?: boolean
-    birthdate?: boolean
-    personalInfo?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-  export type ChildrenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "name" | "birthdate" | "personalInfo" | "createdAt" | "updatedAt", ExtArgs["result"]["children"]>
-  export type ChildrenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
-    classAttendance?: boolean | Children$classAttendanceArgs<ExtArgs>
-    recurringClassAttendance?: boolean | Children$recurringClassAttendanceArgs<ExtArgs>
-    _count?: boolean | ChildrenCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type ChildrenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
-  }
-  export type ChildrenIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
-  }
-
-  export type $ChildrenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Children"
-    objects: {
-      customer: Prisma.$CustomerPayload<ExtArgs>
-      classAttendance: Prisma.$ClassAttendancePayload<ExtArgs>[]
-      recurringClassAttendance: Prisma.$RecurringClassAttendancePayload<ExtArgs>[]
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: number
-      customerId: number
-      name: string
-      birthdate: Date | null
-      personalInfo: string | null
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["children"]>
-    composites: {}
-  }
-
-  type ChildrenGetPayload<S extends boolean | null | undefined | ChildrenDefaultArgs> = $Result.GetResult<Prisma.$ChildrenPayload, S>
-
-  type ChildrenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ChildrenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ChildrenCountAggregateInputType | true
-    }
-
-  export interface ChildrenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Children'], meta: { name: 'Children' } }
-    /**
-     * Find zero or one Children that matches the filter.
-     * @param {ChildrenFindUniqueArgs} args - Arguments to find a Children
-     * @example
-     * // Get one Children
-     * const children = await prisma.children.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends ChildrenFindUniqueArgs>(args: SelectSubset<T, ChildrenFindUniqueArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Children that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {ChildrenFindUniqueOrThrowArgs} args - Arguments to find a Children
-     * @example
-     * // Get one Children
-     * const children = await prisma.children.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends ChildrenFindUniqueOrThrowArgs>(args: SelectSubset<T, ChildrenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Children that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChildrenFindFirstArgs} args - Arguments to find a Children
-     * @example
-     * // Get one Children
-     * const children = await prisma.children.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends ChildrenFindFirstArgs>(args?: SelectSubset<T, ChildrenFindFirstArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Children that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChildrenFindFirstOrThrowArgs} args - Arguments to find a Children
-     * @example
-     * // Get one Children
-     * const children = await prisma.children.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends ChildrenFindFirstOrThrowArgs>(args?: SelectSubset<T, ChildrenFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Children that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChildrenFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Children
-     * const children = await prisma.children.findMany()
-     * 
-     * // Get first 10 Children
-     * const children = await prisma.children.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const childrenWithIdOnly = await prisma.children.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends ChildrenFindManyArgs>(args?: SelectSubset<T, ChildrenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Children.
-     * @param {ChildrenCreateArgs} args - Arguments to create a Children.
-     * @example
-     * // Create one Children
-     * const Children = await prisma.children.create({
-     *   data: {
-     *     // ... data to create a Children
-     *   }
-     * })
-     * 
-     */
-    create<T extends ChildrenCreateArgs>(args: SelectSubset<T, ChildrenCreateArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Children.
-     * @param {ChildrenCreateManyArgs} args - Arguments to create many Children.
-     * @example
-     * // Create many Children
-     * const children = await prisma.children.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends ChildrenCreateManyArgs>(args?: SelectSubset<T, ChildrenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Children and returns the data saved in the database.
-     * @param {ChildrenCreateManyAndReturnArgs} args - Arguments to create many Children.
-     * @example
-     * // Create many Children
-     * const children = await prisma.children.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Children and only return the `id`
-     * const childrenWithIdOnly = await prisma.children.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends ChildrenCreateManyAndReturnArgs>(args?: SelectSubset<T, ChildrenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Children.
-     * @param {ChildrenDeleteArgs} args - Arguments to delete one Children.
-     * @example
-     * // Delete one Children
-     * const Children = await prisma.children.delete({
-     *   where: {
-     *     // ... filter to delete one Children
-     *   }
-     * })
-     * 
-     */
-    delete<T extends ChildrenDeleteArgs>(args: SelectSubset<T, ChildrenDeleteArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Children.
-     * @param {ChildrenUpdateArgs} args - Arguments to update one Children.
-     * @example
-     * // Update one Children
-     * const children = await prisma.children.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends ChildrenUpdateArgs>(args: SelectSubset<T, ChildrenUpdateArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Children.
-     * @param {ChildrenDeleteManyArgs} args - Arguments to filter Children to delete.
-     * @example
-     * // Delete a few Children
-     * const { count } = await prisma.children.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends ChildrenDeleteManyArgs>(args?: SelectSubset<T, ChildrenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Children.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChildrenUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Children
-     * const children = await prisma.children.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends ChildrenUpdateManyArgs>(args: SelectSubset<T, ChildrenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Children and returns the data updated in the database.
-     * @param {ChildrenUpdateManyAndReturnArgs} args - Arguments to update many Children.
-     * @example
-     * // Update many Children
-     * const children = await prisma.children.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Children and only return the `id`
-     * const childrenWithIdOnly = await prisma.children.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends ChildrenUpdateManyAndReturnArgs>(args: SelectSubset<T, ChildrenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Children.
-     * @param {ChildrenUpsertArgs} args - Arguments to update or create a Children.
-     * @example
-     * // Update or create a Children
-     * const children = await prisma.children.upsert({
-     *   create: {
-     *     // ... data to create a Children
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Children we want to update
-     *   }
-     * })
-     */
-    upsert<T extends ChildrenUpsertArgs>(args: SelectSubset<T, ChildrenUpsertArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Children.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChildrenCountArgs} args - Arguments to filter Children to count.
-     * @example
-     * // Count the number of Children
-     * const count = await prisma.children.count({
-     *   where: {
-     *     // ... the filter for the Children we want to count
-     *   }
-     * })
-    **/
-    count<T extends ChildrenCountArgs>(
-      args?: Subset<T, ChildrenCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ChildrenCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Children.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChildrenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends ChildrenAggregateArgs>(args: Subset<T, ChildrenAggregateArgs>): Prisma.PrismaPromise<GetChildrenAggregateType<T>>
-
-    /**
-     * Group by Children.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChildrenGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends ChildrenGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ChildrenGroupByArgs['orderBy'] }
-        : { orderBy?: ChildrenGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, ChildrenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChildrenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Children model
-   */
-  readonly fields: ChildrenFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Children.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__ChildrenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    classAttendance<T extends Children$classAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Children$classAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    recurringClassAttendance<T extends Children$recurringClassAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Children$recurringClassAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Children model
-   */
-  interface ChildrenFieldRefs {
-    readonly id: FieldRef<"Children", 'Int'>
-    readonly customerId: FieldRef<"Children", 'Int'>
-    readonly name: FieldRef<"Children", 'String'>
-    readonly birthdate: FieldRef<"Children", 'DateTime'>
-    readonly personalInfo: FieldRef<"Children", 'String'>
-    readonly createdAt: FieldRef<"Children", 'DateTime'>
-    readonly updatedAt: FieldRef<"Children", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Children findUnique
-   */
-  export type ChildrenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * Filter, which Children to fetch.
-     */
-    where: ChildrenWhereUniqueInput
-  }
-
-  /**
-   * Children findUniqueOrThrow
-   */
-  export type ChildrenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * Filter, which Children to fetch.
-     */
-    where: ChildrenWhereUniqueInput
-  }
-
-  /**
-   * Children findFirst
-   */
-  export type ChildrenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * Filter, which Children to fetch.
-     */
-    where?: ChildrenWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Children to fetch.
-     */
-    orderBy?: ChildrenOrderByWithRelationInput | ChildrenOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Children.
-     */
-    cursor?: ChildrenWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Children from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Children.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Children.
-     */
-    distinct?: ChildrenScalarFieldEnum | ChildrenScalarFieldEnum[]
-  }
-
-  /**
-   * Children findFirstOrThrow
-   */
-  export type ChildrenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * Filter, which Children to fetch.
-     */
-    where?: ChildrenWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Children to fetch.
-     */
-    orderBy?: ChildrenOrderByWithRelationInput | ChildrenOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Children.
-     */
-    cursor?: ChildrenWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Children from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Children.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Children.
-     */
-    distinct?: ChildrenScalarFieldEnum | ChildrenScalarFieldEnum[]
-  }
-
-  /**
-   * Children findMany
-   */
-  export type ChildrenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * Filter, which Children to fetch.
-     */
-    where?: ChildrenWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Children to fetch.
-     */
-    orderBy?: ChildrenOrderByWithRelationInput | ChildrenOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Children.
-     */
-    cursor?: ChildrenWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Children from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Children.
-     */
-    skip?: number
-    distinct?: ChildrenScalarFieldEnum | ChildrenScalarFieldEnum[]
-  }
-
-  /**
-   * Children create
-   */
-  export type ChildrenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Children.
-     */
-    data: XOR<ChildrenCreateInput, ChildrenUncheckedCreateInput>
-  }
-
-  /**
-   * Children createMany
-   */
-  export type ChildrenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Children.
-     */
-    data: ChildrenCreateManyInput | ChildrenCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Children createManyAndReturn
-   */
-  export type ChildrenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * The data used to create many Children.
-     */
-    data: ChildrenCreateManyInput | ChildrenCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Children update
-   */
-  export type ChildrenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Children.
-     */
-    data: XOR<ChildrenUpdateInput, ChildrenUncheckedUpdateInput>
-    /**
-     * Choose, which Children to update.
-     */
-    where: ChildrenWhereUniqueInput
-  }
-
-  /**
-   * Children updateMany
-   */
-  export type ChildrenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Children.
-     */
-    data: XOR<ChildrenUpdateManyMutationInput, ChildrenUncheckedUpdateManyInput>
-    /**
-     * Filter which Children to update
-     */
-    where?: ChildrenWhereInput
-    /**
-     * Limit how many Children to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Children updateManyAndReturn
-   */
-  export type ChildrenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * The data used to update Children.
-     */
-    data: XOR<ChildrenUpdateManyMutationInput, ChildrenUncheckedUpdateManyInput>
-    /**
-     * Filter which Children to update
-     */
-    where?: ChildrenWhereInput
-    /**
-     * Limit how many Children to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Children upsert
-   */
-  export type ChildrenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Children to update in case it exists.
-     */
-    where: ChildrenWhereUniqueInput
-    /**
-     * In case the Children found by the `where` argument doesn't exist, create a new Children with this data.
-     */
-    create: XOR<ChildrenCreateInput, ChildrenUncheckedCreateInput>
-    /**
-     * In case the Children was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<ChildrenUpdateInput, ChildrenUncheckedUpdateInput>
-  }
-
-  /**
-   * Children delete
-   */
-  export type ChildrenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-    /**
-     * Filter which Children to delete.
-     */
-    where: ChildrenWhereUniqueInput
-  }
-
-  /**
-   * Children deleteMany
-   */
-  export type ChildrenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Children to delete
-     */
-    where?: ChildrenWhereInput
-    /**
-     * Limit how many Children to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Children.classAttendance
-   */
-  export type Children$classAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClassAttendance
-     */
-    select?: ClassAttendanceSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ClassAttendance
-     */
-    omit?: ClassAttendanceOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClassAttendanceInclude<ExtArgs> | null
-    where?: ClassAttendanceWhereInput
-    orderBy?: ClassAttendanceOrderByWithRelationInput | ClassAttendanceOrderByWithRelationInput[]
-    cursor?: ClassAttendanceWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ClassAttendanceScalarFieldEnum | ClassAttendanceScalarFieldEnum[]
-  }
-
-  /**
-   * Children.recurringClassAttendance
-   */
-  export type Children$recurringClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RecurringClassAttendance
-     */
-    select?: RecurringClassAttendanceSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the RecurringClassAttendance
-     */
-    omit?: RecurringClassAttendanceOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RecurringClassAttendanceInclude<ExtArgs> | null
-    where?: RecurringClassAttendanceWhereInput
-    orderBy?: RecurringClassAttendanceOrderByWithRelationInput | RecurringClassAttendanceOrderByWithRelationInput[]
-    cursor?: RecurringClassAttendanceWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: RecurringClassAttendanceScalarFieldEnum | RecurringClassAttendanceScalarFieldEnum[]
-  }
-
-  /**
-   * Children without action
-   */
-  export type ChildrenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Children
-     */
-    select?: ChildrenSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Children
-     */
-    omit?: ChildrenOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ChildrenInclude<ExtArgs> | null
-  }
-
-
-  /**
    * Model ClassAttendance
    */
 
@@ -9083,21 +6877,21 @@ export namespace Prisma {
   export type ClassAttendanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     classId?: boolean
     childrenId?: boolean
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     class?: boolean | ClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["classAttendance"]>
 
   export type ClassAttendanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     classId?: boolean
     childrenId?: boolean
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     class?: boolean | ClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["classAttendance"]>
 
   export type ClassAttendanceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     classId?: boolean
     childrenId?: boolean
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     class?: boolean | ClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["classAttendance"]>
 
@@ -9108,22 +6902,22 @@ export namespace Prisma {
 
   export type ClassAttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"classId" | "childrenId", ExtArgs["result"]["classAttendance"]>
   export type ClassAttendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     class?: boolean | ClassDefaultArgs<ExtArgs>
   }
   export type ClassAttendanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     class?: boolean | ClassDefaultArgs<ExtArgs>
   }
   export type ClassAttendanceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     class?: boolean | ClassDefaultArgs<ExtArgs>
   }
 
   export type $ClassAttendancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ClassAttendance"
     objects: {
-      children: Prisma.$ChildrenPayload<ExtArgs>
+      children: Prisma.$ChildPayload<ExtArgs>
       class: Prisma.$ClassPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -9523,7 +7317,7 @@ export namespace Prisma {
    */
   export interface Prisma__ClassAttendanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    children<T extends ChildrenDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChildrenDefaultArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    children<T extends ChildDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChildDefaultArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     class<T extends ClassDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClassDefaultArgs<ExtArgs>>): Prisma__ClassClient<$Result.GetResult<Prisma.$ClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -13665,21 +11459,21 @@ export namespace Prisma {
   export type RecurringClassAttendanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     recurringClassId?: boolean
     childrenId?: boolean
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recurringClassAttendance"]>
 
   export type RecurringClassAttendanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     recurringClassId?: boolean
     childrenId?: boolean
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recurringClassAttendance"]>
 
   export type RecurringClassAttendanceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     recurringClassId?: boolean
     childrenId?: boolean
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recurringClassAttendance"]>
 
@@ -13690,22 +11484,22 @@ export namespace Prisma {
 
   export type RecurringClassAttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"recurringClassId" | "childrenId", ExtArgs["result"]["recurringClassAttendance"]>
   export type RecurringClassAttendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }
   export type RecurringClassAttendanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }
   export type RecurringClassAttendanceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    children?: boolean | ChildrenDefaultArgs<ExtArgs>
+    children?: boolean | ChildDefaultArgs<ExtArgs>
     recurringClass?: boolean | RecurringClassDefaultArgs<ExtArgs>
   }
 
   export type $RecurringClassAttendancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "RecurringClassAttendance"
     objects: {
-      children: Prisma.$ChildrenPayload<ExtArgs>
+      children: Prisma.$ChildPayload<ExtArgs>
       recurringClass: Prisma.$RecurringClassPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -14105,7 +11899,7 @@ export namespace Prisma {
    */
   export interface Prisma__RecurringClassAttendanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    children<T extends ChildrenDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChildrenDefaultArgs<ExtArgs>>): Prisma__ChildrenClient<$Result.GetResult<Prisma.$ChildrenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    children<T extends ChildDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChildDefaultArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     recurringClass<T extends RecurringClassDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RecurringClassDefaultArgs<ExtArgs>>): Prisma__RecurringClassClient<$Result.GetResult<Prisma.$RecurringClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -22930,6 +20724,2228 @@ export namespace Prisma {
 
 
   /**
+   * Model Admin
+   */
+
+  export type AggregateAdmin = {
+    _count: AdminCountAggregateOutputType | null
+    _avg: AdminAvgAggregateOutputType | null
+    _sum: AdminSumAggregateOutputType | null
+    _min: AdminMinAggregateOutputType | null
+    _max: AdminMaxAggregateOutputType | null
+  }
+
+  export type AdminAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type AdminSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type AdminMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    email: string | null
+    password: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AdminMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    email: string | null
+    password: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AdminCountAggregateOutputType = {
+    id: number
+    name: number
+    email: number
+    password: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AdminAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type AdminSumAggregateInputType = {
+    id?: true
+  }
+
+  export type AdminMinAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    password?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AdminMaxAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    password?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AdminCountAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    password?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AdminAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Admin to aggregate.
+     */
+    where?: AdminWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Admins to fetch.
+     */
+    orderBy?: AdminOrderByWithRelationInput | AdminOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AdminWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Admins from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Admins.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Admins
+    **/
+    _count?: true | AdminCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AdminAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AdminSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdminMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdminMaxAggregateInputType
+  }
+
+  export type GetAdminAggregateType<T extends AdminAggregateArgs> = {
+        [P in keyof T & keyof AggregateAdmin]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAdmin[P]>
+      : GetScalarType<T[P], AggregateAdmin[P]>
+  }
+
+
+
+
+  export type AdminGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdminWhereInput
+    orderBy?: AdminOrderByWithAggregationInput | AdminOrderByWithAggregationInput[]
+    by: AdminScalarFieldEnum[] | AdminScalarFieldEnum
+    having?: AdminScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AdminCountAggregateInputType | true
+    _avg?: AdminAvgAggregateInputType
+    _sum?: AdminSumAggregateInputType
+    _min?: AdminMinAggregateInputType
+    _max?: AdminMaxAggregateInputType
+  }
+
+  export type AdminGroupByOutputType = {
+    id: number
+    name: string
+    email: string
+    password: string
+    createdAt: Date
+    updatedAt: Date
+    _count: AdminCountAggregateOutputType | null
+    _avg: AdminAvgAggregateOutputType | null
+    _sum: AdminSumAggregateOutputType | null
+    _min: AdminMinAggregateOutputType | null
+    _max: AdminMaxAggregateOutputType | null
+  }
+
+  type GetAdminGroupByPayload<T extends AdminGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AdminGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AdminGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AdminGroupByOutputType[P]>
+            : GetScalarType<T[P], AdminGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AdminSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    password?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["admin"]>
+
+  export type AdminSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    password?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["admin"]>
+
+  export type AdminSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    password?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["admin"]>
+
+  export type AdminSelectScalar = {
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    password?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AdminOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["admin"]>
+
+  export type $AdminPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Admin"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      name: string
+      email: string
+      password: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["admin"]>
+    composites: {}
+  }
+
+  type AdminGetPayload<S extends boolean | null | undefined | AdminDefaultArgs> = $Result.GetResult<Prisma.$AdminPayload, S>
+
+  type AdminCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AdminFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AdminCountAggregateInputType | true
+    }
+
+  export interface AdminDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Admin'], meta: { name: 'Admin' } }
+    /**
+     * Find zero or one Admin that matches the filter.
+     * @param {AdminFindUniqueArgs} args - Arguments to find a Admin
+     * @example
+     * // Get one Admin
+     * const admin = await prisma.admin.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AdminFindUniqueArgs>(args: SelectSubset<T, AdminFindUniqueArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Admin that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AdminFindUniqueOrThrowArgs} args - Arguments to find a Admin
+     * @example
+     * // Get one Admin
+     * const admin = await prisma.admin.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AdminFindUniqueOrThrowArgs>(args: SelectSubset<T, AdminFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Admin that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminFindFirstArgs} args - Arguments to find a Admin
+     * @example
+     * // Get one Admin
+     * const admin = await prisma.admin.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AdminFindFirstArgs>(args?: SelectSubset<T, AdminFindFirstArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Admin that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminFindFirstOrThrowArgs} args - Arguments to find a Admin
+     * @example
+     * // Get one Admin
+     * const admin = await prisma.admin.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AdminFindFirstOrThrowArgs>(args?: SelectSubset<T, AdminFindFirstOrThrowArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Admins that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Admins
+     * const admins = await prisma.admin.findMany()
+     * 
+     * // Get first 10 Admins
+     * const admins = await prisma.admin.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const adminWithIdOnly = await prisma.admin.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AdminFindManyArgs>(args?: SelectSubset<T, AdminFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Admin.
+     * @param {AdminCreateArgs} args - Arguments to create a Admin.
+     * @example
+     * // Create one Admin
+     * const Admin = await prisma.admin.create({
+     *   data: {
+     *     // ... data to create a Admin
+     *   }
+     * })
+     * 
+     */
+    create<T extends AdminCreateArgs>(args: SelectSubset<T, AdminCreateArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Admins.
+     * @param {AdminCreateManyArgs} args - Arguments to create many Admins.
+     * @example
+     * // Create many Admins
+     * const admin = await prisma.admin.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AdminCreateManyArgs>(args?: SelectSubset<T, AdminCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Admins and returns the data saved in the database.
+     * @param {AdminCreateManyAndReturnArgs} args - Arguments to create many Admins.
+     * @example
+     * // Create many Admins
+     * const admin = await prisma.admin.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Admins and only return the `id`
+     * const adminWithIdOnly = await prisma.admin.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AdminCreateManyAndReturnArgs>(args?: SelectSubset<T, AdminCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Admin.
+     * @param {AdminDeleteArgs} args - Arguments to delete one Admin.
+     * @example
+     * // Delete one Admin
+     * const Admin = await prisma.admin.delete({
+     *   where: {
+     *     // ... filter to delete one Admin
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AdminDeleteArgs>(args: SelectSubset<T, AdminDeleteArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Admin.
+     * @param {AdminUpdateArgs} args - Arguments to update one Admin.
+     * @example
+     * // Update one Admin
+     * const admin = await prisma.admin.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AdminUpdateArgs>(args: SelectSubset<T, AdminUpdateArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Admins.
+     * @param {AdminDeleteManyArgs} args - Arguments to filter Admins to delete.
+     * @example
+     * // Delete a few Admins
+     * const { count } = await prisma.admin.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AdminDeleteManyArgs>(args?: SelectSubset<T, AdminDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Admins.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Admins
+     * const admin = await prisma.admin.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AdminUpdateManyArgs>(args: SelectSubset<T, AdminUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Admins and returns the data updated in the database.
+     * @param {AdminUpdateManyAndReturnArgs} args - Arguments to update many Admins.
+     * @example
+     * // Update many Admins
+     * const admin = await prisma.admin.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Admins and only return the `id`
+     * const adminWithIdOnly = await prisma.admin.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AdminUpdateManyAndReturnArgs>(args: SelectSubset<T, AdminUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Admin.
+     * @param {AdminUpsertArgs} args - Arguments to update or create a Admin.
+     * @example
+     * // Update or create a Admin
+     * const admin = await prisma.admin.upsert({
+     *   create: {
+     *     // ... data to create a Admin
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Admin we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AdminUpsertArgs>(args: SelectSubset<T, AdminUpsertArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Admins.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminCountArgs} args - Arguments to filter Admins to count.
+     * @example
+     * // Count the number of Admins
+     * const count = await prisma.admin.count({
+     *   where: {
+     *     // ... the filter for the Admins we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdminCountArgs>(
+      args?: Subset<T, AdminCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AdminCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Admin.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdminAggregateArgs>(args: Subset<T, AdminAggregateArgs>): Prisma.PrismaPromise<GetAdminAggregateType<T>>
+
+    /**
+     * Group by Admin.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AdminGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AdminGroupByArgs['orderBy'] }
+        : { orderBy?: AdminGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AdminGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdminGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Admin model
+   */
+  readonly fields: AdminFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Admin.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AdminClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Admin model
+   */
+  interface AdminFieldRefs {
+    readonly id: FieldRef<"Admin", 'Int'>
+    readonly name: FieldRef<"Admin", 'String'>
+    readonly email: FieldRef<"Admin", 'String'>
+    readonly password: FieldRef<"Admin", 'String'>
+    readonly createdAt: FieldRef<"Admin", 'DateTime'>
+    readonly updatedAt: FieldRef<"Admin", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Admin findUnique
+   */
+  export type AdminFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * Filter, which Admin to fetch.
+     */
+    where: AdminWhereUniqueInput
+  }
+
+  /**
+   * Admin findUniqueOrThrow
+   */
+  export type AdminFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * Filter, which Admin to fetch.
+     */
+    where: AdminWhereUniqueInput
+  }
+
+  /**
+   * Admin findFirst
+   */
+  export type AdminFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * Filter, which Admin to fetch.
+     */
+    where?: AdminWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Admins to fetch.
+     */
+    orderBy?: AdminOrderByWithRelationInput | AdminOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Admins.
+     */
+    cursor?: AdminWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Admins from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Admins.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Admins.
+     */
+    distinct?: AdminScalarFieldEnum | AdminScalarFieldEnum[]
+  }
+
+  /**
+   * Admin findFirstOrThrow
+   */
+  export type AdminFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * Filter, which Admin to fetch.
+     */
+    where?: AdminWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Admins to fetch.
+     */
+    orderBy?: AdminOrderByWithRelationInput | AdminOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Admins.
+     */
+    cursor?: AdminWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Admins from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Admins.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Admins.
+     */
+    distinct?: AdminScalarFieldEnum | AdminScalarFieldEnum[]
+  }
+
+  /**
+   * Admin findMany
+   */
+  export type AdminFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * Filter, which Admins to fetch.
+     */
+    where?: AdminWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Admins to fetch.
+     */
+    orderBy?: AdminOrderByWithRelationInput | AdminOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Admins.
+     */
+    cursor?: AdminWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Admins from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Admins.
+     */
+    skip?: number
+    distinct?: AdminScalarFieldEnum | AdminScalarFieldEnum[]
+  }
+
+  /**
+   * Admin create
+   */
+  export type AdminCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Admin.
+     */
+    data: XOR<AdminCreateInput, AdminUncheckedCreateInput>
+  }
+
+  /**
+   * Admin createMany
+   */
+  export type AdminCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Admins.
+     */
+    data: AdminCreateManyInput | AdminCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Admin createManyAndReturn
+   */
+  export type AdminCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * The data used to create many Admins.
+     */
+    data: AdminCreateManyInput | AdminCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Admin update
+   */
+  export type AdminUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Admin.
+     */
+    data: XOR<AdminUpdateInput, AdminUncheckedUpdateInput>
+    /**
+     * Choose, which Admin to update.
+     */
+    where: AdminWhereUniqueInput
+  }
+
+  /**
+   * Admin updateMany
+   */
+  export type AdminUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Admins.
+     */
+    data: XOR<AdminUpdateManyMutationInput, AdminUncheckedUpdateManyInput>
+    /**
+     * Filter which Admins to update
+     */
+    where?: AdminWhereInput
+    /**
+     * Limit how many Admins to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Admin updateManyAndReturn
+   */
+  export type AdminUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * The data used to update Admins.
+     */
+    data: XOR<AdminUpdateManyMutationInput, AdminUncheckedUpdateManyInput>
+    /**
+     * Filter which Admins to update
+     */
+    where?: AdminWhereInput
+    /**
+     * Limit how many Admins to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Admin upsert
+   */
+  export type AdminUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Admin to update in case it exists.
+     */
+    where: AdminWhereUniqueInput
+    /**
+     * In case the Admin found by the `where` argument doesn't exist, create a new Admin with this data.
+     */
+    create: XOR<AdminCreateInput, AdminUncheckedCreateInput>
+    /**
+     * In case the Admin was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AdminUpdateInput, AdminUncheckedUpdateInput>
+  }
+
+  /**
+   * Admin delete
+   */
+  export type AdminDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+    /**
+     * Filter which Admin to delete.
+     */
+    where: AdminWhereUniqueInput
+  }
+
+  /**
+   * Admin deleteMany
+   */
+  export type AdminDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Admins to delete
+     */
+    where?: AdminWhereInput
+    /**
+     * Limit how many Admins to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Admin without action
+   */
+  export type AdminDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Admin
+     */
+    select?: AdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Admin
+     */
+    omit?: AdminOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Child
+   */
+
+  export type AggregateChild = {
+    _count: ChildCountAggregateOutputType | null
+    _avg: ChildAvgAggregateOutputType | null
+    _sum: ChildSumAggregateOutputType | null
+    _min: ChildMinAggregateOutputType | null
+    _max: ChildMaxAggregateOutputType | null
+  }
+
+  export type ChildAvgAggregateOutputType = {
+    id: number | null
+    customerId: number | null
+  }
+
+  export type ChildSumAggregateOutputType = {
+    id: number | null
+    customerId: number | null
+  }
+
+  export type ChildMinAggregateOutputType = {
+    id: number | null
+    customerId: number | null
+    name: string | null
+    birthdate: Date | null
+    personalInfo: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ChildMaxAggregateOutputType = {
+    id: number | null
+    customerId: number | null
+    name: string | null
+    birthdate: Date | null
+    personalInfo: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ChildCountAggregateOutputType = {
+    id: number
+    customerId: number
+    name: number
+    birthdate: number
+    personalInfo: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ChildAvgAggregateInputType = {
+    id?: true
+    customerId?: true
+  }
+
+  export type ChildSumAggregateInputType = {
+    id?: true
+    customerId?: true
+  }
+
+  export type ChildMinAggregateInputType = {
+    id?: true
+    customerId?: true
+    name?: true
+    birthdate?: true
+    personalInfo?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ChildMaxAggregateInputType = {
+    id?: true
+    customerId?: true
+    name?: true
+    birthdate?: true
+    personalInfo?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ChildCountAggregateInputType = {
+    id?: true
+    customerId?: true
+    name?: true
+    birthdate?: true
+    personalInfo?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ChildAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Child to aggregate.
+     */
+    where?: ChildWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Children to fetch.
+     */
+    orderBy?: ChildOrderByWithRelationInput | ChildOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ChildWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Children from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Children.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Children
+    **/
+    _count?: true | ChildCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ChildAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ChildSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ChildMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ChildMaxAggregateInputType
+  }
+
+  export type GetChildAggregateType<T extends ChildAggregateArgs> = {
+        [P in keyof T & keyof AggregateChild]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateChild[P]>
+      : GetScalarType<T[P], AggregateChild[P]>
+  }
+
+
+
+
+  export type ChildGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChildWhereInput
+    orderBy?: ChildOrderByWithAggregationInput | ChildOrderByWithAggregationInput[]
+    by: ChildScalarFieldEnum[] | ChildScalarFieldEnum
+    having?: ChildScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ChildCountAggregateInputType | true
+    _avg?: ChildAvgAggregateInputType
+    _sum?: ChildSumAggregateInputType
+    _min?: ChildMinAggregateInputType
+    _max?: ChildMaxAggregateInputType
+  }
+
+  export type ChildGroupByOutputType = {
+    id: number
+    customerId: number
+    name: string
+    birthdate: Date | null
+    personalInfo: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ChildCountAggregateOutputType | null
+    _avg: ChildAvgAggregateOutputType | null
+    _sum: ChildSumAggregateOutputType | null
+    _min: ChildMinAggregateOutputType | null
+    _max: ChildMaxAggregateOutputType | null
+  }
+
+  type GetChildGroupByPayload<T extends ChildGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ChildGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ChildGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ChildGroupByOutputType[P]>
+            : GetScalarType<T[P], ChildGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ChildSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    name?: boolean
+    birthdate?: boolean
+    personalInfo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    classAttendance?: boolean | Child$classAttendanceArgs<ExtArgs>
+    recurringClassAttendance?: boolean | Child$recurringClassAttendanceArgs<ExtArgs>
+    _count?: boolean | ChildCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["child"]>
+
+  export type ChildSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    name?: boolean
+    birthdate?: boolean
+    personalInfo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["child"]>
+
+  export type ChildSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    name?: boolean
+    birthdate?: boolean
+    personalInfo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["child"]>
+
+  export type ChildSelectScalar = {
+    id?: boolean
+    customerId?: boolean
+    name?: boolean
+    birthdate?: boolean
+    personalInfo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ChildOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "name" | "birthdate" | "personalInfo" | "createdAt" | "updatedAt", ExtArgs["result"]["child"]>
+  export type ChildInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    classAttendance?: boolean | Child$classAttendanceArgs<ExtArgs>
+    recurringClassAttendance?: boolean | Child$recurringClassAttendanceArgs<ExtArgs>
+    _count?: boolean | ChildCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ChildIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }
+  export type ChildIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }
+
+  export type $ChildPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Child"
+    objects: {
+      customer: Prisma.$CustomerPayload<ExtArgs>
+      classAttendance: Prisma.$ClassAttendancePayload<ExtArgs>[]
+      recurringClassAttendance: Prisma.$RecurringClassAttendancePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      customerId: number
+      name: string
+      birthdate: Date | null
+      personalInfo: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["child"]>
+    composites: {}
+  }
+
+  type ChildGetPayload<S extends boolean | null | undefined | ChildDefaultArgs> = $Result.GetResult<Prisma.$ChildPayload, S>
+
+  type ChildCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ChildFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ChildCountAggregateInputType | true
+    }
+
+  export interface ChildDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Child'], meta: { name: 'Child' } }
+    /**
+     * Find zero or one Child that matches the filter.
+     * @param {ChildFindUniqueArgs} args - Arguments to find a Child
+     * @example
+     * // Get one Child
+     * const child = await prisma.child.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ChildFindUniqueArgs>(args: SelectSubset<T, ChildFindUniqueArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Child that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ChildFindUniqueOrThrowArgs} args - Arguments to find a Child
+     * @example
+     * // Get one Child
+     * const child = await prisma.child.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ChildFindUniqueOrThrowArgs>(args: SelectSubset<T, ChildFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Child that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChildFindFirstArgs} args - Arguments to find a Child
+     * @example
+     * // Get one Child
+     * const child = await prisma.child.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ChildFindFirstArgs>(args?: SelectSubset<T, ChildFindFirstArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Child that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChildFindFirstOrThrowArgs} args - Arguments to find a Child
+     * @example
+     * // Get one Child
+     * const child = await prisma.child.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ChildFindFirstOrThrowArgs>(args?: SelectSubset<T, ChildFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Children that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChildFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Children
+     * const children = await prisma.child.findMany()
+     * 
+     * // Get first 10 Children
+     * const children = await prisma.child.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const childWithIdOnly = await prisma.child.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ChildFindManyArgs>(args?: SelectSubset<T, ChildFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Child.
+     * @param {ChildCreateArgs} args - Arguments to create a Child.
+     * @example
+     * // Create one Child
+     * const Child = await prisma.child.create({
+     *   data: {
+     *     // ... data to create a Child
+     *   }
+     * })
+     * 
+     */
+    create<T extends ChildCreateArgs>(args: SelectSubset<T, ChildCreateArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Children.
+     * @param {ChildCreateManyArgs} args - Arguments to create many Children.
+     * @example
+     * // Create many Children
+     * const child = await prisma.child.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ChildCreateManyArgs>(args?: SelectSubset<T, ChildCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Children and returns the data saved in the database.
+     * @param {ChildCreateManyAndReturnArgs} args - Arguments to create many Children.
+     * @example
+     * // Create many Children
+     * const child = await prisma.child.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Children and only return the `id`
+     * const childWithIdOnly = await prisma.child.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ChildCreateManyAndReturnArgs>(args?: SelectSubset<T, ChildCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Child.
+     * @param {ChildDeleteArgs} args - Arguments to delete one Child.
+     * @example
+     * // Delete one Child
+     * const Child = await prisma.child.delete({
+     *   where: {
+     *     // ... filter to delete one Child
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ChildDeleteArgs>(args: SelectSubset<T, ChildDeleteArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Child.
+     * @param {ChildUpdateArgs} args - Arguments to update one Child.
+     * @example
+     * // Update one Child
+     * const child = await prisma.child.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ChildUpdateArgs>(args: SelectSubset<T, ChildUpdateArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Children.
+     * @param {ChildDeleteManyArgs} args - Arguments to filter Children to delete.
+     * @example
+     * // Delete a few Children
+     * const { count } = await prisma.child.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ChildDeleteManyArgs>(args?: SelectSubset<T, ChildDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Children.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChildUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Children
+     * const child = await prisma.child.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ChildUpdateManyArgs>(args: SelectSubset<T, ChildUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Children and returns the data updated in the database.
+     * @param {ChildUpdateManyAndReturnArgs} args - Arguments to update many Children.
+     * @example
+     * // Update many Children
+     * const child = await prisma.child.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Children and only return the `id`
+     * const childWithIdOnly = await prisma.child.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ChildUpdateManyAndReturnArgs>(args: SelectSubset<T, ChildUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Child.
+     * @param {ChildUpsertArgs} args - Arguments to update or create a Child.
+     * @example
+     * // Update or create a Child
+     * const child = await prisma.child.upsert({
+     *   create: {
+     *     // ... data to create a Child
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Child we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ChildUpsertArgs>(args: SelectSubset<T, ChildUpsertArgs<ExtArgs>>): Prisma__ChildClient<$Result.GetResult<Prisma.$ChildPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Children.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChildCountArgs} args - Arguments to filter Children to count.
+     * @example
+     * // Count the number of Children
+     * const count = await prisma.child.count({
+     *   where: {
+     *     // ... the filter for the Children we want to count
+     *   }
+     * })
+    **/
+    count<T extends ChildCountArgs>(
+      args?: Subset<T, ChildCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ChildCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Child.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChildAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ChildAggregateArgs>(args: Subset<T, ChildAggregateArgs>): Prisma.PrismaPromise<GetChildAggregateType<T>>
+
+    /**
+     * Group by Child.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChildGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ChildGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ChildGroupByArgs['orderBy'] }
+        : { orderBy?: ChildGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ChildGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChildGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Child model
+   */
+  readonly fields: ChildFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Child.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ChildClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    classAttendance<T extends Child$classAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Child$classAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    recurringClassAttendance<T extends Child$recurringClassAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Child$recurringClassAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringClassAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Child model
+   */
+  interface ChildFieldRefs {
+    readonly id: FieldRef<"Child", 'Int'>
+    readonly customerId: FieldRef<"Child", 'Int'>
+    readonly name: FieldRef<"Child", 'String'>
+    readonly birthdate: FieldRef<"Child", 'DateTime'>
+    readonly personalInfo: FieldRef<"Child", 'String'>
+    readonly createdAt: FieldRef<"Child", 'DateTime'>
+    readonly updatedAt: FieldRef<"Child", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Child findUnique
+   */
+  export type ChildFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * Filter, which Child to fetch.
+     */
+    where: ChildWhereUniqueInput
+  }
+
+  /**
+   * Child findUniqueOrThrow
+   */
+  export type ChildFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * Filter, which Child to fetch.
+     */
+    where: ChildWhereUniqueInput
+  }
+
+  /**
+   * Child findFirst
+   */
+  export type ChildFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * Filter, which Child to fetch.
+     */
+    where?: ChildWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Children to fetch.
+     */
+    orderBy?: ChildOrderByWithRelationInput | ChildOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Children.
+     */
+    cursor?: ChildWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Children from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Children.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Children.
+     */
+    distinct?: ChildScalarFieldEnum | ChildScalarFieldEnum[]
+  }
+
+  /**
+   * Child findFirstOrThrow
+   */
+  export type ChildFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * Filter, which Child to fetch.
+     */
+    where?: ChildWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Children to fetch.
+     */
+    orderBy?: ChildOrderByWithRelationInput | ChildOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Children.
+     */
+    cursor?: ChildWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Children from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Children.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Children.
+     */
+    distinct?: ChildScalarFieldEnum | ChildScalarFieldEnum[]
+  }
+
+  /**
+   * Child findMany
+   */
+  export type ChildFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * Filter, which Children to fetch.
+     */
+    where?: ChildWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Children to fetch.
+     */
+    orderBy?: ChildOrderByWithRelationInput | ChildOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Children.
+     */
+    cursor?: ChildWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Children from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Children.
+     */
+    skip?: number
+    distinct?: ChildScalarFieldEnum | ChildScalarFieldEnum[]
+  }
+
+  /**
+   * Child create
+   */
+  export type ChildCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Child.
+     */
+    data: XOR<ChildCreateInput, ChildUncheckedCreateInput>
+  }
+
+  /**
+   * Child createMany
+   */
+  export type ChildCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Children.
+     */
+    data: ChildCreateManyInput | ChildCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Child createManyAndReturn
+   */
+  export type ChildCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * The data used to create many Children.
+     */
+    data: ChildCreateManyInput | ChildCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Child update
+   */
+  export type ChildUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Child.
+     */
+    data: XOR<ChildUpdateInput, ChildUncheckedUpdateInput>
+    /**
+     * Choose, which Child to update.
+     */
+    where: ChildWhereUniqueInput
+  }
+
+  /**
+   * Child updateMany
+   */
+  export type ChildUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Children.
+     */
+    data: XOR<ChildUpdateManyMutationInput, ChildUncheckedUpdateManyInput>
+    /**
+     * Filter which Children to update
+     */
+    where?: ChildWhereInput
+    /**
+     * Limit how many Children to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Child updateManyAndReturn
+   */
+  export type ChildUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * The data used to update Children.
+     */
+    data: XOR<ChildUpdateManyMutationInput, ChildUncheckedUpdateManyInput>
+    /**
+     * Filter which Children to update
+     */
+    where?: ChildWhereInput
+    /**
+     * Limit how many Children to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Child upsert
+   */
+  export type ChildUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Child to update in case it exists.
+     */
+    where: ChildWhereUniqueInput
+    /**
+     * In case the Child found by the `where` argument doesn't exist, create a new Child with this data.
+     */
+    create: XOR<ChildCreateInput, ChildUncheckedCreateInput>
+    /**
+     * In case the Child was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ChildUpdateInput, ChildUncheckedUpdateInput>
+  }
+
+  /**
+   * Child delete
+   */
+  export type ChildDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+    /**
+     * Filter which Child to delete.
+     */
+    where: ChildWhereUniqueInput
+  }
+
+  /**
+   * Child deleteMany
+   */
+  export type ChildDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Children to delete
+     */
+    where?: ChildWhereInput
+    /**
+     * Limit how many Children to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Child.classAttendance
+   */
+  export type Child$classAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClassAttendance
+     */
+    select?: ClassAttendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClassAttendance
+     */
+    omit?: ClassAttendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClassAttendanceInclude<ExtArgs> | null
+    where?: ClassAttendanceWhereInput
+    orderBy?: ClassAttendanceOrderByWithRelationInput | ClassAttendanceOrderByWithRelationInput[]
+    cursor?: ClassAttendanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClassAttendanceScalarFieldEnum | ClassAttendanceScalarFieldEnum[]
+  }
+
+  /**
+   * Child.recurringClassAttendance
+   */
+  export type Child$recurringClassAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringClassAttendance
+     */
+    select?: RecurringClassAttendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringClassAttendance
+     */
+    omit?: RecurringClassAttendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecurringClassAttendanceInclude<ExtArgs> | null
+    where?: RecurringClassAttendanceWhereInput
+    orderBy?: RecurringClassAttendanceOrderByWithRelationInput | RecurringClassAttendanceOrderByWithRelationInput[]
+    cursor?: RecurringClassAttendanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RecurringClassAttendanceScalarFieldEnum | RecurringClassAttendanceScalarFieldEnum[]
+  }
+
+  /**
+   * Child without action
+   */
+  export type ChildDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Child
+     */
+    select?: ChildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Child
+     */
+    omit?: ChildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChildInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -23001,31 +23017,6 @@ export namespace Prisma {
   };
 
   export type ClassScalarFieldEnum = (typeof ClassScalarFieldEnum)[keyof typeof ClassScalarFieldEnum]
-
-
-  export const AdminsScalarFieldEnum: {
-    id: 'id',
-    name: 'name',
-    email: 'email',
-    password: 'password',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type AdminsScalarFieldEnum = (typeof AdminsScalarFieldEnum)[keyof typeof AdminsScalarFieldEnum]
-
-
-  export const ChildrenScalarFieldEnum: {
-    id: 'id',
-    customerId: 'customerId',
-    name: 'name',
-    birthdate: 'birthdate',
-    personalInfo: 'personalInfo',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type ChildrenScalarFieldEnum = (typeof ChildrenScalarFieldEnum)[keyof typeof ChildrenScalarFieldEnum]
 
 
   export const ClassAttendanceScalarFieldEnum: {
@@ -23154,6 +23145,31 @@ export namespace Prisma {
   };
 
   export type SystemStatusScalarFieldEnum = (typeof SystemStatusScalarFieldEnum)[keyof typeof SystemStatusScalarFieldEnum]
+
+
+  export const AdminScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    email: 'email',
+    password: 'password',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof AdminScalarFieldEnum]
+
+
+  export const ChildScalarFieldEnum: {
+    id: 'id',
+    customerId: 'customerId',
+    name: 'name',
+    birthdate: 'birthdate',
+    personalInfo: 'personalInfo',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ChildScalarFieldEnum = (typeof ChildScalarFieldEnum)[keyof typeof ChildScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -23420,7 +23436,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
     hasSeenWelcome?: BoolFilter<"Customer"> | boolean
     terminationAt?: DateTimeNullableFilter<"Customer"> | Date | string | null
-    children?: ChildrenListRelationFilter
+    children?: ChildListRelationFilter
     classes?: ClassListRelationFilter
     subscription?: SubscriptionListRelationFilter
   }
@@ -23436,7 +23452,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     hasSeenWelcome?: SortOrder
     terminationAt?: SortOrderInput | SortOrder
-    children?: ChildrenOrderByRelationAggregateInput
+    children?: ChildOrderByRelationAggregateInput
     classes?: ClassOrderByRelationAggregateInput
     subscription?: SubscriptionOrderByRelationAggregateInput
   }
@@ -23455,7 +23471,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
     hasSeenWelcome?: BoolFilter<"Customer"> | boolean
     terminationAt?: DateTimeNullableFilter<"Customer"> | Date | string | null
-    children?: ChildrenListRelationFilter
+    children?: ChildListRelationFilter
     classes?: ClassListRelationFilter
     subscription?: SubscriptionListRelationFilter
   }, "id" | "email">
@@ -23598,152 +23614,20 @@ export namespace Prisma {
     isFreeTrial?: BoolWithAggregatesFilter<"Class"> | boolean
   }
 
-  export type AdminsWhereInput = {
-    AND?: AdminsWhereInput | AdminsWhereInput[]
-    OR?: AdminsWhereInput[]
-    NOT?: AdminsWhereInput | AdminsWhereInput[]
-    id?: IntFilter<"Admins"> | number
-    name?: StringFilter<"Admins"> | string
-    email?: StringFilter<"Admins"> | string
-    password?: StringFilter<"Admins"> | string
-    createdAt?: DateTimeFilter<"Admins"> | Date | string
-    updatedAt?: DateTimeFilter<"Admins"> | Date | string
-  }
-
-  export type AdminsOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type AdminsWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    email?: string
-    AND?: AdminsWhereInput | AdminsWhereInput[]
-    OR?: AdminsWhereInput[]
-    NOT?: AdminsWhereInput | AdminsWhereInput[]
-    name?: StringFilter<"Admins"> | string
-    password?: StringFilter<"Admins"> | string
-    createdAt?: DateTimeFilter<"Admins"> | Date | string
-    updatedAt?: DateTimeFilter<"Admins"> | Date | string
-  }, "id" | "email">
-
-  export type AdminsOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: AdminsCountOrderByAggregateInput
-    _avg?: AdminsAvgOrderByAggregateInput
-    _max?: AdminsMaxOrderByAggregateInput
-    _min?: AdminsMinOrderByAggregateInput
-    _sum?: AdminsSumOrderByAggregateInput
-  }
-
-  export type AdminsScalarWhereWithAggregatesInput = {
-    AND?: AdminsScalarWhereWithAggregatesInput | AdminsScalarWhereWithAggregatesInput[]
-    OR?: AdminsScalarWhereWithAggregatesInput[]
-    NOT?: AdminsScalarWhereWithAggregatesInput | AdminsScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Admins"> | number
-    name?: StringWithAggregatesFilter<"Admins"> | string
-    email?: StringWithAggregatesFilter<"Admins"> | string
-    password?: StringWithAggregatesFilter<"Admins"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"Admins"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Admins"> | Date | string
-  }
-
-  export type ChildrenWhereInput = {
-    AND?: ChildrenWhereInput | ChildrenWhereInput[]
-    OR?: ChildrenWhereInput[]
-    NOT?: ChildrenWhereInput | ChildrenWhereInput[]
-    id?: IntFilter<"Children"> | number
-    customerId?: IntFilter<"Children"> | number
-    name?: StringFilter<"Children"> | string
-    birthdate?: DateTimeNullableFilter<"Children"> | Date | string | null
-    personalInfo?: StringNullableFilter<"Children"> | string | null
-    createdAt?: DateTimeFilter<"Children"> | Date | string
-    updatedAt?: DateTimeFilter<"Children"> | Date | string
-    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
-    classAttendance?: ClassAttendanceListRelationFilter
-    recurringClassAttendance?: RecurringClassAttendanceListRelationFilter
-  }
-
-  export type ChildrenOrderByWithRelationInput = {
-    id?: SortOrder
-    customerId?: SortOrder
-    name?: SortOrder
-    birthdate?: SortOrderInput | SortOrder
-    personalInfo?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    customer?: CustomerOrderByWithRelationInput
-    classAttendance?: ClassAttendanceOrderByRelationAggregateInput
-    recurringClassAttendance?: RecurringClassAttendanceOrderByRelationAggregateInput
-  }
-
-  export type ChildrenWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    AND?: ChildrenWhereInput | ChildrenWhereInput[]
-    OR?: ChildrenWhereInput[]
-    NOT?: ChildrenWhereInput | ChildrenWhereInput[]
-    customerId?: IntFilter<"Children"> | number
-    name?: StringFilter<"Children"> | string
-    birthdate?: DateTimeNullableFilter<"Children"> | Date | string | null
-    personalInfo?: StringNullableFilter<"Children"> | string | null
-    createdAt?: DateTimeFilter<"Children"> | Date | string
-    updatedAt?: DateTimeFilter<"Children"> | Date | string
-    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
-    classAttendance?: ClassAttendanceListRelationFilter
-    recurringClassAttendance?: RecurringClassAttendanceListRelationFilter
-  }, "id">
-
-  export type ChildrenOrderByWithAggregationInput = {
-    id?: SortOrder
-    customerId?: SortOrder
-    name?: SortOrder
-    birthdate?: SortOrderInput | SortOrder
-    personalInfo?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: ChildrenCountOrderByAggregateInput
-    _avg?: ChildrenAvgOrderByAggregateInput
-    _max?: ChildrenMaxOrderByAggregateInput
-    _min?: ChildrenMinOrderByAggregateInput
-    _sum?: ChildrenSumOrderByAggregateInput
-  }
-
-  export type ChildrenScalarWhereWithAggregatesInput = {
-    AND?: ChildrenScalarWhereWithAggregatesInput | ChildrenScalarWhereWithAggregatesInput[]
-    OR?: ChildrenScalarWhereWithAggregatesInput[]
-    NOT?: ChildrenScalarWhereWithAggregatesInput | ChildrenScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Children"> | number
-    customerId?: IntWithAggregatesFilter<"Children"> | number
-    name?: StringWithAggregatesFilter<"Children"> | string
-    birthdate?: DateTimeNullableWithAggregatesFilter<"Children"> | Date | string | null
-    personalInfo?: StringNullableWithAggregatesFilter<"Children"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"Children"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Children"> | Date | string
-  }
-
   export type ClassAttendanceWhereInput = {
     AND?: ClassAttendanceWhereInput | ClassAttendanceWhereInput[]
     OR?: ClassAttendanceWhereInput[]
     NOT?: ClassAttendanceWhereInput | ClassAttendanceWhereInput[]
     classId?: IntFilter<"ClassAttendance"> | number
     childrenId?: IntFilter<"ClassAttendance"> | number
-    children?: XOR<ChildrenScalarRelationFilter, ChildrenWhereInput>
+    children?: XOR<ChildScalarRelationFilter, ChildWhereInput>
     class?: XOR<ClassScalarRelationFilter, ClassWhereInput>
   }
 
   export type ClassAttendanceOrderByWithRelationInput = {
     classId?: SortOrder
     childrenId?: SortOrder
-    children?: ChildrenOrderByWithRelationInput
+    children?: ChildOrderByWithRelationInput
     class?: ClassOrderByWithRelationInput
   }
 
@@ -23754,7 +23638,7 @@ export namespace Prisma {
     NOT?: ClassAttendanceWhereInput | ClassAttendanceWhereInput[]
     classId?: IntFilter<"ClassAttendance"> | number
     childrenId?: IntFilter<"ClassAttendance"> | number
-    children?: XOR<ChildrenScalarRelationFilter, ChildrenWhereInput>
+    children?: XOR<ChildScalarRelationFilter, ChildWhereInput>
     class?: XOR<ClassScalarRelationFilter, ClassWhereInput>
   }, "classId_childrenId">
 
@@ -23986,14 +23870,14 @@ export namespace Prisma {
     NOT?: RecurringClassAttendanceWhereInput | RecurringClassAttendanceWhereInput[]
     recurringClassId?: IntFilter<"RecurringClassAttendance"> | number
     childrenId?: IntFilter<"RecurringClassAttendance"> | number
-    children?: XOR<ChildrenScalarRelationFilter, ChildrenWhereInput>
+    children?: XOR<ChildScalarRelationFilter, ChildWhereInput>
     recurringClass?: XOR<RecurringClassScalarRelationFilter, RecurringClassWhereInput>
   }
 
   export type RecurringClassAttendanceOrderByWithRelationInput = {
     recurringClassId?: SortOrder
     childrenId?: SortOrder
-    children?: ChildrenOrderByWithRelationInput
+    children?: ChildOrderByWithRelationInput
     recurringClass?: RecurringClassOrderByWithRelationInput
   }
 
@@ -24004,7 +23888,7 @@ export namespace Prisma {
     NOT?: RecurringClassAttendanceWhereInput | RecurringClassAttendanceWhereInput[]
     recurringClassId?: IntFilter<"RecurringClassAttendance"> | number
     childrenId?: IntFilter<"RecurringClassAttendance"> | number
-    children?: XOR<ChildrenScalarRelationFilter, ChildrenWhereInput>
+    children?: XOR<ChildScalarRelationFilter, ChildWhereInput>
     recurringClass?: XOR<RecurringClassScalarRelationFilter, RecurringClassWhereInput>
   }, "recurringClassId_childrenId">
 
@@ -24417,6 +24301,138 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"SystemStatus"> | Date | string
   }
 
+  export type AdminWhereInput = {
+    AND?: AdminWhereInput | AdminWhereInput[]
+    OR?: AdminWhereInput[]
+    NOT?: AdminWhereInput | AdminWhereInput[]
+    id?: IntFilter<"Admin"> | number
+    name?: StringFilter<"Admin"> | string
+    email?: StringFilter<"Admin"> | string
+    password?: StringFilter<"Admin"> | string
+    createdAt?: DateTimeFilter<"Admin"> | Date | string
+    updatedAt?: DateTimeFilter<"Admin"> | Date | string
+  }
+
+  export type AdminOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdminWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    email?: string
+    AND?: AdminWhereInput | AdminWhereInput[]
+    OR?: AdminWhereInput[]
+    NOT?: AdminWhereInput | AdminWhereInput[]
+    name?: StringFilter<"Admin"> | string
+    password?: StringFilter<"Admin"> | string
+    createdAt?: DateTimeFilter<"Admin"> | Date | string
+    updatedAt?: DateTimeFilter<"Admin"> | Date | string
+  }, "id" | "email">
+
+  export type AdminOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AdminCountOrderByAggregateInput
+    _avg?: AdminAvgOrderByAggregateInput
+    _max?: AdminMaxOrderByAggregateInput
+    _min?: AdminMinOrderByAggregateInput
+    _sum?: AdminSumOrderByAggregateInput
+  }
+
+  export type AdminScalarWhereWithAggregatesInput = {
+    AND?: AdminScalarWhereWithAggregatesInput | AdminScalarWhereWithAggregatesInput[]
+    OR?: AdminScalarWhereWithAggregatesInput[]
+    NOT?: AdminScalarWhereWithAggregatesInput | AdminScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Admin"> | number
+    name?: StringWithAggregatesFilter<"Admin"> | string
+    email?: StringWithAggregatesFilter<"Admin"> | string
+    password?: StringWithAggregatesFilter<"Admin"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Admin"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Admin"> | Date | string
+  }
+
+  export type ChildWhereInput = {
+    AND?: ChildWhereInput | ChildWhereInput[]
+    OR?: ChildWhereInput[]
+    NOT?: ChildWhereInput | ChildWhereInput[]
+    id?: IntFilter<"Child"> | number
+    customerId?: IntFilter<"Child"> | number
+    name?: StringFilter<"Child"> | string
+    birthdate?: DateTimeNullableFilter<"Child"> | Date | string | null
+    personalInfo?: StringNullableFilter<"Child"> | string | null
+    createdAt?: DateTimeFilter<"Child"> | Date | string
+    updatedAt?: DateTimeFilter<"Child"> | Date | string
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    classAttendance?: ClassAttendanceListRelationFilter
+    recurringClassAttendance?: RecurringClassAttendanceListRelationFilter
+  }
+
+  export type ChildOrderByWithRelationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    birthdate?: SortOrderInput | SortOrder
+    personalInfo?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    customer?: CustomerOrderByWithRelationInput
+    classAttendance?: ClassAttendanceOrderByRelationAggregateInput
+    recurringClassAttendance?: RecurringClassAttendanceOrderByRelationAggregateInput
+  }
+
+  export type ChildWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ChildWhereInput | ChildWhereInput[]
+    OR?: ChildWhereInput[]
+    NOT?: ChildWhereInput | ChildWhereInput[]
+    customerId?: IntFilter<"Child"> | number
+    name?: StringFilter<"Child"> | string
+    birthdate?: DateTimeNullableFilter<"Child"> | Date | string | null
+    personalInfo?: StringNullableFilter<"Child"> | string | null
+    createdAt?: DateTimeFilter<"Child"> | Date | string
+    updatedAt?: DateTimeFilter<"Child"> | Date | string
+    customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
+    classAttendance?: ClassAttendanceListRelationFilter
+    recurringClassAttendance?: RecurringClassAttendanceListRelationFilter
+  }, "id">
+
+  export type ChildOrderByWithAggregationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    birthdate?: SortOrderInput | SortOrder
+    personalInfo?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ChildCountOrderByAggregateInput
+    _avg?: ChildAvgOrderByAggregateInput
+    _max?: ChildMaxOrderByAggregateInput
+    _min?: ChildMinOrderByAggregateInput
+    _sum?: ChildSumOrderByAggregateInput
+  }
+
+  export type ChildScalarWhereWithAggregatesInput = {
+    AND?: ChildScalarWhereWithAggregatesInput | ChildScalarWhereWithAggregatesInput[]
+    OR?: ChildScalarWhereWithAggregatesInput[]
+    NOT?: ChildScalarWhereWithAggregatesInput | ChildScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Child"> | number
+    customerId?: IntWithAggregatesFilter<"Child"> | number
+    name?: StringWithAggregatesFilter<"Child"> | string
+    birthdate?: DateTimeNullableWithAggregatesFilter<"Child"> | Date | string | null
+    personalInfo?: StringNullableWithAggregatesFilter<"Child"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Child"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Child"> | Date | string
+  }
+
   export type InstructorCreateInput = {
     name: string
     email: string
@@ -24601,7 +24617,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
-    children?: ChildrenCreateNestedManyWithoutCustomerInput
+    children?: ChildCreateNestedManyWithoutCustomerInput
     classes?: ClassCreateNestedManyWithoutCustomerInput
     subscription?: SubscriptionCreateNestedManyWithoutCustomerInput
   }
@@ -24617,7 +24633,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
-    children?: ChildrenUncheckedCreateNestedManyWithoutCustomerInput
+    children?: ChildUncheckedCreateNestedManyWithoutCustomerInput
     classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
     subscription?: SubscriptionUncheckedCreateNestedManyWithoutCustomerInput
   }
@@ -24632,7 +24648,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    children?: ChildrenUpdateManyWithoutCustomerNestedInput
+    children?: ChildUpdateManyWithoutCustomerNestedInput
     classes?: ClassUpdateManyWithoutCustomerNestedInput
     subscription?: SubscriptionUpdateManyWithoutCustomerNestedInput
   }
@@ -24648,7 +24664,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    children?: ChildrenUncheckedUpdateManyWithoutCustomerNestedInput
+    children?: ChildUncheckedUpdateManyWithoutCustomerNestedInput
     classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
     subscription?: SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput
   }
@@ -24793,142 +24809,8 @@ export namespace Prisma {
     isFreeTrial?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type AdminsCreateInput = {
-    name: string
-    email: string
-    password: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type AdminsUncheckedCreateInput = {
-    id?: number
-    name: string
-    email: string
-    password: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type AdminsUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AdminsUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AdminsCreateManyInput = {
-    id?: number
-    name: string
-    email: string
-    password: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type AdminsUpdateManyMutationInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AdminsUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ChildrenCreateInput = {
-    name: string
-    birthdate?: Date | string | null
-    personalInfo?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    customer: CustomerCreateNestedOneWithoutChildrenInput
-    classAttendance?: ClassAttendanceCreateNestedManyWithoutChildrenInput
-    recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutChildrenInput
-  }
-
-  export type ChildrenUncheckedCreateInput = {
-    id?: number
-    customerId: number
-    name: string
-    birthdate?: Date | string | null
-    personalInfo?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput
-    recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput
-  }
-
-  export type ChildrenUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    customer?: CustomerUpdateOneRequiredWithoutChildrenNestedInput
-    classAttendance?: ClassAttendanceUpdateManyWithoutChildrenNestedInput
-    recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutChildrenNestedInput
-  }
-
-  export type ChildrenUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput
-    recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput
-  }
-
-  export type ChildrenCreateManyInput = {
-    id?: number
-    customerId: number
-    name: string
-    birthdate?: Date | string | null
-    personalInfo?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type ChildrenUpdateManyMutationInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ChildrenUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    customerId?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type ClassAttendanceCreateInput = {
-    children: ChildrenCreateNestedOneWithoutClassAttendanceInput
+    children: ChildCreateNestedOneWithoutClassAttendanceInput
     class: ClassCreateNestedOneWithoutClassAttendanceInput
   }
 
@@ -24938,7 +24820,7 @@ export namespace Prisma {
   }
 
   export type ClassAttendanceUpdateInput = {
-    children?: ChildrenUpdateOneRequiredWithoutClassAttendanceNestedInput
+    children?: ChildUpdateOneRequiredWithoutClassAttendanceNestedInput
     class?: ClassUpdateOneRequiredWithoutClassAttendanceNestedInput
   }
 
@@ -25158,7 +25040,7 @@ export namespace Prisma {
   }
 
   export type RecurringClassAttendanceCreateInput = {
-    children: ChildrenCreateNestedOneWithoutRecurringClassAttendanceInput
+    children: ChildCreateNestedOneWithoutRecurringClassAttendanceInput
     recurringClass: RecurringClassCreateNestedOneWithoutRecurringClassAttendanceInput
   }
 
@@ -25168,7 +25050,7 @@ export namespace Prisma {
   }
 
   export type RecurringClassAttendanceUpdateInput = {
-    children?: ChildrenUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
+    children?: ChildUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
     recurringClass?: RecurringClassUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
   }
 
@@ -25547,6 +25429,140 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AdminCreateInput = {
+    name: string
+    email: string
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdminUncheckedCreateInput = {
+    id?: number
+    name: string
+    email: string
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdminUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminCreateManyInput = {
+    id?: number
+    name: string
+    email: string
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdminUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChildCreateInput = {
+    name: string
+    birthdate?: Date | string | null
+    personalInfo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutChildrenInput
+    classAttendance?: ClassAttendanceCreateNestedManyWithoutChildrenInput
+    recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutChildrenInput
+  }
+
+  export type ChildUncheckedCreateInput = {
+    id?: number
+    customerId: number
+    name: string
+    birthdate?: Date | string | null
+    personalInfo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput
+    recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput
+  }
+
+  export type ChildUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutChildrenNestedInput
+    classAttendance?: ClassAttendanceUpdateManyWithoutChildrenNestedInput
+    recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutChildrenNestedInput
+  }
+
+  export type ChildUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    classAttendance?: ClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput
+    recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput
+  }
+
+  export type ChildCreateManyInput = {
+    id?: number
+    customerId: number
+    name: string
+    birthdate?: Date | string | null
+    personalInfo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChildUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChildUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -25792,10 +25808,10 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type ChildrenListRelationFilter = {
-    every?: ChildrenWhereInput
-    some?: ChildrenWhereInput
-    none?: ChildrenWhereInput
+  export type ChildListRelationFilter = {
+    every?: ChildWhereInput
+    some?: ChildWhereInput
+    none?: ChildWhereInput
   }
 
   export type SubscriptionListRelationFilter = {
@@ -25804,7 +25820,7 @@ export namespace Prisma {
     none?: SubscriptionWhereInput
   }
 
-  export type ChildrenOrderByRelationAggregateInput = {
+  export type ChildOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25994,127 +26010,9 @@ export namespace Prisma {
     _max?: NestedEnumStatusFilter<$PrismaModel>
   }
 
-  export type AdminsCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type AdminsAvgOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
-  export type AdminsMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type AdminsMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    password?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type AdminsSumOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type RecurringClassAttendanceListRelationFilter = {
-    every?: RecurringClassAttendanceWhereInput
-    some?: RecurringClassAttendanceWhereInput
-    none?: RecurringClassAttendanceWhereInput
-  }
-
-  export type RecurringClassAttendanceOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type ChildrenCountOrderByAggregateInput = {
-    id?: SortOrder
-    customerId?: SortOrder
-    name?: SortOrder
-    birthdate?: SortOrder
-    personalInfo?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type ChildrenAvgOrderByAggregateInput = {
-    id?: SortOrder
-    customerId?: SortOrder
-  }
-
-  export type ChildrenMaxOrderByAggregateInput = {
-    id?: SortOrder
-    customerId?: SortOrder
-    name?: SortOrder
-    birthdate?: SortOrder
-    personalInfo?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type ChildrenMinOrderByAggregateInput = {
-    id?: SortOrder
-    customerId?: SortOrder
-    name?: SortOrder
-    birthdate?: SortOrder
-    personalInfo?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type ChildrenSumOrderByAggregateInput = {
-    id?: SortOrder
-    customerId?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type ChildrenScalarRelationFilter = {
-    is?: ChildrenWhereInput
-    isNot?: ChildrenWhereInput
+  export type ChildScalarRelationFilter = {
+    is?: ChildWhereInput
+    isNot?: ChildWhereInput
   }
 
   export type ClassScalarRelationFilter = {
@@ -26234,6 +26132,16 @@ export namespace Prisma {
     id?: SortOrder
     planId?: SortOrder
     customerId?: SortOrder
+  }
+
+  export type RecurringClassAttendanceListRelationFilter = {
+    every?: RecurringClassAttendanceWhereInput
+    some?: RecurringClassAttendanceWhereInput
+    none?: RecurringClassAttendanceWhereInput
+  }
+
+  export type RecurringClassAttendanceOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type RecurringClassCountOrderByAggregateInput = {
@@ -26578,6 +26486,114 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type AdminCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdminAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type AdminMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdminMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdminSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type ChildCountOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    birthdate?: SortOrder
+    personalInfo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ChildAvgOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+  }
+
+  export type ChildMaxOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    birthdate?: SortOrder
+    personalInfo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ChildMinOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    birthdate?: SortOrder
+    personalInfo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ChildSumOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type ClassCreateNestedManyWithoutInstructorInput = {
     create?: XOR<ClassCreateWithoutInstructorInput, ClassUncheckedCreateWithoutInstructorInput> | ClassCreateWithoutInstructorInput[] | ClassUncheckedCreateWithoutInstructorInput[]
     connectOrCreate?: ClassCreateOrConnectWithoutInstructorInput | ClassCreateOrConnectWithoutInstructorInput[]
@@ -26770,11 +26786,11 @@ export namespace Prisma {
     deleteMany?: RecurringClassScalarWhereInput | RecurringClassScalarWhereInput[]
   }
 
-  export type ChildrenCreateNestedManyWithoutCustomerInput = {
-    create?: XOR<ChildrenCreateWithoutCustomerInput, ChildrenUncheckedCreateWithoutCustomerInput> | ChildrenCreateWithoutCustomerInput[] | ChildrenUncheckedCreateWithoutCustomerInput[]
-    connectOrCreate?: ChildrenCreateOrConnectWithoutCustomerInput | ChildrenCreateOrConnectWithoutCustomerInput[]
-    createMany?: ChildrenCreateManyCustomerInputEnvelope
-    connect?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
+  export type ChildCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<ChildCreateWithoutCustomerInput, ChildUncheckedCreateWithoutCustomerInput> | ChildCreateWithoutCustomerInput[] | ChildUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ChildCreateOrConnectWithoutCustomerInput | ChildCreateOrConnectWithoutCustomerInput[]
+    createMany?: ChildCreateManyCustomerInputEnvelope
+    connect?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
   }
 
   export type ClassCreateNestedManyWithoutCustomerInput = {
@@ -26791,11 +26807,11 @@ export namespace Prisma {
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
   }
 
-  export type ChildrenUncheckedCreateNestedManyWithoutCustomerInput = {
-    create?: XOR<ChildrenCreateWithoutCustomerInput, ChildrenUncheckedCreateWithoutCustomerInput> | ChildrenCreateWithoutCustomerInput[] | ChildrenUncheckedCreateWithoutCustomerInput[]
-    connectOrCreate?: ChildrenCreateOrConnectWithoutCustomerInput | ChildrenCreateOrConnectWithoutCustomerInput[]
-    createMany?: ChildrenCreateManyCustomerInputEnvelope
-    connect?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
+  export type ChildUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<ChildCreateWithoutCustomerInput, ChildUncheckedCreateWithoutCustomerInput> | ChildCreateWithoutCustomerInput[] | ChildUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ChildCreateOrConnectWithoutCustomerInput | ChildCreateOrConnectWithoutCustomerInput[]
+    createMany?: ChildCreateManyCustomerInputEnvelope
+    connect?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
   }
 
   export type ClassUncheckedCreateNestedManyWithoutCustomerInput = {
@@ -26812,18 +26828,18 @@ export namespace Prisma {
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
   }
 
-  export type ChildrenUpdateManyWithoutCustomerNestedInput = {
-    create?: XOR<ChildrenCreateWithoutCustomerInput, ChildrenUncheckedCreateWithoutCustomerInput> | ChildrenCreateWithoutCustomerInput[] | ChildrenUncheckedCreateWithoutCustomerInput[]
-    connectOrCreate?: ChildrenCreateOrConnectWithoutCustomerInput | ChildrenCreateOrConnectWithoutCustomerInput[]
-    upsert?: ChildrenUpsertWithWhereUniqueWithoutCustomerInput | ChildrenUpsertWithWhereUniqueWithoutCustomerInput[]
-    createMany?: ChildrenCreateManyCustomerInputEnvelope
-    set?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
-    disconnect?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
-    delete?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
-    connect?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
-    update?: ChildrenUpdateWithWhereUniqueWithoutCustomerInput | ChildrenUpdateWithWhereUniqueWithoutCustomerInput[]
-    updateMany?: ChildrenUpdateManyWithWhereWithoutCustomerInput | ChildrenUpdateManyWithWhereWithoutCustomerInput[]
-    deleteMany?: ChildrenScalarWhereInput | ChildrenScalarWhereInput[]
+  export type ChildUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<ChildCreateWithoutCustomerInput, ChildUncheckedCreateWithoutCustomerInput> | ChildCreateWithoutCustomerInput[] | ChildUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ChildCreateOrConnectWithoutCustomerInput | ChildCreateOrConnectWithoutCustomerInput[]
+    upsert?: ChildUpsertWithWhereUniqueWithoutCustomerInput | ChildUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: ChildCreateManyCustomerInputEnvelope
+    set?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
+    disconnect?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
+    delete?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
+    connect?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
+    update?: ChildUpdateWithWhereUniqueWithoutCustomerInput | ChildUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: ChildUpdateManyWithWhereWithoutCustomerInput | ChildUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: ChildScalarWhereInput | ChildScalarWhereInput[]
   }
 
   export type ClassUpdateManyWithoutCustomerNestedInput = {
@@ -26854,18 +26870,18 @@ export namespace Prisma {
     deleteMany?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
   }
 
-  export type ChildrenUncheckedUpdateManyWithoutCustomerNestedInput = {
-    create?: XOR<ChildrenCreateWithoutCustomerInput, ChildrenUncheckedCreateWithoutCustomerInput> | ChildrenCreateWithoutCustomerInput[] | ChildrenUncheckedCreateWithoutCustomerInput[]
-    connectOrCreate?: ChildrenCreateOrConnectWithoutCustomerInput | ChildrenCreateOrConnectWithoutCustomerInput[]
-    upsert?: ChildrenUpsertWithWhereUniqueWithoutCustomerInput | ChildrenUpsertWithWhereUniqueWithoutCustomerInput[]
-    createMany?: ChildrenCreateManyCustomerInputEnvelope
-    set?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
-    disconnect?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
-    delete?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
-    connect?: ChildrenWhereUniqueInput | ChildrenWhereUniqueInput[]
-    update?: ChildrenUpdateWithWhereUniqueWithoutCustomerInput | ChildrenUpdateWithWhereUniqueWithoutCustomerInput[]
-    updateMany?: ChildrenUpdateManyWithWhereWithoutCustomerInput | ChildrenUpdateManyWithWhereWithoutCustomerInput[]
-    deleteMany?: ChildrenScalarWhereInput | ChildrenScalarWhereInput[]
+  export type ChildUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<ChildCreateWithoutCustomerInput, ChildUncheckedCreateWithoutCustomerInput> | ChildCreateWithoutCustomerInput[] | ChildUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: ChildCreateOrConnectWithoutCustomerInput | ChildCreateOrConnectWithoutCustomerInput[]
+    upsert?: ChildUpsertWithWhereUniqueWithoutCustomerInput | ChildUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: ChildCreateManyCustomerInputEnvelope
+    set?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
+    disconnect?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
+    delete?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
+    connect?: ChildWhereUniqueInput | ChildWhereUniqueInput[]
+    update?: ChildUpdateWithWhereUniqueWithoutCustomerInput | ChildUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: ChildUpdateManyWithWhereWithoutCustomerInput | ChildUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: ChildScalarWhereInput | ChildScalarWhereInput[]
   }
 
   export type ClassUncheckedUpdateManyWithoutCustomerNestedInput = {
@@ -27012,112 +27028,10 @@ export namespace Prisma {
     deleteMany?: ClassAttendanceScalarWhereInput | ClassAttendanceScalarWhereInput[]
   }
 
-  export type CustomerCreateNestedOneWithoutChildrenInput = {
-    create?: XOR<CustomerCreateWithoutChildrenInput, CustomerUncheckedCreateWithoutChildrenInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutChildrenInput
-    connect?: CustomerWhereUniqueInput
-  }
-
-  export type ClassAttendanceCreateNestedManyWithoutChildrenInput = {
-    create?: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput> | ClassAttendanceCreateWithoutChildrenInput[] | ClassAttendanceUncheckedCreateWithoutChildrenInput[]
-    connectOrCreate?: ClassAttendanceCreateOrConnectWithoutChildrenInput | ClassAttendanceCreateOrConnectWithoutChildrenInput[]
-    createMany?: ClassAttendanceCreateManyChildrenInputEnvelope
-    connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-  }
-
-  export type RecurringClassAttendanceCreateNestedManyWithoutChildrenInput = {
-    create?: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput> | RecurringClassAttendanceCreateWithoutChildrenInput[] | RecurringClassAttendanceUncheckedCreateWithoutChildrenInput[]
-    connectOrCreate?: RecurringClassAttendanceCreateOrConnectWithoutChildrenInput | RecurringClassAttendanceCreateOrConnectWithoutChildrenInput[]
-    createMany?: RecurringClassAttendanceCreateManyChildrenInputEnvelope
-    connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-  }
-
-  export type ClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput = {
-    create?: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput> | ClassAttendanceCreateWithoutChildrenInput[] | ClassAttendanceUncheckedCreateWithoutChildrenInput[]
-    connectOrCreate?: ClassAttendanceCreateOrConnectWithoutChildrenInput | ClassAttendanceCreateOrConnectWithoutChildrenInput[]
-    createMany?: ClassAttendanceCreateManyChildrenInputEnvelope
-    connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-  }
-
-  export type RecurringClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput = {
-    create?: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput> | RecurringClassAttendanceCreateWithoutChildrenInput[] | RecurringClassAttendanceUncheckedCreateWithoutChildrenInput[]
-    connectOrCreate?: RecurringClassAttendanceCreateOrConnectWithoutChildrenInput | RecurringClassAttendanceCreateOrConnectWithoutChildrenInput[]
-    createMany?: RecurringClassAttendanceCreateManyChildrenInputEnvelope
-    connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
-  }
-
-  export type CustomerUpdateOneRequiredWithoutChildrenNestedInput = {
-    create?: XOR<CustomerCreateWithoutChildrenInput, CustomerUncheckedCreateWithoutChildrenInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutChildrenInput
-    upsert?: CustomerUpsertWithoutChildrenInput
-    connect?: CustomerWhereUniqueInput
-    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutChildrenInput, CustomerUpdateWithoutChildrenInput>, CustomerUncheckedUpdateWithoutChildrenInput>
-  }
-
-  export type ClassAttendanceUpdateManyWithoutChildrenNestedInput = {
-    create?: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput> | ClassAttendanceCreateWithoutChildrenInput[] | ClassAttendanceUncheckedCreateWithoutChildrenInput[]
-    connectOrCreate?: ClassAttendanceCreateOrConnectWithoutChildrenInput | ClassAttendanceCreateOrConnectWithoutChildrenInput[]
-    upsert?: ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput | ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput[]
-    createMany?: ClassAttendanceCreateManyChildrenInputEnvelope
-    set?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-    disconnect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-    delete?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-    connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-    update?: ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput | ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput[]
-    updateMany?: ClassAttendanceUpdateManyWithWhereWithoutChildrenInput | ClassAttendanceUpdateManyWithWhereWithoutChildrenInput[]
-    deleteMany?: ClassAttendanceScalarWhereInput | ClassAttendanceScalarWhereInput[]
-  }
-
-  export type RecurringClassAttendanceUpdateManyWithoutChildrenNestedInput = {
-    create?: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput> | RecurringClassAttendanceCreateWithoutChildrenInput[] | RecurringClassAttendanceUncheckedCreateWithoutChildrenInput[]
-    connectOrCreate?: RecurringClassAttendanceCreateOrConnectWithoutChildrenInput | RecurringClassAttendanceCreateOrConnectWithoutChildrenInput[]
-    upsert?: RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput | RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput[]
-    createMany?: RecurringClassAttendanceCreateManyChildrenInputEnvelope
-    set?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-    disconnect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-    delete?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-    connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-    update?: RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput | RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput[]
-    updateMany?: RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput | RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput[]
-    deleteMany?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
-  }
-
-  export type ClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput = {
-    create?: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput> | ClassAttendanceCreateWithoutChildrenInput[] | ClassAttendanceUncheckedCreateWithoutChildrenInput[]
-    connectOrCreate?: ClassAttendanceCreateOrConnectWithoutChildrenInput | ClassAttendanceCreateOrConnectWithoutChildrenInput[]
-    upsert?: ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput | ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput[]
-    createMany?: ClassAttendanceCreateManyChildrenInputEnvelope
-    set?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-    disconnect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-    delete?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-    connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
-    update?: ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput | ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput[]
-    updateMany?: ClassAttendanceUpdateManyWithWhereWithoutChildrenInput | ClassAttendanceUpdateManyWithWhereWithoutChildrenInput[]
-    deleteMany?: ClassAttendanceScalarWhereInput | ClassAttendanceScalarWhereInput[]
-  }
-
-  export type RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput = {
-    create?: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput> | RecurringClassAttendanceCreateWithoutChildrenInput[] | RecurringClassAttendanceUncheckedCreateWithoutChildrenInput[]
-    connectOrCreate?: RecurringClassAttendanceCreateOrConnectWithoutChildrenInput | RecurringClassAttendanceCreateOrConnectWithoutChildrenInput[]
-    upsert?: RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput | RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput[]
-    createMany?: RecurringClassAttendanceCreateManyChildrenInputEnvelope
-    set?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-    disconnect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-    delete?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-    connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
-    update?: RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput | RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput[]
-    updateMany?: RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput | RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput[]
-    deleteMany?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
-  }
-
-  export type ChildrenCreateNestedOneWithoutClassAttendanceInput = {
-    create?: XOR<ChildrenCreateWithoutClassAttendanceInput, ChildrenUncheckedCreateWithoutClassAttendanceInput>
-    connectOrCreate?: ChildrenCreateOrConnectWithoutClassAttendanceInput
-    connect?: ChildrenWhereUniqueInput
+  export type ChildCreateNestedOneWithoutClassAttendanceInput = {
+    create?: XOR<ChildCreateWithoutClassAttendanceInput, ChildUncheckedCreateWithoutClassAttendanceInput>
+    connectOrCreate?: ChildCreateOrConnectWithoutClassAttendanceInput
+    connect?: ChildWhereUniqueInput
   }
 
   export type ClassCreateNestedOneWithoutClassAttendanceInput = {
@@ -27126,12 +27040,12 @@ export namespace Prisma {
     connect?: ClassWhereUniqueInput
   }
 
-  export type ChildrenUpdateOneRequiredWithoutClassAttendanceNestedInput = {
-    create?: XOR<ChildrenCreateWithoutClassAttendanceInput, ChildrenUncheckedCreateWithoutClassAttendanceInput>
-    connectOrCreate?: ChildrenCreateOrConnectWithoutClassAttendanceInput
-    upsert?: ChildrenUpsertWithoutClassAttendanceInput
-    connect?: ChildrenWhereUniqueInput
-    update?: XOR<XOR<ChildrenUpdateToOneWithWhereWithoutClassAttendanceInput, ChildrenUpdateWithoutClassAttendanceInput>, ChildrenUncheckedUpdateWithoutClassAttendanceInput>
+  export type ChildUpdateOneRequiredWithoutClassAttendanceNestedInput = {
+    create?: XOR<ChildCreateWithoutClassAttendanceInput, ChildUncheckedCreateWithoutClassAttendanceInput>
+    connectOrCreate?: ChildCreateOrConnectWithoutClassAttendanceInput
+    upsert?: ChildUpsertWithoutClassAttendanceInput
+    connect?: ChildWhereUniqueInput
+    update?: XOR<XOR<ChildUpdateToOneWithWhereWithoutClassAttendanceInput, ChildUpdateWithoutClassAttendanceInput>, ChildUncheckedUpdateWithoutClassAttendanceInput>
   }
 
   export type ClassUpdateOneRequiredWithoutClassAttendanceNestedInput = {
@@ -27412,10 +27326,10 @@ export namespace Prisma {
     deleteMany?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
   }
 
-  export type ChildrenCreateNestedOneWithoutRecurringClassAttendanceInput = {
-    create?: XOR<ChildrenCreateWithoutRecurringClassAttendanceInput, ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput>
-    connectOrCreate?: ChildrenCreateOrConnectWithoutRecurringClassAttendanceInput
-    connect?: ChildrenWhereUniqueInput
+  export type ChildCreateNestedOneWithoutRecurringClassAttendanceInput = {
+    create?: XOR<ChildCreateWithoutRecurringClassAttendanceInput, ChildUncheckedCreateWithoutRecurringClassAttendanceInput>
+    connectOrCreate?: ChildCreateOrConnectWithoutRecurringClassAttendanceInput
+    connect?: ChildWhereUniqueInput
   }
 
   export type RecurringClassCreateNestedOneWithoutRecurringClassAttendanceInput = {
@@ -27424,12 +27338,12 @@ export namespace Prisma {
     connect?: RecurringClassWhereUniqueInput
   }
 
-  export type ChildrenUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput = {
-    create?: XOR<ChildrenCreateWithoutRecurringClassAttendanceInput, ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput>
-    connectOrCreate?: ChildrenCreateOrConnectWithoutRecurringClassAttendanceInput
-    upsert?: ChildrenUpsertWithoutRecurringClassAttendanceInput
-    connect?: ChildrenWhereUniqueInput
-    update?: XOR<XOR<ChildrenUpdateToOneWithWhereWithoutRecurringClassAttendanceInput, ChildrenUpdateWithoutRecurringClassAttendanceInput>, ChildrenUncheckedUpdateWithoutRecurringClassAttendanceInput>
+  export type ChildUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput = {
+    create?: XOR<ChildCreateWithoutRecurringClassAttendanceInput, ChildUncheckedCreateWithoutRecurringClassAttendanceInput>
+    connectOrCreate?: ChildCreateOrConnectWithoutRecurringClassAttendanceInput
+    upsert?: ChildUpsertWithoutRecurringClassAttendanceInput
+    connect?: ChildWhereUniqueInput
+    update?: XOR<XOR<ChildUpdateToOneWithWhereWithoutRecurringClassAttendanceInput, ChildUpdateWithoutRecurringClassAttendanceInput>, ChildUncheckedUpdateWithoutRecurringClassAttendanceInput>
   }
 
   export type RecurringClassUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput = {
@@ -27578,6 +27492,108 @@ export namespace Prisma {
     upsert?: InstructorUpsertWithoutInstructorAbsencesInput
     connect?: InstructorWhereUniqueInput
     update?: XOR<XOR<InstructorUpdateToOneWithWhereWithoutInstructorAbsencesInput, InstructorUpdateWithoutInstructorAbsencesInput>, InstructorUncheckedUpdateWithoutInstructorAbsencesInput>
+  }
+
+  export type CustomerCreateNestedOneWithoutChildrenInput = {
+    create?: XOR<CustomerCreateWithoutChildrenInput, CustomerUncheckedCreateWithoutChildrenInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutChildrenInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type ClassAttendanceCreateNestedManyWithoutChildrenInput = {
+    create?: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput> | ClassAttendanceCreateWithoutChildrenInput[] | ClassAttendanceUncheckedCreateWithoutChildrenInput[]
+    connectOrCreate?: ClassAttendanceCreateOrConnectWithoutChildrenInput | ClassAttendanceCreateOrConnectWithoutChildrenInput[]
+    createMany?: ClassAttendanceCreateManyChildrenInputEnvelope
+    connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+  }
+
+  export type RecurringClassAttendanceCreateNestedManyWithoutChildrenInput = {
+    create?: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput> | RecurringClassAttendanceCreateWithoutChildrenInput[] | RecurringClassAttendanceUncheckedCreateWithoutChildrenInput[]
+    connectOrCreate?: RecurringClassAttendanceCreateOrConnectWithoutChildrenInput | RecurringClassAttendanceCreateOrConnectWithoutChildrenInput[]
+    createMany?: RecurringClassAttendanceCreateManyChildrenInputEnvelope
+    connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+  }
+
+  export type ClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput = {
+    create?: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput> | ClassAttendanceCreateWithoutChildrenInput[] | ClassAttendanceUncheckedCreateWithoutChildrenInput[]
+    connectOrCreate?: ClassAttendanceCreateOrConnectWithoutChildrenInput | ClassAttendanceCreateOrConnectWithoutChildrenInput[]
+    createMany?: ClassAttendanceCreateManyChildrenInputEnvelope
+    connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+  }
+
+  export type RecurringClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput = {
+    create?: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput> | RecurringClassAttendanceCreateWithoutChildrenInput[] | RecurringClassAttendanceUncheckedCreateWithoutChildrenInput[]
+    connectOrCreate?: RecurringClassAttendanceCreateOrConnectWithoutChildrenInput | RecurringClassAttendanceCreateOrConnectWithoutChildrenInput[]
+    createMany?: RecurringClassAttendanceCreateManyChildrenInputEnvelope
+    connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type CustomerUpdateOneRequiredWithoutChildrenNestedInput = {
+    create?: XOR<CustomerCreateWithoutChildrenInput, CustomerUncheckedCreateWithoutChildrenInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutChildrenInput
+    upsert?: CustomerUpsertWithoutChildrenInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutChildrenInput, CustomerUpdateWithoutChildrenInput>, CustomerUncheckedUpdateWithoutChildrenInput>
+  }
+
+  export type ClassAttendanceUpdateManyWithoutChildrenNestedInput = {
+    create?: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput> | ClassAttendanceCreateWithoutChildrenInput[] | ClassAttendanceUncheckedCreateWithoutChildrenInput[]
+    connectOrCreate?: ClassAttendanceCreateOrConnectWithoutChildrenInput | ClassAttendanceCreateOrConnectWithoutChildrenInput[]
+    upsert?: ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput | ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput[]
+    createMany?: ClassAttendanceCreateManyChildrenInputEnvelope
+    set?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+    disconnect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+    delete?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+    connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+    update?: ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput | ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput[]
+    updateMany?: ClassAttendanceUpdateManyWithWhereWithoutChildrenInput | ClassAttendanceUpdateManyWithWhereWithoutChildrenInput[]
+    deleteMany?: ClassAttendanceScalarWhereInput | ClassAttendanceScalarWhereInput[]
+  }
+
+  export type RecurringClassAttendanceUpdateManyWithoutChildrenNestedInput = {
+    create?: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput> | RecurringClassAttendanceCreateWithoutChildrenInput[] | RecurringClassAttendanceUncheckedCreateWithoutChildrenInput[]
+    connectOrCreate?: RecurringClassAttendanceCreateOrConnectWithoutChildrenInput | RecurringClassAttendanceCreateOrConnectWithoutChildrenInput[]
+    upsert?: RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput | RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput[]
+    createMany?: RecurringClassAttendanceCreateManyChildrenInputEnvelope
+    set?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+    disconnect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+    delete?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+    connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+    update?: RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput | RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput[]
+    updateMany?: RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput | RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput[]
+    deleteMany?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
+  }
+
+  export type ClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput = {
+    create?: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput> | ClassAttendanceCreateWithoutChildrenInput[] | ClassAttendanceUncheckedCreateWithoutChildrenInput[]
+    connectOrCreate?: ClassAttendanceCreateOrConnectWithoutChildrenInput | ClassAttendanceCreateOrConnectWithoutChildrenInput[]
+    upsert?: ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput | ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput[]
+    createMany?: ClassAttendanceCreateManyChildrenInputEnvelope
+    set?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+    disconnect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+    delete?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+    connect?: ClassAttendanceWhereUniqueInput | ClassAttendanceWhereUniqueInput[]
+    update?: ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput | ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput[]
+    updateMany?: ClassAttendanceUpdateManyWithWhereWithoutChildrenInput | ClassAttendanceUpdateManyWithWhereWithoutChildrenInput[]
+    deleteMany?: ClassAttendanceScalarWhereInput | ClassAttendanceScalarWhereInput[]
+  }
+
+  export type RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput = {
+    create?: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput> | RecurringClassAttendanceCreateWithoutChildrenInput[] | RecurringClassAttendanceUncheckedCreateWithoutChildrenInput[]
+    connectOrCreate?: RecurringClassAttendanceCreateOrConnectWithoutChildrenInput | RecurringClassAttendanceCreateOrConnectWithoutChildrenInput[]
+    upsert?: RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput | RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput[]
+    createMany?: RecurringClassAttendanceCreateManyChildrenInputEnvelope
+    set?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+    disconnect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+    delete?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+    connect?: RecurringClassAttendanceWhereUniqueInput | RecurringClassAttendanceWhereUniqueInput[]
+    update?: RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput | RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput[]
+    updateMany?: RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput | RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput[]
+    deleteMany?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -28019,7 +28035,7 @@ export namespace Prisma {
     endAt?: DateTimeNullableFilter<"RecurringClass"> | Date | string | null
   }
 
-  export type ChildrenCreateWithoutCustomerInput = {
+  export type ChildCreateWithoutCustomerInput = {
     name: string
     birthdate?: Date | string | null
     personalInfo?: string | null
@@ -28029,7 +28045,7 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutChildrenInput
   }
 
-  export type ChildrenUncheckedCreateWithoutCustomerInput = {
+  export type ChildUncheckedCreateWithoutCustomerInput = {
     id?: number
     name: string
     birthdate?: Date | string | null
@@ -28040,13 +28056,13 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput
   }
 
-  export type ChildrenCreateOrConnectWithoutCustomerInput = {
-    where: ChildrenWhereUniqueInput
-    create: XOR<ChildrenCreateWithoutCustomerInput, ChildrenUncheckedCreateWithoutCustomerInput>
+  export type ChildCreateOrConnectWithoutCustomerInput = {
+    where: ChildWhereUniqueInput
+    create: XOR<ChildCreateWithoutCustomerInput, ChildUncheckedCreateWithoutCustomerInput>
   }
 
-  export type ChildrenCreateManyCustomerInputEnvelope = {
-    data: ChildrenCreateManyCustomerInput | ChildrenCreateManyCustomerInput[]
+  export type ChildCreateManyCustomerInputEnvelope = {
+    data: ChildCreateManyCustomerInput | ChildCreateManyCustomerInput[]
     skipDuplicates?: boolean
   }
 
@@ -28116,33 +28132,33 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ChildrenUpsertWithWhereUniqueWithoutCustomerInput = {
-    where: ChildrenWhereUniqueInput
-    update: XOR<ChildrenUpdateWithoutCustomerInput, ChildrenUncheckedUpdateWithoutCustomerInput>
-    create: XOR<ChildrenCreateWithoutCustomerInput, ChildrenUncheckedCreateWithoutCustomerInput>
+  export type ChildUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: ChildWhereUniqueInput
+    update: XOR<ChildUpdateWithoutCustomerInput, ChildUncheckedUpdateWithoutCustomerInput>
+    create: XOR<ChildCreateWithoutCustomerInput, ChildUncheckedCreateWithoutCustomerInput>
   }
 
-  export type ChildrenUpdateWithWhereUniqueWithoutCustomerInput = {
-    where: ChildrenWhereUniqueInput
-    data: XOR<ChildrenUpdateWithoutCustomerInput, ChildrenUncheckedUpdateWithoutCustomerInput>
+  export type ChildUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: ChildWhereUniqueInput
+    data: XOR<ChildUpdateWithoutCustomerInput, ChildUncheckedUpdateWithoutCustomerInput>
   }
 
-  export type ChildrenUpdateManyWithWhereWithoutCustomerInput = {
-    where: ChildrenScalarWhereInput
-    data: XOR<ChildrenUpdateManyMutationInput, ChildrenUncheckedUpdateManyWithoutCustomerInput>
+  export type ChildUpdateManyWithWhereWithoutCustomerInput = {
+    where: ChildScalarWhereInput
+    data: XOR<ChildUpdateManyMutationInput, ChildUncheckedUpdateManyWithoutCustomerInput>
   }
 
-  export type ChildrenScalarWhereInput = {
-    AND?: ChildrenScalarWhereInput | ChildrenScalarWhereInput[]
-    OR?: ChildrenScalarWhereInput[]
-    NOT?: ChildrenScalarWhereInput | ChildrenScalarWhereInput[]
-    id?: IntFilter<"Children"> | number
-    customerId?: IntFilter<"Children"> | number
-    name?: StringFilter<"Children"> | string
-    birthdate?: DateTimeNullableFilter<"Children"> | Date | string | null
-    personalInfo?: StringNullableFilter<"Children"> | string | null
-    createdAt?: DateTimeFilter<"Children"> | Date | string
-    updatedAt?: DateTimeFilter<"Children"> | Date | string
+  export type ChildScalarWhereInput = {
+    AND?: ChildScalarWhereInput | ChildScalarWhereInput[]
+    OR?: ChildScalarWhereInput[]
+    NOT?: ChildScalarWhereInput | ChildScalarWhereInput[]
+    id?: IntFilter<"Child"> | number
+    customerId?: IntFilter<"Child"> | number
+    name?: StringFilter<"Child"> | string
+    birthdate?: DateTimeNullableFilter<"Child"> | Date | string | null
+    personalInfo?: StringNullableFilter<"Child"> | string | null
+    createdAt?: DateTimeFilter<"Child"> | Date | string
+    updatedAt?: DateTimeFilter<"Child"> | Date | string
   }
 
   export type ClassUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -28198,7 +28214,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
-    children?: ChildrenCreateNestedManyWithoutCustomerInput
+    children?: ChildCreateNestedManyWithoutCustomerInput
     subscription?: SubscriptionCreateNestedManyWithoutCustomerInput
   }
 
@@ -28213,7 +28229,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
-    children?: ChildrenUncheckedCreateNestedManyWithoutCustomerInput
+    children?: ChildUncheckedCreateNestedManyWithoutCustomerInput
     subscription?: SubscriptionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
@@ -28323,7 +28339,7 @@ export namespace Prisma {
   }
 
   export type ClassAttendanceCreateWithoutClassInput = {
-    children: ChildrenCreateNestedOneWithoutClassAttendanceInput
+    children: ChildCreateNestedOneWithoutClassAttendanceInput
   }
 
   export type ClassAttendanceUncheckedCreateWithoutClassInput = {
@@ -28361,7 +28377,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    children?: ChildrenUpdateManyWithoutCustomerNestedInput
+    children?: ChildUpdateManyWithoutCustomerNestedInput
     subscription?: SubscriptionUpdateManyWithoutCustomerNestedInput
   }
 
@@ -28376,7 +28392,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    children?: ChildrenUncheckedUpdateManyWithoutCustomerNestedInput
+    children?: ChildUncheckedUpdateManyWithoutCustomerNestedInput
     subscription?: SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
@@ -28522,157 +28538,7 @@ export namespace Prisma {
     childrenId?: IntFilter<"ClassAttendance"> | number
   }
 
-  export type CustomerCreateWithoutChildrenInput = {
-    name: string
-    email: string
-    password: string
-    prefecture: string
-    emailVerified?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    hasSeenWelcome?: boolean
-    terminationAt?: Date | string | null
-    classes?: ClassCreateNestedManyWithoutCustomerInput
-    subscription?: SubscriptionCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerUncheckedCreateWithoutChildrenInput = {
-    id?: number
-    name: string
-    email: string
-    password: string
-    prefecture: string
-    emailVerified?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    hasSeenWelcome?: boolean
-    terminationAt?: Date | string | null
-    classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
-    subscription?: SubscriptionUncheckedCreateNestedManyWithoutCustomerInput
-  }
-
-  export type CustomerCreateOrConnectWithoutChildrenInput = {
-    where: CustomerWhereUniqueInput
-    create: XOR<CustomerCreateWithoutChildrenInput, CustomerUncheckedCreateWithoutChildrenInput>
-  }
-
-  export type ClassAttendanceCreateWithoutChildrenInput = {
-    class: ClassCreateNestedOneWithoutClassAttendanceInput
-  }
-
-  export type ClassAttendanceUncheckedCreateWithoutChildrenInput = {
-    classId: number
-  }
-
-  export type ClassAttendanceCreateOrConnectWithoutChildrenInput = {
-    where: ClassAttendanceWhereUniqueInput
-    create: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput>
-  }
-
-  export type ClassAttendanceCreateManyChildrenInputEnvelope = {
-    data: ClassAttendanceCreateManyChildrenInput | ClassAttendanceCreateManyChildrenInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type RecurringClassAttendanceCreateWithoutChildrenInput = {
-    recurringClass: RecurringClassCreateNestedOneWithoutRecurringClassAttendanceInput
-  }
-
-  export type RecurringClassAttendanceUncheckedCreateWithoutChildrenInput = {
-    recurringClassId: number
-  }
-
-  export type RecurringClassAttendanceCreateOrConnectWithoutChildrenInput = {
-    where: RecurringClassAttendanceWhereUniqueInput
-    create: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput>
-  }
-
-  export type RecurringClassAttendanceCreateManyChildrenInputEnvelope = {
-    data: RecurringClassAttendanceCreateManyChildrenInput | RecurringClassAttendanceCreateManyChildrenInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type CustomerUpsertWithoutChildrenInput = {
-    update: XOR<CustomerUpdateWithoutChildrenInput, CustomerUncheckedUpdateWithoutChildrenInput>
-    create: XOR<CustomerCreateWithoutChildrenInput, CustomerUncheckedCreateWithoutChildrenInput>
-    where?: CustomerWhereInput
-  }
-
-  export type CustomerUpdateToOneWithWhereWithoutChildrenInput = {
-    where?: CustomerWhereInput
-    data: XOR<CustomerUpdateWithoutChildrenInput, CustomerUncheckedUpdateWithoutChildrenInput>
-  }
-
-  export type CustomerUpdateWithoutChildrenInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    prefecture?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
-    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    classes?: ClassUpdateManyWithoutCustomerNestedInput
-    subscription?: SubscriptionUpdateManyWithoutCustomerNestedInput
-  }
-
-  export type CustomerUncheckedUpdateWithoutChildrenInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: StringFieldUpdateOperationsInput | string
-    prefecture?: StringFieldUpdateOperationsInput | string
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
-    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
-    subscription?: SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput
-  }
-
-  export type ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput = {
-    where: ClassAttendanceWhereUniqueInput
-    update: XOR<ClassAttendanceUpdateWithoutChildrenInput, ClassAttendanceUncheckedUpdateWithoutChildrenInput>
-    create: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput>
-  }
-
-  export type ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput = {
-    where: ClassAttendanceWhereUniqueInput
-    data: XOR<ClassAttendanceUpdateWithoutChildrenInput, ClassAttendanceUncheckedUpdateWithoutChildrenInput>
-  }
-
-  export type ClassAttendanceUpdateManyWithWhereWithoutChildrenInput = {
-    where: ClassAttendanceScalarWhereInput
-    data: XOR<ClassAttendanceUpdateManyMutationInput, ClassAttendanceUncheckedUpdateManyWithoutChildrenInput>
-  }
-
-  export type RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput = {
-    where: RecurringClassAttendanceWhereUniqueInput
-    update: XOR<RecurringClassAttendanceUpdateWithoutChildrenInput, RecurringClassAttendanceUncheckedUpdateWithoutChildrenInput>
-    create: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput>
-  }
-
-  export type RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput = {
-    where: RecurringClassAttendanceWhereUniqueInput
-    data: XOR<RecurringClassAttendanceUpdateWithoutChildrenInput, RecurringClassAttendanceUncheckedUpdateWithoutChildrenInput>
-  }
-
-  export type RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput = {
-    where: RecurringClassAttendanceScalarWhereInput
-    data: XOR<RecurringClassAttendanceUpdateManyMutationInput, RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenInput>
-  }
-
-  export type RecurringClassAttendanceScalarWhereInput = {
-    AND?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
-    OR?: RecurringClassAttendanceScalarWhereInput[]
-    NOT?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
-    recurringClassId?: IntFilter<"RecurringClassAttendance"> | number
-    childrenId?: IntFilter<"RecurringClassAttendance"> | number
-  }
-
-  export type ChildrenCreateWithoutClassAttendanceInput = {
+  export type ChildCreateWithoutClassAttendanceInput = {
     name: string
     birthdate?: Date | string | null
     personalInfo?: string | null
@@ -28682,7 +28548,7 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceCreateNestedManyWithoutChildrenInput
   }
 
-  export type ChildrenUncheckedCreateWithoutClassAttendanceInput = {
+  export type ChildUncheckedCreateWithoutClassAttendanceInput = {
     id?: number
     customerId: number
     name: string
@@ -28693,9 +28559,9 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput
   }
 
-  export type ChildrenCreateOrConnectWithoutClassAttendanceInput = {
-    where: ChildrenWhereUniqueInput
-    create: XOR<ChildrenCreateWithoutClassAttendanceInput, ChildrenUncheckedCreateWithoutClassAttendanceInput>
+  export type ChildCreateOrConnectWithoutClassAttendanceInput = {
+    where: ChildWhereUniqueInput
+    create: XOR<ChildCreateWithoutClassAttendanceInput, ChildUncheckedCreateWithoutClassAttendanceInput>
   }
 
   export type ClassCreateWithoutClassAttendanceInput = {
@@ -28732,18 +28598,18 @@ export namespace Prisma {
     create: XOR<ClassCreateWithoutClassAttendanceInput, ClassUncheckedCreateWithoutClassAttendanceInput>
   }
 
-  export type ChildrenUpsertWithoutClassAttendanceInput = {
-    update: XOR<ChildrenUpdateWithoutClassAttendanceInput, ChildrenUncheckedUpdateWithoutClassAttendanceInput>
-    create: XOR<ChildrenCreateWithoutClassAttendanceInput, ChildrenUncheckedCreateWithoutClassAttendanceInput>
-    where?: ChildrenWhereInput
+  export type ChildUpsertWithoutClassAttendanceInput = {
+    update: XOR<ChildUpdateWithoutClassAttendanceInput, ChildUncheckedUpdateWithoutClassAttendanceInput>
+    create: XOR<ChildCreateWithoutClassAttendanceInput, ChildUncheckedCreateWithoutClassAttendanceInput>
+    where?: ChildWhereInput
   }
 
-  export type ChildrenUpdateToOneWithWhereWithoutClassAttendanceInput = {
-    where?: ChildrenWhereInput
-    data: XOR<ChildrenUpdateWithoutClassAttendanceInput, ChildrenUncheckedUpdateWithoutClassAttendanceInput>
+  export type ChildUpdateToOneWithWhereWithoutClassAttendanceInput = {
+    where?: ChildWhereInput
+    data: XOR<ChildUpdateWithoutClassAttendanceInput, ChildUncheckedUpdateWithoutClassAttendanceInput>
   }
 
-  export type ChildrenUpdateWithoutClassAttendanceInput = {
+  export type ChildUpdateWithoutClassAttendanceInput = {
     name?: StringFieldUpdateOperationsInput | string
     birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28753,7 +28619,7 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutChildrenNestedInput
   }
 
-  export type ChildrenUncheckedUpdateWithoutClassAttendanceInput = {
+  export type ChildUncheckedUpdateWithoutClassAttendanceInput = {
     id?: IntFieldUpdateOperationsInput | number
     customerId?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
@@ -28923,7 +28789,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
-    children?: ChildrenCreateNestedManyWithoutCustomerInput
+    children?: ChildCreateNestedManyWithoutCustomerInput
     classes?: ClassCreateNestedManyWithoutCustomerInput
   }
 
@@ -28938,7 +28804,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     hasSeenWelcome?: boolean
     terminationAt?: Date | string | null
-    children?: ChildrenUncheckedCreateNestedManyWithoutCustomerInput
+    children?: ChildUncheckedCreateNestedManyWithoutCustomerInput
     classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
   }
 
@@ -29026,7 +28892,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    children?: ChildrenUpdateManyWithoutCustomerNestedInput
+    children?: ChildUpdateManyWithoutCustomerNestedInput
     classes?: ClassUpdateManyWithoutCustomerNestedInput
   }
 
@@ -29041,7 +28907,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
     terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    children?: ChildrenUncheckedUpdateManyWithoutCustomerNestedInput
+    children?: ChildUncheckedUpdateManyWithoutCustomerNestedInput
     classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
@@ -29195,7 +29061,7 @@ export namespace Prisma {
   }
 
   export type RecurringClassAttendanceCreateWithoutRecurringClassInput = {
-    children: ChildrenCreateNestedOneWithoutRecurringClassAttendanceInput
+    children: ChildCreateNestedOneWithoutRecurringClassAttendanceInput
   }
 
   export type RecurringClassAttendanceUncheckedCreateWithoutRecurringClassInput = {
@@ -29334,7 +29200,15 @@ export namespace Prisma {
     data: XOR<RecurringClassAttendanceUpdateManyMutationInput, RecurringClassAttendanceUncheckedUpdateManyWithoutRecurringClassInput>
   }
 
-  export type ChildrenCreateWithoutRecurringClassAttendanceInput = {
+  export type RecurringClassAttendanceScalarWhereInput = {
+    AND?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
+    OR?: RecurringClassAttendanceScalarWhereInput[]
+    NOT?: RecurringClassAttendanceScalarWhereInput | RecurringClassAttendanceScalarWhereInput[]
+    recurringClassId?: IntFilter<"RecurringClassAttendance"> | number
+    childrenId?: IntFilter<"RecurringClassAttendance"> | number
+  }
+
+  export type ChildCreateWithoutRecurringClassAttendanceInput = {
     name: string
     birthdate?: Date | string | null
     personalInfo?: string | null
@@ -29344,7 +29218,7 @@ export namespace Prisma {
     classAttendance?: ClassAttendanceCreateNestedManyWithoutChildrenInput
   }
 
-  export type ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput = {
+  export type ChildUncheckedCreateWithoutRecurringClassAttendanceInput = {
     id?: number
     customerId: number
     name: string
@@ -29355,9 +29229,9 @@ export namespace Prisma {
     classAttendance?: ClassAttendanceUncheckedCreateNestedManyWithoutChildrenInput
   }
 
-  export type ChildrenCreateOrConnectWithoutRecurringClassAttendanceInput = {
-    where: ChildrenWhereUniqueInput
-    create: XOR<ChildrenCreateWithoutRecurringClassAttendanceInput, ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput>
+  export type ChildCreateOrConnectWithoutRecurringClassAttendanceInput = {
+    where: ChildWhereUniqueInput
+    create: XOR<ChildCreateWithoutRecurringClassAttendanceInput, ChildUncheckedCreateWithoutRecurringClassAttendanceInput>
   }
 
   export type RecurringClassCreateWithoutRecurringClassAttendanceInput = {
@@ -29382,18 +29256,18 @@ export namespace Prisma {
     create: XOR<RecurringClassCreateWithoutRecurringClassAttendanceInput, RecurringClassUncheckedCreateWithoutRecurringClassAttendanceInput>
   }
 
-  export type ChildrenUpsertWithoutRecurringClassAttendanceInput = {
-    update: XOR<ChildrenUpdateWithoutRecurringClassAttendanceInput, ChildrenUncheckedUpdateWithoutRecurringClassAttendanceInput>
-    create: XOR<ChildrenCreateWithoutRecurringClassAttendanceInput, ChildrenUncheckedCreateWithoutRecurringClassAttendanceInput>
-    where?: ChildrenWhereInput
+  export type ChildUpsertWithoutRecurringClassAttendanceInput = {
+    update: XOR<ChildUpdateWithoutRecurringClassAttendanceInput, ChildUncheckedUpdateWithoutRecurringClassAttendanceInput>
+    create: XOR<ChildCreateWithoutRecurringClassAttendanceInput, ChildUncheckedCreateWithoutRecurringClassAttendanceInput>
+    where?: ChildWhereInput
   }
 
-  export type ChildrenUpdateToOneWithWhereWithoutRecurringClassAttendanceInput = {
-    where?: ChildrenWhereInput
-    data: XOR<ChildrenUpdateWithoutRecurringClassAttendanceInput, ChildrenUncheckedUpdateWithoutRecurringClassAttendanceInput>
+  export type ChildUpdateToOneWithWhereWithoutRecurringClassAttendanceInput = {
+    where?: ChildWhereInput
+    data: XOR<ChildUpdateWithoutRecurringClassAttendanceInput, ChildUncheckedUpdateWithoutRecurringClassAttendanceInput>
   }
 
-  export type ChildrenUpdateWithoutRecurringClassAttendanceInput = {
+  export type ChildUpdateWithoutRecurringClassAttendanceInput = {
     name?: StringFieldUpdateOperationsInput | string
     birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29403,7 +29277,7 @@ export namespace Prisma {
     classAttendance?: ClassAttendanceUpdateManyWithoutChildrenNestedInput
   }
 
-  export type ChildrenUncheckedUpdateWithoutRecurringClassAttendanceInput = {
+  export type ChildUncheckedUpdateWithoutRecurringClassAttendanceInput = {
     id?: IntFieldUpdateOperationsInput | number
     customerId?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
@@ -29851,6 +29725,148 @@ export namespace Prisma {
     recurringClasses?: RecurringClassUncheckedUpdateManyWithoutInstructorNestedInput
   }
 
+  export type CustomerCreateWithoutChildrenInput = {
+    name: string
+    email: string
+    password: string
+    prefecture: string
+    emailVerified?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    hasSeenWelcome?: boolean
+    terminationAt?: Date | string | null
+    classes?: ClassCreateNestedManyWithoutCustomerInput
+    subscription?: SubscriptionCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutChildrenInput = {
+    id?: number
+    name: string
+    email: string
+    password: string
+    prefecture: string
+    emailVerified?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    hasSeenWelcome?: boolean
+    terminationAt?: Date | string | null
+    classes?: ClassUncheckedCreateNestedManyWithoutCustomerInput
+    subscription?: SubscriptionUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutChildrenInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutChildrenInput, CustomerUncheckedCreateWithoutChildrenInput>
+  }
+
+  export type ClassAttendanceCreateWithoutChildrenInput = {
+    class: ClassCreateNestedOneWithoutClassAttendanceInput
+  }
+
+  export type ClassAttendanceUncheckedCreateWithoutChildrenInput = {
+    classId: number
+  }
+
+  export type ClassAttendanceCreateOrConnectWithoutChildrenInput = {
+    where: ClassAttendanceWhereUniqueInput
+    create: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput>
+  }
+
+  export type ClassAttendanceCreateManyChildrenInputEnvelope = {
+    data: ClassAttendanceCreateManyChildrenInput | ClassAttendanceCreateManyChildrenInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RecurringClassAttendanceCreateWithoutChildrenInput = {
+    recurringClass: RecurringClassCreateNestedOneWithoutRecurringClassAttendanceInput
+  }
+
+  export type RecurringClassAttendanceUncheckedCreateWithoutChildrenInput = {
+    recurringClassId: number
+  }
+
+  export type RecurringClassAttendanceCreateOrConnectWithoutChildrenInput = {
+    where: RecurringClassAttendanceWhereUniqueInput
+    create: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput>
+  }
+
+  export type RecurringClassAttendanceCreateManyChildrenInputEnvelope = {
+    data: RecurringClassAttendanceCreateManyChildrenInput | RecurringClassAttendanceCreateManyChildrenInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CustomerUpsertWithoutChildrenInput = {
+    update: XOR<CustomerUpdateWithoutChildrenInput, CustomerUncheckedUpdateWithoutChildrenInput>
+    create: XOR<CustomerCreateWithoutChildrenInput, CustomerUncheckedCreateWithoutChildrenInput>
+    where?: CustomerWhereInput
+  }
+
+  export type CustomerUpdateToOneWithWhereWithoutChildrenInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutChildrenInput, CustomerUncheckedUpdateWithoutChildrenInput>
+  }
+
+  export type CustomerUpdateWithoutChildrenInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    prefecture?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classes?: ClassUpdateManyWithoutCustomerNestedInput
+    subscription?: SubscriptionUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutChildrenInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    prefecture?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    hasSeenWelcome?: BoolFieldUpdateOperationsInput | boolean
+    terminationAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    classes?: ClassUncheckedUpdateManyWithoutCustomerNestedInput
+    subscription?: SubscriptionUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type ClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput = {
+    where: ClassAttendanceWhereUniqueInput
+    update: XOR<ClassAttendanceUpdateWithoutChildrenInput, ClassAttendanceUncheckedUpdateWithoutChildrenInput>
+    create: XOR<ClassAttendanceCreateWithoutChildrenInput, ClassAttendanceUncheckedCreateWithoutChildrenInput>
+  }
+
+  export type ClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput = {
+    where: ClassAttendanceWhereUniqueInput
+    data: XOR<ClassAttendanceUpdateWithoutChildrenInput, ClassAttendanceUncheckedUpdateWithoutChildrenInput>
+  }
+
+  export type ClassAttendanceUpdateManyWithWhereWithoutChildrenInput = {
+    where: ClassAttendanceScalarWhereInput
+    data: XOR<ClassAttendanceUpdateManyMutationInput, ClassAttendanceUncheckedUpdateManyWithoutChildrenInput>
+  }
+
+  export type RecurringClassAttendanceUpsertWithWhereUniqueWithoutChildrenInput = {
+    where: RecurringClassAttendanceWhereUniqueInput
+    update: XOR<RecurringClassAttendanceUpdateWithoutChildrenInput, RecurringClassAttendanceUncheckedUpdateWithoutChildrenInput>
+    create: XOR<RecurringClassAttendanceCreateWithoutChildrenInput, RecurringClassAttendanceUncheckedCreateWithoutChildrenInput>
+  }
+
+  export type RecurringClassAttendanceUpdateWithWhereUniqueWithoutChildrenInput = {
+    where: RecurringClassAttendanceWhereUniqueInput
+    data: XOR<RecurringClassAttendanceUpdateWithoutChildrenInput, RecurringClassAttendanceUncheckedUpdateWithoutChildrenInput>
+  }
+
+  export type RecurringClassAttendanceUpdateManyWithWhereWithoutChildrenInput = {
+    where: RecurringClassAttendanceScalarWhereInput
+    data: XOR<RecurringClassAttendanceUpdateManyMutationInput, RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenInput>
+  }
+
   export type ClassCreateManyInstructorInput = {
     id?: number
     customerId: number
@@ -29984,7 +30000,7 @@ export namespace Prisma {
     endAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type ChildrenCreateManyCustomerInput = {
+  export type ChildCreateManyCustomerInput = {
     id?: number
     name: string
     birthdate?: Date | string | null
@@ -30014,7 +30030,7 @@ export namespace Prisma {
     endAt?: Date | string | null
   }
 
-  export type ChildrenUpdateWithoutCustomerInput = {
+  export type ChildUpdateWithoutCustomerInput = {
     name?: StringFieldUpdateOperationsInput | string
     birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     personalInfo?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30024,7 +30040,7 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceUpdateManyWithoutChildrenNestedInput
   }
 
-  export type ChildrenUncheckedUpdateWithoutCustomerInput = {
+  export type ChildUncheckedUpdateWithoutCustomerInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -30035,7 +30051,7 @@ export namespace Prisma {
     recurringClassAttendance?: RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenNestedInput
   }
 
-  export type ChildrenUncheckedUpdateManyWithoutCustomerInput = {
+  export type ChildUncheckedUpdateManyWithoutCustomerInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     birthdate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -30116,7 +30132,7 @@ export namespace Prisma {
   }
 
   export type ClassAttendanceUpdateWithoutClassInput = {
-    children?: ChildrenUpdateOneRequiredWithoutClassAttendanceNestedInput
+    children?: ChildUpdateOneRequiredWithoutClassAttendanceNestedInput
   }
 
   export type ClassAttendanceUncheckedUpdateWithoutClassInput = {
@@ -30125,38 +30141,6 @@ export namespace Prisma {
 
   export type ClassAttendanceUncheckedUpdateManyWithoutClassInput = {
     childrenId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ClassAttendanceCreateManyChildrenInput = {
-    classId: number
-  }
-
-  export type RecurringClassAttendanceCreateManyChildrenInput = {
-    recurringClassId: number
-  }
-
-  export type ClassAttendanceUpdateWithoutChildrenInput = {
-    class?: ClassUpdateOneRequiredWithoutClassAttendanceNestedInput
-  }
-
-  export type ClassAttendanceUncheckedUpdateWithoutChildrenInput = {
-    classId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ClassAttendanceUncheckedUpdateManyWithoutChildrenInput = {
-    classId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type RecurringClassAttendanceUpdateWithoutChildrenInput = {
-    recurringClass?: RecurringClassUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
-  }
-
-  export type RecurringClassAttendanceUncheckedUpdateWithoutChildrenInput = {
-    recurringClassId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenInput = {
-    recurringClassId?: IntFieldUpdateOperationsInput | number
   }
 
   export type SubscriptionCreateManyPlanInput = {
@@ -30340,7 +30324,7 @@ export namespace Prisma {
   }
 
   export type RecurringClassAttendanceUpdateWithoutRecurringClassInput = {
-    children?: ChildrenUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
+    children?: ChildUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
   }
 
   export type RecurringClassAttendanceUncheckedUpdateWithoutRecurringClassInput = {
@@ -30388,6 +30372,38 @@ export namespace Prisma {
   export type InstructorSlotUncheckedUpdateManyWithoutScheduleInput = {
     weekday?: IntFieldUpdateOperationsInput | number
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClassAttendanceCreateManyChildrenInput = {
+    classId: number
+  }
+
+  export type RecurringClassAttendanceCreateManyChildrenInput = {
+    recurringClassId: number
+  }
+
+  export type ClassAttendanceUpdateWithoutChildrenInput = {
+    class?: ClassUpdateOneRequiredWithoutClassAttendanceNestedInput
+  }
+
+  export type ClassAttendanceUncheckedUpdateWithoutChildrenInput = {
+    classId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ClassAttendanceUncheckedUpdateManyWithoutChildrenInput = {
+    classId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type RecurringClassAttendanceUpdateWithoutChildrenInput = {
+    recurringClass?: RecurringClassUpdateOneRequiredWithoutRecurringClassAttendanceNestedInput
+  }
+
+  export type RecurringClassAttendanceUncheckedUpdateWithoutChildrenInput = {
+    recurringClassId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type RecurringClassAttendanceUncheckedUpdateManyWithoutChildrenInput = {
+    recurringClassId?: IntFieldUpdateOperationsInput | number
   }
 
 

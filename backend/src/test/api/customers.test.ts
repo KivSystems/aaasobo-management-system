@@ -35,7 +35,7 @@ vi.mock("../../helper/resendClient", () => ({
 
 // Mock the mail helper functions
 vi.mock("../../helper/mail", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../lib/mail")>();
+  const actual = await importOriginal<typeof import("../../lib/email/mail")>();
   return {
     ...actual,
     resendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),
@@ -94,7 +94,7 @@ describe("POST /customers/register", () => {
     expect(customer?.emailVerified).toBeNull();
 
     // Verify child was created
-    const child = await prisma.children.findFirst({
+    const child = await prisma.child.findFirst({
       where: { customerId: customer!.id },
     });
     expect(child).toBeTruthy();

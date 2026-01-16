@@ -48,7 +48,7 @@ model Customer {
   updatedAt      DateTime       @updatedAt
   hasSeenWelcome Boolean        @default(false)
   terminationAt  DateTime?
-  children       Children[]
+  children       Child[]
   classes        Class[]
   subscription   Subscription[]
 
@@ -87,35 +87,11 @@ model Class {
   @@index([rebookableUntil])
 }
 
-model Admins {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
-model Children {
-  id                       Int                        @id @default(autoincrement())
-  customerId               Int
-  name                     String
-  birthdate                DateTime?
-  personalInfo             String?
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @default(now()) @updatedAt
-  customer                 Customer                   @relation(fields: [customerId], references: [id])
-  classAttendance          ClassAttendance[]
-  recurringClassAttendance RecurringClassAttendance[]
-
-  @@index([customerId])
-}
-
 model ClassAttendance {
   classId    Int
   childrenId Int
-  children   Children @relation(fields: [childrenId], references: [id])
-  class      Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  children   Child @relation(fields: [childrenId], references: [id])
+  class      Class @relation(fields: [classId], references: [id], onDelete: Cascade)
 
   @@id([classId, childrenId])
   @@index([classId])
@@ -167,10 +143,11 @@ model RecurringClass {
 model RecurringClassAttendance {
   recurringClassId Int
   childrenId       Int
-  children         Children       @relation(fields: [childrenId], references: [id])
+  children         Child          @relation(fields: [childrenId], references: [id])
   recurringClass   RecurringClass @relation(fields: [recurringClassId], references: [id])
 
   @@id([recurringClassId, childrenId])
+  @@index([recurringClassId])
   @@index([childrenId])
 }
 
@@ -245,6 +222,30 @@ model SystemStatus {
   status    String   @default("Running")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Child {
+  id                       Int                        @id @default(autoincrement())
+  customerId               Int
+  name                     String
+  birthdate                DateTime?
+  personalInfo             String?
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @default(now())
+  customer                 Customer                   @relation(fields: [customerId], references: [id])
+  classAttendance          ClassAttendance[]
+  recurringClassAttendance RecurringClassAttendance[]
+
+  @@index([customerId])
 }
 
 enum Status {
