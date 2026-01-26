@@ -191,6 +191,7 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   id: 'id',
   planId: 'planId',
   customerId: 'customerId',
+  selectType: 'selectType',
   startAt: 'startAt',
   endAt: 'endAt'
 };

@@ -238,7 +238,7 @@ export const registerSubscriptionController = async (
   res: Response,
 ) => {
   const customerId = req.params.id;
-  const { planId, startAt } = req.body;
+  const { planId, startAt, selectType } = req.body;
 
   try {
     // Get weekly class times based on plan id.
@@ -254,6 +254,7 @@ export const registerSubscriptionController = async (
       planId,
       customerId,
       startAt: new Date(startAt),
+      selectType,
     };
     const newSubscription = await createNewSubscription(subscriptionData);
     if (!newSubscription) {

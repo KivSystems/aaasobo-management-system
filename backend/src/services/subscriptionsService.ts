@@ -41,6 +41,7 @@ export const createNewSubscription = async (subscriptionData: {
   planId: number;
   customerId: number;
   startAt: Date;
+  selectType: string;
 }) => {
   try {
     const newSubscription = await prisma.subscription.create({

@@ -25,6 +25,7 @@ function AddSubscription({
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   useState<string>("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [selectTypeValue, setSelectTypeValue] = useState<string>("");
 
   // Selecting a plan from the dropdown.
   const handleSelectingPlan = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -63,6 +64,7 @@ function AddSubscription({
     const subscriptionData = {
       planId: selectedPlan.id,
       startAt: selectedDate,
+      selectType: selectTypeValue,
     };
 
     try {
@@ -101,46 +103,62 @@ function AddSubscription({
         <>
           <div className={styles.container}>
             <div className={styles.filterContainer}>
-              <div>
-                <h4>Plan</h4>
-                <select value={filterColumn} onChange={handleChange}>
-                  <option disabled value="0">
-                    Select a plan
-                  </option>
-                  {plansData.map((plan) => {
-                    const { id, name, description } = plan;
-                    return (
-                      <option key={id} value={id}>
-                        {name} ({description})
-                      </option>
-                    );
-                  })}
-                </select>
+              <div className={styles.planDate}>
+                <div>
+                  <h4>Plan</h4>
+                  <select value={filterColumn} onChange={handleChange}>
+                    <option disabled value="0">
+                      Select a plan
+                    </option>
+                    {plansData.map((plan) => {
+                      const { id, name, description } = plan;
+                      return (
+                        <option key={id} value={id}>
+                          {name} ({description})
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className={styles.inputContainer}>
+                  <h4>Subscription Date</h4>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
               </div>
               <div className={styles.inputContainer}>
-                <h4>Subscription Date</h4>
+                <h4>Select Type URL</h4>
                 <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  style={inputStyle}
+                  id="select type url"
+                  type="text"
+                  name="select type url"
+                  placeholder="https://..."
+                  value={selectTypeValue}
+                  onChange={(e) => setSelectTypeValue(e.target.value)}
+                  className={styles.selectTypeInput}
                 />
               </div>
-              <div>
-                <h4>&nbsp;</h4>
-                <ActionButton
-                  onClick={handleRegisterSubscription}
-                  btnText="Subscribe"
-                  className="addBtn"
-                />
-              </div>
-              <div>
-                <h4>&nbsp;</h4>
-                <ActionButton
-                  onClick={handleCancellation}
-                  btnText="Cancel"
-                  className="cancelBtn"
-                />
+              <div className={styles.buttons}>
+                <div>
+                  <h4>&nbsp;</h4>
+                  <ActionButton
+                    onClick={handleRegisterSubscription}
+                    btnText="Subscribe"
+                    className="addBtn"
+                  />
+                </div>
+                <div>
+                  <h4>&nbsp;</h4>
+                  <ActionButton
+                    onClick={handleCancellation}
+                    btnText="Cancel"
+                    className="cancelBtn"
+                  />
+                </div>
               </div>
             </div>
           </div>
