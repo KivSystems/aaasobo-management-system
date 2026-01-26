@@ -94,7 +94,8 @@ function CurrentSubscription({
     <div className={styles.outsideContainer}>
       {subscriptionsData && subscriptionsData.subscriptions.length > 0 ? (
         subscriptionsData.subscriptions.map((subscription, index) => {
-          const { id, plan, startAt, customerTerminationAt } = subscription;
+          const { id, plan, startAt, customerTerminationAt, selectType } =
+            subscription;
           const startDate = new Date(startAt);
 
           return (
@@ -120,6 +121,16 @@ function CurrentSubscription({
                             })}{" "}
                         - {PRESENT_LABEL[language]}
                       </span>
+                    </div>
+                    <div>
+                      <a
+                        href={styles.dateText}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.dateText}
+                      >
+                        {subscription.selectType}
+                      </a>
                     </div>
                   </div>
 
