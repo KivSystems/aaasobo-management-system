@@ -2,6 +2,7 @@
 .env*.local
 .codex
 .playwright-cli/
+/output/
 frontend/playwright-report/
 frontend/test-results/
 frontend/e2e/.auth/
