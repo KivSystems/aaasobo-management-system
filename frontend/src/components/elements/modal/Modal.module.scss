@@ -16,8 +16,13 @@
   border-radius: 16px;
   position: relative;
   max-height: 700px;
-  overflow-y: auto;
+  overflow: hidden;
   z-index: 10000;
+}
+
+.modalBody {
+  max-height: inherit;
+  overflow-y: auto;
 }
 
 .closeButton {
@@ -26,6 +31,7 @@
   right: 5px;
   height: 35px;
   width: 35px;
+  margin-right: 16px;
   padding: 3px;
   color: #333;
   transition: all 0.3s ease;
