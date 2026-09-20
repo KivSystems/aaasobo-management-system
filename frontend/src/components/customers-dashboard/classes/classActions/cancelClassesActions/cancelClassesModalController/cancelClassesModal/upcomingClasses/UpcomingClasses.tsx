@@ -65,6 +65,7 @@ export default function UpcomingClasses({
               {!pastPrevDayDeadline ? (
                 <input
                   type="checkbox"
+                  data-testid={`cancel-class-${eachClass.id}`}
                   checked={selectedClasses.some(
                     (item) => item.classId === eachClass.id,
                   )}
