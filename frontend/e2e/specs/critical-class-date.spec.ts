@@ -112,16 +112,19 @@ async function backend<T>(
   return result.body as T;
 }
 
-async function cancelFirstFutureClassThroughUi(page: Page) {
+async function cancelClassThroughUi(page: Page, classId: number) {
   const cancelable = page.getByRole("button", {
     name: /Cancel Classes|予約をキャンセル/i,
     exact: true,
   });
-  await page.goto("/customers/classes");
   const welcomeButton = page.getByRole("button", { name: "Get Started" });
-  if (await welcomeButton.isVisible()) await welcomeButton.click();
+  await page.addLocatorHandler(welcomeButton, async () => {
+    await welcomeButton.click();
+    await expect(welcomeButton).toBeHidden();
+  });
+  await page.goto("/customers/classes");
   await cancelable.click();
-  await page.locator('input[type="checkbox"]').first().check();
+  await page.getByTestId(`cancel-class-${classId}`).check();
   await page
     .getByRole("button", {
       name: /Cancel Classes \(1\)|予約をキャンセル \(1\)/i,
@@ -368,10 +371,12 @@ test.describe("critical class/date workflows", () => {
     const { classes } = await backend<ClassesResponse>(page, "/classes/21");
     const target = classes.find(
       (item) =>
-        new Date(item.dateTime) > new Date() && item.status === "booked",
+        new Date(item.dateTime).toLocaleDateString("en-CA", {
+          timeZone: "Asia/Tokyo",
+        }) > jstDateDaysFromNow(0) && item.status === "booked",
     );
     expect(target).toBeTruthy();
-    await cancelFirstFutureClassThroughUi(page);
+    await cancelClassThroughUi(page, target!.id);
     await page.reload();
     const { classes: after } = await backend<ClassesResponse>(
       page,
@@ -419,11 +424,13 @@ test.describe("critical class/date workflows", () => {
     const { classes } = await backend<ClassesResponse>(page, "/classes/22");
     const target = classes.find(
       (item) =>
-        new Date(item.dateTime) > new Date() && item.status === "booked",
+        new Date(item.dateTime).toLocaleDateString("en-CA", {
+          timeZone: "Asia/Tokyo",
+        }) > jstDateDaysFromNow(0) && item.status === "booked",
     );
     expect(target).toBeTruthy();
 
-    await cancelFirstFutureClassThroughUi(page);
+    await cancelClassThroughUi(page, target!.id);
     await page.reload();
     const { classes: after } = await backend<ClassesResponse>(
       page,
