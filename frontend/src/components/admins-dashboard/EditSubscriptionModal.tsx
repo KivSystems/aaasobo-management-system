@@ -210,7 +210,7 @@ function EditSubscriptionModal({
               <select
                 className={styles.planInput}
                 name="plan"
-                defaultValue={subscription.planId}
+                value={selectedPlan?.id ?? subscription.planId}
                 onChange={handleSelectPlan}
                 required
               >
