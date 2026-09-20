@@ -18,6 +18,7 @@ import { EDIT_REGULAR_CLASS_MESSAGES } from "@/lib/messages/customerDashboard";
 import styles from "./EditRegularClassModal.module.scss";
 import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
 import { getTodayInJapanISODate } from "@/lib/utils/dateUtils";
+import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
 
 const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -270,6 +271,7 @@ export default function EditRegularClassModal({
       } else {
         throw new Error("Subscription is required");
       }
+      await revalidateCustomerCalendar(customerId, userSessionType);
       onSuccess?.();
       onClose();
     } catch (error: any) {
