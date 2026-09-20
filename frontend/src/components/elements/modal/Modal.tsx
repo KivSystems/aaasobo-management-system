@@ -51,7 +51,7 @@ const Modal: React.FC<ModalProps> = ({
             <XMarkIcon strokeWidth={2.5} />
           </div>
         )}
-        {children}
+        <div className={styles.modalBody}>{children}</div>
       </div>
     </div>
   );
