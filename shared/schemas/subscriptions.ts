@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SchedulePreview } from "./schedulePreview";
 
 // Parameter schemas
 export const SubscriptionIdParams = z.object({
@@ -69,4 +70,65 @@ export type DeleteSubscriptionResponse = z.infer<
 export type CancelSubscriptionBody = z.infer<typeof CancelSubscriptionBody>;
 export type UpdateSubscriptionResponse = z.infer<
   typeof UpdateSubscriptionResponse
+>;
+
+export const SubscriptionDecreaseData = z.object({
+  planId: z.number().int().positive(),
+  recurringClassIds: z
+    .array(z.number().int().positive())
+    .refine(
+      (ids) => new Set(ids).size === ids.length,
+      "Recurring class IDs must be unique",
+    ),
+  selectType: z.string().trim().min(1),
+});
+
+export const SubscriptionDecreasePreviewRequest = SubscriptionDecreaseData;
+export const SubscriptionDecreasePreviewBody = z.object({
+  updateSubscriptionData: SubscriptionDecreasePreviewRequest,
+});
+export const SubscriptionDecreaseBody = z.object({
+  updateSubscriptionData: SubscriptionDecreaseData.extend({
+    recurringClassIds: z
+      .array(z.number().int().positive())
+      .min(1)
+      .refine(
+        (ids) => new Set(ids).size === ids.length,
+        "Recurring class IDs must be unique",
+      ),
+    previewToken: z.string().regex(/^[a-f0-9]{64}$/),
+  }),
+});
+export const SubscriptionDecreasePreview = z.object({
+  previewToken: z.string(),
+  calendar: SchedulePreview,
+  planName: z.string(),
+  regularClasses: z.array(
+    z.object({
+      id: z.number(),
+      startAt: z.iso.datetime().nullable(),
+      instructorName: z.string(),
+    }),
+  ),
+  rebookedClasses: z.array(
+    z.object({
+      id: z.number(),
+      recurringClassId: z.number(),
+      dateTime: z.iso.datetime(),
+      instructorName: z.string(),
+      childrenNames: z.array(z.string()),
+      classCode: z.string(),
+    }),
+  ),
+});
+export type SubscriptionDecreaseData = z.infer<typeof SubscriptionDecreaseData>;
+export type SubscriptionDecreasePreviewRequest = z.infer<
+  typeof SubscriptionDecreasePreviewRequest
+>;
+export type SubscriptionDecreasePreviewBody = z.infer<
+  typeof SubscriptionDecreasePreviewBody
+>;
+export type SubscriptionDecreaseBody = z.infer<typeof SubscriptionDecreaseBody>;
+export type SubscriptionDecreasePreview = z.infer<
+  typeof SubscriptionDecreasePreview
 >;

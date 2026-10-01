@@ -4,6 +4,7 @@ import {
   getRegularClassByIdController,
   getRegularClassesBySubscriptionIdController,
   updateRegularClassController,
+  previewRegularClassController,
   getRecurringClassesByInstructorIdController,
   getRecurringClassesHistoryCountController,
 } from "../../src/controllers/recurringClassesController";
@@ -170,6 +171,13 @@ const routeConfigs = {
   "/": [getBySubscriptionIdConfig, createConfig],
   "/history-count": [getHistoryCountBySubscriptionIdConfig],
   "/by-instructorId": [getByInstructorIdConfig],
+  "/:id/preview": [
+    {
+      ...updateConfig,
+      method: "post" as const,
+      handler: previewRegularClassController,
+    },
+  ],
   "/:id": [getByIdConfig, updateConfig],
 } as const;
 

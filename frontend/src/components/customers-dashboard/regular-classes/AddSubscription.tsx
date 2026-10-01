@@ -8,7 +8,7 @@ import { getAllPlans } from "@/lib/api/plansApi";
 import { registerSubscription } from "@/lib/api/subscriptionsApi";
 import ActionButton from "@/components/elements/buttons/actionButton/ActionButton";
 import InputField from "@/components/elements/inputField/InputField";
-import { ENGLISH_BACKGROUND_LABELS } from "@/lib/data/englishBackground";
+import { ENGLISH_BACKGROUND_LABELS_JP } from "@/lib/data/englishBackground";
 import { EnglishBackground } from "@/types";
 
 function AddSubscription({
@@ -130,7 +130,7 @@ function AddSubscription({
                     </option>
                     {englishBGs.map((bg) => (
                       <option key={bg} value={bg}>
-                        {ENGLISH_BACKGROUND_LABELS[bg as EnglishBackground]}
+                        {ENGLISH_BACKGROUND_LABELS_JP[bg as EnglishBackground]}
                       </option>
                     ))}
                   </select>

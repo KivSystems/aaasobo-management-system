@@ -5,6 +5,7 @@ import Modal from "../../elements/modal/Modal";
 import {
   createRecurringClass,
   editRecurringClass,
+  previewRecurringClassChange,
 } from "@/lib/api/recurringClassesApi";
 import InstructorSelection from "../classes/classActions/bookingActions/InstructorSelection";
 import InstructorSchedule from "./InstructorSchedule";
@@ -19,6 +20,12 @@ import styles from "./EditRegularClassModal.module.scss";
 import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
 import { getTodayInJapanISODate } from "@/lib/utils/dateUtils";
 import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
+
+import ScheduleChangeCalendar from "@/components/features/schedulePreview/ScheduleChangeCalendar";
+import type {
+  RegularClassChangePreview,
+  UpdateRecurringClassRequest,
+} from "@shared/schemas/recurringClasses";
 
 const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -57,7 +64,35 @@ export default function EditRegularClassModal({
   language,
 }: EditRegularClassModalProps) {
   const messages = EDIT_REGULAR_CLASS_MESSAGES[language];
+  const getUpdateErrorMessage = (error: unknown) => {
+    const message = error instanceof Error ? error.message : "";
+    const reasons: Record<string, string> = {
+      "Regular class already exists at this time slot":
+        language === "ja"
+          ? "この曜日・時間には、すでにレギュラークラスが登録されています。別の枠を選択してください。"
+          : "This weekly slot already has a regular class. Please choose another slot.",
+      "Instructor is not available at the requested time slot":
+        language === "ja"
+          ? "この日時は講師の予約可能枠ではありません。別の枠を選択してください。"
+          : "The instructor is unavailable at this time. Please choose another slot.",
+      "Start date must be at least one week from today":
+        language === "ja"
+          ? "変更開始日は本日から7日後以降を選択してください。"
+          : "Please choose a start date at least seven days from today.",
+      "Schedule changed. Review the preview again.":
+        language === "ja"
+          ? "予定が変更されています。プレビューを確認し直してください。"
+          : "The schedule has changed. Please review the preview again.",
+    };
+    return reasons[message] ?? messages.updateFailed;
+  };
+
   const timeZone = useCustomerTimeZone();
+
+  const [confirmation, setConfirmation] = useState<{
+    preview: RegularClassChangePreview;
+    data: UpdateRecurringClassRequest;
+  } | null>(null);
 
   // Form state
   const [startDate, setStartDate] = useState("");
@@ -85,6 +120,7 @@ export default function EditRegularClassModal({
   // Initialize form with current values
   useEffect(() => {
     if (!isOpen) return;
+    setConfirmation(null);
 
     // Set minimum date to one week from today
     const oneWeekFromNow = new Date(
@@ -265,7 +301,12 @@ export default function EditRegularClassModal({
       };
 
       if (recurringClass) {
-        await editRecurringClass(recurringClass.id, scheduleData);
+        const preview = await previewRecurringClassChange(
+          recurringClass.id,
+          scheduleData,
+        );
+        setConfirmation({ preview, data: scheduleData });
+        return;
       } else if (subscriptionId) {
         await createRecurringClass({ ...scheduleData, subscriptionId });
       } else {
@@ -276,13 +317,35 @@ export default function EditRegularClassModal({
       onClose();
     } catch (error: any) {
       console.error("Failed to update regular class:", error);
-      setError(messages.updateFailed);
+      setError(getUpdateErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyConfirmed = async () => {
+    if (!confirmation || !recurringClass) return;
+    setLoading(true);
+    setError("");
+    try {
+      await editRecurringClass(recurringClass.id, {
+        ...confirmation.data,
+        previewToken: confirmation.preview.previewToken,
+      });
+      await revalidateCustomerCalendar(customerId, userSessionType);
+      onSuccess?.();
+      onClose();
+      setConfirmation(null);
+    } catch (e) {
+      setError(getUpdateErrorMessage(e));
+      setConfirmation(null);
     } finally {
       setLoading(false);
     }
   };
 
   const resetAndClose = () => {
+    setConfirmation(null);
     setEditingInstructor(false);
     setEditingChildren(false);
     setModalStep("instructor");
@@ -291,6 +354,55 @@ export default function EditRegularClassModal({
   };
 
   if (!isOpen || !timeZone) return null;
+
+  if (confirmation)
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={loading ? undefined : resetAndClose}
+        maxHeight="90vh"
+      >
+        <div style={{ width: "min(1120px, 94vw)", padding: "24px" }}>
+          <h2>
+            {language === "ja"
+              ? "レギュラークラス変更の確認"
+              : "Review regular class changes"}
+          </h2>
+          <p>
+            {language === "ja"
+              ? "新しいスケジュールの開始"
+              : "New schedule starts"}
+            :{" "}
+            {new Intl.DateTimeFormat(language, {
+              timeZone,
+              dateStyle: "medium",
+              timeStyle: "short",
+            }).format(new Date(confirmation.preview.effectiveAt))}
+          </p>
+          <ScheduleChangeCalendar
+            calendar={confirmation.preview.calendar}
+            timeZone={timeZone}
+            language={language}
+          />
+          <div className={styles.confirmationActions}>
+            <button
+              disabled={loading}
+              className={styles.cancelButton}
+              onClick={() => setConfirmation(null)}
+            >
+              {language === "ja" ? "条件を変更" : "Back"}
+            </button>
+            <button
+              disabled={loading}
+              className={styles.confirmButton}
+              onClick={applyConfirmed}
+            >
+              {loading ? messages.applying : messages.applyChanges}
+            </button>
+          </div>
+        </div>
+      </Modal>
+    );
 
   return (
     <Modal isOpen={isOpen} onClose={resetAndClose} overlayClosable={true}>
@@ -451,7 +563,13 @@ export default function EditRegularClassModal({
               className={styles.confirmButton}
               disabled={loading || selectedChildrenIds.length === 0}
             >
-              {loading ? messages.applying : messages.applyChanges}
+              {loading
+                ? messages.applying
+                : recurringClass
+                  ? language === "ja"
+                    ? "変更内容を確認"
+                    : "Review changes"
+                  : messages.applyChanges}
             </button>
           </div>
         </div>

@@ -1,0 +1,92 @@
+@use "@/styles/variables.module.scss" as *;
+
+.preview {
+  color: $text-dark;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 13px;
+  color: $text-medium;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.legendBox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba($blue-primary, 0.25);
+  background: $booked-background-color;
+  color: $blue-primary;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.timeZone {
+  margin-left: auto;
+  font-size: 11px;
+}
+
+.calendarEvent {
+  border: 1px solid rgba($blue-primary, 0.25) !important;
+  border-radius: 3px !important;
+  background: $booked-background-color !important;
+  color: $blue-primary !important;
+
+  :global(.fc-event-main) {
+    color: inherit;
+  }
+}
+
+.canceled {
+  background: $canceled-background-color !important;
+  color: $canceled-text-color !important;
+}
+
+.event {
+  position: relative;
+}
+
+.changeBadge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.removed {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+
+.added {
+  background: $green-success-hover;
+  border-color: $green-success-hover;
+  color: white;
+}

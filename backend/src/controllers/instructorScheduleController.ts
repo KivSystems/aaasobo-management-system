@@ -107,7 +107,8 @@ export const getInstructorAvailableSlotsController = async (
   res: Response,
 ) => {
   try {
-    const { start, end, timezone, excludeBookedSlots } = req.query;
+    const { start, end, timezone, excludeBookedSlots, forRecurringClass } =
+      req.query;
 
     // Convert excludeBookedSlots parameter to boolean
     const shouldExcludeBooked = excludeBookedSlots === "true";
@@ -118,6 +119,7 @@ export const getInstructorAvailableSlotsController = async (
       end,
       timezone,
       shouldExcludeBooked,
+      forRecurringClass === "true",
     );
 
     res.status(200).json({

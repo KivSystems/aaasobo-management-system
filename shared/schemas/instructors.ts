@@ -265,6 +265,12 @@ export const InstructorAvailableSlotsQuery = z
     timezone: z
       .literal("Asia/Tokyo")
       .describe("Timezone (currently only Asia/Tokyo is supported)"),
+    forRecurringClass: z
+      .enum(["true", "false"])
+      .optional()
+      .describe(
+        "Exclude existing weekly regular classes for regular class selection",
+      ),
     excludeBookedSlots: z
       .string()
       .optional()

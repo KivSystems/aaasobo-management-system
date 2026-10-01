@@ -1,3 +1,4 @@
+import { loadRecurringClassConflictChecker } from "./recurringClassConflictService";
 import { prisma } from "../../prisma/prismaClient";
 import { Prisma, Status } from "@prisma/client";
 import { JAPAN_TIME_DIFF, nDaysLater, nHoursLater } from "../utils/dateUtils";
@@ -346,6 +347,7 @@ export const getInstructorAvailableSlots = async (
   endDate: string, // YYYY-MM-DD format
   timezone: string,
   excludeBookedSlots: boolean,
+  forRecurringClass = false,
 ) => {
   try {
     if (timezone !== "Asia/Tokyo") {
@@ -367,6 +369,21 @@ export const getInstructorAvailableSlots = async (
       excludeSlots,
     );
 
+    if (forRecurringClass) {
+      const hasConflict = await loadRecurringClassConflictChecker(
+        prisma,
+        instructorId,
+      );
+      return availableSlots.filter((slot) => {
+        const occurrence = new Date(slot.dateTime);
+        const jst = new Date(occurrence.getTime() + 9 * 60 * 60 * 1000);
+        return !hasConflict(
+          jst.getUTCDay(),
+          jst.toISOString().slice(11, 16),
+          occurrence,
+        );
+      });
+    }
     return availableSlots;
   } catch (error) {
     console.error("Database Error:", error);

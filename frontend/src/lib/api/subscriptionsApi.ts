@@ -1,4 +1,9 @@
 import type {
+  SubscriptionDecreaseData,
+  SubscriptionDecreaseBody,
+  SubscriptionDecreasePreview,
+} from "@shared/schemas/subscriptions";
+import type {
   SubscriptionsResponse,
   RegisterSubscriptionRequest,
   NewSubscriptionResponse,
@@ -9,7 +14,6 @@ import {
   UpdateSelectTypeUrlRequest,
   UpdateSubscriptionResponse,
   UpdateSubscriptionToAddClassRequest,
-  UpdateSubscriptionToTerminateClassRequest,
 } from "@shared/schemas/admins";
 
 const BACKEND_ORIGIN =
@@ -185,53 +189,59 @@ export const updateSubscriptionToAddClass = async (
   }
 };
 
-export const updateSubscriptionToTerminateClass = async (
+async function requestSubscriptionDecrease<T>(
   subscriptionId: number,
-  updateSubscriptionData: UpdateSubscriptionToTerminateClassRequest,
+  updateSubscriptionData:
+    | SubscriptionDecreaseData
+    | SubscriptionDecreaseBody["updateSubscriptionData"],
+  preview: boolean,
   cookie?: string,
-): Promise<UpdateSubscriptionResponse | { errorMessage: string }> => {
-  try {
-    let apiURL;
-    let headers;
-    let response;
-    const method = "PATCH";
-    const body = JSON.stringify({ updateSubscriptionData });
+): Promise<T | { errorMessage: string }> {
+  const endpoint = `/subscriptions/${subscriptionId}/decrease-recurring-class${preview ? "/preview" : ""}`;
+  const response = await fetch(
+    cookie
+      ? `${BACKEND_ORIGIN}${endpoint}`
+      : `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`,
+    {
+      method: preview ? "POST" : "PATCH",
+      headers: cookie
+        ? { "Content-Type": "application/json", Cookie: cookie }
+        : { "Content-Type": "application/json", "backend-endpoint": endpoint },
+      body: JSON.stringify({ updateSubscriptionData }),
+      cache: "no-store",
+    },
+  );
+  const result = await response.json();
+  if (!response.ok)
+    return {
+      errorMessage: result.error || result.message || ERROR_PAGE_MESSAGE_EN,
+    };
+  return result;
+}
 
-    if (cookie) {
-      // From server component
-      apiURL = `${BACKEND_ORIGIN}/subscriptions/${subscriptionId}/decrease-recurring-class`;
-      headers = { "Content-Type": "application/json", Cookie: cookie };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        body,
-      });
-    } else {
-      // From client component (via proxy)
-      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
-      const backendEndpoint = `/classes/${subscriptionId}/status`;
-      headers = {
-        "Content-Type": "application/json",
-        "backend-endpoint": backendEndpoint,
-      };
-      response = await fetch(apiURL, {
-        method,
-        headers,
-        body,
-      });
-    }
+export const previewSubscriptionDecrease = (
+  subscriptionId: number,
+  data: SubscriptionDecreaseData,
+  cookie?: string,
+) =>
+  requestSubscriptionDecrease<SubscriptionDecreasePreview>(
+    subscriptionId,
+    data,
+    true,
+    cookie,
+  );
 
-    if (response.status !== 200) {
-      return { errorMessage: ERROR_PAGE_MESSAGE_EN };
-    }
-    const result: UpdateSubscriptionResponse = await response.json();
-
-    return result;
-  } catch (error) {
-    console.error("Failed to update subscription:", error);
-    throw error;
-  }
-};
+export const updateSubscriptionToTerminateClass = (
+  subscriptionId: number,
+  data: SubscriptionDecreaseBody["updateSubscriptionData"],
+  cookie?: string,
+) =>
+  requestSubscriptionDecrease<UpdateSubscriptionResponse>(
+    subscriptionId,
+    data,
+    false,
+    cookie,
+  );
 
 export const updateSelectTypeUrl = async (
   subscriptionId: number,

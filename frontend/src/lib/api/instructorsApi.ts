@@ -901,7 +901,7 @@ export const getInstructorAvailableSlots = async (
       end: endDate,
       timezone: "Asia/Tokyo",
       excludeBookedSlots: excludeBookedSlots.toString(),
-    } as AvailableSlotsQuery & { excludeBookedSlots: string });
+    });
 
     let apiURL;
     let headers;
@@ -951,13 +951,15 @@ export const getAdminInstructorAvailableSlots = async (
   startDate: string,
   endDate: string,
   excludeBookedSlots: boolean,
+  forRecurringClass = false,
 ) => {
   const params = new URLSearchParams({
     start: startDate,
     end: endDate,
     timezone: "Asia/Tokyo",
     excludeBookedSlots: excludeBookedSlots.toString(),
-  } as AvailableSlotsQuery & { excludeBookedSlots: string });
+    forRecurringClass: forRecurringClass.toString(),
+  });
   const backendEndpoint = `/instructors/${instructorId}/available-slots?${params}`;
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`,
