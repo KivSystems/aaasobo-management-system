@@ -59,6 +59,7 @@ export default function InstructorSchedule({
           start,
           end,
           true,
+          true,
         );
         const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         setSlots(

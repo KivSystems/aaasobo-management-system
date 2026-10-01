@@ -70,7 +70,7 @@ function RegularClassCard({
       className={`${styles.card} ${selected ? styles.selected : ""} ${isSelectable ? styles.clickable : ""}`}
       onClick={handleToggle}
       aria-pressed={isSelectable ? selected : undefined}
-      aria-label={`Recurring class ${recurringClass.id}`}
+      aria-label={`${language === "ja" ? "レギュラークラス" : "Recurring class"} ${recurringClass.id}`}
     >
       {/* Option 1: Edit button in top-right corner */}
       <div className={styles.cardHeader}>
@@ -78,7 +78,8 @@ function RegularClassCard({
           <AcademicCapIcon className={styles.instructorIcon} />
           <div className={styles.headerInfo}>
             <div className={styles.instructorName}>
-              {recurringClass.instructor?.nickname || "Unknown Instructor"}
+              {recurringClass.instructor?.nickname ||
+                (language === "ja" ? "講師未設定" : "Unknown Instructor")}
             </div>
             <div className={styles.scheduleTime}>
               {day} {startTime}-{endTime}
@@ -172,7 +173,13 @@ function RegularClassCard({
       {/* selection overlay / badge */}
       {isSelectable && (
         <div className={styles.selectionBadge}>
-          {selected ? "Selected" : "Select"}
+          {language === "ja"
+            ? selected
+              ? "選択済み"
+              : "選択"
+            : selected
+              ? "Selected"
+              : "Select"}
         </div>
       )}
     </div>

@@ -11,11 +11,15 @@ import {
 import { getAllPlans } from "@/lib/api/plansApi";
 import RegularClassesTable from "../customers-dashboard/regular-classes/RegularClassesTable";
 import {
+  previewSubscriptionDecreaseAction,
   updateSelectTypeUrlAction,
   updateSubscriptionToAddClassAction,
   updateSubscriptionToTerminateClassAction,
 } from "@/app/actions/updateContent";
 import InputField from "../elements/inputField/InputField";
+
+import type { SubscriptionDecreasePreview } from "@shared/schemas/subscriptions";
+import SubscriptionDecreasePreviewPanel from "./SubscriptionDecreasePreviewPanel";
 
 type EditSubscriptionModalProps = {
   isOpen: boolean;
@@ -42,6 +46,14 @@ function EditSubscriptionModal({
   plan,
   language,
 }: EditSubscriptionModalProps) {
+  const [preview, setPreview] = useState<SubscriptionDecreasePreview | null>(
+    null,
+  );
+  const [previewForSelection, setPreviewForSelection] = useState<string | null>(
+    null,
+  );
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState("");
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [selectedRecurringIds, setSelectedRecurringIds] = useState<number[]>(
@@ -54,6 +66,16 @@ function EditSubscriptionModal({
   const [selectTypeValue, setSelectTypeValue] = useState<string>("");
   const currentEnglishBG = subscription?.plan?.englishBackground;
   const [currentBGPlans, setCurrentBGPlans] = useState<Plan[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setPreview(null);
+      setPreviewForSelection(null);
+      setPreviewError("");
+      setError("");
+      setSelectedRecurringIds([]);
+    }
+  }, [isOpen, subscription?.id]);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -91,6 +113,7 @@ function EditSubscriptionModal({
     const plan = plans.find((p) => p.id === selectedPlanId);
     if (!plan) return;
     setSelectedPlan(plan);
+    setSelectedRecurringIds([]);
   };
 
   const toggleRecurringSelection = (id: number) => {
@@ -99,16 +122,96 @@ function EditSubscriptionModal({
     );
   };
 
+  const selectedRecurringIdsKey = [...selectedRecurringIds]
+    .sort((a, b) => a - b)
+    .join(",");
+
+  useEffect(() => {
+    if (
+      !subscription ||
+      !selectedPlan ||
+      selectedWeeklyTimes >= currentWeeklyTimes
+    ) {
+      setPreview(null);
+      setPreviewForSelection(null);
+      setPreviewError("");
+      setIsPreviewLoading(false);
+      return;
+    }
+
+    const selectedIds = selectedRecurringIdsKey
+      ? selectedRecurringIdsKey.split(",").map(Number)
+      : [];
+    const selectionKey = JSON.stringify([
+      subscription.id,
+      selectedPlan.id,
+      selectedIds,
+      selectTypeValue,
+    ]);
+    let isCurrentRequest = true;
+    setPreviewForSelection(null);
+    setPreviewError("");
+    setIsPreviewLoading(true);
+
+    previewSubscriptionDecreaseAction(subscription.id, {
+      planId: selectedPlan.id,
+      recurringClassIds: selectedIds,
+      selectType: selectTypeValue,
+    })
+      .then((result) => {
+        if (!isCurrentRequest) return;
+        if ("errorMessage" in result) {
+          setPreviewError(result.errorMessage);
+          return;
+        }
+        setPreview(result);
+        setPreviewForSelection(selectionKey);
+      })
+      .catch(() => {
+        if (isCurrentRequest) {
+          setPreviewError(
+            "キャンセル対象を取得できませんでした。もう一度お試しください。",
+          );
+        }
+      })
+      .finally(() => {
+        if (isCurrentRequest) setIsPreviewLoading(false);
+      });
+
+    return () => {
+      isCurrentRequest = false;
+    };
+  }, [
+    subscription,
+    selectedPlan,
+    selectedWeeklyTimes,
+    currentWeeklyTimes,
+    selectedRecurringIdsKey,
+    selectedRecurringIds.length,
+    selectTypeValue,
+  ]);
+
   const resetAndClose = () => {
+    if (loading) return;
+    setPreview(null);
+    setPreviewForSelection(null);
+    setPreviewError("");
     setError("");
     setSelectedRecurringIds([]);
-    setSelectedPlan(null);
+    setSelectedPlan(
+      subscription
+        ? (plans.find((item) => item.id === subscription.planId) ??
+            plan ??
+            null)
+        : (plan ?? null),
+    );
     setLoading(false);
     setSelectTypeValue(subscription?.selectType ?? "");
     onClose();
   };
 
   const handleSubmit = async () => {
+    if (loading) return;
     if (!subscription) return;
     if (!subscription.plan.weeklyClassTimes) return;
     if (
@@ -116,20 +219,20 @@ function EditSubscriptionModal({
       subscription?.selectType === selectTypeValue
     ) {
       setError(
-        "Select a different plan from the current one or change a SelectType URL.",
+        "現在とは異なるプランを選択するか、セレクトタイプのURLを変更してください。",
       );
       setLoading(false);
       return;
     }
 
     if (!selectedPlan) {
-      setError("Please select a plan.");
+      setError("プランを選択してください。");
       setLoading(false);
       return;
     }
 
     if (!selectTypeValue) {
-      setError("Please enter a SelectType URL");
+      setError("セレクトタイプのURLを入力してください。");
       setLoading(false);
       return;
     }
@@ -145,14 +248,19 @@ function EditSubscriptionModal({
           selectType: selectTypeValue,
         };
 
-        await updateSubscriptionToAddClassAction(subscription.id, updateData);
+        const result = await updateSubscriptionToAddClassAction(
+          subscription.id,
+          updateData,
+        );
+        if (result && "errorMessage" in result)
+          throw new Error(result.errorMessage);
       } else if (selectedWeeklyTimes < currentWeeklyTimes) {
         if (
           subscription.plan.weeklyClassTimes - selectedWeeklyTimes !==
           selectedRecurringIds.length
         ) {
           setError(
-            "Select the number of regular classes you want to terminate based on the plan you selected.",
+            "変更先のプランに合わせて、終了するレギュラークラスを必要な数だけ選択してください。",
           );
           setLoading(false);
           return;
@@ -164,24 +272,52 @@ function EditSubscriptionModal({
           selectType: selectTypeValue,
         };
 
-        await updateSubscriptionToTerminateClassAction(
+        const previewKey = JSON.stringify([
           subscription.id,
-          updateData,
+          selectedPlan.id,
+          [...selectedRecurringIds].sort((a, b) => a - b),
+          selectTypeValue,
+        ]);
+        if (previewError) throw new Error(previewError);
+        if (
+          isPreviewLoading ||
+          !preview ||
+          previewForSelection !== previewKey
+        ) {
+          setError(
+            "キャンセル予定の振替クラスを取得しています。少しお待ちください。",
+          );
+          return;
+        }
+        const result = await updateSubscriptionToTerminateClassAction(
+          subscription.id,
+          { ...updateData, previewToken: preview.previewToken },
         );
+        if (result && "errorMessage" in result) {
+          setPreview(null);
+          setPreviewForSelection(null);
+          throw new Error(result.errorMessage);
+        }
       } else if (currentWeeklyTimes === selectedWeeklyTimes) {
         const updateData = {
           selectType: selectTypeValue,
         };
 
-        await updateSelectTypeUrlAction(subscription.id, updateData);
+        const result = await updateSelectTypeUrlAction(
+          subscription.id,
+          updateData,
+        );
+        if (result && "errorMessage" in result)
+          throw new Error(result.errorMessage);
       } else {
-        setError("Something went wrong. Please try again later.");
+        setError("エラーが発生しました。時間をおいて再度お試しください。");
       }
+      setPreview(null);
       onSuccess?.();
       onClose();
     } catch (error: any) {
       console.error("Failed to update subscription:", error);
-      setError(error.message || "Failed to update subscription");
+      setError(error.message || "プランの変更に失敗しました。");
     } finally {
       setLoading(false);
     }
@@ -191,7 +327,12 @@ function EditSubscriptionModal({
   if (!subscription) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={resetAndClose} overlayClosable={true}>
+    <Modal
+      maxHeight="90vh"
+      isOpen={isOpen}
+      onClose={loading ? undefined : resetAndClose}
+      overlayClosable={!loading}
+    >
       <div className={styles.progressiveFlow}>
         <div className={styles.modalHeader}>
           <h2>プラン編集</h2>
@@ -247,40 +388,59 @@ function EditSubscriptionModal({
 
           {/* Select the regular classes Section */}
           {selectedPlan && selectedWeeklyTimes < currentWeeklyTimes ? (
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <ClipboardDocumentListIcon className={styles.sectionIcon} />
-                <h3>終了を希望するクラスを選択</h3>
+            <>
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <ClipboardDocumentListIcon className={styles.sectionIcon} />
+                  <h3>終了を希望するクラスを選択</h3>
+                  <span className={styles.selectionProgress} aria-live="polite">
+                    {selectedRecurringIds.length}/
+                    {currentWeeklyTimes - selectedWeeklyTimes} 選択済み
+                  </span>
+                </div>
+                <div className={styles.sectionContent}>
+                  <span className={styles.selectedValue}>
+                    <div className={styles.classesContent}>
+                      <RegularClassesTable
+                        subscriptionId={subscription.id}
+                        userSessionType={userSessionType}
+                        adminId={adminId}
+                        customerId={customerId}
+                        customerTerminationAt={customerTerminationAt}
+                        language={language}
+                        isSelectable={true}
+                        selectedRecurringIds={selectedRecurringIds}
+                        onToggleRecurring={toggleRecurringSelection}
+                      />
+                    </div>
+                  </span>
+                </div>
               </div>
-              <div className={styles.sectionContent}>
-                <span className={styles.selectedValue}>
-                  <div className={styles.classesContent}>
-                    <RegularClassesTable
-                      subscriptionId={subscription.id}
-                      userSessionType={userSessionType}
-                      adminId={adminId}
-                      customerId={customerId}
-                      customerTerminationAt={customerTerminationAt}
-                      language={language}
-                      isSelectable={true}
-                      selectedRecurringIds={selectedRecurringIds}
-                      onToggleRecurring={toggleRecurringSelection}
-                    />
-                  </div>
-                </span>
-              </div>
-            </div>
+              <SubscriptionDecreasePreviewPanel
+                preview={preview}
+                isLoading={isPreviewLoading}
+                error={previewError}
+              />
+            </>
           ) : (
             <></>
           )}
 
           {/* Action Buttons */}
           <div className={styles.confirmationActions}>
-            <button onClick={resetAndClose} className={styles.cancelButton}>
+            <button
+              disabled={loading || isPreviewLoading}
+              onClick={resetAndClose}
+              className={styles.cancelButton}
+            >
               キャンセル
             </button>
-            <button onClick={handleSubmit} className={styles.confirmButton}>
-              {loading ? "適用中..." : "変更を適用"}
+            <button
+              disabled={loading || isPreviewLoading}
+              onClick={handleSubmit}
+              className={styles.confirmButton}
+            >
+              {loading ? "処理中..." : "変更を適用"}
             </button>
           </div>
         </div>

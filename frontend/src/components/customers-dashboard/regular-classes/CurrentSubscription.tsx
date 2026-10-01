@@ -61,10 +61,18 @@ function CurrentSubscription({
       const success = result && !result.errorMessage;
 
       if (success) {
-        toast.success("Subscription deleted successfully.");
+        toast.success(
+          language === "ja"
+            ? "プランをキャンセルしました。"
+            : "Subscription deleted successfully.",
+        );
         onSubscriptionUpdated();
       } else {
-        toast.error("Failed to delete subscription.");
+        toast.error(
+          language === "ja"
+            ? "プランのキャンセルに失敗しました。"
+            : "Failed to delete subscription.",
+        );
         console.error("Failed to delete subscription:", result);
       }
     } catch (error) {
@@ -90,7 +98,11 @@ function CurrentSubscription({
   const handleEditSuccess = () => {
     onSubscriptionUpdated();
     setIsOpenModal(false);
-    toast.success("Subscription updated successfully.");
+    toast.success(
+      language === "ja"
+        ? "プランを変更しました。"
+        : "Subscription updated successfully.",
+    );
   };
 
   return (
@@ -108,7 +120,9 @@ function CurrentSubscription({
                   <div className={styles.planDateInfo}>
                     <div className={styles.planInfo}>
                       <span className={styles.planName}>
-                        {plan.name} {PLAN_LABEL[language]}
+                        {plan.name.endsWith(PLAN_LABEL[language])
+                          ? plan.name
+                          : `${plan.name} ${PLAN_LABEL[language]}`}
                       </span>
                     </div>
                     <div className={styles.dateInfo}>

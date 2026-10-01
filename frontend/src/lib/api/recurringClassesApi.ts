@@ -183,3 +183,26 @@ export const editRecurringClass = async (
     throw error;
   }
 };
+
+export async function previewRecurringClassChange(
+  id: number,
+  data: UpdateRecurringClassRequest,
+): Promise<
+  import("@shared/schemas/recurringClasses").RegularClassChangePreview
+> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "backend-endpoint": `/recurring-classes/${id}/preview`,
+      },
+      body: JSON.stringify(data),
+    },
+  );
+  const body = await response.json();
+  if (!response.ok)
+    throw new Error(body.message || body.error || "Preview failed");
+  return body;
+}

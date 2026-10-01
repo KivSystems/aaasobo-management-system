@@ -838,3 +838,159 @@ describe("PUT /recurring-classes/:id", () => {
       .expect(400);
   });
 });
+
+describe("regular class calendar preview", () => {
+  async function fixture() {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-09-09T03:00:00Z"));
+    const core = await setupCore({
+      slotWeekday: 4,
+      slotStartTime: "16:00",
+      slotEffectiveFrom: new Date("2026-01-01"),
+    });
+    const cookie = await generateAuthCookie(core.customer.id, "customer");
+    const series = await prisma.recurringClass.create({
+      data: {
+        subscriptionId: core.subscription.id,
+        instructorId: core.instructor.id,
+        startAt: new Date("2026-09-07T07:00:00Z"),
+      },
+    });
+    for (const date of ["2026-09-14", "2026-09-21", "2026-09-28"]) {
+      await createClass(
+        core.customer.id,
+        core.instructor.id,
+        new Date(`${date}T07:00:00Z`),
+        { recurringClassId: series.id, subscriptionId: core.subscription.id },
+      );
+    }
+    const data = {
+      customerId: core.customer.id,
+      instructorId: core.instructor.id,
+      childrenIds: core.children.map((c) => c.id),
+      weekday: 4,
+      startTime: "16:00",
+      startDate: "2026-09-16",
+      timezone: "Asia/Tokyo",
+    };
+    const url = `/recurring-classes/${series.id}`;
+    const preview = () =>
+      request(server).post(`${url}/preview`).set("Cookie", cookie).send(data);
+    return { ...core, cookie, series, data, url, preview };
+  }
+
+  it("previews the exact persisted schedule including retained classes, makeups, conflicts and absences without mutation", async () => {
+    const f = await fixture();
+    await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-10-03T07:00:00Z"),
+      { recurringClassId: f.series.id, status: "rebooked" },
+    );
+    await createInstructorAbsence(
+      f.instructor.id,
+      new Date("2026-09-24T07:00:00Z"),
+    );
+    await createClass(
+      (await createCustomer()).id,
+      f.instructor.id,
+      new Date("2026-10-01T07:00:00Z"),
+    );
+    const preview = (await f.preview().expect(200)).body;
+    expect(preview.effectiveAt).toBe("2026-09-17T07:00:00.000Z");
+    expect(preview.calendar.before).toHaveLength(4);
+    expect(
+      preview.calendar.before.every(
+        (event: { instructorId: number; instructorIcon: string }) =>
+          event.instructorId === f.instructor.id &&
+          event.instructorIcon === f.instructor.icon,
+      ),
+    ).toBe(true);
+    expect(
+      preview.calendar.after.find(
+        (event: { dateTime: string }) =>
+          event.dateTime === "2026-09-17T07:00:00.000Z",
+      ),
+    ).toMatchObject({
+      instructorId: f.instructor.id,
+      instructorIcon: f.instructor.icon,
+      childrenIds: f.children.map((child) => child.id).sort((a, b) => a - b),
+    });
+    expect(preview.calendar.after).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dateTime: "2026-09-14T07:00:00.000Z",
+          status: "booked",
+        }),
+        expect.objectContaining({
+          dateTime: "2026-09-17T07:00:00.000Z",
+          status: "booked",
+        }),
+        expect.objectContaining({
+          dateTime: "2026-09-24T07:00:00.000Z",
+          status: "canceledByInstructor",
+        }),
+        expect.objectContaining({
+          dateTime: "2026-10-01T07:00:00.000Z",
+          status: "canceledByInstructor",
+        }),
+      ]),
+    );
+    expect(await prisma.class.count()).toBe(5);
+    expect(
+      (
+        await prisma.recurringClass.findUniqueOrThrow({
+          where: { id: f.series.id },
+        })
+      ).endAt,
+    ).toBeNull();
+    await request(server)
+      .put(f.url)
+      .set("Cookie", f.cookie)
+      .send({ ...f.data, previewToken: preview.previewToken })
+      .expect(200);
+    const actual = await prisma.class.findMany({
+      where: { customerId: f.customer.id },
+      orderBy: { dateTime: "asc" },
+    });
+    expect(actual.map((c) => [c.dateTime!.toISOString(), c.status])).toEqual(
+      preview.calendar.after
+        .map((c: { dateTime: string; status: string }) => [
+          c.dateTime,
+          c.status,
+        ])
+        .sort((a: string[], b: string[]) => a[0].localeCompare(b[0])),
+    );
+  });
+
+  it("rejects a stale preview and another customer's access", async () => {
+    const f = await fixture();
+    const preview = (await f.preview().expect(200)).body;
+    await createInstructorAbsence(
+      f.instructor.id,
+      new Date("2026-09-17T07:00:00Z"),
+    );
+    await request(server)
+      .put(f.url)
+      .set("Cookie", f.cookie)
+      .send({ ...f.data, previewToken: preview.previewToken })
+      .expect(409);
+    expect(
+      (
+        await prisma.recurringClass.findUniqueOrThrow({
+          where: { id: f.series.id },
+        })
+      ).endAt,
+    ).toBeNull();
+    const foreignCookie = await generateAuthCookie(
+      (await createCustomer()).id,
+      "customer",
+    );
+    await request(server)
+      .post(`${f.url}/preview`)
+      .set("Cookie", foreignCookie)
+      .send(f.data)
+      .expect(403);
+    await request(server).post(`${f.url}/preview`).send(f.data).expect(401);
+  });
+});

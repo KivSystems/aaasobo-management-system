@@ -9,7 +9,8 @@ $font_size: 0.9rem;
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  max-width: 900px;
+  width: min(1120px, 94vw);
+  max-width: 1120px;
   min-width: 800px;
 
   @media (max-width: 1024px) {
@@ -198,5 +199,85 @@ $font_size: 0.9rem;
     button {
       width: 100%;
     }
+  }
+}
+
+.helpText {
+  color: $text-medium;
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+}
+.countBadge {
+  border-radius: 1rem;
+  padding: 0.25rem 0.75rem;
+  background: white;
+  color: $text-dark;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.cancellationList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid $border-light;
+    color: $text-dark;
+  }
+  li:last-child {
+    border-bottom: 0;
+  }
+  small {
+    color: $text-medium;
+  }
+}
+.emptyPreview {
+  margin: 0;
+  padding: 0.5rem 0;
+  color: $text-medium;
+}
+.previewError {
+  margin: 0;
+  color: $red-alert-hover;
+}
+.selectionProgress {
+  margin-left: auto;
+  white-space: nowrap;
+  color: $text-medium;
+  font-size: 0.85rem;
+}
+.selectedClassPreviews {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.bookingDetails {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.selectedClassPreview {
+  padding: 0.75rem;
+  border: 1px solid $border-light;
+  border-radius: 6px;
+  background: white;
+
+  h4 {
+    margin: 0 0 0.5rem;
+    color: $text-dark;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  h4 span {
+    margin-left: 0.35rem;
+    color: $text-medium;
+    font-weight: 400;
   }
 }

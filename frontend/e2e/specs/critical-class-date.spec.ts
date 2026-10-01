@@ -274,11 +274,24 @@ test.describe("critical class/date workflows", () => {
       .click();
     await page.locator('input[type="date"]').fill(jstDateDaysFromNow(8));
     await page
+      .getByRole("button", { name: /Review changes|変更内容を確認/i })
+      .click();
+    await expect(
+      page.getByRole("heading", {
+        name: /Review regular class changes|レギュラークラス変更の確認/i,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("region", {
+        name: /Schedule change preview|スケジュール変更プレビュー/i,
+      }),
+    ).toBeVisible();
+    await page
       .getByRole("button", { name: /Apply Changes|変更を適用/i })
       .click();
     await expect(
       page.getByRole("heading", {
-        name: /Edit Regular Class Schedule|レギュラークラスのスケジュールを編集/i,
+        name: /Review regular class changes|レギュラークラス変更の確認/i,
       }),
     ).toBeHidden();
 

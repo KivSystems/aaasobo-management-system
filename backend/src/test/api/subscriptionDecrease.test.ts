@@ -1,0 +1,295 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import request from "supertest";
+import type { Class } from "@prisma/client";
+import { server } from "../../server";
+import { prisma } from "../setup";
+import {
+  createAdmin,
+  createCustomer,
+  createPlan,
+  createSubscription,
+  createInstructor,
+  createChild,
+  createClass,
+  generateAuthCookie,
+} from "../testUtils";
+
+afterEach(() => vi.useRealTimers());
+async function fixture() {
+  vi.setSystemTime(new Date("2026-09-24T03:00:00Z"));
+  const cookie = await generateAuthCookie((await createAdmin()).id, "admin");
+  const customer = await createCustomer();
+  const instructor = await createInstructor();
+  const child = await createChild(customer.id, { name: "Test child" });
+  const plan = await createPlan({
+    name: "Twice weekly",
+    weeklyClassTimes: 2,
+    description: "",
+    englishBackground: 0,
+  });
+  const smallerPlan = await createPlan({
+    name: "Once weekly",
+    weeklyClassTimes: 1,
+    description: "",
+    englishBackground: 0,
+  });
+  const subscription = await createSubscription(plan.id, customer.id, {
+    endAt: null,
+  });
+  const a = await prisma.recurringClass.create({
+    data: {
+      subscriptionId: subscription.id,
+      instructorId: instructor.id,
+      startAt: new Date("2026-09-07T01:00:00Z"),
+    },
+  });
+  const b = await prisma.recurringClass.create({
+    data: {
+      subscriptionId: subscription.id,
+      instructorId: instructor.id,
+      startAt: new Date("2026-09-08T01:00:00Z"),
+    },
+  });
+  const aBookings: Class[] = [],
+    bBookings: Class[] = [];
+  for (let index = 0; index < 4; index++) {
+    for (const [series, bookings] of [
+      [a, aBookings],
+      [b, bBookings],
+    ] as const) {
+      const c = await createClass(
+        customer.id,
+        instructor.id,
+        new Date(
+          `2026-10-${String(1 + index * 7).padStart(2, "0")}T${series.id === a.id ? "01" : "02"}:00:00Z`,
+        ),
+        {
+          recurringClassId: series.id,
+          subscriptionId: subscription.id,
+          status: "rebooked",
+        },
+      );
+      await prisma.classAttendance.create({
+        data: { classId: c.id, childrenId: child.id },
+      });
+      bookings.push(c);
+    }
+  }
+  const data = {
+    planId: smallerPlan.id,
+    recurringClassIds: [a.id],
+    selectType: subscription.selectType,
+  };
+  const url = `/subscriptions/${subscription.id}/decrease-recurring-class`;
+  const preview = () =>
+    request(server)
+      .post(`${url}/preview`)
+      .set("Cookie", cookie)
+      .send({ updateSubscriptionData: data });
+  const apply = (previewToken: string) =>
+    request(server)
+      .patch(url)
+      .set("Cookie", cookie)
+      .send({ updateSubscriptionData: { ...data, previewToken } });
+  return {
+    cookie,
+    customer,
+    instructor,
+    subscription,
+    smallerPlan,
+    a,
+    b,
+    aBookings,
+    bBookings,
+    data,
+    url,
+    preview,
+    apply,
+  };
+}
+
+describe("subscription decrease confirmation", () => {
+  it("previews the current calendar with no selection without allowing an empty downgrade", async () => {
+    const f = await fixture();
+    const data = { ...f.data, recurringClassIds: [] };
+    const response = await request(server)
+      .post(`${f.url}/preview`)
+      .set("Cookie", f.cookie)
+      .send({ updateSubscriptionData: data })
+      .expect(200);
+    expect(response.body.calendar.before.length).toBeGreaterThan(0);
+    expect(response.body.calendar.after).toEqual(response.body.calendar.before);
+    expect(response.body.rebookedClasses).toEqual([]);
+    await request(server)
+      .patch(f.url)
+      .set("Cookie", f.cookie)
+      .send({
+        updateSubscriptionData: {
+          ...data,
+          previewToken: response.body.previewToken,
+        },
+      })
+      .expect(400);
+  });
+
+  it("previews selected future rebookings without mutation, removes A, and preserves B and past classes", async () => {
+    const f = await fixture();
+    const past = await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-09-23T01:00:00Z"),
+      { recurringClassId: f.a.id, status: "rebooked" },
+    );
+    const normal = await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-10-26T01:00:00Z"),
+      { recurringClassId: f.a.id },
+    );
+    const response = await f.preview().expect(200);
+    expect(
+      response.body.rebookedClasses.map((c: { id: number }) => c.id),
+    ).toEqual(f.aBookings.map((c) => c.id));
+    expect(response.body.rebookedClasses[0]).toMatchObject({
+      instructorName: f.instructor.nickname,
+      childrenNames: ["Test child"],
+      recurringClassId: f.a.id,
+    });
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(f.subscription.planId);
+    expect(await prisma.class.count()).toBe(10);
+    expect(response.body.calendar.before).toHaveLength(10);
+    expect(
+      response.body.calendar.after.map((c: { id: string }) => c.id).sort(),
+    ).toEqual(
+      [...f.bBookings.map((c) => String(c.id)), String(past.id)].sort(),
+    );
+    await f.apply(response.body.previewToken).expect(200);
+    expect(
+      await prisma.class.findMany({
+        where: { id: { in: [...f.aBookings.map((c) => c.id), normal.id] } },
+      }),
+    ).toEqual([]);
+    expect(
+      await prisma.class.count({
+        where: { id: { in: [...f.bBookings.map((c) => c.id), past.id] } },
+      }),
+    ).toBe(5);
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(f.smallerPlan.id);
+  });
+
+  it("previews selected classes before the full termination count is chosen", async () => {
+    const f = await fixture();
+    const threeClassPlan = await createPlan({
+      name: "Three times weekly",
+      weeklyClassTimes: 3,
+      description: "",
+      englishBackground: 0,
+    });
+    await prisma.subscription.update({
+      where: { id: f.subscription.id },
+      data: { planId: threeClassPlan.id },
+    });
+
+    const response = await request(server)
+      .post(`${f.url}/preview`)
+      .set("Cookie", f.cookie)
+      .send({
+        updateSubscriptionData: { ...f.data, recurringClassIds: [f.a.id] },
+      })
+      .expect(200);
+
+    expect(
+      response.body.regularClasses.map((item: { id: number }) => item.id),
+    ).toEqual([f.a.id]);
+    expect(response.body.rebookedClasses).toHaveLength(4);
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(threeClassPlan.id);
+  });
+  it("rejects stale confirmation without modifying the plan, then accepts a fresh preview", async () => {
+    const f = await fixture();
+    const original = await f.preview().expect(200);
+    await prisma.class.update({
+      where: { id: f.aBookings[0].id },
+      data: { dateTime: new Date("2026-11-01T01:00:00Z") },
+    });
+    await f.apply(original.body.previewToken).expect(409);
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(f.subscription.planId);
+    expect(await prisma.class.count()).toBe(8);
+    await f
+      .apply((await f.preview().expect(200)).body.previewToken)
+      .expect(200);
+  });
+  it("requires confirmation even with zero rebookings", async () => {
+    const f = await fixture();
+    await prisma.class.deleteMany({ where: { recurringClassId: f.a.id } });
+    await request(server)
+      .patch(f.url)
+      .set("Cookie", f.cookie)
+      .send({ updateSubscriptionData: f.data })
+      .expect(400);
+    const response = await f.preview().expect(200);
+    expect(response.body.rebookedClasses).toEqual([]);
+    await f.apply(response.body.previewToken).expect(200);
+  });
+  it("rejects foreign and duplicate regular class IDs", async () => {
+    const f = await fixture();
+    const another = await createSubscription(
+      f.subscription.planId,
+      f.customer.id,
+      { endAt: null },
+    );
+    const foreign = await prisma.recurringClass.create({
+      data: { subscriptionId: another.id },
+    });
+    for (const recurringClassIds of [[foreign.id], [f.a.id, f.a.id]]) {
+      await request(server)
+        .post(`${f.url}/preview`)
+        .set("Cookie", f.cookie)
+        .send({ updateSubscriptionData: { ...f.data, recurringClassIds } })
+        .expect(400);
+    }
+  });
+  it("restricts preview and plan updates to admins", async () => {
+    const f = await fixture();
+    const customerCookie = await generateAuthCookie(f.customer.id, "customer");
+    for (const [method, url] of [
+      ["post", `${f.url}/preview`],
+      ["patch", f.url],
+      ["patch", `/subscriptions/${f.subscription.id}/increase-recurring-class`],
+      ["patch", `/subscriptions/${f.subscription.id}/update-select-type`],
+    ] as const) {
+      await request(server)
+        [method](url)
+        .send({ updateSubscriptionData: f.data })
+        .expect(401);
+      await request(server)
+        [method](url)
+        .set("Cookie", customerCookie)
+        .send({ updateSubscriptionData: f.data })
+        .expect(403);
+    }
+  });
+});

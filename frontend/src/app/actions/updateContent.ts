@@ -32,13 +32,17 @@ import { revalidatePath } from "next/cache";
 import {
   updateSelectTypeUrl,
   updateSubscriptionToAddClass,
+  previewSubscriptionDecrease,
   updateSubscriptionToTerminateClass,
 } from "@/lib/api/subscriptionsApi";
 import {
   UpdateSelectTypeUrlRequest,
   UpdateSubscriptionToAddClassRequest,
-  UpdateSubscriptionToTerminateClassRequest,
 } from "@shared/schemas/admins";
+import type {
+  SubscriptionDecreaseData,
+  SubscriptionDecreaseBody,
+} from "@shared/schemas/subscriptions";
 import { EnglishBackground } from "@/types";
 
 export async function updateEventAction(
@@ -334,9 +338,28 @@ export async function updateSubscriptionToAddClassAction(
   }
 }
 
+export async function previewSubscriptionDecreaseAction(
+  subscriptionId: number,
+  data: SubscriptionDecreaseData,
+) {
+  try {
+    return await previewSubscriptionDecrease(
+      subscriptionId,
+      data,
+      await getCookie(),
+    );
+  } catch (error) {
+    console.error("Failed to preview subscription change", error);
+    return {
+      errorMessage:
+        "キャンセル対象を取得できませんでした。もう一度お試しください。",
+    };
+  }
+}
+
 export async function updateSubscriptionToTerminateClassAction(
   subscriptionId: number,
-  updateDate: UpdateSubscriptionToTerminateClassRequest,
+  updateDate: SubscriptionDecreaseBody["updateSubscriptionData"],
 ): Promise<DeleteFormState> {
   try {
     const cookie = await getCookie();
