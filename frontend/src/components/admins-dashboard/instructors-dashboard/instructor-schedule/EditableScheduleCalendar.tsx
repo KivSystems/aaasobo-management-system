@@ -1,3 +1,4 @@
+import { useLanguage } from "@/contexts/LanguageContext";
 import styles from "./EditableScheduleCalendar.module.scss";
 import { InstructorSlot } from "@/lib/api/instructorsApi";
 import {
@@ -33,6 +34,7 @@ export default function EditableScheduleCalendar({
   editedSlots,
   onSlotToggle,
 }: EditableScheduleCalendarProps) {
+  const { language } = useLanguage();
   // Convert initial slots to keys for comparison
   const initialKeys = new Set(
     initialSlots.map((slot) => {
@@ -60,7 +62,7 @@ export default function EditableScheduleCalendar({
   return (
     <BaseCalendarRoot>
       <TimeColumn />
-      {WEEKDAYS_JA.map((day, weekday) => (
+      {(language === "ja" ? WEEKDAYS_JA : WEEKDAYS).map((day, weekday) => (
         <DayColumn
           key={day}
           day={day}
@@ -79,7 +81,7 @@ function DayColumn({
   getCellType,
   onSlotToggle,
 }: {
-  day: Weekday_Ja;
+  day: Weekday_Ja | Weekday;
   weekday: number;
   getCellType: (weekday: number, time: string) => CellType;
   onSlotToggle: (weekday: number, time: string) => void;

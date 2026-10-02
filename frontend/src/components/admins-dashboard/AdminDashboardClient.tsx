@@ -19,9 +19,9 @@ export default function AdminTabs({
   const adminName =
     typeof admin !== "string"
       ? admin.email.includes(MASKED_HEAD_LETTERS)
-        ? "Unknown"
+        ? "不明"
         : admin.name
-      : "Unknown";
+      : "不明";
   const breadcrumb = [
     "管理者リスト",
     "/admins/admin-list",

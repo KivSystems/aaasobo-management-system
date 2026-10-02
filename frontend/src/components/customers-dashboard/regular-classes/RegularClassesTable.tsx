@@ -179,7 +179,9 @@ function RegularClassesTable({
 
       {userSessionType === "admin" && missingClassCount > 0 && !isLoading && (
         <button type="button" onClick={() => setIsAddingClass(true)}>
-          Add regular class ({missingClassCount} remaining)
+          {language === "ja"
+            ? `レギュラークラスを追加（残り${missingClassCount}枠）`
+            : `Add regular class (${missingClassCount} remaining)`}
         </button>
       )}
 

@@ -47,6 +47,7 @@ export const getDayNumberInTimeZone = (
 export const createRenderEventContent = (
   userType: UserType,
   timeZone?: string,
+  language: LanguageType = "en",
 ) => {
   const RenderEventContent = (eventInfo: EventContentArg) => {
     const classDateTime = new Date(eventInfo.event.startStr);
@@ -71,7 +72,9 @@ export const createRenderEventContent = (
         instructorIcon ? (
           <Image
             src={instructorIcon}
-            alt={instructorNickname || "Instructor"}
+            alt={
+              instructorNickname || (language === "ja" ? "講師" : "Instructor")
+            }
             width={30}
             height={30}
             priority
@@ -111,7 +114,11 @@ export const createRenderEventContent = (
           }`}
         >
           <div className={styles.eventTime}>{classTime} -</div>
-          <div className={styles.eventTitle}>{title}</div>
+          <div className={styles.eventTitle}>
+            {title === "No booked class" && language === "ja"
+              ? "予約なし"
+              : title}
+          </div>
         </div>
       </div>
     );

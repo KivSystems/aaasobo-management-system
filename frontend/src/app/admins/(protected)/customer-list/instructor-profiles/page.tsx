@@ -23,7 +23,7 @@ async function InstructorProfilesPage({
 
   // Show error message when no instructor profiles are found
   if (!instructorProfiles || instructorProfiles.length === 0) {
-    return <p>Error: No instructor profiles found.</p>;
+    return <p>インストラクターのプロフィールが見つかりません。</p>;
   }
 
   // Define the breadcrumb links

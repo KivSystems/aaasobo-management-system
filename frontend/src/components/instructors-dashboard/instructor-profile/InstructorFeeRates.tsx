@@ -1,5 +1,6 @@
 "use client";
 
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
 import { useCallback, useEffect, useState } from "react";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
@@ -17,9 +18,12 @@ import styles from "./InstructorProfile.module.scss";
 
 const DEFAULT_CURRENCY = "JPY";
 
-const formatExclusiveEndDate = (value: string | null) => {
+const formatExclusiveEndDate = (
+  value: string | null,
+  language: LanguageType,
+) => {
   if (!value) {
-    return "Onwards";
+    return language === "ja" ? "継続中" : "Onwards";
   }
 
   const date = new Date(`${value}T00:00:00.000Z`);
@@ -39,8 +43,8 @@ const formatMoney = (amount: number, currency: string) => {
   }
 };
 
-const formatPeriod = (fee: InstructorFeeRate) =>
-  `${fee.effectiveFrom} to ${formatExclusiveEndDate(fee.effectiveTo)}`;
+const formatPeriod = (fee: InstructorFeeRate, language: LanguageType) =>
+  `${fee.effectiveFrom} ${language === "ja" ? "〜" : "to"} ${formatExclusiveEndDate(fee.effectiveTo, language)}`;
 
 const createFormState = (fee?: InstructorFeeRate | null) => ({
   currency: fee?.currency ?? DEFAULT_CURRENCY,
@@ -63,18 +67,19 @@ function FeeRateCard({
   onDelete?: () => void;
   isDeleteDisabled?: boolean;
 }) {
+  const { language } = useLanguage();
   return (
     <article className={styles.feeCard}>
       <div className={styles.feeCardHeader}>
         <div>
-          <strong>{formatPeriod(fee)}</strong>
+          <strong>{formatPeriod(fee, language)}</strong>
         </div>
         <div className={styles.feeCardActions}>
           {isLatest && onDelete && (
             <ActionButton
               type="button"
               onClick={onDelete}
-              btnText="Delete"
+              btnText={language === "ja" ? "削除" : "Delete"}
               className="deleteBtn"
               disabled={isDeleteDisabled}
             />
@@ -83,23 +88,25 @@ function FeeRateCard({
       </div>
       <dl className={styles.feeGrid}>
         <div>
-          <dt>Trial</dt>
+          <dt>{language === "ja" ? "体験クラス" : "Trial"}</dt>
           <dd>{formatMoney(fee.trialFee, fee.currency)}</dd>
         </div>
         <div>
-          <dt>Regular</dt>
+          <dt>{language === "ja" ? "通常クラス" : "Regular"}</dt>
           <dd>{formatMoney(fee.regularFee, fee.currency)}</dd>
         </div>
         <div>
-          <dt>Cancel</dt>
+          <dt>{language === "ja" ? "キャンセル" : "Cancel"}</dt>
           <dd>{formatMoney(fee.cancelFee, fee.currency)}</dd>
         </div>
         <div>
-          <dt>Cancel Without Notice</dt>
+          <dt>
+            {language === "ja" ? "無断キャンセル" : "Cancel Without Notice"}
+          </dt>
           <dd>{formatMoney(fee.cancelWithoutNoticeFee, fee.currency)}</dd>
         </div>
         <div>
-          <dt>Monthly Cancel</dt>
+          <dt>{language === "ja" ? "月次キャンセル" : "Monthly Cancel"}</dt>
           <dd>{formatMoney(fee.monthlyCancelFee, fee.currency)}</dd>
         </div>
       </dl>
@@ -135,13 +142,17 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
         : await getMyInstructorFees();
     if ("status" in response) {
       setIsLoading(false);
-      await errorAlert(response.message);
+      await errorAlert(
+        language === "ja"
+          ? localizeAdminMessage(response.message)
+          : response.message,
+      );
       return;
     }
 
     applyFees(response.fees);
     setIsLoading(false);
-  }, [access, applyFees, instructorId]);
+  }, [access, applyFees, instructorId, language]);
 
   useEffect(() => {
     let isMounted = true;
@@ -158,7 +169,11 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
 
       if ("status" in response) {
         setIsLoading(false);
-        await errorAlert(response.message);
+        await errorAlert(
+          language === "ja"
+            ? localizeAdminMessage(response.message)
+            : response.message,
+        );
         return;
       }
 
@@ -169,7 +184,7 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
     return () => {
       isMounted = false;
     };
-  }, [access, applyFees, instructorId]);
+  }, [access, applyFees, instructorId, language]);
 
   const activeFee = fees.find((fee) => fee.effectiveTo === null) ?? fees[0];
   const historicalFees = activeFee
@@ -215,7 +230,9 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
       ].some((value) => !Number.isInteger(value) || value < 0)
     ) {
       await errorAlert(
-        "Enter an effective date and non-negative integer amounts for all fee fields.",
+        language === "ja"
+          ? "適用開始日と、各報酬に0以上の整数を入力してください。"
+          : "Enter an effective date and non-negative integer amounts for all fee fields.",
       );
       return;
     }
@@ -233,11 +250,17 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
     setIsSubmitting(false);
 
     if ("status" in response) {
-      await errorAlert(response.message);
+      await errorAlert(
+        language === "ja"
+          ? localizeAdminMessage(response.message)
+          : response.message,
+      );
       return;
     }
 
-    toast.success(response.message);
+    toast.success(
+      language === "ja" ? "給料レートを登録しました" : response.message,
+    );
     setIsFormOpen(false);
     await loadFees();
   };
@@ -253,7 +276,10 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
     }
 
     const confirmed = await confirmAlert(
-      `Delete the latest fee rate for ${formatPeriod(activeFee)}?<br /><br />This may change payroll results.`,
+      language === "ja"
+        ? `${formatPeriod(activeFee, language)}の最新の給料レートを削除しますか？給与計算の結果が変わる場合があります。`
+        : `Delete the latest fee rate for ${formatPeriod(activeFee, language)}? This may change payroll results.`,
+      language,
     );
 
     if (!confirmed) {
@@ -265,11 +291,17 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
     setIsSubmitting(false);
 
     if ("status" in response) {
-      await errorAlert(response.message);
+      await errorAlert(
+        language === "ja"
+          ? localizeAdminMessage(response.message)
+          : response.message,
+      );
       return;
     }
 
-    toast.success(response.message);
+    toast.success(
+      language === "ja" ? "給料レートを削除しました" : response.message,
+    );
     await loadFees();
   };
 
@@ -280,7 +312,11 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
         <p>{language === "en" ? "Fee Rates" : "給料レート"}</p>
         <div className={styles.feeSection}>
           {isLoading ? (
-            <p className={styles.feeMutedText}>Loading fee rates...</p>
+            <p className={styles.feeMutedText}>
+              {language === "ja"
+                ? "給料レートを読み込み中..."
+                : "Loading fee rates..."}
+            </p>
           ) : activeFee ? (
             <FeeRateCard
               fee={activeFee}
@@ -289,15 +325,21 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
               isDeleteDisabled={isSubmitting || fees.length < 2}
             />
           ) : (
-            <p className={styles.feeMutedText}>No fee rates registered yet.</p>
+            <p className={styles.feeMutedText}>
+              {language === "ja"
+                ? "給料レートは未登録です。"
+                : "No fee rates registered yet."}
+            </p>
           )}
 
           {access === "admin" && isFormOpen && (
             <div className={styles.feeForm}>
-              <h4 className={styles.feeFormTitle}>New fee rate</h4>
+              <h4 className={styles.feeFormTitle}>
+                {language === "ja" ? "新しい給料レート" : "New fee rate"}
+              </h4>
               <div className={styles.feeFormGrid}>
                 <label>
-                  Currency
+                  {language === "ja" ? "通貨" : "Currency"}
                   <input
                     name="currency"
                     value={formState.currency}
@@ -306,11 +348,13 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
                     placeholder="JPY"
                   />
                   <span className={styles.feeFieldHint}>
-                    Use a 3-letter currency code, for example &quot;JPY&quot;.
+                    {language === "ja"
+                      ? "JPYなど、3文字の通貨コードを入力してください。"
+                      : 'Use a 3-letter currency code, for example "JPY".'}
                   </span>
                 </label>
                 <label>
-                  Effective From
+                  {language === "ja" ? "適用開始日" : "Effective From"}
                   <input
                     type="date"
                     name="effectiveFrom"
@@ -319,7 +363,7 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
                   />
                 </label>
                 <label>
-                  Trial Fee
+                  {language === "ja" ? "体験クラスの報酬" : "Trial Fee"}
                   <input
                     type="number"
                     name="trialFee"
@@ -330,7 +374,7 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
                   />
                 </label>
                 <label>
-                  Regular Fee
+                  {language === "ja" ? "通常クラスの報酬" : "Regular Fee"}
                   <input
                     type="number"
                     name="regularFee"
@@ -341,7 +385,7 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
                   />
                 </label>
                 <label>
-                  Cancel Fee
+                  {language === "ja" ? "キャンセル時の報酬" : "Cancel Fee"}
                   <input
                     type="number"
                     name="cancelFee"
@@ -352,7 +396,9 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
                   />
                 </label>
                 <label>
-                  Cancel Without Notice Fee
+                  {language === "ja"
+                    ? "無断キャンセル時の報酬"
+                    : "Cancel Without Notice Fee"}
                   <input
                     type="number"
                     name="cancelWithoutNoticeFee"
@@ -363,7 +409,9 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
                   />
                 </label>
                 <label>
-                  Monthly Cancel Fee
+                  {language === "ja"
+                    ? "月次キャンセルの報酬"
+                    : "Monthly Cancel Fee"}
                   <input
                     type="number"
                     name="monthlyCancelFee"
@@ -384,14 +432,22 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
                   <ActionButton
                     type="button"
                     onClick={handleCancelForm}
-                    btnText="Cancel"
+                    btnText={language === "ja" ? "キャンセル" : "Cancel"}
                     className="cancelBtn"
                     disabled={isSubmitting}
                   />
                   <ActionButton
                     type="button"
                     onClick={handleCreateFee}
-                    btnText={isSubmitting ? "Saving..." : "Save"}
+                    btnText={
+                      isSubmitting
+                        ? language === "ja"
+                          ? "保存中..."
+                          : "Saving..."
+                        : language === "ja"
+                          ? "保存"
+                          : "Save"
+                    }
                     className="saveBtn"
                     disabled={isSubmitting}
                   />
@@ -400,7 +456,9 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
                 <ActionButton
                   type="button"
                   onClick={handleOpenForm}
-                  btnText="Change fee rate"
+                  btnText={
+                    language === "ja" ? "給料レートを変更" : "Change fee rate"
+                  }
                   className="addBtn"
                   disabled={isSubmitting}
                 />
@@ -409,14 +467,18 @@ export default function InstructorFeeRates(props: InstructorFeeRatesProps) {
           )}
 
           <details className={styles.feeHistory}>
-            <summary>Rate history</summary>
+            <summary>{language === "ja" ? "変更履歴" : "Rate history"}</summary>
             <div className={styles.feeHistoryList}>
               {historicalFees.length > 0 ? (
                 historicalFees.map((fee) => (
                   <FeeRateCard key={fee.id} fee={fee} />
                 ))
               ) : (
-                <p className={styles.feeMutedText}>No past fee rates.</p>
+                <p className={styles.feeMutedText}>
+                  {language === "ja"
+                    ? "過去の給料レートはありません。"
+                    : "No past fee rates."}
+                </p>
               )}
             </div>
           </details>

@@ -18,7 +18,7 @@ export default function PlanTabs({
   userSessionType: UserType;
 }) {
   const planName =
-    typeof plan !== "string" ? getLocalizedText(plan.name, "ja") : "Unknown";
+    typeof plan !== "string" ? getLocalizedText(plan.name, "ja") : "不明";
   const breadcrumb = [
     "プランリスト",
     "/admins/plan-list",

@@ -95,9 +95,9 @@ export default function InstructorTags({
       const nextSelectedTagIds = result.selectedTagIds ?? selectedTagIds;
       setSelectedTagIds(nextSelectedTagIds);
       setPersistedSelectedTagIds(nextSelectedTagIds);
-      toast.success(result.successMessage ?? "Tags saved successfully.");
+      toast.success("タグを保存しました。");
     } catch {
-      toast.error("Failed to save tags.");
+      toast.error("タグの保存に失敗しました。");
     } finally {
       setIsSaving(false);
     }
@@ -123,12 +123,13 @@ export default function InstructorTags({
       ]);
       setNewTagLabel("");
     }
-    toast.success(result.successMessage ?? "Tag created successfully.");
+    toast.success("タグを作成しました。");
   };
 
   const deleteTag = async (tagId: number, tagLabel: string) => {
     const confirmed = await confirmAlert(
-      `Are you sure you want to delete the "${tagLabel}" tag?`,
+      `「${tagLabel}」タグを削除しますか？`,
+      "ja",
     );
     if (!confirmed) {
       return;
@@ -151,7 +152,7 @@ export default function InstructorTags({
     setPersistedSelectedTagIds((prevSelectedTagIds) =>
       prevSelectedTagIds.filter((selectedTagId) => selectedTagId !== tagId),
     );
-    toast.success(result.successMessage ?? "Tag deleted successfully.");
+    toast.success("タグを削除しました。");
   };
 
   const handleSaveSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -216,7 +217,7 @@ export default function InstructorTags({
           {catalog.map((tag) => (
             <div key={tag.id} className={styles.catalogRow}>
               <span>{tag.label}</span>
-              <span>{tag.assignedCount ?? 0} instructors</span>
+              <span>{tag.assignedCount ?? 0} 人</span>
               <button
                 onClick={() => deleteTag(tag.id, tag.label)}
                 className={styles.delete}

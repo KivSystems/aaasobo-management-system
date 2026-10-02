@@ -5,7 +5,6 @@ import Image from "next/image";
 import { UserIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import styles from "./DashboardClient.module.scss";
 import {
-  ENGLISH_BACKGROUND_LABELS,
   ENGLISH_BACKGROUND_LABELS_JP,
   EnglishBackground,
 } from "@/lib/data/englishBackground";
@@ -215,11 +214,7 @@ export default function DashboardClient({
             type="button"
             className={styles.toggleButton}
             onClick={() => setIsMessageBoardOpen((prev) => !prev)}
-            aria-label={
-              isMessageBoardOpen
-                ? "Collapse message board"
-                : "Expand message board"
-            }
+            aria-label={isMessageBoardOpen ? "掲示板を閉じる" : "掲示板を開く"}
           >
             {isMessageBoardOpen ? "-" : "+"}
           </button>
@@ -418,18 +413,19 @@ export default function DashboardClient({
           />
           <div className={styles.englishBackgroundFilterGroup}>
             {[
-              { value: "all", label: "All" },
+              { value: "all", label: "すべて" },
               {
                 value: "non-native",
-                label: ENGLISH_BACKGROUND_LABELS[EnglishBackground.NonNative],
+                label:
+                  ENGLISH_BACKGROUND_LABELS_JP[EnglishBackground.NonNative],
               },
               {
                 value: "native-a",
-                label: ENGLISH_BACKGROUND_LABELS[EnglishBackground.NativeA],
+                label: ENGLISH_BACKGROUND_LABELS_JP[EnglishBackground.NativeA],
               },
               {
                 value: "native-b",
-                label: ENGLISH_BACKGROUND_LABELS[EnglishBackground.NativeB],
+                label: ENGLISH_BACKGROUND_LABELS_JP[EnglishBackground.NativeB],
               },
             ].map((option) => (
               <RadioButton

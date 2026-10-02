@@ -26,7 +26,7 @@ export default function AdminLayout({
           onClick={toggleMenu}
           aria-expanded={isOpen}
           aria-controls="admin-sidebar"
-          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
         >
           {isOpen ? (
             <XMarkIcon className={styles.menuIcon} />
@@ -36,7 +36,7 @@ export default function AdminLayout({
         </button>
         <Image
           src="/images/logo2.svg"
-          alt="Aaasobo logo"
+          alt="AaasoBo! ロゴ"
           width={120}
           height={34}
         />
@@ -52,7 +52,7 @@ export default function AdminLayout({
           type="button"
           className={styles.overlay}
           onClick={closeMenu}
-          aria-label="Close menu"
+          aria-label="メニューを閉じる"
         />
       ) : null}
       <div className={styles.content} onClick={closeMenu}>

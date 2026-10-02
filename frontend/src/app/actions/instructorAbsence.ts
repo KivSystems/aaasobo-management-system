@@ -26,6 +26,7 @@ type BatchAbsenceResult = {
 export async function batchUpdateInstructorAbsences(
   instructorId: number,
   changes: AbsenceChange[],
+  language: "ja" | "en" = "en",
 ): Promise<BatchAbsenceResult> {
   try {
     const cookie = await getCookie();
@@ -58,7 +59,9 @@ export async function batchUpdateInstructorAbsences(
           }
           default:
             errors.push(
-              `Unknown action "${change.action}" for ${formatYearDateTime(new Date(change.dateTime))}`,
+              language === "ja"
+                ? `${formatYearDateTime(new Date(change.dateTime), "ja-JP")}の操作を処理できませんでした。`
+                : `Unknown action "${change.action}" for ${formatYearDateTime(new Date(change.dateTime))}`,
             );
         }
       } catch (error) {
@@ -66,7 +69,9 @@ export async function batchUpdateInstructorAbsences(
           error instanceof Error ? error.message : "Unknown error";
         const action = change.action === "add" ? "add" : "remove";
         errors.push(
-          `Failed to ${action} absence for ${formatYearDateTime(new Date(change.dateTime))}: ${errorMessage}`,
+          language === "ja"
+            ? `${formatYearDateTime(new Date(change.dateTime), "ja-JP")}の欠席を${change.action === "add" ? "登録" : "解除"}できませんでした。`
+            : `Failed to ${action} absence for ${formatYearDateTime(new Date(change.dateTime))}: ${errorMessage}`,
         );
       }
     }
@@ -82,24 +87,50 @@ export async function batchUpdateInstructorAbsences(
       // All successful
       const successMessages = [];
       if (successCount.add > 0)
-        successMessages.push(`${successCount.add} absences added`);
+        successMessages.push(
+          language === "ja"
+            ? `欠席を${successCount.add}件登録`
+            : `${successCount.add} absences added`,
+        );
       if (successCount.remove > 0)
-        successMessages.push(`${successCount.remove} absences removed`);
-      message = `Success: ${successMessages.join(", ")}`;
+        successMessages.push(
+          language === "ja"
+            ? `欠席を${successCount.remove}件解除`
+            : `${successCount.remove} absences removed`,
+        );
+      message =
+        language === "ja"
+          ? `${successMessages.join("、")}しました。`
+          : `Success: ${successMessages.join(", ")}`;
     } else if (totalSuccesses > 0) {
       // Partial success
       const successMessages = [];
       if (successCount.add > 0)
-        successMessages.push(`${successCount.add} absences added`);
+        successMessages.push(
+          language === "ja"
+            ? `欠席を${successCount.add}件登録`
+            : `${successCount.add} absences added`,
+        );
       if (successCount.remove > 0)
-        successMessages.push(`${successCount.remove} absences removed`);
-      message = `Partial success: ${successMessages.join(", ")}. ${errors.length} failed.`;
+        successMessages.push(
+          language === "ja"
+            ? `欠席を${successCount.remove}件解除`
+            : `${successCount.remove} absences removed`,
+        );
+      message =
+        language === "ja"
+          ? `${successMessages.join("、")}しました。${errors.length}件の変更に失敗しました。`
+          : `Partial success: ${successMessages.join(", ")}. ${errors.length} failed.`;
     } else if (totalAttempts === 0) {
       // No changes to process
-      message = "No changes were made.";
+      message =
+        language === "ja" ? "変更はありません。" : "No changes were made.";
     } else {
       // All failed
-      message = `All ${totalAttempts} changes failed.`;
+      message =
+        language === "ja"
+          ? `${totalAttempts}件すべての変更に失敗しました。`
+          : `All ${totalAttempts} changes failed.`;
     }
 
     return {
@@ -116,9 +147,14 @@ export async function batchUpdateInstructorAbsences(
       successCount: { add: 0, remove: 0 },
       canceledClasses: [],
       errors: [
-        `Failed to process changes: ${error instanceof Error ? error.message : String(error)}`,
+        language === "ja"
+          ? "変更を処理できませんでした。"
+          : `Failed to process changes: ${error instanceof Error ? error.message : String(error)}`,
       ],
-      message: "Failed to process changes. Please try again.",
+      message:
+        language === "ja"
+          ? "変更を処理できませんでした。もう一度お試しください。"
+          : "Failed to process changes. Please try again.",
     };
   }
 }

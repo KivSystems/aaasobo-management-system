@@ -88,10 +88,16 @@ export default function InstructorsList({
         <nav className={styles.breadcrumb}>
           <ul className={styles.breadcrumb__list}>
             <li className={styles.breadcrumb__item}>
-              <Link href={breadcrumbLink}>Customer Page</Link>
+              <Link href={breadcrumbLink}>
+                {language === "ja" ? "お客さまページ" : "Customer Page"}
+              </Link>
             </li>
             <li className={styles.breadcrumb__separator}>{" >> "}</li>
-            <li className={styles.breadcrumb__item}>Instructor Profiles</li>
+            <li className={styles.breadcrumb__item}>
+              {language === "ja"
+                ? "インストラクタープロフィール"
+                : "Instructor Profiles"}
+            </li>
           </ul>
         </nav>
       )}
@@ -133,11 +139,15 @@ export default function InstructorsList({
             className={styles.clearFilters}
             onClick={() => setSelectedTagIds([])}
           >
-            Clear all
+            {language === "ja" ? "すべて解除" : "Clear all"}
           </button>
         )}
       </div>
-      <p className={styles.resultCount}>{filteredInstructors.length} results</p>
+      <p className={styles.resultCount}>
+        {language === "ja"
+          ? `${filteredInstructors.length}件`
+          : `${filteredInstructors.length} results`}
+      </p>
 
       <div className={styles.instructors__list}>
         {filteredInstructors?.map((instructor) => (

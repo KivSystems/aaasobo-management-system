@@ -9,6 +9,7 @@ export default async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
   const context = await browser.newContext({
     baseURL: config.projects[0].use.baseURL as string,
+    locale: "en-US",
   });
   const page = await context.newPage();
   await page.goto("/admins/login");
@@ -18,18 +19,15 @@ export default async function globalSetup(config: FullConfig) {
   await page
     .locator("#password")
     .fill(process.env.E2E_ADMIN_PASSWORD ?? "E2e-Admin-Password!");
-  await page.getByRole("button", { name: "Login" }).click();
+  await page.getByRole("button", { name: "ログイン" }).click();
   await expect(page).toHaveURL(/\/admins\/(?!login)/, { timeout: 60_000 });
   await page.goto("/admins/data-import");
   await page.locator("#normalized-zip-file").setInputFiles(fixtureZip);
-  await page.getByRole("button", { name: "Execute import" }).click();
-  await page
-    .getByRole("button", { name: /confirm|execute/i })
-    .last()
-    .click();
+  await page.getByRole("button", { name: "取り込みを実行" }).click();
+  await page.getByRole("button", { name: "取り込みを実行" }).last().click();
   try {
     await expect(
-      page.getByRole("heading", { name: "Import Result" }),
+      page.getByRole("heading", { name: "取り込み結果" }),
     ).toBeVisible({ timeout: 180_000 });
   } catch (error) {
     await page.screenshot({
@@ -43,9 +41,7 @@ export default async function globalSetup(config: FullConfig) {
       `Fixture import did not complete. Visible page text:\n${visiblePageText}\n\n${String(error)}`,
     );
   }
-  await expect(
-    page.getByText("Normalized import executed successfully"),
-  ).toBeVisible();
+  await expect(page.getByText("データを取り込みました。")).toBeVisible();
   await context.storageState({ path: ADMIN_STATE });
   await browser.close();
 }

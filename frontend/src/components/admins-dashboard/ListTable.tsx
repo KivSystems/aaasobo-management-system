@@ -24,6 +24,44 @@ import GenerateClassesForm from "./GenerateClassesForm";
 import FilterButton from "./FilterButton";
 import { OMIT_CLASS_STATUSES, PAGE_SIZE_OPTIONS } from "@/lib/data/data";
 
+const cellLabels: Record<string, Record<string, string>> = {
+  Status: {
+    Booked: "予約済み",
+    Rebooked: "振替予約済み",
+    Completed: "完了",
+    "Canceled(Customer)": "キャンセル（お客さま）",
+    "Canceled(Instructor)": "キャンセル（インストラクター）",
+    "Canceled(Admin)": "キャンセル（管理者）",
+    Pending: "承認待ち",
+    Declined: "却下",
+  },
+  English: {
+    "Program Original": "プログラムオリジナル",
+    "Native A": "ネイティブA",
+    "Native B": "ネイティブB",
+  },
+  Day: {
+    Sunday: "日",
+    Monday: "月",
+    Tuesday: "火",
+    Wednesday: "水",
+    Thursday: "木",
+    Friday: "金",
+    Saturday: "土",
+    Sun: "日",
+    Mon: "月",
+    Tue: "火",
+    Wed: "水",
+    Thu: "木",
+    Fri: "金",
+    Sat: "土",
+  },
+  Instructor: { "Not Set": "未設定" },
+  "Date/Time (JST)": { "Not Set": "未設定" },
+};
+const displayCellValue = (key: string, value: unknown) =>
+  typeof value === "string" ? (cellLabels[key]?.[value] ?? value) : value;
+
 const ALL_COLUMNS_FILTER = "__all_columns__";
 
 function useTable<TData extends RowData>(options: TableOptions<TData>) {
@@ -205,7 +243,7 @@ function ListTable({
             accessorKey: key,
             header: key,
             cell: (data) => {
-              const value = data.getValue() as any;
+              const value = displayCellValue(key, data.getValue()) as any;
 
               // Only for Event List page
               // If the item is a color code, display it as a colored box
@@ -293,14 +331,14 @@ function ListTable({
           return Object.keys(eachData)
             .filter((key) => !omitItems.includes(key))
             .some((key) =>
-              String(eachData[key])
+              String(displayCellValue(key, eachData[key]))
                 .toLowerCase()
                 .includes(normalizedFilterValue),
             );
         }
 
         return filterColumn !== "0"
-          ? String(eachData[filterColumn])
+          ? String(displayCellValue(filterColumn, eachData[filterColumn]))
               .toLowerCase()
               .includes(normalizedFilterValue)
           : true;
@@ -369,7 +407,9 @@ function ListTable({
               </option>
               {filterColumns.map((key) => (
                 <option key={key} value={key}>
-                  {key === ALL_COLUMNS_FILTER ? "全項目" : key}
+                  {key === ALL_COLUMNS_FILTER
+                    ? "全項目"
+                    : (itemNameLabels[key] ?? (key === "No" ? "番号" : key))}
                 </option>
               ))}
             </select>
@@ -455,7 +495,8 @@ function ListTable({
                           : ""
                       }
                     >
-                      {itemNameLabels[header.column.id] ?? header.column.id}
+                      {itemNameLabels[header.column.id] ??
+                        (header.column.id === "No" ? "番号" : header.column.id)}
                       {{
                         asc: " ▲",
                         desc: " ▼",

@@ -1,5 +1,6 @@
 "use client";
 
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
 import styles from "./InstructorProfile.module.scss";
 import { useState, useRef, useCallback } from "react";
 import { updateInstructorAction } from "@/app/actions/updateUser";
@@ -39,7 +40,10 @@ import InstructorFeeRates from "./InstructorFeeRates";
 import { EnglishBackground } from "@/types";
 import RadioButton from "../../elements/radioButton/RadioButton";
 import TextAreaInput from "../../elements/textAreaInput/TextAreaInput";
-import { ENGLISH_BACKGROUND_LABELS } from "@/lib/data/englishBackground";
+import {
+  ENGLISH_BACKGROUND_LABELS,
+  ENGLISH_BACKGROUND_LABELS_JP,
+} from "@/lib/data/englishBackground";
 
 // Define the specific string fields that are editable in this component
 type EditableInstructorFields =
@@ -89,6 +93,11 @@ function InstructorProfile({
     if (result.meetingId) newMessages.meetingId = result.meetingId;
     if (result.passcode) newMessages.passcode = result.passcode;
     if (result.errorMessage) newMessages.errorMessage = result.errorMessage;
+    if (language === "ja") {
+      Object.keys(newMessages).forEach((field) => {
+        newMessages[field] = localizeAdminMessage(newMessages[field]);
+      });
+    }
     return newMessages;
   };
 
@@ -116,6 +125,10 @@ function InstructorProfile({
   const [userStatus, setUserStatus] = useState<string>("Active");
   const [leavingDate, setLeavingDate] = useState<string | null>(null);
   const { language } = useLanguage();
+  const backgroundLabels =
+    language === "ja"
+      ? ENGLISH_BACKGROUND_LABELS_JP
+      : ENGLISH_BACKGROUND_LABELS;
   const formRef = useRef<HTMLFormElement>(null);
   const englishBackgroundClassNames = ["", "nativeA", "nativeB"] as const;
 
@@ -160,7 +173,10 @@ function InstructorProfile({
     if (leavingDate && !leavingDate.includes("T") && userStatus === "Leaving") {
       const updatedDate = leavingDate.replace(/-/g, "/");
       confirmed = await confirmAlert(
-        `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
+        language === "ja"
+          ? `卒業日が${updatedDate}（日本時間）で正しいか確認してください。`
+          : `Please confirm if the leaving date "${updatedDate}" (Japan Time) is correct.`,
+        language,
       );
       if (!confirmed) return;
     }
@@ -176,7 +192,11 @@ function InstructorProfile({
     setLocalMessages(buildLocalMessages(result));
 
     if ("instructor" in result && result.instructor) {
-      toast.success("Profile updated successfully");
+      toast.success(
+        language === "ja"
+          ? "プロフィールを更新しました"
+          : "Profile updated successfully",
+      );
       setIsEditing(false);
 
       const incomingInstructor = result.instructor;
@@ -232,12 +252,12 @@ function InstructorProfile({
             {/* User Status Switcher */}
             <StatusSwitcher
               isEditing={isEditing}
-              statusOptions={["在籍中", "卒業予定"]}
+              statusOptions={["Active", "Leaving"]}
               currentStatus={
-                latestInstructor.terminationAt === null ? "在籍中" : "卒業予定"
+                latestInstructor.terminationAt === null ? "Active" : "Leaving"
               }
               leavingDate={latestInstructor.terminationAt}
-              title="ステータス"
+              title={language === "ja" ? "ステータス" : "Status"}
               onStatusChange={(newStatus, newDate) => {
                 setUserStatus(newStatus);
                 setLeavingDate(newDate ?? null);
@@ -247,7 +267,9 @@ function InstructorProfile({
             {isEditing && (
               <>
                 {/* Image Uploader */}
-                <p className={styles.profileImage__text}>プロフィール画像</p>
+                <p className={styles.profileImage__text}>
+                  {language === "ja" ? "プロフィール画像" : "Profile image"}
+                </p>
                 <Uploader />
               </>
             )}
@@ -272,7 +294,7 @@ function InstructorProfile({
                       }`}
                   >
                     {
-                      ENGLISH_BACKGROUND_LABELS[
+                      backgroundLabels[
                         latestInstructor.englishBackground as EnglishBackground
                       ]
                     }
@@ -299,7 +321,9 @@ function InstructorProfile({
             {isEditing ? (
               <>
                 <p className={styles.englishBackground}>
-                  インストラクタータイプ
+                  {language === "ja"
+                    ? "インストラクタータイプ"
+                    : "Instructor type"}
                 </p>
                 <RadioButton
                   name="englishBackground"
@@ -309,7 +333,7 @@ function InstructorProfile({
                     EnglishBackground.NonNative
                   }
                   onChange={handleRadioChange}
-                  label={ENGLISH_BACKGROUND_LABELS[EnglishBackground.NonNative]}
+                  label={backgroundLabels[EnglishBackground.NonNative]}
                   className={styles.englishBackgroundRadio}
                 />
                 <RadioButton
@@ -320,7 +344,7 @@ function InstructorProfile({
                     EnglishBackground.NativeA
                   }
                   onChange={handleRadioChange}
-                  label={ENGLISH_BACKGROUND_LABELS[EnglishBackground.NativeA]}
+                  label={backgroundLabels[EnglishBackground.NativeA]}
                   className={styles.englishBackgroundRadio}
                 />
                 <RadioButton
@@ -331,7 +355,7 @@ function InstructorProfile({
                     EnglishBackground.NativeB
                   }
                   onChange={handleRadioChange}
-                  label={ENGLISH_BACKGROUND_LABELS[EnglishBackground.NativeB]}
+                  label={backgroundLabels[EnglishBackground.NativeB]}
                   className={styles.englishBackgroundRadio}
                 />
               </>
@@ -379,7 +403,10 @@ function InstructorProfile({
                     {latestInstructor.birthdate
                       ? latestInstructor.birthdate.includes(MASKED_BIRTHDATE)
                         ? MASKED_HEAD_LETTERS
-                        : formatBirthdateMonthDay(latestInstructor.birthdate)
+                        : formatBirthdateMonthDay(
+                            latestInstructor.birthdate,
+                            language === "ja" ? "ja-JP" : "en-US",
+                          )
                       : null}
                   </h4>
                 )}
@@ -563,7 +590,9 @@ function InstructorProfile({
                         ? latestInstructor.email.includes(MASKED_HEAD_LETTERS)
                           ? MASKED_HEAD_LETTERS
                           : latestInstructor.email
-                        : "Not available"}
+                        : language === "ja"
+                          ? "未登録"
+                          : "Not available"}
                     </h4>
                   )}
                 </div>
@@ -607,7 +636,9 @@ function InstructorProfile({
                             )
                             ? MASKED_HEAD_LETTERS
                             : latestInstructor.classURL
-                          : "Not available"}
+                          : language === "ja"
+                            ? "未登録"
+                            : "Not available"}
                       </a>
                     </h4>
                   )}
@@ -638,7 +669,9 @@ function InstructorProfile({
                             )
                             ? MASKED_HEAD_LETTERS
                             : latestInstructor.meetingId
-                          : "Not available"}
+                          : language === "ja"
+                            ? "未登録"
+                            : "Not available"}
                       </p>
                     )}
                   </div>
@@ -668,7 +701,9 @@ function InstructorProfile({
                             )
                             ? MASKED_HEAD_LETTERS
                             : latestInstructor.passcode
-                          : "Not available"}
+                          : language === "ja"
+                            ? "未登録"
+                            : "Not available"}
                       </p>
                     )}
                   </div>
@@ -713,8 +748,9 @@ function InstructorProfile({
               <div className={styles.insideContainer}>
                 <InformationCircleIcon className={styles.icon} />
                 <p className={styles.info}>
-                  If you wish to update the profile information above, please
-                  contact the staff via Facebook.
+                  {language === "ja"
+                    ? "上記のプロフィール情報の変更を希望する場合は、Facebookでスタッフにご連絡ください。"
+                    : "If you wish to update the profile information above, please contact the staff via Facebook."}
                 </p>
               </div>
             )}
@@ -731,7 +767,7 @@ function InstructorProfile({
                   <div className={styles.buttons}>
                     <ActionButton
                       className="cancelEditingInstructor"
-                      btnText="キャンセル"
+                      btnText={language === "ja" ? "キャンセル" : "Cancel"}
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
@@ -741,7 +777,7 @@ function InstructorProfile({
 
                     <ActionButton
                       className="saveInstructor"
-                      btnText="保存"
+                      btnText={language === "ja" ? "保存" : "Save"}
                       type="submit"
                       Icon={CheckIcon}
                     />
@@ -750,7 +786,7 @@ function InstructorProfile({
                   <div className={styles.buttons}>
                     <ActionButton
                       className="editInstructor"
-                      btnText="編集"
+                      btnText={language === "ja" ? "編集" : "Edit"}
                       onClick={handleEditClick}
                     />
                   </div>

@@ -55,13 +55,13 @@ export default function InstructorTabs({
         return [
           "インストラクターリスト",
           "/admins/instructor-list",
-          `インストラクターページ (${nickname || "Unknown"})`,
+          `インストラクターページ (${nickname || "不明"})`,
         ];
       case "class-list":
         return [
           "クラスリスト",
           "/admins/class-list",
-          `インストラクターページ (${nickname || "Unknown"})`,
+          `インストラクターページ (${nickname || "不明"})`,
         ];
       default:
         return [];

@@ -20,7 +20,7 @@ const Page = async (props: { params: Promise<{ classId: string }> }) => {
   // Get the classId from the URL parameters
   const classId = parseInt(params.classId);
   if (isNaN(classId)) {
-    return <p>Class not found (invalid class id)</p>;
+    return <p>クラスが見つかりません（クラスIDが無効です）。</p>;
   }
 
   // Get the instructorId from the applicable class information
@@ -30,7 +30,7 @@ const Page = async (props: { params: Promise<{ classId: string }> }) => {
   if (response && "instructorId" in response) {
     instructorId = response.instructorId;
   } else {
-    return <p>Class not found (invalid instructor id)</p>;
+    return <p>クラスが見つかりません（インストラクターIDが無効です）。</p>;
   }
 
   const { selectedClassDetails, sameDateClasses } = await getSameDateClasses(

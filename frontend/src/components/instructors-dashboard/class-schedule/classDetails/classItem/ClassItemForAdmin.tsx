@@ -93,14 +93,14 @@ const ClassItemForAdmin = ({
           {isEditingStatus ? (
             <div>
               <CheckboxInput
-                label="Completed"
+                label="完了"
                 checked={selectedStatus === "completed"}
                 onClick={(e) => e.stopPropagation()}
                 onChange={() => setSelectedStatus("completed")}
                 className="classItemForAdmin"
               />
               <CheckboxInput
-                label="Canceled by Instructor"
+                label="講師都合でキャンセル"
                 checked={selectedStatus === "canceledByInstructor"}
                 onClick={(e) => e.stopPropagation()}
                 onChange={() => {
@@ -111,6 +111,7 @@ const ClassItemForAdmin = ({
             </div>
           ) : (
             <ClassStatus
+              language="ja"
               status={classItem.status}
               isFreeTrial={isFreeTrial}
               className="classItem"
@@ -142,7 +143,7 @@ const ClassItemForAdmin = ({
                   ))}
                 </div>
               ) : initialAttendedChildrenIds.length === 0 ? (
-                <div className={styles.classItem__childrenToEdit}>Absent</div>
+                <div className={styles.classItem__childrenToEdit}>欠席</div>
               ) : (
                 <div className={styles.classItem__childrenToEdit}>
                   {classItem.attendingChildren
@@ -156,7 +157,7 @@ const ClassItemForAdmin = ({
 
         <div className={styles.classItem__time}>
           <span>{classStartTime}</span>
-          <span>(JP: {classStartTimeJST})</span>
+          <span>(日本時間: {classStartTimeJST})</span>
         </div>
       </div>
 
@@ -164,7 +165,7 @@ const ClassItemForAdmin = ({
         {isEditingAttendance || isEditingStatus ? (
           <>
             <ActionButton
-              btnText="Cancel"
+              btnText="キャンセル"
               onClick={(e) => {
                 e.stopPropagation();
                 handleCancelClick();
@@ -174,7 +175,7 @@ const ClassItemForAdmin = ({
             />
             {isEditingAttendance && (
               <ActionButton
-                btnText="Save Attendance"
+                btnText="出席状況を保存"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleAttendanceUpdate({
@@ -194,7 +195,7 @@ const ClassItemForAdmin = ({
             )}
             {isEditingStatus && (
               <ActionButton
-                btnText="Save Class Status"
+                btnText="クラスの状態を保存"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleClassStatusUpdate({
@@ -216,7 +217,7 @@ const ClassItemForAdmin = ({
           <>
             {statusesForAttendance.includes(classItem.status) && (
               <ActionButton
-                btnText="Edit Attendance"
+                btnText="出席状況を編集"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsEditingAttendance(true);
@@ -227,7 +228,7 @@ const ClassItemForAdmin = ({
             )}
             {bookedStatuses.includes(classItem.status) && (
               <ActionButton
-                btnText="Edit Class Status"
+                btnText="クラスの状態を編集"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsEditingStatus(true);

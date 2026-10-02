@@ -241,7 +241,7 @@ function DailyBreakdownTable({
         </tbody>
         <tfoot>
           <tr>
-            <th scope="row">Total</th>
+            <th scope="row">{locale === "ja" ? "合計" : "Total"}</th>
             <td>{totals.trial}</td>
             <td>{totals.regular}</td>
             <td>{totals.cancel}</td>

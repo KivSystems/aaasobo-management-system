@@ -1,5 +1,7 @@
 "use client";
 
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
+
 import styles from "./PlanProfile.module.scss";
 import { toast } from "react-toastify";
 import { useState, useCallback } from "react";
@@ -23,7 +25,7 @@ import {
 import { confirmAlert } from "@/lib/utils/alertUtils";
 import { getLocalizedText } from "@/lib/utils/stringUtils";
 import { EnglishBackground } from "@/types";
-import { ENGLISH_BACKGROUND_LABELS } from "@/lib/data/englishBackground";
+import { ENGLISH_BACKGROUND_LABELS_JP } from "@/lib/data/englishBackground";
 
 function PlanProfile({
   plan,
@@ -69,9 +71,7 @@ function PlanProfile({
   };
 
   const handleDeleteClick = async () => {
-    const confirmed = await confirmAlert(
-      "Are you sure you want to delete this plan?",
-    );
+    const confirmed = await confirmAlert("このプランを削除しますか？", "ja");
 
     if (confirmed && latestPlan) {
       const formData = new FormData();
@@ -80,12 +80,14 @@ function PlanProfile({
       const result = await deletePlanAction(deleteResultState, formData);
       setDeleteResultState(result);
       if ("id" in result && result.id) {
-        toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("plan"));
+        toast.success(
+          localizeAdminMessage(CONTENT_DELETE_SUCCESS_MESSAGE("plan")),
+        );
         setIsEditing(false);
         setPreviousPlan(null);
         setLatestPlan(null);
       } else if ("errorMessage" in result && result.errorMessage) {
-        toast.error(result.errorMessage);
+        toast.error(localizeAdminMessage(result.errorMessage));
       }
     }
   };
@@ -134,10 +136,14 @@ function PlanProfile({
       return {};
     }
     const newMessages: Record<string, string> = {};
-    if (result.planNameJpn) newMessages.planNameJpn = result.planNameJpn;
-    if (result.planNameEng) newMessages.planNameEng = result.planNameEng;
-    if (result.description) newMessages.description = result.description;
-    if (result.errorMessage) newMessages.errorMessage = result.errorMessage;
+    if (result.planNameJpn)
+      newMessages.planNameJpn = localizeAdminMessage(result.planNameJpn);
+    if (result.planNameEng)
+      newMessages.planNameEng = localizeAdminMessage(result.planNameEng);
+    if (result.description)
+      newMessages.description = localizeAdminMessage(result.description);
+    if (result.errorMessage)
+      newMessages.errorMessage = localizeAdminMessage(result.errorMessage);
     return newMessages;
   };
 
@@ -150,7 +156,9 @@ function PlanProfile({
 
     if ("plan" in result && result.plan) {
       const updatedPlan = result.plan as Plan;
-      toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("plan"));
+      toast.success(
+        localizeAdminMessage(CONTENT_UPDATE_SUCCESS_MESSAGE("plan")),
+      );
       setIsEditing(false);
       setPreviousPlan({
         ...updatedPlan,
@@ -163,7 +171,7 @@ function PlanProfile({
         planNameJpn: getLocalizedText(updatedPlan.name, "ja"),
       });
     } else if ("errorMessage" in result && result.errorMessage) {
-      toast.error(result.errorMessage);
+      toast.error(localizeAdminMessage(result.errorMessage));
     }
   };
 
@@ -280,7 +288,9 @@ function PlanProfile({
                         }
                         onChange={handleRadioChange}
                         label={
-                          ENGLISH_BACKGROUND_LABELS[EnglishBackground.NonNative]
+                          ENGLISH_BACKGROUND_LABELS_JP[
+                            EnglishBackground.NonNative
+                          ]
                         }
                         className={styles.planTypeRadio}
                       />
@@ -293,7 +303,9 @@ function PlanProfile({
                         }
                         onChange={handleRadioChange}
                         label={
-                          ENGLISH_BACKGROUND_LABELS[EnglishBackground.NativeA]
+                          ENGLISH_BACKGROUND_LABELS_JP[
+                            EnglishBackground.NativeA
+                          ]
                         }
                         className={styles.planTypeRadio}
                       />
@@ -306,7 +318,9 @@ function PlanProfile({
                         }
                         onChange={handleRadioChange}
                         label={
-                          ENGLISH_BACKGROUND_LABELS[EnglishBackground.NativeB]
+                          ENGLISH_BACKGROUND_LABELS_JP[
+                            EnglishBackground.NativeB
+                          ]
                         }
                         className={styles.planTypeRadio}
                       />
@@ -314,7 +328,7 @@ function PlanProfile({
                   ) : (
                     <h4 className={styles.planDescription__text}>
                       {
-                        ENGLISH_BACKGROUND_LABELS[
+                        ENGLISH_BACKGROUND_LABELS_JP[
                           latestPlan.englishBackground as EnglishBackground
                         ]
                       }

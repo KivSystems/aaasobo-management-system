@@ -89,7 +89,13 @@ export default function MessageBoardPanel({
             className={styles.toggleButton}
             onClick={() => setIsOpen((prev) => !prev)}
             aria-label={
-              isOpen ? "Collapse message board" : "Expand message board"
+              language === "ja"
+                ? isOpen
+                  ? "お知らせを閉じる"
+                  : "お知らせを開く"
+                : isOpen
+                  ? "Collapse message board"
+                  : "Expand message board"
             }
           >
             {isOpen ? "-" : "＋"}
