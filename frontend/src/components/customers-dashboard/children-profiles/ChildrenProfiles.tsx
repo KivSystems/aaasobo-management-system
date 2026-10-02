@@ -110,6 +110,7 @@ function ChildrenProfiles({
 
     const confirmed = await confirmAlert(
       CONFIRM_DELETE_CHILD_PROFILE_MESSAGE[language],
+      language,
     );
     if (!confirmed) return;
 

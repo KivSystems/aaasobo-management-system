@@ -97,7 +97,9 @@ function InstructorSearch({
         handleSendInstructor(activeInstructor.id, activeInstructor.name);
       } catch (error) {
         console.error("Failed to load instructors:", error);
-        setLoadError("Failed to load instructors. Please try again.");
+        setLoadError(
+          "インストラクターを読み込めませんでした。もう一度お試しください。",
+        );
       } finally {
         setHasLoaded(true);
       }
@@ -110,7 +112,7 @@ function InstructorSearch({
         <button
           type="button"
           className={styles.navigationButton}
-          aria-label="Previous instructor"
+          aria-label="前のインストラクター"
           disabled={!canSelectPrevious}
           onClick={() => selectAdjacentInstructor(-1)}
         >
@@ -119,7 +121,7 @@ function InstructorSearch({
         <div className={styles.filterContainer}>
           <input
             type="text"
-            placeholder="Search instructors..."
+            placeholder="インストラクターを検索..."
             onChange={handleSearch}
             value={searchTerm}
           />
@@ -137,7 +139,7 @@ function InstructorSearch({
           )}
           <ActionButton
             onClick={() => handleUpdateCalendar()}
-            btnText="Display Calendar"
+            btnText="カレンダーを表示"
             className="bookBtn"
             disabled={selectedInstructorId === null}
           />
@@ -145,7 +147,7 @@ function InstructorSearch({
         <button
           type="button"
           className={styles.navigationButton}
-          aria-label="Next instructor"
+          aria-label="次のインストラクター"
           disabled={!canSelectNext}
           onClick={() => selectAdjacentInstructor(1)}
         >
@@ -154,7 +156,9 @@ function InstructorSearch({
       </div>
       {loadError && <p className={styles.loadError}>{loadError}</p>}
       {!loadError && hasLoaded && instructors.length === 0 && (
-        <p className={styles.emptyState}>No active instructors found.</p>
+        <p className={styles.emptyState}>
+          在籍中のインストラクターが見つかりません。
+        </p>
       )}
     </>
   );

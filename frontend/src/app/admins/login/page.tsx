@@ -15,8 +15,8 @@ export default function LoginPage() {
           className={styles.logo}
           priority={true}
         />
-        <h2>Login for admins</h2>
-        <LoginForm userType="admin" language="en" />
+        <h2>管理者ログイン</h2>
+        <LoginForm userType="admin" language="ja" />
       </div>
     </main>
   );

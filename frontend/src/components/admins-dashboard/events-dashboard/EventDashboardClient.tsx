@@ -18,7 +18,7 @@ export default function EventTabs({
   userSessionType: UserType;
 }) {
   const eventName =
-    typeof event !== "string" ? getLocalizedText(event.name, "ja") : "Unknown";
+    typeof event !== "string" ? getLocalizedText(event.name, "ja") : "不明";
   const breadcrumb = [
     "イベントリスト",
     "/admins/event-list",

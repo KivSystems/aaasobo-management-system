@@ -1,4 +1,8 @@
+"use client";
+
 import React from "react";
+import jaLocale from "@fullcalendar/core/locales/ja";
+import { useLanguage } from "@/contexts/LanguageContext";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
@@ -18,6 +22,7 @@ type CalendarProp = {
 } & CalendarOptions;
 
 function Calendar({ events, headerRight, ...options }: CalendarProp) {
+  const { language } = useLanguage();
   return (
     <div style={{ position: "relative" }}>
       <FullCalendar
@@ -28,6 +33,7 @@ function Calendar({ events, headerRight, ...options }: CalendarProp) {
           center: "title",
           right: "",
         }}
+        locale={language === "ja" ? jaLocale : "en"}
         events={events}
         slotMinTime="08:00:00"
         slotMaxTime="22:00:00"

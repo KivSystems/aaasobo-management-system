@@ -1,6 +1,7 @@
 "use client";
 
 import FullCalendar from "@fullcalendar/react";
+import jaLocale from "@fullcalendar/core/locales/ja";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 import calendarStyles from "@/components/customers-dashboard/classes/customerCalensar/CustomerCalendar.module.scss";
@@ -28,10 +29,14 @@ export default function ScheduleChangeCalendar({
 }: {
   calendar: SchedulePreview;
   timeZone?: string;
-  language?: string;
+  language?: LanguageType;
 }) {
   const ja = language === "ja";
-  const renderEventContent = createRenderEventContent("customer", timeZone);
+  const renderEventContent = createRenderEventContent(
+    "customer",
+    timeZone,
+    language,
+  );
   const remaining = [...calendar.after];
   const events: { event: SchedulePreviewEvent; change: Change }[] =
     calendar.before.map((event) => {
@@ -97,7 +102,7 @@ export default function ScheduleChangeCalendar({
             center: "title",
             right: "",
           }}
-          locale={ja ? "ja" : "en"}
+          locale={ja ? jaLocale : "en"}
           buttonText={{ today: ja ? "今日" : "today" }}
           buttonHints={{
             prev: ja ? "前の月" : "Previous month",

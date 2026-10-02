@@ -62,7 +62,7 @@ function InstructorCalendarForAdmin({
       setColorsForEvents(colorsForEvents);
     } catch (error) {
       if (requestId !== requestIdRef.current) return;
-      setError("Failed to load classes. Please try again.");
+      setError("クラスを読み込めませんでした。もう一度お試しください。");
     } finally {
       if (requestId === requestIdRef.current) {
         setIsLoading(false);
@@ -99,7 +99,7 @@ function InstructorCalendarForAdmin({
       {error && <div>{error}</div>}
       {!isLoading && !error && instructorId === null && (
         <p className={styles.emptyState}>
-          Select an instructor to display their calendar.
+          インストラクターを選択するとカレンダーが表示されます。
         </p>
       )}
       {!isLoading &&
@@ -110,7 +110,7 @@ function InstructorCalendarForAdmin({
           <>
             {userSessionType === "admin" && instructorName ? (
               <span className={styles.instructorName}>
-                Instructor: &nbsp;{instructorName}
+                インストラクター：{instructorName}
               </span>
             ) : null}
             <InstructorCalendarClient

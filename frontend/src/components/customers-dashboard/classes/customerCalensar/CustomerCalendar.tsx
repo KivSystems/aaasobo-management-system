@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
+import jaLocale from "@fullcalendar/core/locales/ja";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -44,6 +45,7 @@ export default function CustomerCalendar({
   const renderCustomerEventContent = createRenderEventContent(
     "customer",
     timeZone ?? undefined,
+    language,
   );
 
   const handleModalClose = () => {
@@ -75,7 +77,7 @@ export default function CustomerCalendar({
           eventClick={handleEventClick}
           eventContent={renderCustomerEventContent}
           validRange={validRange}
-          locale={language === "ja" ? "ja" : "en"}
+          locale={language === "ja" ? jaLocale : "en"}
           dayCellContent={(arg) => {
             return { html: String(arg.date.getDate()) };
           }}

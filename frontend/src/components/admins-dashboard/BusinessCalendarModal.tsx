@@ -27,7 +27,7 @@ const BusinessCalendarModal = ({
 
   return (
     <div className={styles.modalContent}>
-      <h2>Update Schedule</h2>
+      <h2>スケジュールの変更</h2>
       {selectedDates && (
         <>
           <InputField name="startDate" value={selectedDates[0]} type="hidden" />
@@ -47,7 +47,7 @@ const BusinessCalendarModal = ({
               className={styles.eventSelect}
               onChange={handleSelectChange}
             >
-              <option value="default">Select Event</option>
+              <option value="default">イベントを選択</option>
               {events.map((event) => (
                 <option key={event.id} value={event.id}>
                   {event.name}
@@ -58,7 +58,7 @@ const BusinessCalendarModal = ({
           <div className={styles.actionButton}>
             <ActionButton
               className="saveEvent"
-              btnText="Update"
+              btnText="更新"
               type="submit"
               Icon={CheckIcon}
             />

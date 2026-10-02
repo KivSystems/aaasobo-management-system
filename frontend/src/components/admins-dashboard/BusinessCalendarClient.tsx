@@ -1,7 +1,10 @@
 "use client";
 
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
+
 import styles from "./BusinessCalendarClient.module.scss";
 import FullCalendar from "@fullcalendar/react";
+import jaLocale from "@fullcalendar/core/locales/ja";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateSelectArg } from "@fullcalendar/core";
@@ -156,7 +159,7 @@ const BusinessCalendarClient = ({
       const data = await getAllBusinessSchedules();
       setBusinessSchedule(data.organizedData);
     } catch (err) {
-      toast.error("Failed to fetch schedule data");
+      toast.error(localizeAdminMessage("スケジュールの取得に失敗しました。"));
     }
   };
 
@@ -167,28 +170,36 @@ const BusinessCalendarClient = ({
     const newMessages: Record<string, string> = {};
 
     if ("eventId" in result && result.eventId) {
-      newMessages.eventId = result.eventId;
+      newMessages.eventId = localizeAdminMessage(result.eventId);
     }
     if ("errorMessage" in result && result.errorMessage) {
-      newMessages.errorMessage = result.errorMessage;
+      newMessages.errorMessage = localizeAdminMessage(result.errorMessage);
     }
 
     setLocalMessages(newMessages);
 
     if ("result" in result && result.result) {
-      toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("schedule"));
+      toast.success(
+        localizeAdminMessage(CONTENT_UPDATE_SUCCESS_MESSAGE("schedule")),
+      );
       await fetchSchedule();
       setIsModalOpen(false);
       setSelectedDates([]);
       setScheduleVersion((prev) => prev + 1);
     } else if ("errorMessage" in result && result.errorMessage) {
-      toast.error(result.errorMessage);
+      toast.error(localizeAdminMessage(result.errorMessage));
     }
   };
 
   // Display the failure message if the schedule is not loaded
   if (!businessSchedule || !events) {
-    return <div>Failed to load AaasoBo! schedule.</div>;
+    return (
+      <div>
+        {language === "ja"
+          ? "AaasoBo! のスケジュールを読み込めませんでした。"
+          : "Failed to load the AaasoBo! schedule."}
+      </div>
+    );
   }
 
   // Map events to the format required for the calendar legend
@@ -214,7 +225,7 @@ const BusinessCalendarClient = ({
             right: "",
           }}
           timeZone="Asia/Tokyo"
-          locale={language === "ja" ? "ja" : "en"}
+          locale={language === "ja" ? jaLocale : "en"}
           dayCellContent={(arg) => {
             return { html: getDayNumberInTimeZone(arg.date) };
           }}

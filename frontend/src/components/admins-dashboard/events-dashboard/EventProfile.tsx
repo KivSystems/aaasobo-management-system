@@ -1,5 +1,7 @@
 "use client";
 
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
+
 import styles from "./EventProfile.module.scss";
 import { useState, useCallback } from "react";
 import { updateEventAction } from "@/app/actions/updateContent";
@@ -47,10 +49,13 @@ function EventProfile({
       return {};
     }
     const newMessages: Record<string, string> = {};
-    if (result.eventNameJpn) newMessages.eventNameJpn = result.eventNameJpn;
-    if (result.eventNameEng) newMessages.eventNameEng = result.eventNameEng;
-    if (result.color) newMessages.color = result.color;
-    if (result.errorMessage) newMessages.errorMessage = result.errorMessage;
+    if (result.eventNameJpn)
+      newMessages.eventNameJpn = localizeAdminMessage(result.eventNameJpn);
+    if (result.eventNameEng)
+      newMessages.eventNameEng = localizeAdminMessage(result.eventNameEng);
+    if (result.color) newMessages.color = localizeAdminMessage(result.color);
+    if (result.errorMessage)
+      newMessages.errorMessage = localizeAdminMessage(result.errorMessage);
     return newMessages;
   };
 
@@ -109,9 +114,7 @@ function EventProfile({
   };
 
   const handleDeleteClick = async () => {
-    const confirmed = await confirmAlert(
-      "Are you sure you want to delete this event?",
-    );
+    const confirmed = await confirmAlert("このイベントを削除しますか？", "ja");
 
     if (confirmed && latestEvent) {
       const formData = new FormData();
@@ -120,11 +123,13 @@ function EventProfile({
       const result = await deleteEventAction(deleteResultState, formData);
       setDeleteResultState(result);
       if ("id" in result && result.id) {
-        toast.success(CONTENT_DELETE_SUCCESS_MESSAGE("event"));
+        toast.success(
+          localizeAdminMessage(CONTENT_DELETE_SUCCESS_MESSAGE("event")),
+        );
         setIsEditing(false);
         setLatestEvent(null);
       } else if ("errorMessage" in result && result.errorMessage) {
-        toast.error(result.errorMessage);
+        toast.error(localizeAdminMessage(result.errorMessage));
       }
     }
   };
@@ -138,7 +143,9 @@ function EventProfile({
 
     if ("event" in result && result.event) {
       const updatedEvent = result.event as BusinessEventType;
-      toast.success(CONTENT_UPDATE_SUCCESS_MESSAGE("event"));
+      toast.success(
+        localizeAdminMessage(CONTENT_UPDATE_SUCCESS_MESSAGE("event")),
+      );
       setIsEditing(false);
       setPreviousEvent({
         ...updatedEvent,
@@ -151,7 +158,7 @@ function EventProfile({
         eventNameJpn: getLocalizedText(updatedEvent.name, "ja"),
       });
     } else if ("errorMessage" in result && result.errorMessage) {
-      toast.error(result.errorMessage);
+      toast.error(localizeAdminMessage(result.errorMessage));
     }
   };
 

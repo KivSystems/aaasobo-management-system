@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+
 import styles from "./InstructorSchedule.module.scss";
 import { useState } from "react";
 import {
@@ -32,6 +34,7 @@ export default function InstructorSchedule({
   initialSelectedSchedule?: InstructorScheduleWithSlots | null;
 }) {
   // State for versioned schedules
+  const { language } = useLanguage();
   const inferredScheduleId =
     initialSelectedScheduleId ??
     initialSchedules.find((schedule) => schedule.effectiveTo === null)?.id ??
@@ -51,7 +54,11 @@ export default function InstructorSchedule({
     try {
       const response = await getInstructorSchedules(instructorId);
       if ("message" in response) {
-        errorAlert(response.message as string);
+        errorAlert(
+          language === "ja"
+            ? "スケジュールを取得できませんでした。"
+            : (response.message as string),
+        );
         return;
       }
       setSchedules(response.schedules);
@@ -76,7 +83,11 @@ export default function InstructorSchedule({
         scheduleId,
       );
       if ("message" in response) {
-        errorAlert(response.message as string);
+        errorAlert(
+          language === "ja"
+            ? "スケジュールを取得できませんでした。"
+            : (response.message as string),
+        );
         return;
       }
       setSelectedSchedule(response.schedule);
@@ -98,7 +109,11 @@ export default function InstructorSchedule({
       );
 
       if ("message" in response) {
-        errorAlert(response.message as string);
+        errorAlert(
+          language === "ja"
+            ? "スケジュールを作成できませんでした。開始日と時間枠を確認してください。"
+            : (response.message as string),
+        );
         return false;
       }
 
@@ -113,13 +128,21 @@ export default function InstructorSchedule({
         setScheduleImpact(response.impactSummary);
         setIsImpactDialogOpen(true);
       }
-      toast.success("Schedule created successfully.");
+      toast.success(
+        language === "ja"
+          ? "スケジュールを作成しました。"
+          : "Schedule created successfully.",
+      );
       return true;
     } catch (error) {
       console.error("Failed to create schedule:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      errorAlert(`Failed to create schedule: ${errorMessage}`);
+      errorAlert(
+        language === "ja"
+          ? "スケジュールを作成できませんでした。開始日と時間枠を確認してください。"
+          : `Failed to create schedule: ${errorMessage}`,
+      );
       return false;
     }
   };
@@ -129,17 +152,23 @@ export default function InstructorSchedule({
       <div className={styles.dateInput}>
         <div className={styles.scheduleHeader}>
           <label className={styles.label}>
-            スケジュール期間 (日本時間)
+            {language === "ja"
+              ? "スケジュール期間 (日本時間)"
+              : "Schedule period (Japan time)"}
             <select
               className={styles.input}
               value={selectedScheduleId || ""}
               onChange={(e) => handleScheduleSelection(Number(e.target.value))}
             >
-              <option value="">スケジュール期間を選択</option>
+              <option value="">
+                {language === "ja"
+                  ? "スケジュール期間を選択"
+                  : "Select a schedule period"}
+              </option>
               {schedules.map((schedule) => (
                 <option key={schedule.id} value={schedule.id}>
                   {new Date(schedule.effectiveFrom).toLocaleDateString(
-                    "ja-JP",
+                    language === "ja" ? "ja-JP" : "en-US",
                     { timeZone: "Asia/Tokyo" },
                   )}{" "}
                   -{" "}
@@ -147,8 +176,13 @@ export default function InstructorSchedule({
                     ? new Date(
                         new Date(schedule.effectiveTo).getTime() -
                           +24 * 60 * 60 * 1000,
-                      ).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" })
-                    : "現在"}
+                      ).toLocaleDateString(
+                        language === "ja" ? "ja-JP" : "en-US",
+                        { timeZone: "Asia/Tokyo" },
+                      )
+                    : language === "ja"
+                      ? "現在"
+                      : "Present"}
                 </option>
               ))}
             </select>
@@ -156,7 +190,11 @@ export default function InstructorSchedule({
           <ActionButton
             type="button"
             onClick={() => setIsModalOpen(true)}
-            btnText="新しいスケジュールを作成"
+            btnText={
+              language === "ja"
+                ? "新しいスケジュールを作成"
+                : "Create a New Schedule"
+            }
             className="addBtn"
           />
         </div>
@@ -166,7 +204,11 @@ export default function InstructorSchedule({
 
       {!selectedSchedule && schedules.length === 0 && (
         <div className={styles.noSchedules}>
-          <p>登録済みのスケジュールが見つかりません。</p>
+          <p>
+            {language === "ja"
+              ? "登録済みのスケジュールが見つかりません。"
+              : "No schedules found."}
+          </p>
         </div>
       )}
 

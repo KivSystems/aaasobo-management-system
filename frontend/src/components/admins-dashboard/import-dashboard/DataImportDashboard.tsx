@@ -1,5 +1,7 @@
 "use client";
 
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
+
 import { useMemo, useState } from "react";
 import Modal from "@/components/elements/modal/Modal";
 import {
@@ -74,14 +76,14 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
     if (!file) {
       setIncrementalErrors((current) => ({
         ...current,
-        [target]: "Please select a focused ZIP package.",
+        [target]: "追加対象のZIPファイルを選択してください。",
       }));
       return;
     }
-    const label = target === "customers" ? "customers" : "instructors";
+    const label = target === "customers" ? "お客さま" : "インストラクター";
     if (
       !window.confirm(
-        `Add ${label} and their related records? Existing records will be preserved.`,
+        `${label}と関連データを追加しますか？ 既存のデータは保持されます。`,
       )
     ) {
       return;
@@ -104,8 +106,8 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
         ...current,
         [target]:
           typedError instanceof Error
-            ? typedError.message
-            : "Incremental import failed",
+            ? localizeAdminMessage(typedError.message)
+            : "データの追加に失敗しました。",
       }));
       const details = typedError.details as
         | ImportExecuteErrorResponse
@@ -127,17 +129,17 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
     const result = incrementalResults[target];
     return (
       <article className={styles.importCard}>
-        <h3>{isCustomers ? "Add Customers" : "Add Instructors"}</h3>
+        <h3>{isCustomers ? "お客さまを追加" : "インストラクターを追加"}</h3>
         <p>
           {isCustomers
-            ? "Requires customers.csv, children.csv, and subscriptions.csv."
-            : "Requires instructors.csv, instructor_fees.csv, and instructor_schedules.csv."}
+            ? "customers.csv、children.csv、subscriptions.csv が必要です。"
+            : "instructors.csv、instructor_fees.csv、instructor_schedules.csv が必要です。"}
         </p>
         <label
           className={styles.fileInputLabel}
           htmlFor={`incremental-${target}-zip`}
         >
-          Focused ZIP package
+          追加対象のZIPファイル
         </label>
         <input
           id={`incremental-${target}-zip`}
@@ -157,22 +159,22 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
           onClick={() => handleIncrementalImport(target)}
         >
           {activeIncrementalImport === target
-            ? "Validating and importing..."
+            ? "確認・取り込み中..."
             : isCustomers
-              ? "Add Customers"
-              : "Add Instructors"}
+              ? "お客さまを追加"
+              : "インストラクターを追加"}
         </button>
         {incrementalErrors[target] && (
           <p className={styles.error}>{incrementalErrors[target]}</p>
         )}
         {issues.length > 0 && (
           <div className={styles.validationReport}>
-            <h4>Validation Issues</h4>
+            <h4>データの問題点</h4>
             <ul className={styles.list}>
               {issues.map((item, index) => (
                 <li key={`${item.file}:${item.row}:${item.column}:${index}`}>
-                  [{item.file}] row {item.row ?? "-"}, column{" "}
-                  {item.column ?? "-"}: {item.message}
+                  [{item.file}] 行 {item.row ?? "-"}, 列 {item.column ?? "-"}:{" "}
+                  {localizeAdminMessage(item.message)}
                 </li>
               ))}
             </ul>
@@ -180,8 +182,8 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
         )}
         {result && (
           <div className={styles.successReport}>
-            <h4>Import Result</h4>
-            <p>{result.message}</p>
+            <h4>取り込み結果</h4>
+            <p>{localizeAdminMessage(result.message)}</p>
             <ul className={styles.countList}>
               {Object.entries(result.report.importedByFile).map(
                 ([fileName, count]) => (
@@ -200,7 +202,7 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
   const handleNormalize = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!sourceFile) {
-      setErrorMessage("Please select a CSV file to normalize.");
+      setErrorMessage("整形するCSVファイルを選択してください。");
       return;
     }
 
@@ -216,7 +218,9 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
       setNormalizeResult(result);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Normalization failed";
+        error instanceof Error
+          ? localizeAdminMessage(error.message)
+          : "データの整形に失敗しました。";
       setErrorMessage(message);
     } finally {
       setIsNormalizing(false);
@@ -236,7 +240,7 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
 
   const handleDownloadNormalizedZip = async () => {
     if (!normalizeResult?.jobId) {
-      setErrorMessage("Run normalization first to download a package.");
+      setErrorMessage("ダウンロードする前にデータを整形してください。");
       return;
     }
 
@@ -247,7 +251,9 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
       triggerDownload(blob, `normalized-import-${normalizeResult.jobId}.zip`);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Download failed";
+        error instanceof Error
+          ? localizeAdminMessage(error.message)
+          : "ダウンロードに失敗しました。";
       setErrorMessage(message);
     } finally {
       setIsDownloadingZip(false);
@@ -257,7 +263,7 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
   const openExecuteModal = () => {
     if (!normalizedZipFile && !normalizeResult?.jobId) {
       setExecuteErrorMessage(
-        "Provide a normalized zip file or run normalization first.",
+        "整形済みのZIPファイルを選択するか、先にデータを整形してください。",
       );
       return;
     }
@@ -282,8 +288,8 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
       const typedError = error as AdminImportExecuteError;
       const message =
         typedError instanceof Error
-          ? typedError.message
-          : "Import execution failed";
+          ? localizeAdminMessage(typedError.message)
+          : "データの取り込みに失敗しました。";
       setExecuteErrorMessage(message);
 
       const details = typedError.details as
@@ -300,28 +306,26 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
   return (
     <section className={styles.container}>
       <header className={styles.header}>
-        <h1>Data Import</h1>
+        <h1>データ取り込み</h1>
         <p className={styles.subText}>
-          Add focused customer or instructor packages, or replace import data
-          with a clean package.
+          お客さま・インストラクターのデータを追加するか、取り込み対象のデータを一括で置き換えます。
         </p>
-        <p className={styles.subText}>Admin ID: {adminId}</p>
+        <p className={styles.subText}>管理者ID: {adminId}</p>
       </header>
 
       <section className={`${styles.operationSection} ${styles.destructive}`}>
         <div>
-          <h2>Clean import (destructive)</h2>
+          <h2>一括置き換え（既存データを削除）</h2>
           <p className={styles.warningText}>
-            Replaces all import-target data. Use only when intentionally
-            rebuilding the database.
+            取り込み対象のデータをすべて置き換えます。データベースを再構築する場合にのみ使用してください。
           </p>
         </div>
 
         <div className={styles.formSection}>
-          <h2>1) Normalize raw CSV</h2>
+          <h2>1）CSVデータを整形</h2>
           <form className={styles.form} onSubmit={handleNormalize}>
             <label className={styles.fileInputLabel} htmlFor="raw-import-file">
-              Raw source CSV
+              元のCSVファイル
             </label>
             <input
               id="raw-import-file"
@@ -336,7 +340,7 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
               type="submit"
               disabled={isNormalizing}
             >
-              {isNormalizing ? "Normalizing..." : "Run normalization"}
+              {isNormalizing ? "整形中..." : "データを整形"}
             </button>
           </form>
         </div>
@@ -345,13 +349,13 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
 
         {normalizeResult && (
           <div className={styles.report}>
-            <h2>Normalization Report</h2>
+            <h2>整形結果</h2>
             <p>
-              <strong>Job ID:</strong>{" "}
+              <strong>処理ID:</strong>{" "}
               <span className={styles.jobId}>{normalizeResult.jobId}</span>
             </p>
             <p>
-              <strong>Raw rows:</strong> {normalizeResult.report.rawRows}
+              <strong>元データの行数:</strong> {normalizeResult.report.rawRows}
             </p>
             <div className={styles.actions}>
               <button
@@ -361,17 +365,17 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
                 type="button"
               >
                 {isDownloadingZip
-                  ? "Downloading..."
-                  : "Download normalized zip"}
+                  ? "ダウンロード中..."
+                  : "整形済みZIPをダウンロード"}
               </button>
             </div>
 
-            <h3>Rows By File</h3>
+            <h3>ファイルごとの行数</h3>
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>File</th>
-                  <th>Rows</th>
+                  <th>ファイル</th>
+                  <th>行数</th>
                 </tr>
               </thead>
               <tbody>
@@ -384,26 +388,28 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
               </tbody>
             </table>
 
-            <h3>Generated Customer Emails</h3>
+            <h3>自動生成されたお客さまのメールアドレス</h3>
             {normalizeResult.report.generatedCustomerEmails.length === 0 ? (
-              <p>None</p>
+              <p>なし</p>
             ) : (
               <ul className={styles.list}>
                 {normalizeResult.report.generatedCustomerEmails.map((item) => (
                   <li key={`${item.row}:${item.generatedEmail}`}>
-                    Row {item.row}: {item.customerName} ({item.generatedEmail})
+                    行 {item.row}: {item.customerName} ({item.generatedEmail})
                   </li>
                 ))}
               </ul>
             )}
 
-            <h3>Warnings</h3>
+            <h3>注意事項</h3>
             {normalizeResult.report.warnings.length === 0 ? (
-              <p>None</p>
+              <p>なし</p>
             ) : (
               <ul className={styles.list}>
                 {normalizeResult.report.warnings.map((warning) => (
-                  <li key={warning}>{warning}</li>
+                  <li key={localizeAdminMessage(warning)}>
+                    {localizeAdminMessage(warning)}
+                  </li>
                 ))}
               </ul>
             )}
@@ -411,13 +417,13 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
         )}
 
         <div className={styles.formSection}>
-          <h2>2) Execute import</h2>
+          <h2>2）データを取り込み</h2>
           <form className={styles.form}>
             <label
               className={styles.fileInputLabel}
               htmlFor="normalized-zip-file"
             >
-              Normalized package zip (optional if you already normalized above)
+              整形済みZIPファイル（上で整形した場合は選択不要）
             </label>
             <input
               id="normalized-zip-file"
@@ -432,7 +438,7 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
               type="button"
               onClick={openExecuteModal}
             >
-              Execute import
+              取り込みを実行
             </button>
           </form>
         </div>
@@ -443,12 +449,12 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
 
         {executeIssues.length > 0 && (
           <div className={styles.report}>
-            <h3>Validation Issues</h3>
+            <h3>データの問題点</h3>
             <ul className={styles.list}>
               {executeIssues.map((issue, index) => (
                 <li key={`${issue.file}:${issue.row}:${issue.column}:${index}`}>
-                  [{issue.file}] row {issue.row ?? "-"}, column{" "}
-                  {issue.column ?? "-"}: {issue.message}
+                  [{issue.file}] 行 {issue.row ?? "-"}, 列 {issue.column ?? "-"}
+                  : {localizeAdminMessage(issue.message)}
                 </li>
               ))}
             </ul>
@@ -457,13 +463,13 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
 
         {executeResult && (
           <div className={styles.report}>
-            <h2>Import Result</h2>
-            <p>{executeResult.message}</p>
+            <h2>取り込み結果</h2>
+            <p>{localizeAdminMessage(executeResult.message)}</p>
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>File</th>
-                  <th>Imported Rows</th>
+                  <th>ファイル</th>
+                  <th>取り込んだ行数</th>
                 </tr>
               </thead>
               <tbody>
@@ -481,10 +487,9 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
 
       <section className={styles.operationSection}>
         <div>
-          <h2>Incremental import (add-only)</h2>
+          <h2>データの追加</h2>
           <p className={styles.subText}>
-            Adds new records atomically without deleting or changing existing
-            data.
+            既存のデータを削除・変更せず、新しいデータをまとめて追加します。
           </p>
         </div>
         <div className={styles.cardGrid}>
@@ -499,14 +504,12 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
         overlayClosable={true}
       >
         <div className={styles.confirmModal}>
-          <h3>Confirm destructive import</h3>
+          <h3>一括置き換えの確認</h3>
           <p>
-            This will fully reset existing import-target data and replace it
-            with this package.
+            取り込み対象の既存データをすべて削除し、このファイルのデータに置き換えます。
           </p>
           <p>
-            Seed admins are preserved, but other data may be permanently
-            removed.
+            初期設定の管理者は保持されますが、その他のデータは完全に削除される場合があります。
           </p>
           <div className={styles.modalActions}>
             <button
@@ -515,7 +518,7 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
               onClick={() => setIsConfirmModalOpen(false)}
               disabled={isExecutingImport}
             >
-              Cancel
+              キャンセル
             </button>
             <button
               className={styles.dangerButton}
@@ -523,7 +526,7 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
               onClick={handleExecuteImport}
               disabled={isExecutingImport}
             >
-              {isExecutingImport ? "Importing..." : "Yes, execute import"}
+              {isExecutingImport ? "取り込み中..." : "取り込みを実行"}
             </button>
           </div>
         </div>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useLanguage } from "@/contexts/LanguageContext";
 import React from "react";
 import { UserIcon as UserIconOutline } from "@heroicons/react/24/outline";
 import styles from "./ChildDetailsCard.module.scss"; // or adjust based on your file structure
@@ -5,6 +8,7 @@ import { formatBirthdateToISO } from "@/lib/utils/dateUtils";
 import { MASKED_HEAD_LETTERS } from "@/lib/data/data";
 
 export default function ChildDetailsCard({ child }: { child: Child }) {
+  const { language } = useLanguage();
   return (
     <div className={styles.children__content}>
       <div className={styles.children__header}>
@@ -12,22 +16,30 @@ export default function ChildDetailsCard({ child }: { child: Child }) {
           <UserIconOutline className={styles.children__icon} />
         </div>
         <div className={styles.children__nameContainer}>
-          <div className={styles.children__nameTitle}>Name</div>
+          <div className={styles.children__nameTitle}>
+            {language === "ja" ? "名前" : "Name"}
+          </div>
           <div className={styles.children__name}>{child.name}</div>
         </div>
       </div>
       <div className={styles.children__birthdateContainer}>
-        <div className={styles.children__birthdateTitle}>Birthdate</div>
+        <div className={styles.children__birthdateTitle}>
+          {language === "ja" ? "生年月日" : "Birthdate"}
+        </div>
         <div className={styles.children__birthdate}>
           {child.birthdate
             ? child.personalInfo?.includes(MASKED_HEAD_LETTERS)
               ? MASKED_HEAD_LETTERS
               : formatBirthdateToISO(child.birthdate)
-            : "N/A"}
+            : language === "ja"
+              ? "未登録"
+              : "N/A"}
         </div>
       </div>
       <div className={styles.children__personalInfoContainer}>
-        <div className={styles.children__personalInfoTitle}>Notes</div>
+        <div className={styles.children__personalInfoTitle}>
+          {language === "ja" ? "備考" : "Notes"}
+        </div>
         <div className={styles.children__personalInfo}>
           {child.personalInfo}
         </div>

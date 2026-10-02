@@ -117,7 +117,7 @@ function CustomerDashboardClient({
       initialActiveTab={initialActiveTab}
     />
   ) : (
-    <p>Not authorized.</p>
+    <p>このページを表示する権限がありません。</p>
   );
 }
 

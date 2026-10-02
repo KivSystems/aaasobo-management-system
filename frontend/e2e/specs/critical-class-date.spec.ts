@@ -196,6 +196,7 @@ test.describe("critical class/date workflows", () => {
 
     const adminContext = await browser.newContext({
       storageState: ADMIN_STATE,
+      locale: "en-US",
       timezoneId: "Canada/Eastern",
     });
     const adminPage = await adminContext.newPage();
@@ -338,6 +339,7 @@ test.describe("critical class/date workflows", () => {
   }, testInfo) => {
     const context = await browser.newContext({
       storageState: ADMIN_STATE,
+      locale: "en-US",
       timezoneId: "Asia/Tokyo",
     });
     const page = await context.newPage();
@@ -399,7 +401,10 @@ test.describe("critical class/date workflows", () => {
       "canceledByCustomer",
     );
 
-    const instructor = await browser.newContext({ timezoneId: "Asia/Tokyo" });
+    const instructor = await browser.newContext({
+      timezoneId: "Asia/Tokyo",
+      locale: "ja-JP",
+    });
     const instructorPage = await instructor.newPage();
     monitor(instructorPage, testInfo);
     await login(instructorPage, "instructor", target!.instructor!.id);
@@ -460,6 +465,7 @@ test.describe("critical class/date workflows", () => {
   }, testInfo) => {
     const context = await browser.newContext({
       storageState: ADMIN_STATE,
+      locale: "en-US",
       timezoneId: "Asia/Tokyo",
     });
     const page = await context.newPage();
@@ -495,9 +501,7 @@ test.describe("critical class/date workflows", () => {
     await page
       .getByRole("button", { name: "スケジュールを作成", exact: true })
       .click();
-    await expect(
-      page.getByText("Schedule created successfully."),
-    ).toBeVisible();
+    await expect(page.getByText("スケジュールを作成しました。")).toBeVisible();
     await expect(selector.locator("option")).toHaveCount(optionCountBefore + 1);
 
     const after = await backend<SchedulesResponse>(
@@ -526,7 +530,10 @@ test.describe("critical class/date workflows", () => {
   test("5. availability and historical completion state remain role consistent", async ({
     browser,
   }, testInfo) => {
-    const context = await browser.newContext({ timezoneId: "Asia/Tokyo" });
+    const context = await browser.newContext({
+      timezoneId: "Asia/Tokyo",
+      locale: "ja-JP",
+    });
     const page = await context.newPage();
     monitor(page, testInfo);
     await login(page, "instructor", 5);

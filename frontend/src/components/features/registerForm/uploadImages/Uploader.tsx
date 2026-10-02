@@ -4,12 +4,14 @@ import React, { ChangeEvent, DragEvent, useRef, useState } from "react";
 import styles from "./Uploader.module.scss";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type UploaderProps = {
   label?: string;
 };
 
 function Uploader({ label }: UploaderProps) {
+  const { language } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -56,9 +58,7 @@ function Uploader({ label }: UploaderProps) {
 
   return (
     <section className={styles.dragDrop}>
-      {label && (
-        <p className={styles.label}>インストラクタープロフィール画像</p>
-      )}
+      {label && <p className={styles.label}>{label}</p>}
       <div
         className={`${styles.documentUploader} ${isDragging ? styles.dragging : ""}`}
         onDrop={handleDrop}
@@ -68,10 +68,14 @@ function Uploader({ label }: UploaderProps) {
         <PhotoIcon width={50} height={50} color="#ccc" />
         <div className={styles.uploadInfo}>
           <div>
-            <p>画像をドロップあるいは&nbsp;</p>
+            <p>
+              {language === "ja"
+                ? "画像をドロップ、または "
+                : "Drop an image or "}
+            </p>
           </div>
           <label htmlFor="icon" className={styles.uploadBtn}>
-            ブラウズ
+            {language === "ja" ? "ファイルを選択" : "Browse"}
             <input
               type="file"
               id="icon"
@@ -83,7 +87,11 @@ function Uploader({ label }: UploaderProps) {
             />
           </label>
         </div>
-        <p>サポート: JPGとPNG形式 (最大5MB)</p>
+        <p>
+          {language === "ja"
+            ? "JPG・PNG形式（最大5MB）"
+            : "JPG and PNG files (up to 5 MB)"}
+        </p>
       </div>
 
       {file && (
@@ -93,7 +101,7 @@ function Uploader({ label }: UploaderProps) {
               src={fileName}
               width={50}
               height={50}
-              alt="Uploaded content"
+              alt={language === "ja" ? "アップロード画像" : "Uploaded image"}
             />
             <p>{file.name}</p>
           </div>
