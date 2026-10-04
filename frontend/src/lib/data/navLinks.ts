@@ -111,6 +111,11 @@ export function getLinks(
       href: "/admins/data-import",
       icon: ArrowUpOnSquareIcon,
     },
+    {
+      name: "ログ",
+      href: "/admins/logs",
+      icon: ClockIcon,
+    },
     // Not in use for now
     // {
     //   name: "Child List",

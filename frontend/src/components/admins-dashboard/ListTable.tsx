@@ -223,7 +223,9 @@ function ListTable({
 
   // Define the displays of the table
   const availableColumnKeys = useMemo(() => {
-    if (currentData.length === 0) return [];
+    if (currentData.length === 0) {
+      return listType === "Log List" ? (columnOrder ?? []) : [];
+    }
 
     const keys = Object.keys(currentData[0]).filter(
       (key) => !omitItems.includes(key),
@@ -234,11 +236,11 @@ function ListTable({
       ...columnOrder.filter((key) => keys.includes(key)),
       ...keys.filter((key) => !columnOrder.includes(key)),
     ];
-  }, [columnOrder, currentData, omitItems]);
+  }, [columnOrder, currentData, listType, omitItems]);
 
   const columns = useMemo<ColumnDef<any>[]>(
     () =>
-      currentData.length > 0
+      currentData.length > 0 || listType === "Log List"
         ? availableColumnKeys.map((key) => ({
             accessorKey: key,
             header: key,
@@ -294,6 +296,7 @@ function ListTable({
     [
       availableColumnKeys,
       currentData.length,
+      listType,
       linkItems,
       linkUrls,
       replaceItems,
@@ -507,7 +510,13 @@ function ListTable({
               ))}
             </thead>
             <tbody className={styles.tableBody}>
-              {table.getRowModel().rows.map((row) => (
+              {table.getRowModel().rows.length === 0 && listType === "Log List" ? (
+                <tr key="empty-logs">
+                  <td colSpan={Math.max(availableColumnKeys.length, 1)}>
+                    ログデータはありません
+                  </td>
+                </tr>
+              ) : table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <td
