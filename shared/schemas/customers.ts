@@ -10,20 +10,20 @@ export const CustomerIdParams = z.object({
 // Request body schemas
 export const RegisterCustomerRequest = z.object({
   customerData: z.object({
-    name: z.string().min(1).describe("Customer's full name"),
+    name: z.string().trim().min(1).describe("Customer's full name"),
     email: z.email().describe("Customer's email address"),
     password: z.string().min(1).describe("Customer's password"),
     prefecture: z.string().min(1).describe("Customer's prefecture"),
   }),
   childData: z.object({
-    name: z.string().min(1).describe("Child's full name"),
+    name: z.string().trim().min(1).describe("Child's full name"),
     birthdate: z.string().min(1).describe("Child's birthdate"),
     personalInfo: z.string().min(1).describe("Child's personal information"),
   }),
 });
 
 export const UpdateCustomerProfileRequest = z.object({
-  name: z.string().min(1).describe("Updated customer name"),
+  name: z.string().trim().min(1).describe("Updated customer name"),
   email: z.email().describe("Updated customer email"),
   prefecture: z.string().min(1).describe("Updated customer prefecture"),
 });

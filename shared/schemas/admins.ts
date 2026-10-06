@@ -74,20 +74,20 @@ export const EventIdParams = z.object({
 
 // Admin registration and update schemas
 export const RegisterAdminRequest = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
   email: z.email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
 });
 
 export const UpdateAdminRequest = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
   email: z.email("Invalid email format"),
 });
 
 // Instructor registration and update schemas
 export const RegisterInstructorRequest = z.object({
-  name: z.string().min(1, "Name is required"),
-  nickname: z.string().min(1, "Nickname is required"),
+  name: z.string().trim().min(1, "Name is required"),
+  nickname: z.string().trim().min(1, "Nickname is required"),
   email: z.email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
   birthdate: z.string().min(1, "Birthdate is required"),
@@ -104,10 +104,10 @@ export const RegisterInstructorRequest = z.object({
 });
 
 export const UpdateInstructorRequest = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
   leavingDate: z.string().nullable().optional(),
   email: z.email("Invalid email format"),
-  nickname: z.string().min(1, "Nickname is required"),
+  nickname: z.string().trim().min(1, "Nickname is required"),
   birthdate: z.string().min(1, "Birthdate is required"),
   workingTime: z.string(),
   lifeHistory: z.string(),

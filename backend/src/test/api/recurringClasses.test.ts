@@ -647,6 +647,16 @@ describe("PUT /recurring-classes/:id", () => {
       },
     );
 
+    await createClass(
+      customer.id,
+      instructor.id,
+      new Date("2026-05-14T01:00:00.000Z"),
+      {
+        recurringClassId: oldRecurringClass.id,
+        subscriptionId: subscription.id,
+      },
+    );
+
     const response = await request(server)
       .put(`/recurring-classes/${oldRecurringClass.id}`)
       .set("Cookie", authCookie)
@@ -679,6 +689,17 @@ describe("PUT /recurring-classes/:id", () => {
     expect(boundaryClasses[0].recurringClassId).toBe(
       response.body.newRecurringClass.id,
     );
+    const farFuture = await prisma.class.findMany({
+      where: {
+        recurringClassId: response.body.newRecurringClass.id,
+        dateTime: new Date("2026-05-14T01:00:00.000Z"),
+      },
+      include: { classAttendance: true },
+    });
+    expect(farFuture).toHaveLength(1);
+    expect(
+      farFuture[0].classAttendance.map((attendance) => attendance.childrenId),
+    ).toEqual([child.id]);
   });
 
   it.each([
@@ -944,6 +965,46 @@ describe("regular class calendar preview", () => {
         })
       ).endAt,
     ).toBeNull();
+    await request(server)
+      .put(f.url)
+      .set("Cookie", f.cookie)
+      .send({ ...f.data, previewToken: preview.previewToken })
+      .expect(200);
+    const actual = await prisma.class.findMany({
+      where: { customerId: f.customer.id },
+      orderBy: { dateTime: "asc" },
+    });
+    expect(actual.map((c) => [c.dateTime!.toISOString(), c.status])).toEqual(
+      preview.calendar.after
+        .map((c: { dateTime: string; status: string }) => [
+          c.dateTime,
+          c.status,
+        ])
+        .sort((a: string[], b: string[]) => a[0].localeCompare(b[0])),
+    );
+  });
+
+  it("keeps the existing generated horizon when changing weekdays, with preview matching saved classes", async () => {
+    const f = await fixture();
+    await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2027-02-01T07:00:00.000Z"),
+      {
+        recurringClassId: f.series.id,
+        subscriptionId: f.subscription.id,
+      },
+    );
+    const preview = (await f.preview().expect(200)).body;
+    expect(preview.calendar.after).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dateTime: "2027-02-04T07:00:00.000Z",
+          status: "booked",
+        }),
+      ]),
+    );
+    expect(await prisma.class.count()).toBe(4);
     await request(server)
       .put(f.url)
       .set("Cookie", f.cookie)

@@ -33,7 +33,7 @@ const months = [
 export const createCustomerRegisterSchema = (language: LanguageType) => {
   return z
     .object({
-      name: z.string().min(1, NAME_REQUIRED_MESSAGE[language]),
+      name: z.string().trim().min(1, NAME_REQUIRED_MESSAGE[language]),
       email: z
         .string()
         .email(EMAIL_INVALID_MESSAGE[language])
@@ -53,8 +53,8 @@ export const createCustomerRegisterSchema = (language: LanguageType) => {
 
 export const instructorRegisterSchema = z
   .object({
-    name: z.string().min(1, "Name is required."),
-    nickname: z.string().min(1, "Nickname is required."),
+    name: z.string().trim().min(1, "Name is required."),
+    nickname: z.string().trim().min(1, "Nickname is required."),
     email: z
       .string()
       .email("Please enter a valid email address.")
@@ -105,7 +105,7 @@ export const instructorIconRegisterSchema = z.object({
 
 export const adminRegisterSchema = z
   .object({
-    name: z.string().min(1, "Name is required."),
+    name: z.string().trim().min(1, "Name is required."),
     email: z
       .string()
       .email("Please enter a valid email address.")
@@ -203,8 +203,8 @@ export const scheduleUpdateSchema = z.object({
 });
 
 export const instructorUpdateSchema = z.object({
-  name: z.string().min(1, "Name is required."),
-  nickname: z.string().min(1, "Nickname is required."),
+  name: z.string().trim().min(1, "Name is required."),
+  nickname: z.string().trim().min(1, "Nickname is required."),
   email: z
     .string()
     .email("Please enter a valid email address.")
@@ -236,7 +236,7 @@ export const instructorIconUpdateSchema = z.object({
 });
 
 export const adminUpdateSchema = z.object({
-  name: z.string().min(1, "Name is required."),
+  name: z.string().trim().min(1, "Name is required."),
   email: z
     .string()
     .email("Please enter a valid email address.")
@@ -347,6 +347,7 @@ export const createChildRegisterSchema = (language: LanguageType) => {
   return z.object({
     name: z
       .string()
+      .trim()
       .min(1, REQUIRED_MESSAGE[language])
       .regex(/^[A-Za-z\s]+$/, { message: ALPHABET_ONLY_MESSAGE[language] }),
     birthdate: createBirthdateSchema(INVALID_DATE_MESSAGE[language]),
