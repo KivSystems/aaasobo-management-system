@@ -163,9 +163,23 @@ async function findAvailableInstructorSlot(
   });
 }
 
+function getClassGenerationEnd(
+  firstOccurrence: Date,
+  existingDates: Date[] = [],
+): Date {
+  const end = new Date(firstOccurrence);
+  end.setMonth(end.getMonth() + 3);
+  for (const date of existingDates) {
+    const throughExistingWeek = nDaysLater(7, date);
+    if (throughExistingWeek > end) end.setTime(throughExistingWeek.getTime());
+  }
+  return end;
+}
+
 async function createRecurringClass(
   tx: Prisma.TransactionClient,
   params: CreateRegularClassParams,
+  generationEnd?: Date,
 ): Promise<{ recurringClass: RecurringClass; createdClasses: Class[] }> {
   const {
     instructorId,
@@ -233,9 +247,7 @@ async function createRecurringClass(
     })),
   });
 
-  // Generate dates for 3 months and create classes
-  const endDate = new Date(firstOccurrence);
-  endDate.setMonth(endDate.getMonth() + 3);
+  const endDate = generationEnd ?? getClassGenerationEnd(firstOccurrence);
 
   const createdClasses = await createClassesUntil(tx, recurringClass, endDate, {
     customerId,
@@ -521,13 +533,14 @@ async function prepareRegularClassChange(
     throw new Error("Regular class already exists at this time slot");
   const { rows, events } = await loadCalendarClasses(tx, customerId);
   const cutoff = getRecurringClassTerminationCutoff(firstOccurrence);
-  const removedIds = rows
-    .filter(
-      (c) => c.recurringClassId === recurringClassId && c.dateTime! >= cutoff,
-    )
-    .map((c) => c.id);
-  const end = new Date(firstOccurrence);
-  end.setMonth(end.getMonth() + 3);
+  const removedClasses = rows.filter(
+    (c) => c.recurringClassId === recurringClassId && c.dateTime! >= cutoff,
+  );
+  const removedIds = removedClasses.map((c) => c.id);
+  const end = getClassGenerationEnd(
+    firstOccurrence,
+    removedClasses.map((c) => c.dateTime!),
+  );
   const planned = await planClassDates(
     tx,
     instructorId,
@@ -572,6 +585,7 @@ async function prepareRegularClassChange(
     existing,
     subscriptionId: existing.subscription.id,
     firstOccurrence,
+    generationEnd: end,
     calendar,
     previewToken,
   };
@@ -605,10 +619,11 @@ export const updateRegularClass = async (params: UpdateRegularClassParams) =>
         prepared.firstOccurrence,
       );
       const { recurringClass: newRecurringClass, createdClasses } =
-        await createRecurringClass(tx, {
-          ...params,
-          subscriptionId: prepared.subscriptionId,
-        });
+        await createRecurringClass(
+          tx,
+          { ...params, subscriptionId: prepared.subscriptionId },
+          prepared.generationEnd,
+        );
       return { oldRecurringClass, newRecurringClass, createdClasses };
     },
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },

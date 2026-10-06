@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createBirthdateSchema } from "./authSchema";
 
 export const customerProfileSchema = z.object({
-  name: z.string().min(1, "名前は必須項目です。 / Name is required."),
+  name: z.string().trim().min(1, "名前は必須項目です。 / Name is required."),
   email: z
     .string()
     .email(
@@ -17,6 +17,7 @@ export const customerProfileSchema = z.object({
 export const childProfileSchema = z.object({
   name: z
     .string()
+    .trim()
     .min(1, "名前は必須項目です。 / Name is required.")
     .regex(
       /^[A-Za-z\s]+$/,

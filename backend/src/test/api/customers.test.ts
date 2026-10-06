@@ -197,6 +197,41 @@ describe("PATCH /customers/:id", () => {
     expect(updatedCustomer?.emailVerified).toBeNull();
   });
 
+  it.each(["   ", "\t\n", "　"])(
+    "rejects a whitespace-only name %j without changing the customer",
+    async (name) => {
+      const authCookie = await createAdminAuthCookie();
+      const customer = await createCustomer();
+      await request(server)
+        .patch(`/customers/${customer.id}`)
+        .set("Cookie", authCookie)
+        .send({ name, email: customer.email, prefecture: customer.prefecture })
+        .expect(400);
+      const persisted = await prisma.customer.findUniqueOrThrow({
+        where: { id: customer.id },
+      });
+      expect(persisted.name).toBe(customer.name);
+    },
+  );
+
+  it("trims surrounding whitespace and retains spaces inside a valid name", async () => {
+    const authCookie = await createAdminAuthCookie();
+    const customer = await createCustomer();
+    await request(server)
+      .patch(`/customers/${customer.id}`)
+      .set("Cookie", authCookie)
+      .send({
+        name: "  Test Customer  ",
+        email: customer.email,
+        prefecture: customer.prefecture,
+      })
+      .expect(200);
+    const persisted = await prisma.customer.findUniqueOrThrow({
+      where: { id: customer.id },
+    });
+    expect(persisted.name).toBe("Test Customer");
+  });
+
   it("fail for missing required fields", async () => {
     const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();

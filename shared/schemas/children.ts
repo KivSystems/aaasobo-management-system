@@ -12,7 +12,7 @@ export const GetChildrenQuery = z.object({
 });
 
 export const RegisterChildRequest = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
   birthdate: z.string().min(1, "Birthdate is required"),
   personalInfo: z.string().min(1, "Personal info is required"),
   customerId: z
@@ -22,7 +22,7 @@ export const RegisterChildRequest = z.object({
 });
 
 export const UpdateChildRequest = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
   birthdate: z.string().min(1, "Birthdate is required"),
   personalInfo: z.string().min(1, "Personal info is required"),
   customerId: z
