@@ -1,4 +1,9 @@
 import express, { RequestHandler } from "express";
+import { z } from "zod";
+import {
+  UpdateSelectTypeUrlRequest,
+  UpdateSubscriptionToAddClassRequest,
+} from "../../../shared/schemas/admins";
 import { registerRoutes } from "../../src/middlewares/validationMiddleware";
 import {
   previewSubscriptionDecreaseController,
@@ -91,6 +96,9 @@ const updateSubscriptionToAddClass = {
   method: "patch" as const,
   middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updateSubscriptionToAddClassController,
+  bodySchema: z.object({
+    updateSubscriptionData: UpdateSubscriptionToAddClassRequest,
+  }),
   paramsSchema: SubscriptionIdParams,
   openapi: {
     summary: "Update a subscription to add recurring classes",
@@ -150,6 +158,7 @@ const updateSelectTypeUrl = {
   method: "patch" as const,
   middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updateSelectTypeUrlController,
+  bodySchema: z.object({ updateSubscriptionData: UpdateSelectTypeUrlRequest }),
   paramsSchema: SubscriptionIdParams,
   openapi: {
     summary: "Update a SelectType url",

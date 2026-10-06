@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ErrorResponse } from "./common";
-import { SubscriptionResponse } from "./subscriptions";
+import { SelectTypeUrl, SubscriptionResponse } from "./subscriptions";
 
 // Parameter schemas
 export const CustomerIdParams = z.object({
@@ -31,7 +31,7 @@ export const UpdateCustomerProfileRequest = z.object({
 export const RegisterSubscriptionRequest = z.object({
   planId: z.number().int().positive().describe("Plan ID for the subscription"),
   startAt: z.string().describe("Subscription start date"),
-  selectType: z.string().describe("SelectType URL"),
+  selectType: SelectTypeUrl.describe("SelectType URL"),
 });
 
 export const VerifyEmailRequest = z.object({

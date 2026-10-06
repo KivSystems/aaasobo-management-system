@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SelectTypeUrl } from "./subscriptions";
 
 export const AdminIdParams = z.object({
   id: z
@@ -555,8 +556,9 @@ export const UpdateSubscriptionResponse = z.object({
 });
 
 export const UpdateSubscriptionToAddClassRequest = z.object({
-  planId: z.number(),
-  times: z.number(),
+  planId: z.number().int().positive(),
+  times: z.number().int().positive(),
+  selectType: SelectTypeUrl,
 });
 
 export const UpdateSubscriptionToTerminateClassRequest = z.object({
@@ -565,7 +567,7 @@ export const UpdateSubscriptionToTerminateClassRequest = z.object({
 });
 
 export const UpdateSelectTypeUrlRequest = z.object({
-  selectType: z.string(),
+  selectType: SelectTypeUrl,
 });
 
 // Error response schemas

@@ -10,6 +10,7 @@ import ActionButton from "@/components/elements/buttons/actionButton/ActionButto
 import InputField from "@/components/elements/inputField/InputField";
 import { ENGLISH_BACKGROUND_LABELS_JP } from "@/lib/data/englishBackground";
 import { EnglishBackground } from "@/types";
+import { selectTypeUrlSchema } from "@/schemas/authSchema";
 
 function AddSubscription({
   customerId,
@@ -69,10 +70,16 @@ function AddSubscription({
       return;
     }
 
+    const parsedUrl = selectTypeUrlSchema.safeParse(selectTypeValue);
+    if (!parsedUrl.success) {
+      toast.error("有効な http:// または https:// のURLを入力してください。");
+      return;
+    }
+
     const subscriptionData = {
       planId: selectedPlan.id,
       startAt: selectedDate,
-      selectType: selectTypeValue,
+      selectType: parsedUrl.data,
     };
 
     try {
@@ -172,7 +179,6 @@ function AddSubscription({
                   name="SelectType url"
                   placeholder="https://dashboard.stripe.com/subscriptions/sub_1234567890abcdef"
                   value={selectTypeValue}
-                  maxLength={50}
                   onChange={(e) => setSelectTypeValue(e.target.value)}
                   className={styles.selectTypeInput}
                 />
