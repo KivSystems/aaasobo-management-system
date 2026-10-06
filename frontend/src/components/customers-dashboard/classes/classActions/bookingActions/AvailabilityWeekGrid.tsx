@@ -4,6 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./AvailabilityWeekGrid.module.scss";
 import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
 
+import {
+  FREE_TRIAL_BOOKING_HOURS,
+  REGULAR_REBOOKING_HOURS,
+} from "@/lib/data/data";
+
 const DATE_KEY_TIME_ZONE = "UTC";
 const LOAD_TIMEOUT_MS = 30000;
 const WEEKDAY_LABELS = {
@@ -23,6 +28,7 @@ type AvailabilityWeekGridProps = {
   ) => Promise<AvailabilityWeekGridSlot[]>;
   onSlotSelect: (slot: AvailabilityWeekGridSlot) => void;
   language: LanguageType;
+  isFreeTrial: boolean;
   showInstructorCount?: boolean;
 };
 
@@ -119,6 +125,7 @@ export default function AvailabilityWeekGrid({
   fetchSlots,
   onSlotSelect,
   language,
+  isFreeTrial,
   showInstructorCount = false,
 }: AvailabilityWeekGridProps) {
   const timeZone = useCustomerTimeZone();
@@ -127,6 +134,17 @@ export default function AvailabilityWeekGrid({
   const [weekStart, setWeekStart] = useState(() =>
     getWeekStart(getDateKey(new Date(), resolvedTimeZone)),
   );
+  const [now, setNow] = useState(Date.now);
+  const noticeHours = isFreeTrial
+    ? FREE_TRIAL_BOOKING_HOURS
+    : REGULAR_REBOOKING_HOURS;
+  const earliestBookingTime = now + noticeHours * 60 * 60 * 1000;
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const [slots, setSlots] = useState<AvailabilityWeekGridSlot[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -207,6 +225,9 @@ export default function AvailabilityWeekGrid({
   const slotsByDate = useMemo(() => {
     const grouped = slots.reduce<Record<string, AvailabilityWeekGridSlot[]>>(
       (groupedSlots, slot) => {
+        if (new Date(slot.dateTime).getTime() < earliestBookingTime) {
+          return groupedSlots;
+        }
         const dateKey = getDateKey(new Date(slot.dateTime), resolvedTimeZone);
         if (!groupedSlots[dateKey]) {
           groupedSlots[dateKey] = [];
@@ -226,7 +247,7 @@ export default function AvailabilityWeekGrid({
     });
 
     return grouped;
-  }, [resolvedTimeZone, slots]);
+  }, [earliestBookingTime, resolvedTimeZone, slots]);
 
   const goToPreviousWeek = useCallback(() => {
     setWeekStart((currentWeekStart) => addDays(currentWeekStart, -7));
@@ -317,7 +338,16 @@ export default function AvailabilityWeekGrid({
                         key={slot.dateTime}
                         type="button"
                         className={styles.timeSlot}
-                        onClick={() => onSlotSelect(slot)}
+                        onClick={() => {
+                          const currentTime = Date.now();
+                          setNow(currentTime);
+                          if (
+                            new Date(slot.dateTime).getTime() >=
+                            currentTime + noticeHours * 60 * 60 * 1000
+                          ) {
+                            onSlotSelect(slot);
+                          }
+                        }}
                       >
                         <span className={styles.slotTime}>
                           {formatSlotTime(slot.dateTime, timeZone)}

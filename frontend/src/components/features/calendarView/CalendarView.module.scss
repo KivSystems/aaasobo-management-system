@@ -139,3 +139,28 @@
 .holidayDateNumber {
   color: #997676;
 }
+
+@media (max-width: 640px) {
+  .customerEvent {
+    padding: 2px 0;
+
+    .instructorIcon,
+    .classStatusIcon,
+    .eventTitle,
+    .timeSeparator {
+      display: none;
+    }
+
+    .eventDetails {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .eventTime {
+      margin: 0;
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+  }
+}

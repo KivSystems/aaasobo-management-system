@@ -16,6 +16,7 @@ interface InstructorAvailabilityCalendarProps {
     instructor: InstructorRebookingProfile,
   ) => void;
   language: "ja" | "en";
+  isFreeTrial: boolean;
 }
 
 const createInstructorProfile = (
@@ -34,6 +35,7 @@ export default function InstructorAvailabilityCalendar({
   instructorName,
   onSlotSelect,
   language,
+  isFreeTrial,
 }: InstructorAvailabilityCalendarProps) {
   const fetchSlots = useCallback(
     async (startDate: string, endDate: string) => {
@@ -82,6 +84,7 @@ export default function InstructorAvailabilityCalendar({
         fetchSlots={fetchSlots}
         onSlotSelect={handleSlotSelect}
         language={language}
+        isFreeTrial={isFreeTrial}
       />
     </div>
   );

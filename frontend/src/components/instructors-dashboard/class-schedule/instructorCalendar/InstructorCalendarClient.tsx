@@ -78,7 +78,7 @@ const InstructorCalendarClient = ({
   };
 
   return (
-    <div className={styles.calendarContainer}>
+    <div className={`${styles.calendarContainer} ${styles.withMobileToolbar}`}>
       <MessageBoardPanel
         posts={visiblePosts}
         storageKey="instructorClassScheduleMessageBoardOpenState"

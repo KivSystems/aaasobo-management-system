@@ -470,6 +470,7 @@ export default function ProgressiveBookingFlow({
               <div className={styles.sectionContent}>
                 <DateTimeSelection
                   onSlotSelect={handleSlotSelect}
+                  isFreeTrial={isFreeTrial}
                   language={language}
                   selectedInstructor={null}
                   englishBackground={
@@ -508,6 +509,7 @@ export default function ProgressiveBookingFlow({
               <div className={styles.sectionContent}>
                 <DateTimeSelection
                   onSlotSelect={handleSlotSelect}
+                  isFreeTrial={isFreeTrial}
                   language={language}
                   selectedInstructor={selectedInstructor}
                   englishBackground={
