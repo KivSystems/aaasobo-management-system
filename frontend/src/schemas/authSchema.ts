@@ -384,3 +384,12 @@ export const generateClassesSchema = z
       path: ["month"],
     },
   );
+
+export const selectTypeUrlSchema = z
+  .string()
+  .trim()
+  .url("有効な http:// または https:// のURLを入力してください。")
+  .refine(
+    (value) => /^https?:\/\//i.test(value),
+    "有効な http:// または https:// のURLを入力してください。",
+  );

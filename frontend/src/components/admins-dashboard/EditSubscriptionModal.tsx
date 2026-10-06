@@ -19,6 +19,7 @@ import {
 import InputField from "../elements/inputField/InputField";
 
 import type { SubscriptionDecreasePreview } from "@shared/schemas/subscriptions";
+import { selectTypeUrlSchema } from "@/schemas/authSchema";
 import SubscriptionDecreasePreviewPanel from "./SubscriptionDecreasePreviewPanel";
 
 type EditSubscriptionModalProps = {
@@ -231,8 +232,8 @@ function EditSubscriptionModal({
       return;
     }
 
-    if (!selectTypeValue) {
-      setError("セレクトタイプのURLを入力してください。");
+    if (!selectTypeUrlSchema.safeParse(selectTypeValue).success) {
+      setError("有効な http:// または https:// のURLを入力してください。");
       setLoading(false);
       return;
     }
@@ -379,7 +380,6 @@ function EditSubscriptionModal({
                 type="text"
                 placeholder="https://dashboard.stripe.com/subscriptions/sub_1234567890abcdef"
                 value={selectTypeValue}
-                maxLength={50}
                 onChange={(e) => setSelectTypeValue(e.target.value)}
                 className={styles.selectTypeInput}
               />

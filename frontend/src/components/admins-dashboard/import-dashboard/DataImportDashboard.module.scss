@@ -3,11 +3,16 @@
 .container {
   display: grid;
   gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
   max-width: 900px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .operationSection {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   padding: 1rem;
   border: 2px solid #b7dfca;
@@ -39,6 +44,8 @@
 
 .importCard {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   align-content: start;
   gap: 0.75rem;
   padding: 1rem;
@@ -96,11 +103,19 @@
 
 .form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: 0.75rem;
   padding: 1rem;
   border: 1px solid $border-light;
   border-radius: 0.5rem;
   background: #fff;
+}
+
+.container input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .fileInputLabel {
@@ -188,6 +203,8 @@
 
 .report {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: 0.75rem;
   padding: 1rem;
   border: 1px solid $border-light;
@@ -206,6 +223,9 @@
 }
 
 .table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
@@ -229,6 +249,7 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -246,6 +267,7 @@
 
 .modalActions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.5rem;
 }

@@ -1,6 +1,15 @@
 import { z } from "zod";
 import { SchedulePreview } from "./schedulePreview";
 
+export const SelectTypeUrl = z
+  .string()
+  .trim()
+  .url("Enter a valid HTTP or HTTPS URL")
+  .refine(
+    (value) => /^https?:\/\//i.test(value),
+    "Enter a valid HTTP or HTTPS URL",
+  );
+
 // Parameter schemas
 export const SubscriptionIdParams = z.object({
   id: z.string().regex(/^\d+$/, "Must be a valid number").transform(Number),
@@ -80,7 +89,7 @@ export const SubscriptionDecreaseData = z.object({
       (ids) => new Set(ids).size === ids.length,
       "Recurring class IDs must be unique",
     ),
-  selectType: z.string().trim().min(1),
+  selectType: SelectTypeUrl,
 });
 
 export const SubscriptionDecreasePreviewRequest = SubscriptionDecreaseData;

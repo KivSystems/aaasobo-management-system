@@ -3,5 +3,12 @@
   "ignore": ["generated/**", "prisma.config.ts"],
   "prisma": {
     "config": ["package.json"]
-  }
+  },
+  "entry": [
+    "src/seed/bootstrap.ts",
+    "src/seed/dummy.ts",
+    "src/seed/generateBetaImportFromRawSchedule.ts",
+    "src/seed/generateNormalizedImportFixture.ts",
+    "src/seed/generateIncrementalImportFixture.ts"
+  ]
 }
