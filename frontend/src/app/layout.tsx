@@ -5,7 +5,6 @@ import { ToastContainer } from "react-toastify";
 import { LanguageProvider } from "../contexts/LanguageContext";
 import { getSystemStatus } from "@/lib/api/maintenanceApi";
 import SystemStatusWatcher from "@/components/features/systemStatusWatcher/SystemStatusWatcher";
-import MaintenancePage from "@/components/elements/maintenancePage/MaintenancePage";
 import { CustomerTimeZoneProvider } from "@/contexts/CustomerTimeZoneContext";
 
 const poppins = Poppins({
@@ -35,7 +34,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const systemStatus = await getSystemStatus();
-  const isStop = systemStatus === "Stop";
 
   // If the system is running, show the normal layout
   return (
@@ -44,8 +42,9 @@ export default async function RootLayout({
         <LanguageProvider>
           <CustomerTimeZoneProvider>
             <ToastContainer />
-            <SystemStatusWatcher />
-            {isStop ? <MaintenancePage /> : children}
+            <SystemStatusWatcher initialStatus={systemStatus}>
+              {children}
+            </SystemStatusWatcher>
           </CustomerTimeZoneProvider>
         </LanguageProvider>
       </body>

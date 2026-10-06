@@ -11,6 +11,7 @@ interface DateTimeSelectionProps {
     availableInstructors: InstructorRebookingProfile[],
   ) => void;
   language: LanguageType;
+  isFreeTrial: boolean;
   selectedInstructor?: InstructorRebookingProfile | null; // For instructor-first flow
   englishBackground: EnglishBackground; // For filtering in date-first flow
 }
@@ -18,6 +19,7 @@ interface DateTimeSelectionProps {
 export default function DateTimeSelection({
   onSlotSelect,
   language,
+  isFreeTrial,
   selectedInstructor,
   englishBackground,
 }: DateTimeSelectionProps) {
@@ -44,6 +46,7 @@ export default function DateTimeSelection({
           instructorName={selectedInstructor.nickname}
           onSlotSelect={handleInstructorSlotSelect}
           language={language}
+          isFreeTrial={isFreeTrial}
         />
       ) : (
         /* For date-first flow, show full calendar with all instructor availability */
@@ -51,6 +54,7 @@ export default function DateTimeSelection({
           onSlotSelect={handleSlotSelect}
           englishBackground={englishBackground}
           language={language}
+          isFreeTrial={isFreeTrial}
         />
       )}
     </div>

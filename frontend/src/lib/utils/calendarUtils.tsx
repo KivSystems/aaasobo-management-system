@@ -62,7 +62,8 @@ export const createRenderEventContent = (
 
     return (
       <div
-        className={styles.eventBlock}
+        className={`${styles.eventBlock} ${isCustomer ? styles.customerEvent : ""}`}
+        title={`${classTime} ${instructorNickname || ""} ${title}`.trim()}
         style={{
           cursor: isClickable ? "pointer" : "default",
         }}
@@ -113,7 +114,10 @@ export const createRenderEventContent = (
                     : ""
           }`}
         >
-          <div className={styles.eventTime}>{classTime} -</div>
+          <div className={styles.eventTime}>
+            {classTime}
+            <span className={styles.timeSeparator}> -</span>
+          </div>
           <div className={styles.eventTitle}>
             {title === "No booked class" && language === "ja"
               ? "予約なし"

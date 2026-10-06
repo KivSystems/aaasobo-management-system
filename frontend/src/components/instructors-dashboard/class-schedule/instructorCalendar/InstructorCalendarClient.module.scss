@@ -105,11 +105,13 @@
 }
 
 @media (max-width: 640px) {
-  .calendarContainer {
+  .withMobileToolbar {
     :global(.fc-header-toolbar) {
       display: none;
     }
+  }
 
+  .calendarContainer {
     :global(.fc-col-header-cell-cushion) {
       font-size: 0.7rem;
     }

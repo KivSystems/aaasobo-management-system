@@ -1,28 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getSystemStatus } from "@/lib/api/maintenanceApi";
+import { useEffect, useState, type ReactNode } from "react";
 import MaintenancePage from "@/components/elements/maintenancePage/MaintenancePage";
 import { POLLING_INTERVAL } from "@/lib/data/data";
 
-export default function SystemStatusWatcher() {
-  const [showMaintenance, setShowMaintenance] = useState(false);
+export default function SystemStatusWatcher({
+  initialStatus,
+  children,
+}: {
+  initialStatus: string;
+  children: ReactNode;
+}) {
+  const [showMaintenance, setShowMaintenance] = useState(
+    initialStatus === "Stop",
+  );
 
   useEffect(() => {
+    const controller = new AbortController();
     const interval = setInterval(async () => {
       try {
-        const status = await getSystemStatus();
-        if (status === "Stop") {
-          setShowMaintenance(true);
-          clearInterval(interval);
+        const response = await fetch("/api/system-status", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) return;
+        const { status } = await response.json();
+        if (status === "Running" || status === "Stop") {
+          setShowMaintenance(status === "Stop");
         }
       } catch (error) {
-        console.error("Failed to fetch system status:", error);
+        if (!controller.signal.aborted) {
+          console.error("Failed to fetch system status:", error);
+        }
       }
     }, POLLING_INTERVAL);
 
-    return () => clearInterval(interval);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
   }, []);
 
-  return showMaintenance ? <MaintenancePage /> : null;
+  return showMaintenance ? <MaintenancePage /> : children;
 }
