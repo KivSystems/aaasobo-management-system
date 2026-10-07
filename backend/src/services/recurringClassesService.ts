@@ -102,7 +102,7 @@ function createWeeklyDates(start: Date, end: Date): Date[] {
   return dates;
 }
 
-export function getRecurringClassTerminationCutoff(endDate: Date): Date {
+function getRecurringClassTerminationCutoff(endDate: Date): Date {
   return nHoursBefore(
     JAPAN_TIME_DIFF,
     new Date(
