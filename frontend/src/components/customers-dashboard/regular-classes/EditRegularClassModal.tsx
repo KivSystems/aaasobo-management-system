@@ -18,7 +18,10 @@ import {
 import { EDIT_REGULAR_CLASS_MESSAGES } from "@/lib/messages/customerDashboard";
 import styles from "./EditRegularClassModal.module.scss";
 import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
-import { getTodayInJapanISODate } from "@/lib/utils/dateUtils";
+import {
+  formatDateToISOInTimeZone,
+  getTodayInJapanISODate,
+} from "@/lib/utils/dateUtils";
 import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
 
 import ScheduleChangeCalendar from "@/components/features/schedulePreview/ScheduleChangeCalendar";
@@ -41,6 +44,7 @@ interface EditRegularClassModalProps {
   onClose: () => void;
   recurringClass?: RecurringClass;
   subscriptionId?: number;
+  subscriptionStartAt?: string;
   customerId: number;
   allChildren: Child[];
   userSessionType?: UserType;
@@ -55,6 +59,7 @@ export default function EditRegularClassModal({
   onClose,
   recurringClass,
   subscriptionId,
+  subscriptionStartAt,
   customerId,
   allChildren,
   userSessionType,
@@ -79,6 +84,14 @@ export default function EditRegularClassModal({
         language === "ja"
           ? "変更開始日は本日から7日後以降を選択してください。"
           : "Please choose a start date at least seven days from today.",
+      "Regular class change cannot precede its start date":
+        language === "ja"
+          ? "変更予定のクラスの開始日以降を選択してください。"
+          : "Please choose a date on or after this regular class starts.",
+      "Regular class cannot start before subscription":
+        language === "ja"
+          ? "プランの開始日以降を選択してください。"
+          : "Please choose a date on or after the subscription starts.",
       "Schedule changed. Review the preview again.":
         language === "ja"
           ? "予定が変更されています。プレビューを確認し直してください。"
@@ -127,7 +140,17 @@ export default function EditRegularClassModal({
       `${getTodayInJapanISODate()}T00:00:00.000Z`,
     );
     oneWeekFromNow.setUTCDate(oneWeekFromNow.getUTCDate() + 7);
-    const minDateString = oneWeekFromNow.toISOString().split("T")[0];
+    const oneWeekDate = oneWeekFromNow.toISOString().split("T")[0];
+    const contractStartDate = subscriptionStartAt
+      ? formatDateToISOInTimeZone(new Date(subscriptionStartAt), "Asia/Tokyo")
+      : oneWeekDate;
+    const regularStartAt = recurringClass?.dateTime || recurringClass?.startAt;
+    const regularStartDate = regularStartAt
+      ? formatDateToISOInTimeZone(new Date(regularStartAt), "Asia/Tokyo")
+      : oneWeekDate;
+    const minDateString = [oneWeekDate, contractStartDate, regularStartDate]
+      .sort()
+      .at(-1)!;
     setMinDate(minDateString);
     setStartDate(minDateString);
 
@@ -181,7 +204,7 @@ export default function EditRegularClassModal({
         }).format(classDate),
       );
     }
-  }, [isOpen, recurringClass, timeZone]);
+  }, [isOpen, recurringClass, subscriptionStartAt, timeZone]);
 
   const handleInstructorSelect = (instructor: InstructorRebookingProfile) => {
     setSelectedInstructor(instructor);

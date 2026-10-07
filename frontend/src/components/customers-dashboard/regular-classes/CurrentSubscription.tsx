@@ -137,10 +137,12 @@ function CurrentSubscription({
                           ? startDate.toLocaleDateString("ja-JP", {
                               year: "numeric",
                               month: "long",
+                              timeZone: "Asia/Tokyo",
                             })
                           : startDate.toLocaleDateString("en-US", {
                               year: "numeric",
                               month: "long",
+                              timeZone: "Asia/Tokyo",
                             })}{" "}
                         -{" "}
                         {endAt
@@ -196,6 +198,7 @@ function CurrentSubscription({
               <div className={styles.classesContent}>
                 <RegularClassesTable
                   subscriptionId={id}
+                  subscriptionStartAt={startAt}
                   subscriptionEndAt={endAt}
                   userSessionType={userSessionType}
                   adminId={adminId}

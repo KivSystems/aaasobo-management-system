@@ -98,17 +98,11 @@ export const SubscriptionDecreasePreviewBody = z.object({
 });
 export const SubscriptionDecreaseBody = z.object({
   updateSubscriptionData: SubscriptionDecreaseData.extend({
-    recurringClassIds: z
-      .array(z.number().int().positive())
-      .min(1)
-      .refine(
-        (ids) => new Set(ids).size === ids.length,
-        "Recurring class IDs must be unique",
-      ),
     previewToken: z.string().regex(/^[a-f0-9]{64}$/),
   }),
 });
 export const SubscriptionDecreasePreview = z.object({
+  requiredTerminationCount: z.number().int().nonnegative(),
   previewToken: z.string(),
   calendar: SchedulePreview,
   planName: z.string(),

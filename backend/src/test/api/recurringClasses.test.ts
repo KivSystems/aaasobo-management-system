@@ -88,6 +88,56 @@ afterEach(() => {
 });
 
 describe("POST /recurring-classes", () => {
+  it.each([
+    ["2026-10-15", 400],
+    ["2026-11-01", 201],
+  ] as const)(
+    "respects the future subscription start when enrolling from %s",
+    async (startDate, expectedStatus) => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date("2026-10-06T12:00:00Z"));
+      const cookie = await createAdminAuthCookie();
+      const f = await setupCore({
+        slotWeekday: 4,
+        slotStartTime: "16:00",
+        slotEffectiveFrom: new Date("2026-01-01"),
+      });
+      const contractStart = new Date("2026-11-01T00:00:00+09:00");
+      await prisma.subscription.update({
+        where: { id: f.subscription.id },
+        data: { startAt: contractStart },
+      });
+      await request(server)
+        .post("/recurring-classes")
+        .set("Cookie", cookie)
+        .send({
+          instructorId: f.instructor.id,
+          weekday: 4,
+          startTime: "16:00",
+          customerId: f.customer.id,
+          childrenIds: f.children.map((c) => c.id),
+          subscriptionId: f.subscription.id,
+          startDate,
+          timezone: "Asia/Tokyo",
+        })
+        .expect(expectedStatus);
+      const classes = await prisma.class.findMany({
+        where: { customerId: f.customer.id },
+      });
+      if (expectedStatus === 400) {
+        expect(classes).toHaveLength(0);
+        expect(
+          await prisma.recurringClass.count({
+            where: { subscriptionId: f.subscription.id },
+          }),
+        ).toBe(0);
+      } else {
+        expect(classes.length).toBeGreaterThan(0);
+        expect(classes.every((c) => c.dateTime! >= contractStart)).toBe(true);
+      }
+    },
+  );
+
   it.each(["2026-09-01", "2026-10-20"])(
     "rejects new classes for a subscription canceled effective %s without mutation",
     async (endDate) => {
@@ -1067,6 +1117,97 @@ describe("regular class calendar preview", () => {
         ])
         .sort((a: string[], b: string[]) => a[0].localeCompare(b[0])),
     );
+  });
+
+  it("rejects moving a future regular class version before its start date", async () => {
+    const f = await fixture();
+    await prisma.recurringClass.update({
+      where: { id: f.series.id },
+      data: { startAt: new Date("2026-10-22T07:00:00Z") },
+    });
+    const predecessor = await prisma.recurringClass.create({
+      data: {
+        subscriptionId: f.subscription.id,
+        instructorId: f.instructor.id,
+        startAt: new Date("2026-09-07T07:00:00Z"),
+        endAt: new Date("2026-10-22T07:00:00Z"),
+      },
+    });
+    await prisma.class.updateMany({
+      where: { recurringClassId: f.series.id },
+      data: { recurringClassId: predecessor.id },
+    });
+    await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-10-22T07:00:00Z"),
+      { subscriptionId: f.subscription.id, recurringClassId: f.series.id },
+    );
+    const beforeClasses = await prisma.class.findMany({
+      orderBy: { id: "asc" },
+    });
+    const beforeSeries = await prisma.recurringClass.findMany({
+      orderBy: { id: "asc" },
+    });
+    for (const method of ["post", "put"] as const) {
+      const url = method === "post" ? `${f.url}/preview` : f.url;
+      const response = await request(server)
+        [method](url)
+        .set("Cookie", f.cookie)
+        .send({ ...f.data, startDate: "2026-10-15" })
+        .expect(400);
+      expect(response.body.message).toBe(
+        "Regular class change cannot precede its start date",
+      );
+    }
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      beforeClasses,
+    );
+    expect(
+      await prisma.recurringClass.findMany({ orderBy: { id: "asc" } }),
+    ).toEqual(beforeSeries);
+  });
+
+  it("rejects preview and apply before a future subscription starts without changing bookings", async () => {
+    const f = await fixture();
+    await prisma.subscription.update({
+      where: { id: f.subscription.id },
+      data: { startAt: new Date("2026-11-01T00:00:00+09:00") },
+    });
+    await prisma.recurringClass.update({
+      where: { id: f.series.id },
+      data: { startAt: new Date("2026-11-02T07:00:00Z") },
+    });
+    await prisma.class.deleteMany({ where: { customerId: f.customer.id } });
+    await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-11-02T07:00:00Z"),
+      { subscriptionId: f.subscription.id, recurringClassId: f.series.id },
+    );
+    const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+    for (const method of ["post", "put"] as const) {
+      const url = method === "post" ? `${f.url}/preview` : f.url;
+      const response = await request(server)
+        [method](url)
+        .set("Cookie", f.cookie)
+        .send(f.data)
+        .expect(400);
+      expect(response.body.message).toBe(
+        "Regular class cannot start before subscription",
+      );
+    }
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      before,
+    );
+    expect(await prisma.recurringClass.count()).toBe(1);
+    expect(
+      (
+        await prisma.recurringClass.findUniqueOrThrow({
+          where: { id: f.series.id },
+        })
+      ).endAt,
+    ).toBeNull();
   });
 
   it("rejects preview and apply after subscription cancellation without changing bookings", async () => {

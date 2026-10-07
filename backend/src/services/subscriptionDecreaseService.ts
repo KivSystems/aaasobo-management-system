@@ -44,12 +44,30 @@ async function buildPreview(
   if (
     plan.englishBackground !== subscription.plan.englishBackground ||
     plan.terminationAt ||
-    subscription.plan.weeklyClassTimes <= plan.weeklyClassTimes ||
-    (allowPartialSelection
-      ? subscription.plan.weeklyClassTimes - plan.weeklyClassTimes <
-        data.recurringClassIds.length
-      : subscription.plan.weeklyClassTimes - plan.weeklyClassTimes !==
-        data.recurringClassIds.length)
+    subscription.plan.weeklyClassTimes <= plan.weeklyClassTimes
+  ) {
+    throw new SubscriptionDecreaseError(
+      400,
+      "変更するプランと終了するクラスを確認してください。",
+    );
+  }
+  const assignmentScope = {
+    subscriptionId: id,
+    endAt: null,
+    instructorId: { not: null },
+    startAt: { not: null },
+  };
+  const assignedClassCount = await tx.recurringClass.count({
+    where: assignmentScope,
+  });
+  const requiredTerminationCount = Math.max(
+    0,
+    assignedClassCount - plan.weeklyClassTimes,
+  );
+  if (
+    data.recurringClassIds.length > requiredTerminationCount ||
+    (!allowPartialSelection &&
+      data.recurringClassIds.length !== requiredTerminationCount)
   ) {
     throw new SubscriptionDecreaseError(
       400,
@@ -58,9 +76,8 @@ async function buildPreview(
   }
   const regularClasses = await tx.recurringClass.findMany({
     where: {
+      ...assignmentScope,
       id: { in: data.recurringClassIds },
-      subscriptionId: id,
-      OR: [{ endAt: null }, { endAt: { gt: now } }],
     },
     include: { instructor: true },
     orderBy: { id: "asc" },
@@ -88,6 +105,7 @@ async function buildPreview(
   const calendar = await loadCalendarClasses(tx, subscription.customerId);
   const removedIds = new Set(affectedClasses.map((c) => String(c.id)));
   const preview = {
+    requiredTerminationCount,
     calendar: {
       before: calendar.events,
       after: calendar.events.filter((c) => !removedIds.has(c.id)),

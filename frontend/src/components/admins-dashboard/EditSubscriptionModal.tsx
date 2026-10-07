@@ -64,6 +64,9 @@ function EditSubscriptionModal({
   const [error, setError] = useState<string>("");
   const currentWeeklyTimes = subscription?.plan?.weeklyClassTimes ?? 0;
   const selectedWeeklyTimes = selectedPlan?.weeklyClassTimes ?? 0;
+  const requiredTerminationCount =
+    preview?.requiredTerminationCount ??
+    Math.max(0, currentWeeklyTimes - selectedWeeklyTimes);
   const [selectTypeValue, setSelectTypeValue] = useState<string>("");
   const currentEnglishBG = subscription?.plan?.englishBackground;
   const [currentBGPlans, setCurrentBGPlans] = useState<Plan[]>([]);
@@ -256,10 +259,7 @@ function EditSubscriptionModal({
         if (result && "errorMessage" in result)
           throw new Error(result.errorMessage);
       } else if (selectedWeeklyTimes < currentWeeklyTimes) {
-        if (
-          subscription.plan.weeklyClassTimes - selectedWeeklyTimes !==
-          selectedRecurringIds.length
-        ) {
+        if (requiredTerminationCount !== selectedRecurringIds.length) {
           setError(
             "変更先のプランに合わせて、終了するレギュラークラスを必要な数だけ選択してください。",
           );
@@ -394,24 +394,30 @@ function EditSubscriptionModal({
                   <ClipboardDocumentListIcon className={styles.sectionIcon} />
                   <h3>終了を希望するクラスを選択</h3>
                   <span className={styles.selectionProgress} aria-live="polite">
-                    {selectedRecurringIds.length}/
-                    {currentWeeklyTimes - selectedWeeklyTimes} 選択済み
+                    {selectedRecurringIds.length}/{requiredTerminationCount}{" "}
+                    選択済み
                   </span>
                 </div>
                 <div className={styles.sectionContent}>
                   <span className={styles.selectedValue}>
                     <div className={styles.classesContent}>
-                      <RegularClassesTable
-                        subscriptionId={subscription.id}
-                        userSessionType={userSessionType}
-                        adminId={adminId}
-                        customerId={customerId}
-                        customerTerminationAt={customerTerminationAt}
-                        language={language}
-                        isSelectable={true}
-                        selectedRecurringIds={selectedRecurringIds}
-                        onToggleRecurring={toggleRecurringSelection}
-                      />
+                      {preview && requiredTerminationCount === 0 ? (
+                        <p>
+                          未設定の枠を減らすため、終了するクラスの選択は不要です。
+                        </p>
+                      ) : (
+                        <RegularClassesTable
+                          subscriptionId={subscription.id}
+                          userSessionType={userSessionType}
+                          adminId={adminId}
+                          customerId={customerId}
+                          customerTerminationAt={customerTerminationAt}
+                          language={language}
+                          isSelectable={true}
+                          selectedRecurringIds={selectedRecurringIds}
+                          onToggleRecurring={toggleRecurringSelection}
+                        />
+                      )}
                     </div>
                   </span>
                 </div>
