@@ -98,6 +98,8 @@
   }
 
   thead th {
+    white-space: normal;
+    overflow-wrap: anywhere;
     background: #f8fafc;
     color: #334155;
     font-size: 0.95rem;
