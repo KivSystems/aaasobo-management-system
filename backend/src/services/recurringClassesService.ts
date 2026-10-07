@@ -196,6 +196,14 @@ async function createRecurringClass(
     throw new Error("Only Asia/Tokyo timezone is supported");
   }
 
+  const subscription = await tx.subscription.findUnique({
+    where: { id: subscriptionId },
+  });
+  if (!subscription || subscription.customerId !== customerId)
+    throw new Error("Regular class not found");
+  if (subscription.endAt)
+    throw new Error("Subscription no longer accepts regular classes");
+
   const startDateObj = new Date(startDate);
 
   // Check if instructor is available
@@ -491,6 +499,8 @@ async function prepareRegularClassChange(
     existing.subscription.customerId !== customerId
   )
     throw new Error("Regular class not found");
+  if (existing.subscription.endAt)
+    throw new Error("Subscription no longer accepts regular classes");
   if (existing.endAt && existing.endAt <= new Date())
     throw new Error("Regular class not found");
   const children = await tx.child.findMany({
