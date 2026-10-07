@@ -35,6 +35,7 @@ function handleRegularClassError(error: unknown, res: Response): Response {
     "Only Asia/Tokyo timezone is supported",
     "Regular class already exists at this time slot",
     "Start date must be at least one week from today",
+    "Subscription no longer accepts regular classes",
   ];
 
   if (businessLogicErrors.includes(err.message)) {

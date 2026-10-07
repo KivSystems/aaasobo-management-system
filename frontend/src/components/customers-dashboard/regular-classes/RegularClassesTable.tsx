@@ -18,6 +18,7 @@ import {
 
 function RegularClassesTable({
   subscriptionId,
+  subscriptionEndAt,
   userSessionType,
   adminId,
   customerId,
@@ -30,6 +31,7 @@ function RegularClassesTable({
   refreshKey,
 }: {
   subscriptionId: number;
+  subscriptionEndAt?: string | null;
   userSessionType?: UserType;
   adminId?: number;
   customerId: number;
@@ -129,6 +131,7 @@ function RegularClassesTable({
   };
 
   const handleEditRegularClass = (recurringClassId: number) => {
+    if (subscriptionEndAt) return;
     const classToEdit = activeRecurringClasses.find(
       (cls) => cls.id === recurringClassId,
     );
@@ -163,7 +166,7 @@ function RegularClassesTable({
             <RegularClassCard
               key={recurringClass.id}
               recurringClass={recurringClass}
-              onEdit={handleEditRegularClass}
+              onEdit={subscriptionEndAt ? undefined : handleEditRegularClass}
               language={language}
               userSessionType={userSessionType}
               customerTerminationAt={customerTerminationAt}
@@ -177,13 +180,16 @@ function RegularClassesTable({
         </div>
       ) : null}
 
-      {userSessionType === "admin" && missingClassCount > 0 && !isLoading && (
-        <button type="button" onClick={() => setIsAddingClass(true)}>
-          {language === "ja"
-            ? `レギュラークラスを追加（残り${missingClassCount}枠）`
-            : `Add regular class (${missingClassCount} remaining)`}
-        </button>
-      )}
+      {userSessionType === "admin" &&
+        !subscriptionEndAt &&
+        missingClassCount > 0 &&
+        !isLoading && (
+          <button type="button" onClick={() => setIsAddingClass(true)}>
+            {language === "ja"
+              ? `レギュラークラスを追加（残り${missingClassCount}枠）`
+              : `Add regular class (${missingClassCount} remaining)`}
+          </button>
+        )}
 
       {!isSelectable && historyCount > 0 && (
         <div style={{ marginTop: "2rem" }}>
@@ -231,7 +237,7 @@ function RegularClassesTable({
           <p>{NO_REGULAR_CLASSES_MESSAGE[language]}</p>
         )}
 
-      {isAddingClass && (
+      {isAddingClass && !subscriptionEndAt && (
         <EditRegularClassModal
           isOpen={isAddingClass}
           onClose={() => setIsAddingClass(false)}
@@ -247,7 +253,7 @@ function RegularClassesTable({
       )}
 
       {/* Edit Modal */}
-      {editingClass && (
+      {editingClass && !subscriptionEndAt && (
         <EditRegularClassModal
           isOpen={isEditModalOpen}
           onClose={handleCloseEditModal}

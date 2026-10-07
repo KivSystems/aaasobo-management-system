@@ -66,7 +66,7 @@ async function setupCore({
   const plan = await createPlan();
   const subscription = await createSubscription(plan.id, customer.id, {
     startAt: new Date("2025-01-01T00:00:00.000Z"),
-    endAt: new Date("2026-01-01T00:00:00.000Z"),
+    endAt: null,
   });
   const children = await Promise.all(
     Array.from({ length: childrenCount }).map(() => createChild(customer.id)),
@@ -88,6 +88,49 @@ afterEach(() => {
 });
 
 describe("POST /recurring-classes", () => {
+  it.each(["2026-09-01", "2026-10-20"])(
+    "rejects new classes for a subscription canceled effective %s without mutation",
+    async (endDate) => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date("2026-10-06T12:00:00Z"));
+      const cookie = await createAdminAuthCookie();
+      const f = await setupCore({
+        slotWeekday: 4,
+        slotStartTime: "16:00",
+        slotEffectiveFrom: new Date("2026-01-01"),
+      });
+      await prisma.subscription.update({
+        where: { id: f.subscription.id },
+        data: { endAt: new Date(endDate) },
+      });
+      const response = await request(server)
+        .post("/recurring-classes")
+        .set("Cookie", cookie)
+        .send({
+          instructorId: f.instructor.id,
+          weekday: 4,
+          startTime: "16:00",
+          customerId: f.customer.id,
+          childrenIds: f.children.map((c) => c.id),
+          subscriptionId: f.subscription.id,
+          startDate: "2026-11-01",
+          timezone: "Asia/Tokyo",
+        })
+        .expect(400);
+      expect(response.body.message).toBe(
+        "Subscription no longer accepts regular classes",
+      );
+      expect(
+        await prisma.recurringClass.count({
+          where: { subscriptionId: f.subscription.id },
+        }),
+      ).toBe(0);
+      expect(
+        await prisma.class.count({ where: { customerId: f.customer.id } }),
+      ).toBe(0);
+    },
+  );
+
   it("succeed creating recurring class when slot exists", async () => {
     const authCookie = await createAdminAuthCookie();
     const { customer, subscription, children, instructor } = await setupCore({
@@ -607,7 +650,7 @@ describe("PUT /recurring-classes/:id", () => {
     const plan = await createPlan();
     const subscription = await createSubscription(plan.id, customer.id, {
       startAt: new Date("2025-01-01T00:00:00.000Z"),
-      endAt: new Date("2027-01-01T00:00:00.000Z"),
+      endAt: null,
     });
     const child = await createChild(customer.id);
     const instructor = await createInstructor();
@@ -716,7 +759,7 @@ describe("PUT /recurring-classes/:id", () => {
       const plan = await createPlan();
       const subscription = await createSubscription(plan.id, customer.id, {
         startAt: new Date("2025-01-01T00:00:00.000Z"),
-        endAt: new Date("2027-01-01T00:00:00.000Z"),
+        endAt: null,
       });
       const child = await createChild(customer.id);
       const oldInstructor = await createInstructor();
@@ -765,7 +808,9 @@ describe("PUT /recurring-classes/:id", () => {
     const customer = await createCustomer();
     const authCookie = await generateAuthCookie(customer.id, "customer");
     const plan = await createPlan();
-    const subscription = await createSubscription(plan.id, customer.id);
+    const subscription = await createSubscription(plan.id, customer.id, {
+      endAt: null,
+    });
     const child = await createChild(customer.id);
 
     const oldInstructor = await createInstructor();
@@ -1022,6 +1067,38 @@ describe("regular class calendar preview", () => {
         ])
         .sort((a: string[], b: string[]) => a[0].localeCompare(b[0])),
     );
+  });
+
+  it("rejects preview and apply after subscription cancellation without changing bookings", async () => {
+    const f = await fixture();
+    await prisma.subscription.update({
+      where: { id: f.subscription.id },
+      data: { endAt: new Date("2026-10-20") },
+    });
+    const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+    const data = { ...f.data, startDate: "2026-11-01" };
+    for (const method of ["post", "put"] as const) {
+      const url = method === "post" ? `${f.url}/preview` : f.url;
+      const response = await request(server)
+        [method](url)
+        .set("Cookie", f.cookie)
+        .send(data)
+        .expect(400);
+      expect(response.body.message).toBe(
+        "Subscription no longer accepts regular classes",
+      );
+    }
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      before,
+    );
+    expect(await prisma.recurringClass.count()).toBe(1);
+    expect(
+      (
+        await prisma.recurringClass.findUniqueOrThrow({
+          where: { id: f.series.id },
+        })
+      ).endAt,
+    ).toBeNull();
   });
 
   it("rejects a stale preview and another customer's access", async () => {

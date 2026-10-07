@@ -109,8 +109,14 @@ function CurrentSubscription({
     <div className={styles.outsideContainer}>
       {subscriptionsData && subscriptionsData.subscriptions.length > 0 ? (
         subscriptionsData.subscriptions.map((subscription, index) => {
-          const { id, plan, startAt, customerTerminationAt, selectType } =
-            subscription;
+          const {
+            id,
+            plan,
+            startAt,
+            endAt,
+            customerTerminationAt,
+            selectType,
+          } = subscription;
           const startDate = new Date(startAt);
 
           return (
@@ -136,7 +142,18 @@ function CurrentSubscription({
                               year: "numeric",
                               month: "long",
                             })}{" "}
-                        - {PRESENT_LABEL[language]}
+                        -{" "}
+                        {endAt
+                          ? new Date(endAt).toLocaleDateString(
+                              language === "ja" ? "ja-JP" : "en-US",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                timeZone: "Asia/Tokyo",
+                              },
+                            )
+                          : PRESENT_LABEL[language]}
                       </span>
                     </div>
 
@@ -179,6 +196,7 @@ function CurrentSubscription({
               <div className={styles.classesContent}>
                 <RegularClassesTable
                   subscriptionId={id}
+                  subscriptionEndAt={endAt}
                   userSessionType={userSessionType}
                   adminId={adminId}
                   customerId={customerId}
