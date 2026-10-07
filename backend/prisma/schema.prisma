@@ -159,6 +159,9 @@ model Subscription {
 }
 
 model RecurringClass {
+  previousRecurringClassId Int?                       @unique
+  previousRecurringClass   RecurringClass?            @relation("RecurringClassVersions", fields: [previousRecurringClassId], references: [id], onDelete: SetNull)
+  nextRecurringClass       RecurringClass?            @relation("RecurringClassVersions")
   id                       Int                        @id @default(autoincrement())
   instructorId             Int?
   subscriptionId           Int?

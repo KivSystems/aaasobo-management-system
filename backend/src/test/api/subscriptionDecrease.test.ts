@@ -109,6 +109,160 @@ async function fixture() {
 }
 
 describe("subscription decrease confirmation", () => {
+  it("removes pending predecessor bookings for the selected slot without changing sibling bookings or history", async () => {
+    const f = await fixture();
+    const historicalEnd = new Date("2026-09-15T01:00:00Z");
+    const historical = await prisma.recurringClass.create({
+      data: {
+        subscriptionId: f.subscription.id,
+        instructorId: f.instructor.id,
+        startAt: new Date("2026-09-01T01:00:00Z"),
+        endAt: historicalEnd,
+      },
+    });
+    const predecessor = await prisma.recurringClass.create({
+      data: {
+        subscriptionId: f.subscription.id,
+        instructorId: f.instructor.id,
+        startAt: historicalEnd,
+        endAt: new Date("2026-10-15T01:00:00Z"),
+        previousRecurringClassId: historical.id,
+      },
+    });
+    await prisma.recurringClass.update({
+      where: { id: f.a.id },
+      data: {
+        startAt: new Date("2026-10-15T01:00:00Z"),
+        previousRecurringClassId: predecessor.id,
+      },
+    });
+    await prisma.class.updateMany({
+      where: { id: { in: f.aBookings.slice(0, 2).map((c) => c.id) } },
+      data: { recurringClassId: predecessor.id },
+    });
+    const past = await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-09-10T01:00:00Z"),
+      {
+        subscriptionId: f.subscription.id,
+        recurringClassId: historical.id,
+        status: "completed",
+      },
+    );
+    const preview = (await f.preview().expect(200)).body;
+    for (const c of f.aBookings)
+      expect(
+        preview.calendar.after.some(
+          (event: { id: string }) => event.id === String(c.id),
+        ),
+      ).toBe(false);
+    await f.apply(preview.previewToken).expect(200);
+    expect(
+      await prisma.class.findMany({
+        where: { id: { in: f.aBookings.map((c) => c.id) } },
+      }),
+    ).toHaveLength(0);
+    expect(await prisma.class.findUnique({ where: { id: past.id } })).toEqual(
+      past,
+    );
+    expect(
+      await prisma.class.findMany({
+        where: { recurringClassId: f.b.id },
+        orderBy: { id: "asc" },
+      }),
+    ).toEqual(f.bBookings);
+    expect(
+      (
+        await prisma.recurringClass.findUniqueOrThrow({
+          where: { id: historical.id },
+        })
+      ).endAt,
+    ).toEqual(historicalEnd);
+    expect(
+      (
+        await prisma.recurringClass.findUniqueOrThrow({
+          where: { id: predecessor.id },
+        })
+      ).endAt,
+    ).toEqual(new Date());
+    expect(
+      (await prisma.recurringClass.findUniqueOrThrow({ where: { id: f.a.id } }))
+        .endAt,
+    ).toEqual(new Date());
+  });
+
+  it("rejects a decrease with unresolved legacy pending versions without changing bookings", async () => {
+    const f = await fixture();
+    const legacy = await prisma.recurringClass.create({
+      data: {
+        subscriptionId: f.subscription.id,
+        instructorId: f.instructor.id,
+        startAt: new Date("2026-09-01T01:00:00Z"),
+        endAt: new Date("2026-10-15T01:00:00Z"),
+      },
+    });
+    await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-10-01T03:00:00Z"),
+      { subscriptionId: f.subscription.id, recurringClassId: legacy.id },
+    );
+    const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+    const response = await f.preview().expect(409);
+    expect(response.body.error).toContain("変更前のクラス");
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      before,
+    );
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(f.subscription.planId);
+  });
+
+  it("rejects a stale preview when a predecessor booking changes", async () => {
+    const f = await fixture();
+    const predecessor = await prisma.recurringClass.create({
+      data: {
+        subscriptionId: f.subscription.id,
+        instructorId: f.instructor.id,
+        startAt: new Date("2026-09-01T01:00:00Z"),
+        endAt: new Date("2026-10-15T01:00:00Z"),
+      },
+    });
+    await prisma.recurringClass.update({
+      where: { id: f.a.id },
+      data: {
+        startAt: predecessor.endAt,
+        previousRecurringClassId: predecessor.id,
+      },
+    });
+    await prisma.class.update({
+      where: { id: f.aBookings[0].id },
+      data: { recurringClassId: predecessor.id },
+    });
+    const preview = (await f.preview().expect(200)).body;
+    await prisma.class.update({
+      where: { id: f.aBookings[0].id },
+      data: { status: "canceledByCustomer" },
+    });
+    const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+    await f.apply(preview.previewToken).expect(409);
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      before,
+    );
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(f.subscription.planId);
+  });
+
   it.each([0, 1])(
     "reduces unused slots with %i assigned classes without deleting bookings",
     async (assignedCount) => {

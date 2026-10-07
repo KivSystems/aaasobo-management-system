@@ -81,10 +81,11 @@ export const deleteSubscriptionController = async (
         cancellationDateObj,
       );
 
-      res.status(200).json({
-        message: "Subscription deleted successfully",
-        id: terminatedSubscription.id,
-      });
+      return terminatedSubscription;
+    });
+    res.status(200).json({
+      message: "Subscription deleted successfully",
+      id: req.params.id,
     });
   } catch (error) {
     console.error("Error deleting recurring class:", error);

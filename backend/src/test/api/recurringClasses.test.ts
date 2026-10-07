@@ -922,6 +922,9 @@ describe("PUT /recurring-classes/:id", () => {
 
     expect(response.body.oldRecurringClass.id).toBe(oldRecurringClass.id);
     expect(response.body.newRecurringClass.instructorId).toBe(newInstructor.id);
+    expect(response.body.newRecurringClass.previousRecurringClassId).toBe(
+      oldRecurringClass.id,
+    );
 
     const reloadedOld = await prisma.recurringClass.findUnique({
       where: { id: oldRecurringClass.id },
@@ -1117,6 +1120,26 @@ describe("regular class calendar preview", () => {
         ])
         .sort((a: string[], b: string[]) => a[0].localeCompare(b[0])),
     );
+  });
+
+  it("rejects editing a replaced version even before its scheduled end", async () => {
+    const f = await fixture();
+    await prisma.recurringClass.update({
+      where: { id: f.series.id },
+      data: { endAt: new Date("2026-10-22T07:00:00Z") },
+    });
+    const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+    for (const method of ["post", "put"] as const) {
+      await request(server)
+        [method](method === "post" ? `${f.url}/preview` : f.url)
+        .set("Cookie", f.cookie)
+        .send(f.data)
+        .expect(404);
+    }
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      before,
+    );
+    expect(await prisma.recurringClass.count()).toBe(1);
   });
 
   it("rejects moving a future regular class version before its start date", async () => {

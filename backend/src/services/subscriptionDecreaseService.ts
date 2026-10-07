@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { Prisma } from "@prisma/client";
+import { Prisma, RecurringClass } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import type {
   SubscriptionDecreaseData,
@@ -27,7 +27,10 @@ async function buildPreview(
   data: SubscriptionDecreaseData,
   now: Date,
   allowPartialSelection = false,
-): Promise<SubscriptionDecreasePreview> {
+): Promise<{
+  preview: SubscriptionDecreasePreview;
+  terminationVersionIds: number[];
+}> {
   const subscription = await tx.subscription.findUnique({
     where: { id },
     include: { plan: true },
@@ -88,9 +91,43 @@ async function buildPreview(
       "このプランに属する有効なレギュラークラスを選択してください。",
     );
   const cutoff = getRecurringClassTerminationCutoff(now);
+  const versions = new Map<number, RecurringClass>();
+  for (const selected of regularClasses) {
+    const visited = new Set<number>();
+    let version: RecurringClass | null = selected;
+    while (version) {
+      if (visited.has(version.id) || version.subscriptionId !== id)
+        throw new SubscriptionDecreaseError(
+          409,
+          "クラスの変更履歴を確認できません。管理者にお問い合わせください。",
+        );
+      visited.add(version.id);
+      versions.set(version.id, version);
+      version = version.previousRecurringClassId
+        ? await tx.recurringClass.findUnique({
+            where: { id: version.previousRecurringClassId },
+          })
+        : null;
+    }
+  }
+  const unresolvedLegacyVersion = await tx.recurringClass.findFirst({
+    where: {
+      subscriptionId: id,
+      endAt: { gt: now },
+      nextRecurringClass: null,
+      classes: { some: { dateTime: { gte: cutoff } } },
+    },
+    select: { id: true },
+  });
+  if (unresolvedLegacyVersion)
+    throw new SubscriptionDecreaseError(
+      409,
+      "変更前のクラスに未来の予約が残っています。変更開始後に減枠するか、管理者に履歴の確認を依頼してください。",
+    );
+  const terminationVersionIds = [...versions.keys()].sort((a, b) => a - b);
   const affectedClasses = await tx.class.findMany({
     where: {
-      recurringClassId: { in: data.recurringClassIds },
+      recurringClassId: { in: terminationVersionIds },
       dateTime: { gte: cutoff },
     },
     include: {
@@ -138,7 +175,9 @@ async function buildPreview(
         },
         cutoff,
         preview,
-        regularClasses: regularClasses.map((c) => [c.id, c.endAt]),
+        regularClasses: [...versions.values()]
+          .sort((a, b) => a.id - b.id)
+          .map((c) => [c.id, c.endAt, c.previousRecurringClassId]),
         affectedClasses: affectedClasses.map((c) => [
           c.id,
           c.dateTime,
@@ -149,7 +188,7 @@ async function buildPreview(
       }),
     )
     .digest("hex");
-  return { ...preview, previewToken };
+  return { preview: { ...preview, previewToken }, terminationVersionIds };
 }
 
 export async function previewSubscriptionDecrease(
@@ -157,7 +196,7 @@ export async function previewSubscriptionDecrease(
   data: SubscriptionDecreaseData,
 ) {
   return prisma.$transaction(
-    (tx) => buildPreview(tx, id, data, new Date(), true),
+    async (tx) => (await buildPreview(tx, id, data, new Date(), true)).preview,
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
   );
 }
@@ -170,7 +209,12 @@ export async function applySubscriptionDecrease(
   return prisma.$transaction(
     async (tx) => {
       const now = new Date();
-      const preview = await buildPreview(tx, id, data, now);
+      const { preview, terminationVersionIds } = await buildPreview(
+        tx,
+        id,
+        data,
+        now,
+      );
       if (preview.previewToken !== previewToken)
         throw new SubscriptionDecreaseError(
           409,
@@ -180,7 +224,7 @@ export async function applySubscriptionDecrease(
         where: { id },
         data: { planId: data.planId, selectType: data.selectType },
       });
-      for (const recurringClassId of data.recurringClassIds)
+      for (const recurringClassId of terminationVersionIds)
         await terminateRecurringClass(tx, recurringClassId, now);
     },
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
