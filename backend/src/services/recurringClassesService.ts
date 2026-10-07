@@ -102,7 +102,7 @@ function createWeeklyDates(start: Date, end: Date): Date[] {
   return dates;
 }
 
-export function getRecurringClassTerminationCutoff(endDate: Date): Date {
+function getRecurringClassTerminationCutoff(endDate: Date): Date {
   return nHoursBefore(
     JAPAN_TIME_DIFF,
     new Date(
@@ -119,6 +119,7 @@ export async function terminateRecurringClass(
   tx: Prisma.TransactionClient,
   recurringClassId: number,
   endDate: Date,
+  deletionCutoff = getRecurringClassTerminationCutoff(endDate),
 ): Promise<RecurringClass> {
   const existing = await tx.recurringClass.findUniqueOrThrow({
     where: { id: recurringClassId },
@@ -131,13 +132,11 @@ export async function terminateRecurringClass(
     },
   });
 
-  const startOfEndDate = getRecurringClassTerminationCutoff(endDate);
-
   // Delete future classes
   await tx.class.deleteMany({
     where: {
       recurringClassId,
-      dateTime: { gte: startOfEndDate },
+      dateTime: { gte: deletionCutoff },
     },
   });
   // ClassAttendance records will be cascade deleted automatically
@@ -559,7 +558,9 @@ async function prepareRegularClassChange(
   )
     throw new Error("Regular class already exists at this time slot");
   const { rows, events } = await loadCalendarClasses(tx, customerId);
-  const cutoff = getRecurringClassTerminationCutoff(firstOccurrence);
+  const cutoff = getRecurringClassTerminationCutoff(
+    getJstDateAtUtcMidnight(firstOccurrence),
+  );
   const removedClasses = rows.filter(
     (c) => c.recurringClassId === recurringClassId && c.dateTime! >= cutoff,
   );
@@ -613,6 +614,7 @@ async function prepareRegularClassChange(
     subscriptionId: existing.subscription.id,
     firstOccurrence,
     generationEnd: end,
+    deletionCutoff: cutoff,
     calendar,
     previewToken,
   };
@@ -644,6 +646,7 @@ export const updateRegularClass = async (params: UpdateRegularClassParams) =>
         tx,
         params.recurringClassId,
         prepared.firstOccurrence,
+        prepared.deletionCutoff,
       );
       const { recurringClass: newRecurringClass, createdClasses } =
         await createRecurringClass(

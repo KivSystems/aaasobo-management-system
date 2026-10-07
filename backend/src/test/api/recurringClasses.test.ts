@@ -998,6 +998,81 @@ describe("regular class calendar preview", () => {
     return { ...core, cookie, series, data, url, preview };
   }
 
+  it("preserves the previous JST day's makeup when changing to an early morning schedule", async () => {
+    const f = await fixture();
+    await createInstructorSlot(f.schedule.id, 4, time`08:00`);
+    const makeup = await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-09-16T07:00:00Z"),
+      {
+        recurringClassId: f.series.id,
+        subscriptionId: f.subscription.id,
+        status: "rebooked",
+      },
+    );
+    const attendance = await prisma.classAttendance.create({
+      data: { classId: makeup.id, childrenId: f.children[0].id },
+    });
+    const sameDay = await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-09-16T16:00:00Z"),
+      {
+        recurringClassId: f.series.id,
+        subscriptionId: f.subscription.id,
+        status: "rebooked",
+      },
+    );
+    const data = { ...f.data, startTime: "08:00" };
+    const preview = (
+      await request(server)
+        .post(`${f.url}/preview`)
+        .set("Cookie", f.cookie)
+        .send(data)
+        .expect(200)
+    ).body;
+    expect(preview.effectiveAt).toBe("2026-09-16T23:00:00.000Z");
+    expect(
+      preview.calendar.after.some(
+        (event: { id: string }) => event.id === String(makeup.id),
+      ),
+    ).toBe(true);
+    expect(
+      preview.calendar.after.some(
+        (event: { id: string }) => event.id === String(sameDay.id),
+      ),
+    ).toBe(false);
+    await request(server)
+      .put(f.url)
+      .set("Cookie", f.cookie)
+      .send({ ...data, previewToken: preview.previewToken })
+      .expect(200);
+    expect(await prisma.class.findUnique({ where: { id: makeup.id } })).toEqual(
+      makeup,
+    );
+    expect(
+      await prisma.classAttendance.findUnique({
+        where: {
+          classId_childrenId: {
+            classId: attendance.classId,
+            childrenId: attendance.childrenId,
+          },
+        },
+      }),
+    ).toEqual(attendance);
+    expect(
+      await prisma.class.findUnique({ where: { id: sameDay.id } }),
+    ).toBeNull();
+    expect(
+      (
+        await prisma.recurringClass.findUniqueOrThrow({
+          where: { id: f.series.id },
+        })
+      ).endAt?.toISOString(),
+    ).toBe(preview.effectiveAt);
+  });
+
   it("previews the exact persisted schedule including retained classes, makeups, conflicts and absences without mutation", async () => {
     const f = await fixture();
     await createClass(
