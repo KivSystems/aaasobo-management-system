@@ -120,10 +120,15 @@ export async function terminateRecurringClass(
   recurringClassId: number,
   endDate: Date,
 ): Promise<RecurringClass> {
-  // Set endAt to indicate termination
+  const existing = await tx.recurringClass.findUniqueOrThrow({
+    where: { id: recurringClassId },
+  });
   const terminatedRecurringClass = await tx.recurringClass.update({
     where: { id: recurringClassId },
-    data: { endAt: endDate },
+    data: {
+      endAt:
+        existing.endAt && existing.endAt < endDate ? existing.endAt : endDate,
+    },
   });
 
   const startOfEndDate = getRecurringClassTerminationCutoff(endDate);
@@ -180,6 +185,7 @@ async function createRecurringClass(
   tx: Prisma.TransactionClient,
   params: CreateRegularClassParams,
   generationEnd?: Date,
+  previousRecurringClassId?: number,
 ): Promise<{ recurringClass: RecurringClass; createdClasses: Class[] }> {
   const {
     instructorId,
@@ -247,6 +253,7 @@ async function createRecurringClass(
       subscriptionId,
       startAt: firstOccurrence,
       endAt: null,
+      previousRecurringClassId,
     },
   });
 
@@ -503,8 +510,7 @@ async function prepareRegularClassChange(
     throw new Error("Regular class not found");
   if (existing.subscription.endAt)
     throw new Error("Subscription no longer accepts regular classes");
-  if (existing.endAt && existing.endAt <= new Date())
-    throw new Error("Regular class not found");
+  if (existing.endAt) throw new Error("Regular class not found");
   const children = await tx.child.findMany({
     where: { id: { in: childrenIds }, customerId },
     orderBy: { id: "asc" },
@@ -644,6 +650,7 @@ export const updateRegularClass = async (params: UpdateRegularClassParams) =>
           tx,
           { ...params, subscriptionId: prepared.subscriptionId },
           prepared.generationEnd,
+          params.recurringClassId,
         );
       return { oldRecurringClass, newRecurringClass, createdClasses };
     },
