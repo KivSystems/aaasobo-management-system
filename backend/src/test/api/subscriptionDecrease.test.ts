@@ -109,6 +109,180 @@ async function fixture() {
 }
 
 describe("subscription decrease confirmation", () => {
+  it.each([0, 1])(
+    "reduces unused slots with %i assigned classes without deleting bookings",
+    async (assignedCount) => {
+      const f = await fixture();
+      const removedIds = assignedCount === 0 ? [f.a.id, f.b.id] : [f.a.id];
+      await prisma.class.deleteMany({
+        where: { recurringClassId: { in: removedIds } },
+      });
+      await prisma.recurringClass.deleteMany({
+        where: { id: { in: removedIds } },
+      });
+      await prisma.recurringClass.create({
+        data: { subscriptionId: f.subscription.id },
+      });
+      const otherSubscription = await createSubscription(
+        f.subscription.planId,
+        f.customer.id,
+        { endAt: null },
+      );
+      const otherSeries = await prisma.recurringClass.create({
+        data: {
+          subscriptionId: otherSubscription.id,
+          instructorId: f.instructor.id,
+        },
+      });
+      await createClass(
+        f.customer.id,
+        f.instructor.id,
+        new Date("2026-10-09T03:00:00Z"),
+        {
+          subscriptionId: otherSubscription.id,
+          recurringClassId: otherSeries.id,
+        },
+      );
+      const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+      const data = { ...f.data, recurringClassIds: [] };
+      const preview = (
+        await request(server)
+          .post(`${f.url}/preview`)
+          .set("Cookie", f.cookie)
+          .send({ updateSubscriptionData: data })
+          .expect(200)
+      ).body;
+      expect(preview.calendar.after).toEqual(preview.calendar.before);
+      expect(
+        (
+          await prisma.subscription.findUniqueOrThrow({
+            where: { id: f.subscription.id },
+          })
+        ).planId,
+      ).toBe(f.subscription.planId);
+      await request(server)
+        .patch(f.url)
+        .set("Cookie", f.cookie)
+        .send({
+          updateSubscriptionData: {
+            ...data,
+            previewToken: preview.previewToken,
+          },
+        })
+        .expect(200);
+      expect(
+        (
+          await prisma.subscription.findUniqueOrThrow({
+            where: { id: f.subscription.id },
+          })
+        ).planId,
+      ).toBe(f.smallerPlan.id);
+      expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+        before,
+      );
+      expect(
+        await prisma.recurringClass.count({
+          where: {
+            subscriptionId: f.subscription.id,
+            endAt: null,
+            instructorId: { not: null },
+            startAt: { not: null },
+          },
+        }),
+      ).toBe(assignedCount);
+      expect(
+        (
+          await prisma.recurringClass.findUniqueOrThrow({
+            where: { id: otherSeries.id },
+          })
+        ).endAt,
+      ).toBeNull();
+      expect(preview.requiredTerminationCount).toBe(0);
+    },
+  );
+
+  it("requires only assignments exceeding the smaller plan when unused slots exist", async () => {
+    const f = await fixture();
+    await prisma.plan.update({
+      where: { id: f.subscription.planId },
+      data: { weeklyClassTimes: 4 },
+    });
+    const retained = await prisma.recurringClass.create({
+      data: {
+        subscriptionId: f.subscription.id,
+        instructorId: f.instructor.id,
+        startAt: new Date("2026-09-09T03:00:00Z"),
+      },
+    });
+    const retainedClass = await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-10-09T03:00:00Z"),
+      { subscriptionId: f.subscription.id, recurringClassId: retained.id },
+    );
+    const data = { ...f.data, recurringClassIds: [f.a.id, f.b.id] };
+    const preview = (
+      await request(server)
+        .post(`${f.url}/preview`)
+        .set("Cookie", f.cookie)
+        .send({ updateSubscriptionData: data })
+        .expect(200)
+    ).body;
+    await request(server)
+      .patch(f.url)
+      .set("Cookie", f.cookie)
+      .send({
+        updateSubscriptionData: { ...data, previewToken: preview.previewToken },
+      })
+      .expect(200);
+    expect(preview.requiredTerminationCount).toBe(2);
+    expect(
+      await prisma.class.findUnique({ where: { id: retainedClass.id } }),
+    ).toEqual(retainedClass);
+    expect(
+      await prisma.recurringClass.count({
+        where: { subscriptionId: f.subscription.id, endAt: null },
+      }),
+    ).toBe(1);
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(f.smallerPlan.id);
+  });
+
+  it("rejects historical schedule versions with a future end date as termination selections", async () => {
+    const f = await fixture();
+    const ending = await prisma.recurringClass.create({
+      data: {
+        subscriptionId: f.subscription.id,
+        instructorId: f.instructor.id,
+        startAt: new Date("2026-09-01"),
+        endAt: new Date("2026-10-15"),
+      },
+    });
+    const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+    await request(server)
+      .post(`${f.url}/preview`)
+      .set("Cookie", f.cookie)
+      .send({
+        updateSubscriptionData: { ...f.data, recurringClassIds: [ending.id] },
+      })
+      .expect(400);
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(f.subscription.planId);
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      before,
+    );
+  });
+
   it("previews the current calendar with no selection without allowing an empty downgrade", async () => {
     const f = await fixture();
     const data = { ...f.data, recurringClassIds: [] };

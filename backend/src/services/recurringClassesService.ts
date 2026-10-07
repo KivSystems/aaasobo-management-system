@@ -225,6 +225,8 @@ async function createRecurringClass(
     weekday,
     startTime,
   );
+  if (firstOccurrence < subscription.startAt)
+    throw new Error("Regular class cannot start before subscription");
 
   // Check for conflicting regular classes
   const hasConflict = await conflictingRegularClassExists(
@@ -520,6 +522,15 @@ async function prepareRegularClassChange(
     weekday,
     startTime,
   );
+  if (firstOccurrence < existing.subscription.startAt)
+    throw new Error("Regular class cannot start before subscription");
+  if (existing.startAt) {
+    const existingJstDate = new Date(
+      existing.startAt.getTime() + JAPAN_TIME_DIFF * 60 * 60 * 1000,
+    );
+    if (firstOccurrence < getRecurringClassTerminationCutoff(existingJstDate))
+      throw new Error("Regular class change cannot precede its start date");
+  }
   if (
     !(await findAvailableInstructorSlot(
       tx,

@@ -18,6 +18,7 @@ import {
 
 function RegularClassesTable({
   subscriptionId,
+  subscriptionStartAt,
   subscriptionEndAt,
   userSessionType,
   adminId,
@@ -31,6 +32,7 @@ function RegularClassesTable({
   refreshKey,
 }: {
   subscriptionId: number;
+  subscriptionStartAt?: string;
   subscriptionEndAt?: string | null;
   userSessionType?: UserType;
   adminId?: number;
@@ -242,6 +244,7 @@ function RegularClassesTable({
           isOpen={isAddingClass}
           onClose={() => setIsAddingClass(false)}
           subscriptionId={subscriptionId}
+          subscriptionStartAt={subscriptionStartAt}
           customerId={customerId}
           allChildren={allChildren}
           userSessionType={userSessionType}
@@ -258,6 +261,7 @@ function RegularClassesTable({
           isOpen={isEditModalOpen}
           onClose={handleCloseEditModal}
           recurringClass={editingClass}
+          subscriptionStartAt={subscriptionStartAt}
           customerId={customerId}
           allChildren={allChildren}
           userSessionType={userSessionType}
