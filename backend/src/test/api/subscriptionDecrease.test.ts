@@ -16,6 +16,7 @@ import {
 
 afterEach(() => vi.useRealTimers());
 async function fixture() {
+  vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date("2026-09-24T03:00:00Z"));
   const cookie = await generateAuthCookie((await createAdmin()).id, "admin");
   const customer = await createCustomer();
@@ -109,6 +110,121 @@ async function fixture() {
 }
 
 describe("subscription decrease confirmation", () => {
+  it("preserves today's completed and started classes and attendance while removing future bookings", async () => {
+    const f = await fixture();
+    const child = await createChild(f.customer.id);
+    const preserved = [];
+    for (const [dateTime, status] of [
+      ["2026-09-24T01:00:00Z", "completed"],
+      ["2026-09-24T02:50:00Z", "booked"],
+    ] as const) {
+      const booking = await createClass(
+        f.customer.id,
+        f.instructor.id,
+        new Date(dateTime),
+        {
+          recurringClassId: f.a.id,
+          subscriptionId: f.subscription.id,
+          status,
+        },
+      );
+      const attendance = await prisma.classAttendance.create({
+        data: { classId: booking.id, childrenId: child.id },
+      });
+      preserved.push({ booking, attendance });
+    }
+    const siblingAttendance = await prisma.classAttendance.findMany({
+      where: { classId: { in: f.bBookings.map((c) => c.id) } },
+      orderBy: { classId: "asc" },
+    });
+    const preview = (await f.preview().expect(200)).body;
+    for (const { booking } of preserved)
+      expect(
+        preview.calendar.after.some(
+          (event: { id: string }) => event.id === String(booking.id),
+        ),
+      ).toBe(true);
+    await f.apply(preview.previewToken).expect(200);
+    for (const { booking, attendance } of preserved) {
+      expect(
+        await prisma.class.findUnique({ where: { id: booking.id } }),
+      ).toEqual(booking);
+      expect(
+        await prisma.classAttendance.findUnique({
+          where: {
+            classId_childrenId: {
+              classId: attendance.classId,
+              childrenId: attendance.childrenId,
+            },
+          },
+        }),
+      ).toEqual(attendance);
+    }
+    expect(
+      await prisma.class.count({
+        where: { id: { in: f.aBookings.map((c) => c.id) } },
+      }),
+    ).toBe(0);
+    expect(
+      await prisma.class.findMany({
+        where: { recurringClassId: f.b.id },
+        orderBy: { id: "asc" },
+      }),
+    ).toEqual(f.bBookings);
+    expect(
+      await prisma.classAttendance.findMany({
+        where: { classId: { in: f.bBookings.map((c) => c.id) } },
+        orderBy: { classId: "asc" },
+      }),
+    ).toEqual(siblingAttendance);
+  });
+
+  it("accepts a preview after the clock advances without changing affected bookings", async () => {
+    const f = await fixture();
+    const preview = (await f.preview().expect(200)).body;
+    vi.setSystemTime(new Date("2026-09-24T03:00:10Z"));
+    expect((await f.preview().expect(200)).body.previewToken).toBe(
+      preview.previewToken,
+    );
+    await f.apply(preview.previewToken).expect(200);
+    expect(
+      await prisma.class.count({ where: { recurringClassId: f.a.id } }),
+    ).toBe(0);
+  });
+
+  it("rejects confirmation after a selected booking starts and accepts a refreshed preview", async () => {
+    const f = await fixture();
+    const starting = await createClass(
+      f.customer.id,
+      f.instructor.id,
+      new Date("2026-09-24T03:00:05Z"),
+      {
+        recurringClassId: f.a.id,
+        subscriptionId: f.subscription.id,
+      },
+    );
+    const preview = (await f.preview().expect(200)).body;
+    const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+    vi.setSystemTime(new Date("2026-09-24T03:00:10Z"));
+    await f.apply(preview.previewToken).expect(409);
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      before,
+    );
+    expect(
+      (
+        await prisma.subscription.findUniqueOrThrow({
+          where: { id: f.subscription.id },
+        })
+      ).planId,
+    ).toBe(f.subscription.planId);
+    const refreshed = (await f.preview().expect(200)).body;
+    expect(refreshed.previewToken).not.toBe(preview.previewToken);
+    await f.apply(refreshed.previewToken).expect(200);
+    expect(
+      await prisma.class.findUnique({ where: { id: starting.id } }),
+    ).toEqual(starting);
+  });
+
   it("removes pending predecessor bookings for the selected slot without changing sibling bookings or history", async () => {
     const f = await fixture();
     const historicalEnd = new Date("2026-09-15T01:00:00Z");

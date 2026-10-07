@@ -5,10 +5,7 @@ import type {
   SubscriptionDecreaseData,
   SubscriptionDecreasePreview,
 } from "../../../shared/schemas/subscriptions";
-import {
-  getRecurringClassTerminationCutoff,
-  terminateRecurringClass,
-} from "./recurringClassesService";
+import { terminateRecurringClass } from "./recurringClassesService";
 
 import { loadCalendarClasses } from "./schedulePreviewService";
 
@@ -90,7 +87,7 @@ async function buildPreview(
       400,
       "このプランに属する有効なレギュラークラスを選択してください。",
     );
-  const cutoff = getRecurringClassTerminationCutoff(now);
+  const cutoff = now;
   const versions = new Map<number, RecurringClass>();
   for (const selected of regularClasses) {
     const visited = new Set<number>();
@@ -173,7 +170,6 @@ async function buildPreview(
           ...data,
           recurringClassIds: [...data.recurringClassIds].sort((a, b) => a - b),
         },
-        cutoff,
         preview,
         regularClasses: [...versions.values()]
           .sort((a, b) => a.id - b.id)
@@ -225,7 +221,7 @@ export async function applySubscriptionDecrease(
         data: { planId: data.planId, selectType: data.selectType },
       });
       for (const recurringClassId of terminationVersionIds)
-        await terminateRecurringClass(tx, recurringClassId, now);
+        await terminateRecurringClass(tx, recurringClassId, now, now);
     },
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
   );
