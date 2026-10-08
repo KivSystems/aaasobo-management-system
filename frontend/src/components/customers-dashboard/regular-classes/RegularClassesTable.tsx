@@ -225,6 +225,7 @@ function RegularClassesTable({
                   key={recurringClass.id}
                   recurringClass={recurringClass}
                   language={language}
+                  userSessionType={userSessionType}
                 />
               ))}
             </div>
