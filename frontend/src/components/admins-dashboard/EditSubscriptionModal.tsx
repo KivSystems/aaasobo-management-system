@@ -1,5 +1,7 @@
 "use client";
 
+import { revalidateCustomerCalendar } from "@/app/actions/revalidate";
+
 import React, { ChangeEvent, useEffect, useState } from "react";
 import Modal from "../elements/modal/Modal";
 import styles from "./EditSubscriptionModal.module.scss";
@@ -313,6 +315,7 @@ function EditSubscriptionModal({
       } else {
         setError("エラーが発生しました。時間をおいて再度お試しください。");
       }
+      await revalidateCustomerCalendar(customerId, userSessionType);
       setPreview(null);
       onSuccess?.();
       onClose();
