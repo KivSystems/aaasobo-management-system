@@ -13,6 +13,19 @@ const executeErrorMessage = "Failed to execute normalized import";
 const downloadErrorMessage = "Failed to download normalized package";
 const incrementalErrorMessage = "Failed to execute incremental import";
 
+const readImportResponse = async (response: Response, fallback: string) => {
+  try {
+    return await response.json();
+  } catch {
+    if (response.status === 504) {
+      throw new Error(
+        "The import request timed out. Check the current data before retrying; the import may have completed.",
+      );
+    }
+    throw new Error(`${fallback} (HTTP ${response.status})`);
+  }
+};
+
 export interface AdminImportExecuteError extends Error {
   details?: unknown;
 }
@@ -31,7 +44,7 @@ export const normalizeAdminImportSource = async (
     body: formData,
   });
 
-  const data = await response.json();
+  const data = await readImportResponse(response, normalizeErrorMessage);
 
   if (!response.ok) {
     throw new Error(
@@ -86,7 +99,7 @@ export const executeNormalizedImport = async ({
     body: formData,
   });
 
-  const data = await response.json();
+  const data = await readImportResponse(response, executeErrorMessage);
   if (!response.ok) {
     const error = new Error(
       typeof data?.message === "string" ? data.message : executeErrorMessage,
@@ -111,7 +124,7 @@ export const executeIncrementalAdminImport = async (
     },
     body: formData,
   });
-  const data = await response.json();
+  const data = await readImportResponse(response, incrementalErrorMessage);
   if (!response.ok) {
     const error = new Error(
       typeof data?.message === "string"
