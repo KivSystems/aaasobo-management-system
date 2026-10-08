@@ -37,6 +37,62 @@ describe("GET /children", () => {
 });
 
 describe("POST /children", () => {
+  it.each(["   ", "\t\n", "　"])(
+    "rejects whitespace-only child name %j on create and edit",
+    async (name) => {
+      const authCookie = await createAdminAuthCookie();
+      const customer = await createCustomer();
+      const child = await createChild(customer.id);
+      const before = await prisma.child.count({
+        where: { customerId: customer.id },
+      });
+      const data = {
+        name,
+        birthdate: "2020-02-20",
+        personalInfo: "QA profile",
+        customerId: customer.id,
+      };
+
+      await request(server)
+        .post("/children")
+        .set("Cookie", authCookie)
+        .send(data)
+        .expect(400);
+      await request(server)
+        .patch(`/children/${child.id}`)
+        .set("Cookie", authCookie)
+        .send(data)
+        .expect(400);
+
+      expect(
+        await prisma.child.count({ where: { customerId: customer.id } }),
+      ).toBe(before);
+      const persisted = await prisma.child.findUniqueOrThrow({
+        where: { id: child.id },
+      });
+      expect(persisted.name).toBe(child.name);
+    },
+  );
+
+  it("trims surrounding whitespace when creating a child", async () => {
+    const authCookie = await createAdminAuthCookie();
+    const customer = await createCustomer();
+    await request(server)
+      .post("/children")
+      .set("Cookie", authCookie)
+      .send({
+        name: "  QA Child  ",
+        birthdate: "2020-02-20",
+        personalInfo: "QA profile",
+        customerId: customer.id,
+      })
+      .expect(200);
+    const child = await prisma.child.findFirstOrThrow({
+      where: { customerId: customer.id },
+    });
+    expect(child.name).toBe("QA Child");
+  });
+
   it("succeed with valid data", async () => {
     const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();

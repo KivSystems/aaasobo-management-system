@@ -197,6 +197,41 @@ describe("PATCH /customers/:id", () => {
     expect(updatedCustomer?.emailVerified).toBeNull();
   });
 
+  it.each(["   ", "\t\n", "　"])(
+    "rejects a whitespace-only name %j without changing the customer",
+    async (name) => {
+      const authCookie = await createAdminAuthCookie();
+      const customer = await createCustomer();
+      await request(server)
+        .patch(`/customers/${customer.id}`)
+        .set("Cookie", authCookie)
+        .send({ name, email: customer.email, prefecture: customer.prefecture })
+        .expect(400);
+      const persisted = await prisma.customer.findUniqueOrThrow({
+        where: { id: customer.id },
+      });
+      expect(persisted.name).toBe(customer.name);
+    },
+  );
+
+  it("trims surrounding whitespace and retains spaces inside a valid name", async () => {
+    const authCookie = await createAdminAuthCookie();
+    const customer = await createCustomer();
+    await request(server)
+      .patch(`/customers/${customer.id}`)
+      .set("Cookie", authCookie)
+      .send({
+        name: "  Test Customer  ",
+        email: customer.email,
+        prefecture: customer.prefecture,
+      })
+      .expect(200);
+    const persisted = await prisma.customer.findUniqueOrThrow({
+      where: { id: customer.id },
+    });
+    expect(persisted.name).toBe("Test Customer");
+  });
+
   it("fail for missing required fields", async () => {
     const authCookie = await createAdminAuthCookie();
     const customer = await createCustomer();
@@ -226,6 +261,28 @@ describe("GET /customers/:id/child-profiles", () => {
       .expect(200);
 
     expect(response.body).toHaveLength(2);
+  });
+
+  it("returns imported child profiles without personal information", async () => {
+    const authCookie = await createAdminAuthCookie();
+    const customer = await createCustomer();
+    const child = await prisma.child.create({
+      data: {
+        customerId: customer.id,
+        name: faker.person.fullName(),
+        birthdate: faker.date.past({ years: 10 }),
+        personalInfo: null,
+      },
+    });
+
+    const response = await request(server)
+      .get(`/customers/${customer.id}/child-profiles`)
+      .set("Cookie", authCookie)
+      .expect(200);
+
+    expect(response.body).toEqual([
+      expect.objectContaining({ id: child.id, personalInfo: null }),
+    ]);
   });
 });
 
@@ -401,6 +458,11 @@ describe("POST /customers/:id/subscription", () => {
       where: { customerId: customer.id, planId: plan.id },
     });
     expect(subscription).toBeTruthy();
+    expect(
+      await prisma.recurringClass.count({
+        where: { subscriptionId: subscription!.id },
+      }),
+    ).toBe(0);
   });
 
   it("fail for invalid planId type", async () => {

@@ -1,3 +1,6 @@
+"use client";
+
+import { useLanguage } from "@/contexts/LanguageContext";
 import React from "react";
 import clsx from "clsx";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
@@ -51,13 +54,15 @@ function InputField({
   autoComplete,
   showPassword = false,
   onTogglePasswordVisibility,
-  language = "en",
+  language: languageOverride,
   className,
   min,
   display = "block",
   readOnly,
   maxLength,
 }: InputFieldProps) {
+  const { language: contextLanguage } = useLanguage();
+  const language = languageOverride ?? contextLanguage;
   const isDecorated = Boolean(label || icon || type === "password");
   const computedRequired = required ?? inputRequired ?? true;
 

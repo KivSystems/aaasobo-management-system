@@ -22,12 +22,14 @@ interface AllInstructorAvailabilityCalendarProps {
     availableInstructors: InstructorRebookingProfile[],
   ) => void;
   language: "ja" | "en";
+  isFreeTrial: boolean;
   englishBackground: EnglishBackground;
 }
 
 export default function AllInstructorAvailabilityCalendar({
   onSlotSelect,
   language,
+  isFreeTrial,
   englishBackground,
 }: AllInstructorAvailabilityCalendarProps) {
   const fetchSlots = useCallback(
@@ -83,6 +85,7 @@ export default function AllInstructorAvailabilityCalendar({
         fetchSlots={fetchSlots}
         onSlotSelect={handleSlotSelect}
         language={language}
+        isFreeTrial={isFreeTrial}
         showInstructorCount
       />
     </div>

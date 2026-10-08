@@ -34,6 +34,13 @@ const StatusSwitcher = ({
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
   const { language } = useLanguage();
+  const displayStatus = (value: string) => {
+    if (language === "ja") {
+      if (value === "Active") return "在籍中";
+      if (value === "Leaving") return "卒業予定";
+    }
+    return capitalizeFirst(value);
+  };
 
   const dateInfo = useMemo(() => {
     if (!leavingDate) {
@@ -77,14 +84,14 @@ const StatusSwitcher = ({
                   status === statusOptions[0] ? styles["status--active"] : ""
                 }`}
               >
-                {capitalizeFirst(statusOptions[0])}
+                {displayStatus(statusOptions[0])}
               </span>
               <span
                 className={`${styles.status} ${
                   status === statusOptions[1] ? styles["status--active"] : ""
                 }`}
               >
-                {capitalizeFirst(statusOptions[1])}
+                {displayStatus(statusOptions[1])}
               </span>
             </div>
 
@@ -107,7 +114,9 @@ const StatusSwitcher = ({
                   onKeyDown={(e) => e.preventDefault()} // Prevent date input from typing
                   className={styles.leavingDate__inputField}
                 />
-                <span>(Japan Time)</span>
+                <span>
+                  {language === "ja" ? "（日本時間）" : "(Japan Time)"}
+                </span>
               </>
             )}
           </div>
@@ -122,7 +131,7 @@ const StatusSwitcher = ({
                 <p className={styles.userLeaving__text}>
                   {language === "en"
                     ? `${dateInfo.isPast ? "Left" : "Leaving"} on ${getLongMonth(new Date(leavingDate))} ${dateInfo.date}, ${dateInfo.year} (Japan Time)`
-                    : `${dateInfo.year}年${dateInfo.month + 1}月${dateInfo.date}日${dateInfo.isPast ? "退会済み" : "退会予定"} (日本時間)`}
+                    : `${dateInfo.year}年${dateInfo.month + 1}月${dateInfo.date}日${dateInfo.isPast ? "卒業済み" : "卒業予定"} (日本時間)`}
                 </p>
               </div>
             )}

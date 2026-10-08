@@ -62,6 +62,16 @@ const SLOT_LABELS: Record<InstructorCalendarSlotType, string> = {
   canceledByInstructor: "Canceled",
 };
 
+const SLOT_LABELS_JA: Record<InstructorCalendarSlotType, string> = {
+  businessEvent: "イベント",
+  open: "予約可能",
+  booked: "予約済み",
+  rebooked: "予約済み",
+  completed: "完了",
+  absence: "欠勤",
+  canceledByInstructor: "キャンセル済み",
+};
+
 const SLOT_SYMBOLS: Record<InstructorCalendarSlotType, string> = {
   businessEvent: "◆",
   open: "○",
@@ -169,41 +179,45 @@ export default function InstructorSlotCalendar({
     [getClassDetailUrl, router],
   );
 
-  const renderEventContent = useCallback((eventInfo: EventContentArg) => {
-    const slotType = eventInfo.event.extendedProps
-      .slotType as InstructorCalendarSlotType;
+  const renderEventContent = useCallback(
+    (eventInfo: EventContentArg) => {
+      const slotType = eventInfo.event.extendedProps
+        .slotType as InstructorCalendarSlotType;
 
-    if (slotType === "businessEvent") {
-      return null;
-    }
+      if (slotType === "businessEvent") {
+        return null;
+      }
 
-    const isClickable = CLICKABLE_SLOT_TYPES.includes(slotType);
-    const titleText =
-      eventInfo.event.title &&
-      !["open", "absence"].includes(slotType) &&
-      eventInfo.event.title !== SLOT_LABELS[slotType] &&
-      eventInfo.event.title !== "Class"
-        ? eventInfo.event.title
-        : "";
-    const compactLabel = titleText
-      ? `${SLOT_LABELS[slotType]} - ${titleText}`
-      : SLOT_LABELS[slotType];
+      const isClickable = CLICKABLE_SLOT_TYPES.includes(slotType);
+      const titleText =
+        eventInfo.event.title &&
+        !["open", "absence"].includes(slotType) &&
+        eventInfo.event.title !== SLOT_LABELS[slotType] &&
+        eventInfo.event.title !== "Class"
+          ? eventInfo.event.title
+          : "";
+      const labels = language === "ja" ? SLOT_LABELS_JA : SLOT_LABELS;
+      const compactLabel = titleText
+        ? `${labels[slotType]} - ${titleText}`
+        : labels[slotType];
 
-    return (
-      <div
-        className={`${styles.eventBlock} ${isClickable ? styles.clickable : ""}`}
-      >
-        <div className={styles.eventHeader}>
-          <span className={styles.statusBadge}>
-            <span className={styles.statusSymbol}>
-              {SLOT_SYMBOLS[slotType]}
+      return (
+        <div
+          className={`${styles.eventBlock} ${isClickable ? styles.clickable : ""}`}
+        >
+          <div className={styles.eventHeader}>
+            <span className={styles.statusBadge}>
+              <span className={styles.statusSymbol}>
+                {SLOT_SYMBOLS[slotType]}
+              </span>
+              {compactLabel}
             </span>
-            {compactLabel}
-          </span>
+          </div>
         </div>
-      </div>
-    );
-  }, []);
+      );
+    },
+    [language],
+  );
 
   return (
     <>

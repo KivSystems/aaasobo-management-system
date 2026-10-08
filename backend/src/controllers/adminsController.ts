@@ -88,7 +88,9 @@ import type {
   RegisterEventRequest,
   UpdateEventRequest,
 } from "../../../shared/schemas/admins";
+import { ENGLISH_BACKGROUND_LABELS } from "../constants/englishBackground";
 import { EnglishBackground } from "../types";
+import { getEnrollmentStatus } from "../services/enrollmentStatusService";
 
 // Register Admin
 export const registerAdminController = async (
@@ -303,6 +305,18 @@ export const getAllCustomersController = async (_: Request, res: Response) => {
   }
 };
 
+export const getEnrollmentStatusController = async (
+  _: Request,
+  res: Response,
+) => {
+  try {
+    res.json({ data: await getEnrollmentStatus() });
+  } catch (error) {
+    console.error("Failed to get enrollment status:", error);
+    res.status(500).json({ error });
+  }
+};
+
 // Displaying past customers' information for admin dashboard
 export const getAllPastCustomersController = async (
   _: Request,
@@ -360,18 +374,12 @@ export const getAllInstructorsController = async (
     // Transform the data structure.
     const data = instructors.map((instructor, number) => {
       const { id, name, nickname, email } = instructor;
-      const englishBackgroundLabel: Record<EnglishBackground, string> = {
-        [EnglishBackground.NonNative]: "Non Native",
-        [EnglishBackground.NativeA]: "Native A",
-        [EnglishBackground.NativeB]: "Native B",
-      };
-
       return {
         No: number + 1,
         ID: id,
         Instructor: nickname,
         English:
-          englishBackgroundLabel[
+          ENGLISH_BACKGROUND_LABELS[
             instructor.englishBackground as EnglishBackground
           ],
         "Full Name": name,
@@ -838,18 +846,13 @@ export const getAllPlansController = async (_: Request, res: Response) => {
       const { id, name, weeklyClassTimes, description, englishBackground } =
         plan;
       const [planNameJpn, planNameEng] = name.split(" / ");
-      const englishBackgroundLabel: Record<EnglishBackground, string> = {
-        [EnglishBackground.NonNative]: "Non Native",
-        [EnglishBackground.NativeA]: "Native A",
-        [EnglishBackground.NativeB]: "Native B",
-      };
-
       return {
         No: number + 1,
         ID: id,
         "Plan (Japanese)": planNameJpn,
         "Plan (English)": planNameEng,
-        English: englishBackgroundLabel[englishBackground as EnglishBackground],
+        English:
+          ENGLISH_BACKGROUND_LABELS[englishBackground as EnglishBackground],
         "Weekly Class Times": weeklyClassTimes,
         Description: description,
       };
@@ -1161,6 +1164,7 @@ export const getClassesWithinPeriodController = async (
     const classes = await getClassesWithinPeriod(
       designatedPeriodBefore,
       designatedPeriodAfter,
+      !shouldFetchTodayOnly,
     );
 
     // Transform the data structure.
@@ -1236,7 +1240,7 @@ export const getClassesWithinPeriodController = async (
       return {
         No: number + 1,
         ID: id,
-        "Date/Time (JST)": date ? `${date} ${time}` : "Not Set",
+        "Date/Time (JST)": dateTime ? `${date} ${time}` : "Not Set",
         Day: dayOfWeekStr,
         Instructor: instructorName,
         InstructorID: instructor?.id ?? null,

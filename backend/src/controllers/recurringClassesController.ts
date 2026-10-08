@@ -4,6 +4,7 @@ import {
   getRegularClassById,
   getRegularClassesBySubscriptionId,
   updateRegularClass,
+  previewRegularClassChange,
   getValidRecurringClassesByInstructorId,
   getRecurringClassesHistoryCountBySubscriptionId,
 } from "../services/recurringClassesService";
@@ -26,12 +27,17 @@ function handleRegularClassError(error: unknown, res: Response): Response {
   const err =
     error instanceof Error ? error : new Error("An unknown error occurred");
 
+  if (err.message === "Schedule changed. Review the preview again.")
+    return res.status(409).json({ message: err.message });
   const businessLogicErrors = [
     "Instructor is not available at the requested time slot",
     "Instructor schedule not found",
     "Only Asia/Tokyo timezone is supported",
     "Regular class already exists at this time slot",
     "Start date must be at least one week from today",
+    "Subscription no longer accepts regular classes",
+    "Regular class cannot start before subscription",
+    "Regular class change cannot precede its start date",
   ];
 
   if (businessLogicErrors.includes(err.message)) {
@@ -95,10 +101,34 @@ export const getRecurringClassesHistoryCountController = async (
   }
 };
 
+export const previewRegularClassController = async (
+  req: RequestWith<RecurringClassIdParams, UpdateRecurringClassRequest>,
+  res: Response,
+) => {
+  const user = (req as typeof req & { user?: { id: string; userType: string } })
+    .user;
+  if (user?.userType === "customer" && Number(user.id) !== req.body.customerId)
+    return res.status(403).json({ message: "Forbidden" });
+  try {
+    return res.json(
+      await previewRegularClassChange({
+        ...req.body,
+        recurringClassId: req.params.id,
+      }),
+    );
+  } catch (error) {
+    return handleRegularClassError(error, res);
+  }
+};
+
 export const updateRegularClassController = async (
   req: RequestWith<RecurringClassIdParams, UpdateRecurringClassRequest>,
   res: Response,
 ) => {
+  const user = (req as typeof req & { user?: { id: string; userType: string } })
+    .user;
+  if (user?.userType === "customer" && Number(user.id) !== req.body.customerId)
+    return res.status(403).json({ message: "Forbidden" });
   try {
     const result = await updateRegularClass({
       recurringClassId: req.params.id,

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface LanguageContextProps {
   language: LanguageType;
@@ -13,22 +13,33 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(
 
 export const LanguageProvider = ({
   children,
+  fixedLanguage,
 }: {
   children: React.ReactNode;
+  fixedLanguage?: LanguageType;
 }) => {
-  const [language, setLanguage] = useState<LanguageType>(() => {
-    if (typeof navigator !== "undefined") {
-      return navigator.language.startsWith("ja") ? "ja" : "en";
-    }
-    return "en";
-  });
+  // Keep the server render and the first client render identical. Browser
+  // language detection can only safely affect a subsequent client render.
+  const [language, setLanguage] = useState<LanguageType>("en");
+
+  useEffect(() => {
+    if (fixedLanguage) return;
+    const detectionTimer = window.setTimeout(() => {
+      setLanguage(navigator.language.startsWith("ja") ? "ja" : "en");
+    }, 0);
+
+    return () => window.clearTimeout(detectionTimer);
+  }, [fixedLanguage]);
 
   const toggleLanguage = () => {
+    if (fixedLanguage) return;
     setLanguage((prev) => (prev === "en" ? "ja" : "en"));
   };
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage }}>
+    <LanguageContext.Provider
+      value={{ language: fixedLanguage ?? language, toggleLanguage }}
+    >
       {children}
     </LanguageContext.Provider>
   );

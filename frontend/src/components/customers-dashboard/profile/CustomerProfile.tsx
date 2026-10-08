@@ -63,7 +63,10 @@ function CustomerProfile({
 
   const handleDeactivateClick = async () => {
     const confirmed = await confirmAlert(
-      "Are you sure to deactivate this customer? This action cannot be undone.",
+      language === "ja"
+        ? "このお客さまを無効化しますか？この操作は取り消せません。"
+        : "Are you sure to deactivate this customer? This action cannot be undone.",
+      language,
     );
 
     if (confirmed && customerProfile) {
@@ -223,7 +226,7 @@ function CustomerProfile({
               ) : null}
               <ActionButton
                 className="editCustomer"
-                btnText={language === "ja" ? "プロフィールを編集" : "Edit"}
+                btnText={language === "ja" ? "編集" : "Edit"}
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();

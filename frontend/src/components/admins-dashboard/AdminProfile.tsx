@@ -1,5 +1,7 @@
 "use client";
 
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
+
 import styles from "./AdminProfile.module.scss";
 import { useState, useCallback } from "react";
 import { updateAdminAction } from "@/app/actions/updateUser";
@@ -44,9 +46,10 @@ function AdminProfile({
       return {};
     }
     const newMessages: Record<string, string> = {};
-    if (result.name) newMessages.name = result.name;
-    if (result.email) newMessages.email = result.email;
-    if (result.errorMessage) newMessages.errorMessage = result.errorMessage;
+    if (result.name) newMessages.name = localizeAdminMessage(result.name);
+    if (result.email) newMessages.email = localizeAdminMessage(result.email);
+    if (result.errorMessage)
+      newMessages.errorMessage = localizeAdminMessage(result.errorMessage);
     return newMessages;
   };
 
@@ -93,7 +96,8 @@ function AdminProfile({
 
   const handleDeleteClick = async () => {
     const confirmed = await confirmAlert(
-      "Are you sure you want to delete this admin's profile?",
+      "この管理者のプロフィールを削除しますか？",
+      "ja",
     );
     if (confirmed && latestAdmin) {
       const formData = new FormData();
@@ -102,11 +106,11 @@ function AdminProfile({
       const result = await deleteAdminAction(deleteResultState, formData);
       setDeleteResultState(result);
       if ("id" in result && result.id) {
-        toast.success(ADMIN_DELETE_SUCCESS_MESSAGE);
+        toast.success(localizeAdminMessage(ADMIN_DELETE_SUCCESS_MESSAGE));
         setIsEditing(false);
         setLatestAdmin(null);
       } else if ("errorMessage" in result && result.errorMessage) {
-        toast.error(result.errorMessage);
+        toast.error(localizeAdminMessage(result.errorMessage));
       }
     }
   };
@@ -120,12 +124,12 @@ function AdminProfile({
 
     if ("admin" in result && result.admin) {
       const admin = result.admin as Admin;
-      toast.success(ADMIN_UPDATE_SUCCESS_MESSAGE);
+      toast.success(localizeAdminMessage(ADMIN_UPDATE_SUCCESS_MESSAGE));
       setIsEditing(false);
       setPreviousAdmin(admin);
       setLatestAdmin(admin);
     } else if ("errorMessage" in result && result.errorMessage) {
-      toast.error(result.errorMessage);
+      toast.error(localizeAdminMessage(result.errorMessage));
     }
   };
 
@@ -135,7 +139,7 @@ function AdminProfile({
   }
 
   if (!latestAdmin) {
-    return <p>Admin not found</p>;
+    return <p>管理者が見つかりません</p>;
   }
 
   const adminId = admin.id;
@@ -147,7 +151,7 @@ function AdminProfile({
           <form onSubmit={handleSubmit} className={styles.profileCard}>
             {/* Admin name */}
             <div className={styles.adminName__nameSection}>
-              <p className={styles.adminName__text}>Name</p>
+              <p className={styles.adminName__text}>名前</p>
               {isEditing ? (
                 <InputField
                   name="name"
@@ -164,7 +168,7 @@ function AdminProfile({
             <div className={styles.insideContainer}>
               <EnvelopeIcon className={styles.icon} />
               <div>
-                <p>Email</p>
+                <p>メールアドレス</p>
                 {isEditing ? (
                   <InputField
                     name="email"
@@ -189,7 +193,7 @@ function AdminProfile({
                 <div className={styles.buttons}>
                   <ActionButton
                     className="cancelEditingAdmin"
-                    btnText="Cancel"
+                    btnText="キャンセル"
                     type="button"
                     onClick={(e) => {
                       e.preventDefault();
@@ -198,7 +202,7 @@ function AdminProfile({
                   />
                   <ActionButton
                     className="saveAdmin"
-                    btnText="Save"
+                    btnText="保存"
                     type="submit"
                     Icon={CheckIcon}
                   />
@@ -208,7 +212,7 @@ function AdminProfile({
                   <div>
                     <ActionButton
                       className="deleteAdmin"
-                      btnText="Delete"
+                      btnText="削除"
                       type="button"
                       onClick={() => handleDeleteClick()}
                       disabled={userId === adminId && userId === SUPER_ADMIN_ID}
@@ -217,7 +221,7 @@ function AdminProfile({
                   <div>
                     <ActionButton
                       className="editAdmin"
-                      btnText="Edit"
+                      btnText="編集"
                       type="button"
                       onClick={handleEditClick}
                     />

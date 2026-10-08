@@ -1,19 +1,44 @@
 import { describe, expect, it } from "vitest";
 import request from "supertest";
 import JSZip from "jszip";
+import { Prisma } from "@prisma/client";
 import { server } from "../../../server";
 import { generateNormalizedImportFixture } from "../../../seed/generateNormalizedImportFixture";
 import { validateNormalizedImportFiles } from "../../../services/adminImport";
 import {
+  getCreatedIdsInInputOrder,
+  IMPORT_PRESERVED_TABLES,
+  IMPORT_RESET_TABLES,
+} from "../../../services/adminImport/execute";
+import {
   createAdmin,
   createCustomer,
+  createInstructor,
   generateAuthCookie,
 } from "../../testUtils";
 import { prisma } from "../../setup";
+import {
+  cancelClassById,
+  getRebookableClasses,
+} from "../../../services/classesService";
 
 const RAW_HEADER =
   ",英語村,,2020.10.,name,child name,plan,講師名,date,time,class,お子さま誕生日,兄弟お子さま誕生日,年齢,詳細,備考※月2回の場合は週を記入,favorite,,,";
 const IMPORT_FILE_SIZE_LIMIT_BYTES = 50 * 1024 * 1024;
+
+describe("normalized import bulk insert ID mapping", () => {
+  it("restores input order when createManyAndReturn returns rows out of order", () => {
+    expect(
+      getCreatedIdsInInputOrder([{ id: 103 }, { id: 101 }, { id: 102 }], 3),
+    ).toEqual([101, 102, 103]);
+  });
+
+  it("rejects an incomplete bulk insert result", () => {
+    expect(() => getCreatedIdsInInputOrder([{ id: 101 }], 2)).toThrow(
+      "Bulk insert returned 1 rows; expected 2",
+    );
+  });
+});
 
 function rawRow(columns: string[]) {
   return columns.join(",");
@@ -315,6 +340,16 @@ describe("POST /admins/import/normalize", () => {
 });
 
 describe("POST /admins/import/execute", () => {
+  it("defines a clean-import policy for every application table", () => {
+    const categorizedTables = [
+      ...IMPORT_RESET_TABLES,
+      ...IMPORT_PRESERVED_TABLES,
+    ].sort();
+    const applicationTables = Object.values(Prisma.ModelName).sort();
+
+    expect(categorizedTables).toEqual(applicationTables);
+  });
+
   it("executes normalized package by jobId", async () => {
     const admin = await createAdmin();
     const authCookie = await generateAuthCookie(admin.id, "admin");
@@ -442,7 +477,51 @@ describe("POST /admins/import/execute", () => {
 
   it("imports a normalized zip and persists cross-entity relationships", async () => {
     const admin = await createAdmin();
+    const existingInstructor = await createInstructor();
     const authCookie = await generateAuthCookie(admin.id, "admin");
+    const existingTag = await prisma.instructorTagCatalog.create({
+      data: {
+        label: "Existing tag",
+        sortOrder: 1,
+        createdBy: admin.id,
+      },
+    });
+
+    await Promise.all([
+      prisma.instructorTagAssignment.create({
+        data: {
+          instructorId: existingInstructor.id,
+          tagId: existingTag.id,
+          updatedBy: admin.id,
+        },
+      }),
+      prisma.instructorAbsence.create({
+        data: {
+          instructorId: existingInstructor.id,
+          absentAt: new Date("2025-01-01T00:00:00.000Z"),
+        },
+      }),
+      prisma.verificationToken.create({
+        data: {
+          email: "existing-verification@example.com",
+          token: "existing-verification-token",
+          expires: new Date("2030-01-01T00:00:00.000Z"),
+        },
+      }),
+      prisma.passwordResetToken.create({
+        data: {
+          email: "existing-reset@example.com",
+          token: "existing-reset-token",
+          expires: new Date("2030-01-01T00:00:00.000Z"),
+        },
+      }),
+      prisma.messageBoardPost.create({
+        data: {
+          target: 0,
+          body: "Existing message",
+        },
+      }),
+    ]);
 
     const zipBuffer = await buildZipBuffer(buildMinimalNormalizedFiles());
 
@@ -464,12 +543,22 @@ describe("POST /admins/import/execute", () => {
       subscriptions,
       instructors,
       instructorFees,
+      instructorSchedules,
+      instructorSlots,
+      instructorAbsences,
+      instructorTagCatalog,
+      instructorTagAssignments,
+      events,
       schedules,
       recurringClasses,
       classes,
       recurringClassAttendance,
       classAttendance,
-      status,
+      systemStatuses,
+      verificationTokens,
+      passwordResetTokens,
+      admins,
+      messageBoardPosts,
     ] = await Promise.all([
       prisma.plan.count(),
       prisma.customer.count(),
@@ -477,12 +566,22 @@ describe("POST /admins/import/execute", () => {
       prisma.subscription.count(),
       prisma.instructor.count(),
       prisma.instructorFee.count(),
+      prisma.instructorSchedule.count(),
+      prisma.instructorSlot.count(),
+      prisma.instructorAbsence.count(),
+      prisma.instructorTagCatalog.count(),
+      prisma.instructorTagAssignment.count(),
+      prisma.event.count(),
       prisma.schedule.count(),
       prisma.recurringClass.count(),
       prisma.class.count(),
       prisma.recurringClassAttendance.count(),
       prisma.classAttendance.count(),
-      prisma.systemStatus.findFirst(),
+      prisma.systemStatus.count(),
+      prisma.verificationToken.count(),
+      prisma.passwordResetToken.count(),
+      prisma.admin.count(),
+      prisma.messageBoardPost.count(),
     ]);
 
     expect(plans).toBe(1);
@@ -491,12 +590,22 @@ describe("POST /admins/import/execute", () => {
     expect(subscriptions).toBe(1);
     expect(instructors).toBe(1);
     expect(instructorFees).toBe(1);
+    expect(instructorSchedules).toBe(1);
+    expect(instructorSlots).toBe(1);
+    expect(instructorAbsences).toBe(0);
+    expect(instructorTagCatalog).toBe(0);
+    expect(instructorTagAssignments).toBe(0);
+    expect(events).toBe(1);
     expect(schedules).toBe(1);
     expect(recurringClasses).toBe(1);
     expect(classes).toBe(1);
     expect(recurringClassAttendance).toBe(1);
     expect(classAttendance).toBe(1);
-    expect(status?.status).toBe("Running");
+    expect(systemStatuses).toBe(1);
+    expect(verificationTokens).toBe(0);
+    expect(passwordResetTokens).toBe(0);
+    expect(admins).toBe(1);
+    expect(messageBoardPosts).toBe(0);
 
     const importedClass = await prisma.class.findFirst({
       include: {
@@ -535,9 +644,9 @@ describe("POST /admins/import/execute", () => {
     const admin = await createAdmin();
     const authCookie = await generateAuthCookie(admin.id, "admin");
     const generated = await generateNormalizedImportFixture({
-      from: "2026-01-01",
-      completedUntil: "2026-01-03",
-      to: "2026-01-07",
+      from: "2099-01-01",
+      completedUntil: "2099-01-03",
+      to: "2099-01-07",
     });
 
     const validation = validateNormalizedImportFiles(generated.files);
@@ -602,6 +711,56 @@ describe("POST /admins/import/execute", () => {
       generated.rows["recurring_class_attendance.csv"].length,
     );
     expect(classAttendance).toBe(generated.rows["class_attendance.csv"].length);
+
+    const [completedClasses, bookedClasses] = await Promise.all([
+      prisma.class.findMany({ where: { status: "completed" } }),
+      prisma.class.findMany({ where: { status: "booked" } }),
+    ]);
+    expect(
+      completedClasses.every(({ rebookableUntil }) => !rebookableUntil),
+    ).toBe(true);
+    expect(bookedClasses.length).toBeGreaterThan(0);
+    expect(
+      bookedClasses.every(
+        ({ dateTime, rebookableUntil }) =>
+          dateTime &&
+          rebookableUntil &&
+          rebookableUntil.getTime() - dateTime.getTime() ===
+            180 * 24 * 60 * 60 * 1000,
+      ),
+    ).toBe(true);
+
+    const classToCancel = bookedClasses[0];
+    await cancelClassById(classToCancel.id);
+    const rebookableClasses = await getRebookableClasses(
+      classToCancel.customerId,
+    );
+    expect(rebookableClasses).toContainEqual(
+      expect.objectContaining({ id: classToCancel.id }),
+    );
+
+    const [classRelationshipMismatches, attendanceRelationshipMismatches] =
+      await Promise.all([
+        prisma.$queryRaw<Array<{ count: bigint }>>`
+          SELECT COUNT(*) AS count
+          FROM "Class" c
+          JOIN "Subscription" s ON s.id = c."subscriptionId"
+          JOIN "RecurringClass" rc ON rc.id = c."recurringClassId"
+          WHERE c."customerId" <> s."customerId"
+             OR rc."subscriptionId" <> c."subscriptionId"
+             OR rc."instructorId" <> c."instructorId"
+        `,
+        prisma.$queryRaw<Array<{ count: bigint }>>`
+          SELECT COUNT(*) AS count
+          FROM "ClassAttendance" ca
+          JOIN "Class" c ON c.id = ca."classId"
+          JOIN "Child" child ON child.id = ca."childrenId"
+          WHERE c."customerId" <> child."customerId"
+        `,
+      ]);
+
+    expect(classRelationshipMismatches[0].count).toBe(0n);
+    expect(attendanceRelationshipMismatches[0].count).toBe(0n);
   }, 120_000);
 
   it("scales the deterministic fixture from the instructor count option", async () => {
@@ -616,53 +775,168 @@ describe("POST /admins/import/execute", () => {
     expect(validation.issues).toEqual([]);
     expect(validation.isValid).toBe(true);
     expect(generated.rows["instructors.csv"]).toHaveLength(5);
+    expect(generated.files["instructors.csv"]).toContain(
+      ",/images/default-user-icon.jpg?id=in0001,",
+    );
     expect(generated.rows["customers.csv"]).toHaveLength(50);
-    expect(generated.rows["children.csv"]).toHaveLength(55);
+    expect(generated.rows["children.csv"]).toHaveLength(100);
     expect(generated.rows["subscriptions.csv"]).toHaveLength(50);
-    expect(generated.rows["recurring_classes.csv"]).toHaveLength(55);
-    expect(generated.rows["recurring_class_attendance.csv"]).toHaveLength(65);
-    expect(generated.rows["classes.csv"]).toHaveLength(55);
-    expect(generated.rows["class_attendance.csv"]).toHaveLength(65);
-    expect(generated.rows["instructor_schedules.csv"]).toHaveLength(77);
+    expect(generated.rows["recurring_classes.csv"]).toHaveLength(100);
+    expect(generated.rows["recurring_class_attendance.csv"]).toHaveLength(200);
+    expect(generated.rows["classes.csv"]).toHaveLength(100);
+    expect(generated.rows["class_attendance.csv"]).toHaveLength(200);
+    expect(generated.rows["instructor_schedules.csv"]).toHaveLength(150);
   });
 
-  it("imports the deterministic fixture with more than 9999 classes", async () => {
-    const admin = await createAdmin();
-    const authCookie = await generateAuthCookie(admin.id, "admin");
+  it("generates dense UI-review data with compatible plans and instructors", async () => {
     const generated = await generateNormalizedImportFixture({
       from: "2026-01-01",
-      completedUntil: "2026-05-22",
-      to: "2026-05-31",
-      instructorCount: 50,
+      completedUntil: "2026-01-03",
+      to: "2026-01-07",
     });
+    const plans = generated.rows["plans.csv"];
+    const subscriptions = generated.rows["subscriptions.csv"];
+    const recurringClasses = generated.rows["recurring_classes.csv"];
+    const instructors = generated.rows["instructors.csv"];
+    const schedules = generated.rows["instructor_schedules.csv"];
 
-    const validation = validateNormalizedImportFiles(generated.files);
-    expect(validation.issues).toEqual([]);
-    expect(validation.isValid).toBe(true);
+    expect(plans).toEqual([
+      expect.objectContaining({
+        plan_ref: "PL0001",
+        name: "月2,180円プラン / 2,180 yen/month Plan",
+        weekly_class_times: "1",
+        english_background: "0",
+      }),
+      expect.objectContaining({
+        plan_ref: "PL0002",
+        name: "月3,180円プラン / 3,180 yen/month Plan",
+        weekly_class_times: "2",
+        english_background: "0",
+      }),
+      expect.objectContaining({
+        plan_ref: "PL0003",
+        name: "月13,980円プラン / 13,980 yen/month Plan Native A",
+        weekly_class_times: "2",
+        english_background: "1",
+      }),
+      expect.objectContaining({
+        plan_ref: "PL0004",
+        name: "月13,980円プラン / 13,980 yen/month Plan Native B",
+        weekly_class_times: "2",
+        english_background: "2",
+      }),
+    ]);
 
-    const zipBuffer = await buildZipBuffer(generated.files);
-    const response = await request(server)
-      .post("/admins/import/execute")
-      .set("Cookie", authCookie)
-      .attach("file", zipBuffer, {
-        filename: generated.zipFileName,
-        contentType: "application/zip",
-      })
-      .expect(200);
+    const childCountByCustomer = new Map<string, number>();
+    for (const child of generated.rows["children.csv"]) {
+      childCountByCustomer.set(
+        child.customer_ref,
+        (childCountByCustomer.get(child.customer_ref) ?? 0) + 1,
+      );
+    }
+    expect(
+      [...childCountByCustomer.values()].every((count) => count === 2),
+    ).toBe(true);
 
-    expect(response.body.imported).toBe(true);
+    const planByRef = new Map(plans.map((plan) => [plan.plan_ref, plan]));
+    const subscriptionByRef = new Map(
+      subscriptions.map((subscription) => [
+        subscription.subscription_ref,
+        subscription,
+      ]),
+    );
+    for (const subscription of subscriptions) {
+      const customerIndex = Number(subscription.customer_ref.slice(2));
+      expect(subscription.plan_ref).toBe(
+        customerIndex % 2 === 1 ? "PL0002" : "PL0003",
+      );
+    }
 
-    const customerLoginResponse = await request(server)
-      .post("/users/authenticate")
-      .send({
-        email: generated.rows["customers.csv"][0].email,
-        password: generated.rows["customers.csv"][0].temp_password,
-        userType: "customer",
-      })
-      .expect(200);
+    const instructorBackgroundByRef = new Map(
+      instructors.map((instructor) => [
+        instructor.instructor_ref,
+        instructor.english_background,
+      ]),
+    );
+    const recurringCountBySubscription = new Map<string, number>();
+    const recurringCountByInstructor = new Map<string, number>();
+    const instructorBySubscription = new Map<string, string>();
+    const dateTimesBySubscription = new Map<string, Set<string>>();
+    const assignedSlotKeys = new Set<string>();
+    for (const recurringClass of recurringClasses) {
+      const subscription = subscriptionByRef.get(
+        recurringClass.subscription_ref,
+      );
+      const plan = subscription && planByRef.get(subscription.plan_ref);
+      expect(plan?.english_background).toBe(
+        instructorBackgroundByRef.get(recurringClass.instructor_ref),
+      );
+      recurringCountBySubscription.set(
+        recurringClass.subscription_ref,
+        (recurringCountBySubscription.get(recurringClass.subscription_ref) ??
+          0) + 1,
+      );
+      recurringCountByInstructor.set(
+        recurringClass.instructor_ref,
+        (recurringCountByInstructor.get(recurringClass.instructor_ref) ?? 0) +
+          1,
+      );
+      const assignedInstructor = instructorBySubscription.get(
+        recurringClass.subscription_ref,
+      );
+      expect(
+        assignedInstructor === undefined ||
+          assignedInstructor === recurringClass.instructor_ref,
+      ).toBe(true);
+      instructorBySubscription.set(
+        recurringClass.subscription_ref,
+        recurringClass.instructor_ref,
+      );
+      const subscriptionDateTimes =
+        dateTimesBySubscription.get(recurringClass.subscription_ref) ??
+        new Set<string>();
+      expect(subscriptionDateTimes.has(recurringClass.start_at)).toBe(false);
+      subscriptionDateTimes.add(recurringClass.start_at);
+      dateTimesBySubscription.set(
+        recurringClass.subscription_ref,
+        subscriptionDateTimes,
+      );
 
-    expect(customerLoginResponse.body).toEqual({ id: expect.any(Number) });
-  }, 120_000);
+      const localDate = recurringClass.start_at.slice(0, 10);
+      const weekday = new Date(`${localDate}T00:00:00.000Z`).getUTCDay();
+      const startTime = recurringClass.start_at.slice(11, 16);
+      const slotKey = `${recurringClass.instructor_ref}:${weekday}:${startTime}`;
+      expect(assignedSlotKeys.has(slotKey)).toBe(false);
+      assignedSlotKeys.add(slotKey);
+    }
+    expect(
+      [...recurringCountBySubscription.values()].every((count) => count === 2),
+    ).toBe(true);
+    expect(
+      [...recurringCountByInstructor.values()].every((count) => count === 20),
+    ).toBe(true);
+
+    const scheduleSlotKeys = new Set(
+      schedules.map(
+        (slot) => `${slot.instructor_ref}:${slot.weekday}:${slot.start_time}`,
+      ),
+    );
+    expect(schedules).toHaveLength(instructors.length * 30);
+    expect(
+      [...assignedSlotKeys].every((slotKey) => scheduleSlotKeys.has(slotKey)),
+    ).toBe(true);
+  });
+
+  it("requires at least two instructors for alternating backgrounds", async () => {
+    await expect(
+      generateNormalizedImportFixture({
+        from: "2026-01-01",
+        completedUntil: "2026-01-03",
+        to: "2026-01-07",
+        instructorCount: 1,
+      }),
+    ).rejects.toThrow("instructorCount must be an integer of at least 2");
+  });
 
   it("accepts multiple slot rows that share the same instructor schedule key", async () => {
     const admin = await createAdmin();

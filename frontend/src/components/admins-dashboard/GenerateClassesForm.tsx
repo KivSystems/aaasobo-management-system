@@ -27,8 +27,8 @@ function GenerateClassesForm() {
   return (
     <>
       <ActionButton
-        btnText={"Generate Classes"}
-        className="rebookClass"
+        btnText={"レギュラークラス生成"}
+        className="generateClassesBtn"
         onClick={() => setIsModalOpen(true)}
       />
       <Modal

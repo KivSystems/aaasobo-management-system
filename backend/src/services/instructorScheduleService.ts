@@ -1,13 +1,12 @@
+import { loadRecurringClassConflictChecker } from "./recurringClassConflictService";
 import { prisma } from "../../prisma/prismaClient";
-import { Prisma, Status } from "../../generated/prisma";
+import { Prisma, Status } from "@prisma/client";
 import { JAPAN_TIME_DIFF, nDaysLater, nHoursLater } from "../utils/dateUtils";
 import { EnglishBackground } from "../types";
 import {
   CANCELED_CLASS_COLOR,
   COMPLETED_CLASS_COLOR,
-  FREE_TRIAL_CLASS_COLOR,
-  REBOOKED_CLASS_COLOR,
-  REGULAR_CLASS_COLOR,
+  UPCOMING_CLASS_COLOR,
 } from "../utils/colors";
 import {
   NO_CLASS_EVENT_NAME,
@@ -94,15 +93,17 @@ export const getActiveInstructorSchedule = async (
   effectiveDate: string,
 ) => {
   try {
+    const targetDate = new Date(effectiveDate);
     const activeSchedule = await prisma.instructorSchedule.findFirst({
       where: {
         instructorId,
-        effectiveFrom: { lte: new Date(effectiveDate) },
-        effectiveTo: null,
+        effectiveFrom: { lte: targetDate },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gt: targetDate } }],
       },
       include: {
         slots: { orderBy: [{ weekday: "asc" }, { startTime: "asc" }] },
       },
+      orderBy: { effectiveFrom: "desc" },
     });
 
     if (!activeSchedule) {
@@ -346,6 +347,7 @@ export const getInstructorAvailableSlots = async (
   endDate: string, // YYYY-MM-DD format
   timezone: string,
   excludeBookedSlots: boolean,
+  forRecurringClass = false,
 ) => {
   try {
     if (timezone !== "Asia/Tokyo") {
@@ -367,6 +369,21 @@ export const getInstructorAvailableSlots = async (
       excludeSlots,
     );
 
+    if (forRecurringClass) {
+      const hasConflict = await loadRecurringClassConflictChecker(
+        prisma,
+        instructorId,
+      );
+      return availableSlots.filter((slot) => {
+        const occurrence = new Date(slot.dateTime);
+        const jst = new Date(occurrence.getTime() + 9 * 60 * 60 * 1000);
+        return !hasConflict(
+          jst.getUTCDay(),
+          jst.toISOString().slice(11, 16),
+          occurrence,
+        );
+      });
+    }
     return availableSlots;
   } catch (error) {
     console.error("Database Error:", error);
@@ -518,17 +535,14 @@ export const getInstructorCalendarSlots = async (
       Extract<Status, "booked" | "rebooked" | "completed">,
       string
     > = {
-      booked: REGULAR_CLASS_COLOR,
-      rebooked: REBOOKED_CLASS_COLOR,
+      booked: UPCOMING_CLASS_COLOR,
+      rebooked: UPCOMING_CLASS_COLOR,
       completed: COMPLETED_CLASS_COLOR,
     };
 
     const classSlots = classes
       .filter((classItem) => classItem.dateTime !== null)
       .map((classItem) => {
-        const isBookedOrRebooked =
-          classItem.status === "booked" || classItem.status === "rebooked";
-
         return {
           start: classItem.dateTime!.toISOString(),
           end: new Date(
@@ -539,9 +553,7 @@ export const getInstructorCalendarSlots = async (
               .map((attendance) => attendance.children.name)
               .join(", ") || "Class",
           color:
-            classItem.isFreeTrial && isBookedOrRebooked
-              ? FREE_TRIAL_CLASS_COLOR
-              : statusColorMap[classItem.status as keyof typeof statusColorMap],
+            statusColorMap[classItem.status as keyof typeof statusColorMap],
           slotType: classItem.status as "booked" | "rebooked" | "completed",
           classId: classItem.id,
         };

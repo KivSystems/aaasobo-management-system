@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
+import jaLocale from "@fullcalendar/core/locales/ja";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -13,15 +14,15 @@ import Modal from "@/components/elements/modal/Modal";
 import ClassDetail from "@/components/features/classDetail/ClassDetail";
 import {
   createRenderEventContent,
+  getCurrentMonthValidRange,
   getDayCellColorHandler,
-  getValidRange,
 } from "@/lib/utils/calendarUtils";
 import CalendarLegend from "@/components/features/calendarLegend/CalendarLegend";
+import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
 
 export default function CustomerCalendar({
   customerId,
   classes,
-  createdAt,
   businessSchedule,
   colorsForEvents,
   userSessionType,
@@ -29,6 +30,7 @@ export default function CustomerCalendar({
   const [isClassDetailModalOpen, setIsClassDetailModalOpen] = useState(false);
   const [classDetail, setClassDetail] = useState<CustomerClass | null>(null);
   const { language } = useLanguage();
+  const timeZone = useCustomerTimeZone();
 
   const handleEventClick = (clickInfo: EventClickArg) => {
     const classId = clickInfo.event.extendedProps.classId;
@@ -39,8 +41,12 @@ export default function CustomerCalendar({
     setIsClassDetailModalOpen(true);
   };
 
-  const validRange = () => getValidRange(createdAt, 3);
-  const renderCustomerEventContent = createRenderEventContent("customer");
+  const validRange = () => getCurrentMonthValidRange(3);
+  const renderCustomerEventContent = createRenderEventContent(
+    "customer",
+    timeZone ?? undefined,
+    language,
+  );
 
   const handleModalClose = () => {
     setClassDetail(null);
@@ -48,6 +54,8 @@ export default function CustomerCalendar({
   };
 
   const dayCellColors = getDayCellColorHandler(businessSchedule);
+
+  if (!timeZone) return null;
 
   return (
     <>
@@ -69,7 +77,7 @@ export default function CustomerCalendar({
           eventClick={handleEventClick}
           eventContent={renderCustomerEventContent}
           validRange={validRange}
-          locale={language === "ja" ? "ja" : "en"}
+          locale={language === "ja" ? jaLocale : "en"}
           dayCellContent={(arg) => {
             return { html: String(arg.date.getDate()) };
           }}
@@ -80,6 +88,7 @@ export default function CustomerCalendar({
           eventDisplay="block"
           allDaySlot={false}
           dayCellDidMount={dayCellColors}
+          timeZone="local"
         />
 
         {colorsForEvents.length > 0 && (

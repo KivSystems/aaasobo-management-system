@@ -18,6 +18,8 @@ import {
 
 function RegularClassesTable({
   subscriptionId,
+  subscriptionStartAt,
+  subscriptionEndAt,
   userSessionType,
   adminId,
   customerId,
@@ -30,6 +32,8 @@ function RegularClassesTable({
   refreshKey,
 }: {
   subscriptionId: number;
+  subscriptionStartAt?: string;
+  subscriptionEndAt?: string | null;
   userSessionType?: UserType;
   adminId?: number;
   customerId: number;
@@ -55,10 +59,13 @@ function RegularClassesTable({
   const [editingClass, setEditingClass] = useState<RecurringClass | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [updateCount, setUpdateCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAddingClass, setIsAddingClass] = useState(false);
 
   // Fetch active classes and children on component mount
   useEffect(() => {
     const fetchActiveClasses = async () => {
+      setIsLoading(true);
       try {
         const data = await getRecurringClassesBySubscriptionId(
           subscriptionId,
@@ -67,6 +74,8 @@ function RegularClassesTable({
         setActiveRecurringClasses(data.recurringClasses);
       } catch (error) {
         console.error("Failed to fetch active classes:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -124,6 +133,7 @@ function RegularClassesTable({
   };
 
   const handleEditRegularClass = (recurringClassId: number) => {
+    if (subscriptionEndAt) return;
     const classToEdit = activeRecurringClasses.find(
       (cls) => cls.id === recurringClassId,
     );
@@ -143,15 +153,22 @@ function RegularClassesTable({
     handleCloseEditModal();
   };
 
+  const missingClassCount = Math.max(
+    0,
+    (plan?.weeklyClassTimes || 0) - activeRecurringClasses.length,
+  );
+
   return (
     <div>
-      {activeRecurringClasses.length > 0 && (
+      {isLoading ? (
+        <p>{LOADING_TEXT[language]}</p>
+      ) : activeRecurringClasses.length > 0 ? (
         <div className={styles.cardGrid}>
           {activeRecurringClasses.map((recurringClass) => (
             <RegularClassCard
               key={recurringClass.id}
               recurringClass={recurringClass}
-              onEdit={handleEditRegularClass}
+              onEdit={subscriptionEndAt ? undefined : handleEditRegularClass}
               language={language}
               userSessionType={userSessionType}
               customerTerminationAt={customerTerminationAt}
@@ -163,7 +180,18 @@ function RegularClassesTable({
             />
           ))}
         </div>
-      )}
+      ) : null}
+
+      {userSessionType === "admin" &&
+        !subscriptionEndAt &&
+        missingClassCount > 0 &&
+        !isLoading && (
+          <button type="button" onClick={() => setIsAddingClass(true)}>
+            {language === "ja"
+              ? `レギュラークラスを追加（残り${missingClassCount}枠）`
+              : `Add regular class (${missingClassCount} remaining)`}
+          </button>
+        )}
 
       {!isSelectable && historyCount > 0 && (
         <div style={{ marginTop: "2rem" }}>
@@ -204,22 +232,43 @@ function RegularClassesTable({
         </div>
       )}
 
-      {activeRecurringClasses.length === 0 && historyCount === 0 && (
-        <p>{NO_REGULAR_CLASSES_MESSAGE[language]}</p>
-      )}
+      {!isLoading &&
+        activeRecurringClasses.length === 0 &&
+        historyCount === 0 &&
+        userSessionType !== "admin" && (
+          <p>{NO_REGULAR_CLASSES_MESSAGE[language]}</p>
+        )}
 
-      {/* Edit Modal */}
-      {editingClass && (
+      {isAddingClass && !subscriptionEndAt && (
         <EditRegularClassModal
-          isOpen={isEditModalOpen}
-          onClose={handleCloseEditModal}
-          recurringClass={editingClass}
+          isOpen={isAddingClass}
+          onClose={() => setIsAddingClass(false)}
+          subscriptionId={subscriptionId}
+          subscriptionStartAt={subscriptionStartAt}
           customerId={customerId}
           allChildren={allChildren}
           userSessionType={userSessionType}
           adminId={adminId}
           onSuccess={handleEditSuccess}
           plan={plan}
+          language={language}
+        />
+      )}
+
+      {/* Edit Modal */}
+      {editingClass && !subscriptionEndAt && (
+        <EditRegularClassModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          recurringClass={editingClass}
+          subscriptionStartAt={subscriptionStartAt}
+          customerId={customerId}
+          allChildren={allChildren}
+          userSessionType={userSessionType}
+          adminId={adminId}
+          onSuccess={handleEditSuccess}
+          plan={plan}
+          language={language}
         />
       )}
     </div>

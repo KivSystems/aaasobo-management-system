@@ -1,14 +1,22 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import type { EventClickArg, EventSourceFuncArg } from "@fullcalendar/core";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+import { useCallback, useRef, useState } from "react";
+import type {
+  DatesSetArg,
+  EventClickArg,
+  EventContentArg,
+  EventSourceFuncArg,
+} from "@fullcalendar/core";
 import Calendar from "@/components/features/calendar/Calendar";
 import InstructorSlotCalendar from "@/components/features/instructorSlotCalendar/InstructorSlotCalendar";
+import MessageBoardPanel from "@/components/features/messageBoardPanel/MessageBoardPanel";
 import Modal from "@/components/elements/modal/Modal";
 import ActionButton from "@/components/elements/buttons/actionButton/ActionButton";
 import {
+  getAdminInstructorAvailableSlots,
   getInstructorAbsences,
-  getInstructorAvailableSlots,
 } from "@/lib/api/instructorsApi";
 import {
   batchUpdateInstructorAbsences,
@@ -21,6 +29,7 @@ import type {
   InstructorAbsence,
 } from "@shared/schemas/instructors";
 import { toast } from "react-toastify";
+import { MessageTarget } from "@/types";
 import styles from "./AdminInstructorCalendar.module.scss";
 
 type EditCalendarEvent = {
@@ -33,25 +42,37 @@ type EditCalendarEvent = {
   extendedProps: {
     type: "available" | "absence";
     hasPendingChange: boolean;
-    changeType: "toRemove";
   };
 };
 
 export default function AdminInstructorCalendar({
   instructorId,
+  messageBoardPosts = [],
 }: {
   instructorId: number;
+  messageBoardPosts?: MessageBoardPostItem[];
 }) {
+  const { language } = useLanguage();
   const [refreshKey, setRefreshKey] = useState(0);
   const [modalRefreshKey, setModalRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<
     Map<string, AbsenceChange>
   >(new Map());
+  const pendingChangesRef = useRef(pendingChanges);
+  const visibleCalendarDateRef = useRef(new Date());
+  const [editCalendarInitialDate, setEditCalendarInitialDate] = useState(
+    visibleCalendarDateRef.current,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [canceledClasses, setCanceledClasses] = useState<
     AbsenceCanceledClassSummary[]
   >([]);
+  const visiblePosts = messageBoardPosts.filter(
+    (post) =>
+      post.target === MessageTarget.instructor ||
+      post.target === MessageTarget.both,
+  );
 
   const formatJSTDate = (date: Date) => {
     const year = date.getFullYear();
@@ -74,7 +95,12 @@ export default function AdminInstructorCalendar({
 
       try {
         const [slotsResponse, absencesResponse] = await Promise.all([
-          getInstructorAvailableSlots(instructorId, startStr, endStr, false),
+          getAdminInstructorAvailableSlots(
+            instructorId,
+            startStr,
+            endStr,
+            false,
+          ),
           getInstructorAbsences(instructorId),
         ]);
 
@@ -83,7 +109,9 @@ export default function AdminInstructorCalendar({
         if ("data" in slotsResponse) {
           events.push(
             ...slotsResponse.data.map((slot) => {
-              const pendingChange = pendingChanges.get(slot.dateTime);
+              const pendingChange = pendingChangesRef.current.get(
+                slot.dateTime,
+              );
 
               return {
                 id: `available-${slot.dateTime}`,
@@ -91,13 +119,12 @@ export default function AdminInstructorCalendar({
                 end: new Date(
                   new Date(slot.dateTime).getTime() + 25 * 60000,
                 ).toISOString(),
-                title: "Available",
+                title: language === "ja" ? "予約可能" : "Available",
                 color: "#A2B098",
                 textColor: "#FFF",
                 extendedProps: {
                   type: "available" as const,
                   hasPendingChange: pendingChange?.action === "add",
-                  changeType: "toRemove" as const,
                 },
               };
             }),
@@ -112,7 +139,9 @@ export default function AdminInstructorCalendar({
                 return absenceDate >= info.start && absenceDate < info.end;
               })
               .map((absence: InstructorAbsence) => {
-                const pendingChange = pendingChanges.get(absence.absentAt);
+                const pendingChange = pendingChangesRef.current.get(
+                  absence.absentAt,
+                );
 
                 return {
                   id: `absence-${absence.absentAt}`,
@@ -120,13 +149,12 @@ export default function AdminInstructorCalendar({
                   end: new Date(
                     new Date(absence.absentAt).getTime() + 25 * 60000,
                   ).toISOString(),
-                  title: "Absent",
+                  title: language === "ja" ? "欠席" : "Absent",
                   color: "#DC2626",
                   textColor: "#FFF",
                   extendedProps: {
                     type: "absence" as const,
                     hasPendingChange: pendingChange?.action === "remove",
-                    changeType: "toRemove" as const,
                   },
                 };
               }),
@@ -139,34 +167,59 @@ export default function AdminInstructorCalendar({
         return [];
       }
     },
-    [instructorId, pendingChanges],
+    [instructorId, language],
   );
 
   const handleSlotToggle = useCallback((clickInfo: EventClickArg) => {
     const eventType = clickInfo.event.extendedProps.type;
     const dateTime = clickInfo.event.start!.toISOString();
+    const newChanges = new Map(pendingChangesRef.current);
 
-    setPendingChanges((prev) => {
-      const newChanges = new Map(prev);
+    if (newChanges.has(dateTime)) {
+      newChanges.delete(dateTime);
+    } else if (eventType === "absence") {
+      newChanges.set(dateTime, {
+        dateTime,
+        action: "remove",
+        originalType: "absence",
+      });
+    } else if (eventType === "available") {
+      newChanges.set(dateTime, {
+        dateTime,
+        action: "add",
+        originalType: "available",
+      });
+    }
 
-      if (newChanges.has(dateTime)) {
-        newChanges.delete(dateTime);
-      } else if (eventType === "absence") {
-        newChanges.set(dateTime, {
-          dateTime,
-          action: "remove",
-          originalType: "absence",
-        });
-      } else if (eventType === "available") {
-        newChanges.set(dateTime, {
-          dateTime,
-          action: "add",
-          originalType: "available",
-        });
-      }
+    pendingChangesRef.current = newChanges;
+    setPendingChanges(newChanges);
+    clickInfo.event.setExtendedProp(
+      "hasPendingChange",
+      newChanges.has(dateTime),
+    );
+  }, []);
 
-      return newChanges;
-    });
+  const handleVisibleDatesSet = useCallback((info: DatesSetArg) => {
+    visibleCalendarDateRef.current = new Date(info.view.currentStart);
+  }, []);
+
+  const handleEditEventClassNames = useCallback((info: EventContentArg) => {
+    const { hasPendingChange, type } = info.event.extendedProps;
+
+    if (!hasPendingChange) {
+      return [];
+    }
+
+    return [
+      styles.withBadge,
+      type === "available" ? styles.willBeAbsent : styles.willBeAvailable,
+    ];
+  }, []);
+
+  const clearPendingChanges = useCallback(() => {
+    const emptyChanges = new Map<string, AbsenceChange>();
+    pendingChangesRef.current = emptyChanges;
+    setPendingChanges(emptyChanges);
   }, []);
 
   const handleBatchSubmit = async () => {
@@ -178,10 +231,14 @@ export default function AdminInstructorCalendar({
 
     try {
       const changes = Array.from(pendingChanges.values());
-      const result = await batchUpdateInstructorAbsences(instructorId, changes);
+      const result = await batchUpdateInstructorAbsences(
+        instructorId,
+        changes,
+        language,
+      );
 
       if (result.success) {
-        setPendingChanges(new Map());
+        clearPendingChanges();
         setCanceledClasses(result.canceledClasses);
         refreshCalendars();
         setIsEditModalOpen(false);
@@ -192,25 +249,32 @@ export default function AdminInstructorCalendar({
         result.successCount.add > 0 ||
         result.successCount.remove > 0
       ) {
-        setPendingChanges(new Map());
+        clearPendingChanges();
         setCanceledClasses(result.canceledClasses);
         refreshCalendars();
         setIsEditModalOpen(false);
 
         await errorAlert(
-          `${result.message}\n\nErrors:\n${result.errors.join("\n")}`,
+          `${result.message}\n\n${language === "ja" ? "エラー" : "Errors"}:\n${result.errors.join("\n")}`,
         );
       } else if (result.errors.length > 0) {
         await errorAlert(
-          `${result.message}\n\nErrors:\n${result.errors.join("\n")}`,
+          `${result.message}\n\n${language === "ja" ? "エラー" : "Errors"}:\n${result.errors.join("\n")}`,
         );
       } else {
-        toast.info(result.message || "No changes were made.");
+        toast.info(
+          result.message ||
+            (language === "ja"
+              ? "変更はありません。"
+              : "No changes were made."),
+        );
       }
     } catch (error) {
       console.error("Batch submission failed:", error);
       errorAlert(
-        `Failed to submit changes: ${error instanceof Error ? error.message : String(error)}`,
+        language === "ja"
+          ? "変更を保存できませんでした。もう一度お試しください。"
+          : `Failed to submit changes: ${error instanceof Error ? error.message : String(error)}`,
       );
     } finally {
       setIsSubmitting(false);
@@ -219,16 +283,28 @@ export default function AdminInstructorCalendar({
 
   return (
     <div className={styles.container}>
+      <MessageBoardPanel
+        posts={visiblePosts}
+        storageKey="instructorClassScheduleMessageBoardOpenState"
+        readMessageStorageKey="readInstructorMessageNumber"
+      />
       <InstructorSlotCalendar
         instructorId={instructorId}
         refreshKey={refreshKey}
+        calendarOptions={{
+          datesSet: handleVisibleDatesSet,
+          initialDate: visibleCalendarDateRef.current,
+        }}
         getClassDetailUrl={(classId) =>
           `/admins/instructor-list/${instructorId}/class-schedule/${classId}`
         }
         headerRight={
           <ActionButton
-            btnText="Edit Absences"
-            onClick={() => setIsEditModalOpen(true)}
+            btnText={language === "ja" ? "欠席を編集" : "Edit Absences"}
+            onClick={() => {
+              setEditCalendarInitialDate(visibleCalendarDateRef.current);
+              setIsEditModalOpen(true);
+            }}
             className="editBtn"
           />
         }
@@ -243,33 +319,40 @@ export default function AdminInstructorCalendar({
       >
         <div className={styles.modal}>
           <div className={styles.modalHeader}>
-            <h2>Edit Instructor Absences</h2>
+            <h2>
+              {language === "ja"
+                ? "講師の欠席を編集"
+                : "Edit Instructor Absences"}
+            </h2>
             <p>
-              Click available slots to mark as absent, or click absence slots to
-              remove them.
+              {language === "ja"
+                ? "予約可能な枠をクリックすると欠席に、欠席の枠をクリックすると予約可能に変更します。"
+                : "Click available slots to mark as absent, or click absence slots to remove them."}
             </p>
           </div>
 
           <div className={styles.editLegend}>
             <div className={styles.editLegendItem}>
               <div className={`${styles.editLegendBox} ${styles.available}`} />
-              <span>Available</span>
+              <span>{language === "ja" ? "予約可能" : "Available"}</span>
             </div>
             <div className={styles.editLegendItem}>
               <div className={`${styles.editLegendBox} ${styles.absence}`} />
-              <span>Absence</span>
+              <span>{language === "ja" ? "欠席" : "Absence"}</span>
             </div>
             <div className={styles.editLegendItem}>
               <div
                 className={`${styles.editLegendBox} ${styles.available} ${styles.withBadge} ${styles.willBeAbsent}`}
               />
-              <span>Will be Absent</span>
+              <span>{language === "ja" ? "欠席に変更" : "Will be Absent"}</span>
             </div>
             <div className={styles.editLegendItem}>
               <div
                 className={`${styles.editLegendBox} ${styles.absence} ${styles.withBadge} ${styles.willBeAvailable}`}
               />
-              <span>Will be Available</span>
+              <span>
+                {language === "ja" ? "予約可能に変更" : "Will be Available"}
+              </span>
             </div>
           </div>
 
@@ -280,28 +363,9 @@ export default function AdminInstructorCalendar({
               contentHeight="auto"
               events={fetchEditCalendarEvents}
               eventClick={handleSlotToggle}
+              eventClassNames={handleEditEventClassNames}
+              initialDate={editCalendarInitialDate}
               selectable={false}
-              eventDidMount={(info) => {
-                const { hasPendingChange, changeType, type } =
-                  info.event.extendedProps;
-                if (hasPendingChange && changeType === "toRemove") {
-                  const element = info.el;
-                  element.style.position = "relative";
-
-                  const badge = document.createElement("div");
-                  badge.className = styles.eventBadge;
-
-                  if (type === "available") {
-                    badge.classList.add(styles.willBeAbsent);
-                    badge.title = "Will be marked absent";
-                  } else if (type === "absence") {
-                    badge.classList.add(styles.willBeAvailable);
-                    badge.title = "Will be removed";
-                  }
-
-                  element.appendChild(badge);
-                }
-              }}
             />
           </div>
 
@@ -309,12 +373,12 @@ export default function AdminInstructorCalendar({
             <ActionButton
               type="button"
               onClick={() => {
-                setPendingChanges(new Map());
+                clearPendingChanges();
                 setIsEditModalOpen(false);
               }}
               disabled={isSubmitting}
               className="cancelBtn"
-              btnText="Cancel"
+              btnText={language === "ja" ? "キャンセル" : "Cancel"}
             />
             <ActionButton
               type="button"
@@ -323,8 +387,12 @@ export default function AdminInstructorCalendar({
               className="submitBtn"
               btnText={
                 isSubmitting
-                  ? "Submitting..."
-                  : `Submit (${pendingChanges.size})`
+                  ? language === "ja"
+                    ? "保存中..."
+                    : "Submitting..."
+                  : language === "ja"
+                    ? `保存 (${pendingChanges.size})`
+                    : `Submit (${pendingChanges.size})`
               }
             />
           </div>
@@ -340,10 +408,15 @@ export default function AdminInstructorCalendar({
       >
         <div className={styles.summaryModal}>
           <div className={styles.summaryHeader}>
-            <h2>Classes Canceled</h2>
+            <h2>
+              {language === "ja"
+                ? "キャンセルされたクラス"
+                : "Classes Canceled"}
+            </h2>
             <p>
-              {canceledClasses.length} classes were canceled for the registered
-              absence and are now rebookable.
+              {language === "ja"
+                ? `欠席の登録により${canceledClasses.length}件のクラスがキャンセルされ、振替予約が可能になりました。`
+                : `${canceledClasses.length} classes were canceled for the registered absence and are now rebookable.`}
             </p>
           </div>
 
@@ -351,20 +424,28 @@ export default function AdminInstructorCalendar({
             <table className={styles.summaryTable}>
               <thead>
                 <tr>
-                  <th>Customer</th>
-                  <th>Class Time</th>
-                  <th>Class Code</th>
-                  <th>Rebookable Until</th>
+                  <th>{language === "ja" ? "お客さま" : "Customer"}</th>
+                  <th>{language === "ja" ? "クラス日時" : "Class Time"}</th>
+                  <th>{language === "ja" ? "クラスコード" : "Class Code"}</th>
+                  <th>{language === "ja" ? "振替期限" : "Rebookable Until"}</th>
                 </tr>
               </thead>
               <tbody>
                 {canceledClasses.map((classItem) => (
                   <tr key={classItem.id}>
                     <td>{classItem.customer.name}</td>
-                    <td>{formatYearDateTime(new Date(classItem.dateTime))}</td>
+                    <td>
+                      {formatYearDateTime(
+                        new Date(classItem.dateTime),
+                        language === "ja" ? "ja-JP" : "en-US",
+                      )}
+                    </td>
                     <td>{classItem.classCode}</td>
                     <td>
-                      {formatYearDateTime(new Date(classItem.rebookableUntil))}
+                      {formatYearDateTime(
+                        new Date(classItem.rebookableUntil),
+                        language === "ja" ? "ja-JP" : "en-US",
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -377,7 +458,7 @@ export default function AdminInstructorCalendar({
               type="button"
               onClick={() => setCanceledClasses([])}
               className="submitBtn"
-              btnText="Close"
+              btnText={language === "ja" ? "閉じる" : "Close"}
             />
           </div>
         </div>

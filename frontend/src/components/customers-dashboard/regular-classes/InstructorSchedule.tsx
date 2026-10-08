@@ -2,18 +2,27 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  getActiveInstructorSchedule,
+  getAdminInstructorAvailableSlots,
   InstructorSlot,
 } from "@/lib/api/instructorsApi";
+import { getTodayInJapanISODate } from "@/lib/utils/dateUtils";
 import { WEEKDAYS } from "@/lib/utils/scheduleUtils";
+import { EDIT_REGULAR_CLASS_MESSAGES } from "@/lib/messages/customerDashboard";
 import styles from "./InstructorSchedule.module.scss";
+import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
 
 interface InstructorScheduleProps {
   instructorId: number;
   effectiveDate: string;
-  onSlotSelect: (weekday: number, startTime: string) => void;
+  onSlotSelect: (
+    weekday: number,
+    startTime: string,
+    displayWeekday: number,
+    displayTime: string,
+  ) => void;
   selectedWeekday: number | null;
   selectedStartTime: string;
+  language: LanguageType;
 }
 
 export default function InstructorSchedule({
@@ -22,8 +31,13 @@ export default function InstructorSchedule({
   onSlotSelect,
   selectedWeekday,
   selectedStartTime,
+  language,
 }: InstructorScheduleProps) {
-  const [slots, setSlots] = useState<InstructorSlot[]>([]);
+  const messages = EDIT_REGULAR_CLASS_MESSAGES[language];
+  const timeZone = useCustomerTimeZone();
+  const [slots, setSlots] = useState<
+    Array<InstructorSlot & { dateTime: string }>
+  >([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
@@ -33,16 +47,44 @@ export default function InstructorSchedule({
       setError("");
 
       try {
-        // Get instructor's active schedule directly
-        const response = await getActiveInstructorSchedule(
+        const today = getTodayInJapanISODate();
+        const start = effectiveDate || today;
+        const endDate = new Date(`${start}T00:00:00+09:00`);
+        endDate.setDate(endDate.getDate() + 7);
+        const end = endDate.toLocaleDateString("sv-SE", {
+          timeZone: "Asia/Tokyo",
+        });
+        const response = await getAdminInstructorAvailableSlots(
           instructorId,
-          effectiveDate,
+          start,
+          end,
+          true,
+          true,
         );
-        // Set the slots from the active schedule
-        setSlots(response.schedule?.slots || []);
+        const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        setSlots(
+          response.data.map((slot) => {
+            const date = new Date(slot.dateTime);
+            const weekdayName = new Intl.DateTimeFormat("en-US", {
+              weekday: "short",
+              timeZone: "Asia/Tokyo",
+            }).format(date);
+            return {
+              scheduleId: 0,
+              weekday: weekdayNames.indexOf(weekdayName),
+              startTime: new Intl.DateTimeFormat("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+                timeZone: "Asia/Tokyo",
+              }).format(date),
+              dateTime: slot.dateTime,
+            };
+          }),
+        );
       } catch (error) {
         console.error("Failed to fetch instructor schedule:", error);
-        setError("Failed to load instructor schedule");
+        setError(messages.scheduleLoadFailed);
       } finally {
         setLoading(false);
       }
@@ -51,18 +93,39 @@ export default function InstructorSchedule({
     if (instructorId) {
       fetchSchedule();
     }
-  }, [instructorId, effectiveDate]);
+  }, [instructorId, effectiveDate, messages.scheduleLoadFailed]);
 
-  // Group JST slots by weekday
+  if (!timeZone) return null;
+
+  // Display each instant locally while retaining its original JST API values.
   const slotsByWeekday = (slots || []).reduce(
     (acc, slot) => {
-      if (!acc[slot.weekday]) {
-        acc[slot.weekday] = [];
+      const slotDate = new Date(slot.dateTime);
+      const localWeekdayName = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        timeZone,
+      }).format(slotDate);
+      const localWeekday = [
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+      ].indexOf(localWeekdayName);
+      if (!acc[localWeekday]) {
+        acc[localWeekday] = [];
       }
 
-      // Display JST times directly
-      acc[slot.weekday].push({
-        displayTime: slot.startTime,
+      acc[localWeekday].push({
+        displayTime: new Intl.DateTimeFormat("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone,
+        }).format(slotDate),
+        displayWeekday: localWeekday,
         originalWeekday: slot.weekday,
         originalTime: slot.startTime,
       });
@@ -73,6 +136,7 @@ export default function InstructorSchedule({
       number,
       Array<{
         displayTime: string;
+        displayWeekday: number;
         originalWeekday: number;
         originalTime: string;
       }>
@@ -90,7 +154,7 @@ export default function InstructorSchedule({
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
-        <span>Loading instructor schedule...</span>
+        <span>{messages.loadingSchedule}</span>
       </div>
     );
   }
@@ -106,10 +170,7 @@ export default function InstructorSchedule({
   if (!slots || slots.length === 0) {
     return (
       <div className={styles.emptyContainer}>
-        <span>
-          No available time slots found for this instructor on the selected
-          date.
-        </span>
+        <span>{messages.noAvailableSlots}</span>
       </div>
     );
   }
@@ -121,7 +182,7 @@ export default function InstructorSchedule({
         <div className={styles.header}>
           {WEEKDAYS.map((day, index) => (
             <div key={day} className={styles.dayHeader}>
-              {day}
+              {messages.weekdays[index]}
             </div>
           ))}
         </div>
@@ -144,12 +205,14 @@ export default function InstructorSchedule({
                     onSlotSelect(
                       slotInfo.originalWeekday,
                       slotInfo.originalTime,
+                      slotInfo.displayWeekday,
+                      slotInfo.displayTime,
                     )
                   }
                 >
                   {slotInfo.displayTime}
                 </button>
-              )) || <div className={styles.noSlots}>No slots</div>}
+              )) || <div className={styles.noSlots}>{messages.noSlots}</div>}
             </div>
           ))}
         </div>

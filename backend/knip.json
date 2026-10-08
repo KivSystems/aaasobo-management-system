@@ -1,8 +1,14 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": ["generated/**", "prisma.config.ts"],
-  "ignoreDependencies": ["@prisma/client"],
   "prisma": {
     "config": ["package.json"]
-  }
+  },
+  "entry": [
+    "src/seed/bootstrap.ts",
+    "src/seed/dummy.ts",
+    "src/seed/generateBetaImportFromRawSchedule.ts",
+    "src/seed/generateNormalizedImportFixture.ts",
+    "src/seed/generateIncrementalImportFixture.ts"
+  ]
 }

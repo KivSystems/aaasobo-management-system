@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+
 import Modal from "@/components/elements/modal/Modal";
 import type { ScheduleUpdateImpactSummary } from "@shared/schemas/instructors";
 import styles from "./ScheduleImpactDialog.module.scss";
@@ -15,6 +17,7 @@ export default function ScheduleImpactDialog({
   onClose,
   impactSummary,
 }: ScheduleImpactDialogProps) {
+  const { language } = useLanguage();
   if (!impactSummary) {
     return null;
   }
@@ -24,30 +27,36 @@ export default function ScheduleImpactDialog({
   return (
     <Modal isOpen={isOpen} onClose={onClose} overlayClosable={true}>
       <div className={styles.content}>
-        <h3 className={styles.title}>Schedule Update Impact</h3>
+        <h3 className={styles.title}>
+          {language === "ja"
+            ? "スケジュール変更の結果"
+            : "Schedule Update Impact"}
+        </h3>
         <p className={styles.description}>
-          This schedule update affected existing bookings.
+          {language === "ja"
+            ? "スケジュール変更に伴い、以下の予約を変更しました。"
+            : "This schedule update affected existing bookings."}
         </p>
         <ul className={styles.impactList}>
           {terminatedRecurringClassCount > 0 && (
             <li>
-              {terminatedRecurringClassCount} regular{" "}
-              {terminatedRecurringClassCount === 1
-                ? "class was"
-                : "classes were"}{" "}
-              terminated.
+              {language === "ja"
+                ? `${terminatedRecurringClassCount}件のレギュラークラスを終了しました。`
+                : `${terminatedRecurringClassCount} regular ${terminatedRecurringClassCount === 1 ? "class was" : "classes were"} terminated.`}
             </li>
           )}
           {canceledClassCount > 0 && (
             <li>
-              {canceledClassCount} booked{" "}
-              {canceledClassCount === 1 ? "class was" : "classes were"} canceled
-              by the instructor.
+              {language === "ja"
+                ? `${canceledClassCount}件の予約済みクラスを講師都合でキャンセルしました。`
+                : `${canceledClassCount} booked ${canceledClassCount === 1 ? "class was" : "classes were"} canceled by the instructor.`}
             </li>
           )}
         </ul>
         <p className={styles.note}>
-          Canceled classes remain available for the existing rebooking flow.
+          {language === "ja"
+            ? "キャンセルされたクラスは通常の手順で振替予約できます。"
+            : "Canceled classes remain available for the existing rebooking flow."}
         </p>
         <div className={styles.actions}>
           <button

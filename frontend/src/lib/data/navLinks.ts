@@ -11,6 +11,7 @@ import {
   BellIcon,
   ArrowUpOnSquareIcon,
   ClipboardDocumentCheckIcon,
+  BanknotesIcon,
 } from "@heroicons/react/24/outline";
 
 export function getLinks(
@@ -56,57 +57,57 @@ export function getLinks(
 
   const adminLinks: LinkType[] = [
     {
-      name: "Dashboard",
+      name: "ダッシュボード",
       href: "/admins/dashboard",
       icon: HomeModernIcon,
     },
     {
-      name: "Class Calendar",
+      name: "カスタマーリスト",
+      href: "/admins/enrollment-status",
+      icon: ClipboardDocumentCheckIcon,
+    },
+    {
+      name: "クラスカレンダー",
       href: "/admins/calendar",
       icon: CalendarDaysIcon,
     },
     {
-      name: "Class List",
+      name: "クラスリスト",
       href: "/admins/class-list",
       icon: ClipboardDocumentListIcon,
     },
     {
-      name: "Customer List",
-      href: "/admins/customer-list",
-      icon: UsersIcon,
-    },
-    {
-      name: "Instructor List",
+      name: "インストラクター\nリスト",
       href: "/admins/instructor-list",
       icon: UsersIcon,
     },
     {
-      name: "Plan List",
-      href: "/admins/plan-list",
-      icon: AcademicCapIcon,
-    },
-    {
-      name: "Event List",
-      href: "/admins/event-list",
-      icon: BellIcon,
-    },
-    {
-      name: "Admin List",
+      name: "管理者リスト",
       href: "/admins/admin-list",
       icon: UserIcon,
     },
     {
-      name: "Instructor Profiles",
+      name: "インストラクター　　　プロフィール",
       href: "/admins/instructor-profiles",
       icon: UsersIcon,
     },
     {
-      name: "AaasoBo! Calendar",
+      name: "アーソボカレンダー",
       href: "/admins/business-calendar",
       icon: CalendarDaysIcon,
     },
     {
-      name: "Data Import",
+      name: "プランリスト",
+      href: "/admins/plan-list",
+      icon: AcademicCapIcon,
+    },
+    {
+      name: "イベントリスト",
+      href: "/admins/event-list",
+      icon: BellIcon,
+    },
+    {
+      name: "データインポート",
       href: "/admins/data-import",
       icon: ArrowUpOnSquareIcon,
     },
@@ -138,6 +139,11 @@ export function getLinks(
       name: "Schedule",
       href: "/instructors/availability",
       icon: ClockIcon,
+    },
+    {
+      name: "Payroll",
+      href: "/instructors/payroll",
+      icon: BanknotesIcon,
     },
     {
       name: "AaasoBo! Calendar",

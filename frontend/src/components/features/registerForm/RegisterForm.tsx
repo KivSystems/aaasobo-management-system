@@ -1,6 +1,8 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
+
+import { useActionState, useState } from "react";
 import styles from "./RegisterForm.module.scss";
 import {
   EnvelopeIcon,
@@ -33,6 +35,20 @@ import Uploader from "./uploadImages/Uploader";
 import { EnglishBackground } from "@/types";
 import RadioButton from "../../elements/radioButton/RadioButton";
 import TextAreaInput from "../../elements/textAreaInput/TextAreaInput";
+import {
+  ENGLISH_BACKGROUND_LABELS,
+  ENGLISH_BACKGROUND_LABELS_JP,
+} from "@/lib/data/englishBackground";
+
+const DEFAULT_INSTRUCTOR_SKILL = `Science: [Can you provide a simple experiment?]
+Cooking: [Can you lead a cooking class?]
+Crafting: (Are you good at crafting?)
+Origami: (Are you good at playing Origami?)
+Minecraft: [Account required]
+Roblox: [Account required]
+Pokemon: [Do you know over 10 characters?]
+Disney: [Do you know over 10 characters?]
+Others: [Please specify:]`;
 
 const RegisterForm = ({
   categoryType,
@@ -57,19 +73,24 @@ const RegisterForm = ({
   const [submittedValues, setSubmittedValues] = useState<
     Record<string, string>
   >({});
-  const { localMessages, clearErrorMessage, resetMessages } =
-    useFormMessages(registerResultState);
+  const {
+    localMessages: rawMessages,
+    clearErrorMessage,
+    resetMessages,
+  } = useFormMessages(registerResultState);
+  const localMessages =
+    language === "ja"
+      ? (Object.fromEntries(
+          Object.entries(rawMessages).map(([key, value]) => [
+            key,
+            typeof value === "string" ? localizeAdminMessage(value) : value,
+          ]),
+        ) as typeof rawMessages)
+      : rawMessages;
   const { passwordStrength } = usePasswordStrength(password);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [englishBackground, setEnglishBackground] = useState<EnglishBackground>(
     EnglishBackground.NonNative,
   );
-  const englishBackgroundLabels = [
-    "Non Native",
-    "Native A",
-    "Native B",
-  ] as const;
-
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEnglishBackground = Number(e.target.value);
     setEnglishBackground(newEnglishBackground);
@@ -107,16 +128,16 @@ const RegisterForm = ({
       {((userType === "admin" && !categoryType) ||
         userType === "instructor") && (
         <>
-          <p className={styles.required}>*Required</p>
+          <p className={styles.required}>*必須</p>
 
           {/* Name */}
           <InputField
             id="name"
-            label="Name"
+            label="氏名"
             type="text"
             name="name"
             defaultValue={persistedValues.name}
-            placeholder="e.g., John Doe"
+            placeholder="例: John Doe"
             icon={<UserCircleIcon className={styles.icon} />}
             inputRequired
             error={localMessages.name}
@@ -128,11 +149,11 @@ const RegisterForm = ({
               {/* Nickname */}
               <InputField
                 id="nickname"
-                label="Nickname"
+                label="ニックネーム"
                 type="text"
                 name="nickname"
                 defaultValue={persistedValues.nickname}
-                placeholder="e.g., John"
+                placeholder="例: John"
                 icon={<UserCircleIcon className={styles.icon} />}
                 inputRequired
                 error={localMessages.nickname}
@@ -142,11 +163,11 @@ const RegisterForm = ({
               {/* Birthday */}
               <InputField
                 id="birthdate"
-                label="Birthday"
+                label="お誕生日"
                 type="date"
                 name="birthdate"
                 defaultValue={persistedValues.birthdate}
-                placeholder="e.g., 2000-01-01"
+                placeholder="例: 2000-01-01"
                 icon={<CakeIcon className={styles.icon} />}
                 inputRequired
                 onChange={() => clearErrorMessage("birthdate")}
@@ -157,11 +178,11 @@ const RegisterForm = ({
           {/* Email */}
           <InputField
             id="email"
-            label="Email"
+            label="メールアドレス"
             type="email"
             name="email"
             defaultValue={persistedValues.email}
-            placeholder="e.g., example@aaasobo.com"
+            placeholder="例: example@aaasobo.com"
             icon={<EnvelopeIcon className={styles.icon} />}
             inputRequired
             error={localMessages.email}
@@ -171,11 +192,11 @@ const RegisterForm = ({
           {/* Password */}
           <InputField
             id="password"
-            label="Password"
+            label="パスワード"
             type="password"
             name="password"
             value={password}
-            placeholder="At least 8 characters"
+            placeholder="8文字以上"
             onChange={(event) => {
               setPassword(event.target.value);
               clearErrorMessage("password");
@@ -192,16 +213,17 @@ const RegisterForm = ({
           <PasswordStrengthMeter
             password={password}
             passwordStrength={passwordStrength}
+            language={language}
           />
 
           {/* Password Confirmation */}
           <InputField
             id="passConfirmation"
-            label="Password Confirmation"
+            label="パスワード確認"
             type="password"
             name="passConfirmation"
             defaultValue={persistedValues.passConfirmation}
-            placeholder="Re-enter your password"
+            placeholder="例: 8文字以上"
             icon={<LockClosedIcon className={styles.icon} />}
             inputRequired
             error={localMessages.passConfirmation}
@@ -215,11 +237,11 @@ const RegisterForm = ({
               {/* Class URL */}
               <InputField
                 id="classURL"
-                label="Class URL"
+                label="クラスURL"
                 type="text"
                 name="classURL"
                 defaultValue={persistedValues.classURL}
-                placeholder="e.g., https://zoom.us/j/..."
+                placeholder="例: https://zoom.us/j/..."
                 icon={<LinkIcon className={styles.icon} />}
                 inputRequired
                 error={localMessages.classURL}
@@ -229,11 +251,11 @@ const RegisterForm = ({
               {/* Meeting ID */}
               <InputField
                 id="meetingId"
-                label="Meeting ID"
+                label="ミーティングID"
                 type="text"
                 name="meetingId"
                 defaultValue={persistedValues.meetingId}
-                placeholder="e.g., 123 456 7890"
+                placeholder="例: 123 456 7890"
                 icon={<IdentificationIcon className={styles.icon} />}
                 inputRequired
                 error={localMessages.meetingId}
@@ -243,11 +265,11 @@ const RegisterForm = ({
               {/* Pass Code */}
               <InputField
                 id="passcode"
-                label="Pass Code"
+                label="パスコード"
                 type="text"
                 name="passcode"
                 defaultValue={persistedValues.passcode}
-                placeholder="e.g., 123456"
+                placeholder="例: 123456"
                 icon={<KeyIcon className={styles.icon} />}
                 inputRequired
                 error={localMessages.passcode}
@@ -258,9 +280,9 @@ const RegisterForm = ({
               <TextAreaInput
                 id="workingTime"
                 name="workingTime"
-                label="Available Class"
+                label="クラス開催時間"
                 defaultValue={persistedValues.workingTime}
-                placeholder="e.g., 9 AM - 5 PM (Philippines) on weekdays"
+                placeholder="例: 9 AM - 5 PM (フィリピン) の平日"
                 maxLength={500}
                 icon={
                   <CalendarDaysIcon
@@ -277,9 +299,9 @@ const RegisterForm = ({
               <TextAreaInput
                 id="lifeHistory"
                 name="lifeHistory"
-                label="Life History"
+                label="経歴"
                 defaultValue={persistedValues.lifeHistory}
-                placeholder="e.g., I am a dedicated instructor with a passion for teaching."
+                placeholder="例: 私はこれまで英語講師として10年以上の経験があります。"
                 maxLength={500}
                 icon={
                   <NewspaperIcon className={styles.textareaContainer__icon} />
@@ -294,9 +316,9 @@ const RegisterForm = ({
               <TextAreaInput
                 id="favoriteFood"
                 name="favoriteFood"
-                label="Favorite Food"
+                label="好きな食べ物"
                 defaultValue={persistedValues.favoriteFood}
-                placeholder="e.g., Sushi"
+                placeholder="例: 寿司"
                 maxLength={500}
                 icon={
                   <FaceSmileIcon className={styles.textareaContainer__icon} />
@@ -311,9 +333,9 @@ const RegisterForm = ({
               <TextAreaInput
                 id="hobby"
                 name="hobby"
-                label="Hobby"
+                label="趣味"
                 defaultValue={persistedValues.hobby}
-                placeholder="e.g., Reading"
+                placeholder="例: 読書"
                 maxLength={500}
                 icon={
                   <LightBulbIcon className={styles.textareaContainer__icon} />
@@ -328,9 +350,9 @@ const RegisterForm = ({
               <TextAreaInput
                 id="messageForChildren"
                 name="messageForChildren"
-                label="Message For Children"
+                label="子供たちへのメッセージ"
                 defaultValue={persistedValues.messageForChildren}
-                placeholder="e.g., Always do your best!"
+                placeholder="例: 常に楽しんでください！"
                 maxLength={500}
                 icon={
                   <PencilSquareIcon
@@ -347,9 +369,9 @@ const RegisterForm = ({
               <TextAreaInput
                 id="skill"
                 name="skill"
-                label="Skill"
-                defaultValue={persistedValues.skill}
-                placeholder="e.g., Japanese Language"
+                label="スキル"
+                defaultValue={persistedValues.skill ?? DEFAULT_INSTRUCTOR_SKILL}
+                placeholder="例: 日本語"
                 maxLength={500}
                 icon={
                   <HandThumbUpIcon className={styles.textareaContainer__icon} />
@@ -357,18 +379,22 @@ const RegisterForm = ({
                 unstyled
                 labelTextClassName={styles.label}
                 inputWrapperClassName={styles.textareaContainer}
-                inputClassName={styles.textarea}
+                inputClassName={`${styles.textarea} ${styles.skillTextarea}`}
               />
 
               {/* English Background Selection (radio button) */}
-              <label className={styles.label}>English Background</label>
+              <label className={styles.label}>インストラクタータイプ</label>
               <div className={styles.radioButtonContainer}>
                 <RadioButton
                   name="englishBackground"
                   value={EnglishBackground.NonNative}
                   checked={englishBackground === EnglishBackground.NonNative}
                   onChange={handleRadioChange}
-                  label={englishBackgroundLabels[EnglishBackground.NonNative]}
+                  label={
+                    (language === "ja"
+                      ? ENGLISH_BACKGROUND_LABELS_JP
+                      : ENGLISH_BACKGROUND_LABELS)[EnglishBackground.NonNative]
+                  }
                   className={styles.englishBackgroundRadio}
                 />
                 <RadioButton
@@ -376,7 +402,11 @@ const RegisterForm = ({
                   value={EnglishBackground.NativeA}
                   checked={englishBackground === EnglishBackground.NativeA}
                   onChange={handleRadioChange}
-                  label={englishBackgroundLabels[EnglishBackground.NativeA]}
+                  label={
+                    (language === "ja"
+                      ? ENGLISH_BACKGROUND_LABELS_JP
+                      : ENGLISH_BACKGROUND_LABELS)[EnglishBackground.NativeA]
+                  }
                   className={styles.englishBackgroundRadio}
                 />
                 <RadioButton
@@ -384,33 +414,17 @@ const RegisterForm = ({
                   value={EnglishBackground.NativeB}
                   checked={englishBackground === EnglishBackground.NativeB}
                   onChange={handleRadioChange}
-                  label={englishBackgroundLabels[EnglishBackground.NativeB]}
+                  label={
+                    (language === "ja"
+                      ? ENGLISH_BACKGROUND_LABELS_JP
+                      : ENGLISH_BACKGROUND_LABELS)[EnglishBackground.NativeB]
+                  }
                   className={styles.englishBackgroundRadio}
                 />
               </div>
 
               {/* Image File */}
-              <input
-                type="file"
-                name="icon"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-              />
-              <Uploader
-                onFileSelect={(file) => {
-                  if (fileInputRef.current && file) {
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    fileInputRef.current.files = dataTransfer.files;
-                  }
-                }}
-                clearFileInputRef={() => {
-                  if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                  }
-                }}
-                label={"Instructor profile image"}
-              />
+              <Uploader label={"インストラクター画像"} />
             </>
           )}
         </>
@@ -419,14 +433,14 @@ const RegisterForm = ({
       {/* Plan registration (only for admin) */}
       {userType === "admin" && categoryType === "plan" && (
         <>
-          <p className={styles.required}>*Required</p>
+          <p className={styles.required}>*必須</p>
           <InputField
             id="name"
-            label="Plan Name (Japanese)"
+            label="プラン名（日本語）"
             type="text"
             name="planNameJpn"
             defaultValue={persistedValues.planNameJpn}
-            placeholder="e.g., 月3,180円プラン"
+            placeholder="例: 月3,180円プラン"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
             error={localMessages.planNameJpn}
@@ -434,11 +448,11 @@ const RegisterForm = ({
           />
           <InputField
             id="name"
-            label="Plan Name (English)"
+            label="プラン名（英語）"
             type="text"
             name="planNameEng"
             defaultValue={persistedValues.planNameEng}
-            placeholder="e.g., 3,180 yen/month Plan"
+            placeholder="例: 3,180 yen/month Plan"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
             error={localMessages.planNameEng}
@@ -446,11 +460,11 @@ const RegisterForm = ({
           />
           <InputField
             id="weeklyClassTimes"
-            label="Weekly Class Times"
+            label="週ごとの授業回数"
             type="number"
             name="weeklyClassTimes"
             defaultValue={persistedValues.weeklyClassTimes}
-            placeholder="e.g., 2"
+            placeholder="例: 2"
             icon={<CalendarIcon className={styles.icon} />}
             inputRequired
             error={localMessages.weeklyClassTimes}
@@ -458,25 +472,29 @@ const RegisterForm = ({
           />
           <InputField
             id="description"
-            label="Description"
+            label="説明"
             type="text"
             name="description"
             defaultValue={persistedValues.description}
-            placeholder="e.g., 2 classes per week"
+            placeholder="例: 週2回の授業"
             icon={<DocumentTextIcon className={styles.icon} />}
             inputRequired
             error={localMessages.description}
             onChange={() => clearErrorMessage("description")}
           />{" "}
           {/* Plan Type (Radio button) */}
-          <label className={styles.label}>English Background</label>
+          <label className={styles.label}>インストラクタータイプ</label>
           <div className={styles.radioButtonContainer}>
             <RadioButton
               name="englishBackground"
               value={EnglishBackground.NonNative}
               checked={englishBackground === EnglishBackground.NonNative}
               onChange={handleRadioChange}
-              label={englishBackgroundLabels[EnglishBackground.NonNative]}
+              label={
+                (language === "ja"
+                  ? ENGLISH_BACKGROUND_LABELS_JP
+                  : ENGLISH_BACKGROUND_LABELS)[EnglishBackground.NonNative]
+              }
               className={styles.englishBackgroundRadio}
             />
             <RadioButton
@@ -484,7 +502,11 @@ const RegisterForm = ({
               value={EnglishBackground.NativeA}
               checked={englishBackground === EnglishBackground.NativeA}
               onChange={handleRadioChange}
-              label={englishBackgroundLabels[EnglishBackground.NativeA]}
+              label={
+                (language === "ja"
+                  ? ENGLISH_BACKGROUND_LABELS_JP
+                  : ENGLISH_BACKGROUND_LABELS)[EnglishBackground.NativeA]
+              }
               className={styles.englishBackgroundRadio}
             />
             <RadioButton
@@ -492,7 +514,11 @@ const RegisterForm = ({
               value={EnglishBackground.NativeB}
               checked={englishBackground === EnglishBackground.NativeB}
               onChange={handleRadioChange}
-              label={englishBackgroundLabels[EnglishBackground.NativeB]}
+              label={
+                (language === "ja"
+                  ? ENGLISH_BACKGROUND_LABELS_JP
+                  : ENGLISH_BACKGROUND_LABELS)[EnglishBackground.NativeB]
+              }
               className={styles.englishBackgroundRadio}
             />
           </div>
@@ -502,14 +528,14 @@ const RegisterForm = ({
       {/* Event registration (only for admin) */}
       {userType === "admin" && categoryType === "event" && (
         <>
-          <p className={styles.required}>*Required</p>
+          <p className={styles.required}>*必須</p>
           <InputField
             id="eventNameJpn"
-            label="Event Name (Japanese)"
+            label="イベント名（日本語）"
             type="text"
             name="eventNameJpn"
             defaultValue={persistedValues.eventNameJpn}
-            placeholder="e.g., アーソボイベント"
+            placeholder="例: アーソボイベント"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
             error={localMessages.eventNameJpn}
@@ -517,11 +543,11 @@ const RegisterForm = ({
           />
           <InputField
             id="eventNameEng"
-            label="Event Name (English)"
+            label="イベント名（英語）"
             type="text"
             name="eventNameEng"
             defaultValue={persistedValues.eventNameEng}
-            placeholder="e.g., AaasoBo! Event"
+            placeholder="例: AaasoBo! Event"
             icon={<AcademicCapIcon className={styles.icon} />}
             inputRequired
             error={localMessages.eventNameEng}
@@ -530,7 +556,7 @@ const RegisterForm = ({
           <div className={styles.eventColor}>
             <InputField
               id="color"
-              label="Color Code"
+              label="カラーコード"
               type="color"
               name="color"
               value={colorValue}
@@ -566,27 +592,9 @@ const RegisterForm = ({
       </div>
 
       {/* Submission Button */}
-      {!categoryType ? (
-        <div className={styles.buttonWrapper}>
-          <ActionButton
-            btnText={language === "ja" ? "アカウント登録" : "Create Account"}
-            className="bookBtn"
-            type="submit"
-          />
-        </div>
-      ) : (
-        <div className={styles.buttonWrapper}>
-          <ActionButton
-            btnText={`Register ${
-              categoryType
-                ? categoryType.charAt(0).toUpperCase() + categoryType.slice(1)
-                : ""
-            }`}
-            className="bookBtn"
-            type="submit"
-          />
-        </div>
-      )}
+      <div className={styles.buttonWrapper}>
+        <ActionButton btnText="登録" className="bookBtn" type="submit" />
+      </div>
     </form>
   );
 };

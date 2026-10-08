@@ -8,6 +8,9 @@ import { getAllPlans } from "@/lib/api/plansApi";
 import { registerSubscription } from "@/lib/api/subscriptionsApi";
 import ActionButton from "@/components/elements/buttons/actionButton/ActionButton";
 import InputField from "@/components/elements/inputField/InputField";
+import { ENGLISH_BACKGROUND_LABELS_JP } from "@/lib/data/englishBackground";
+import { EnglishBackground } from "@/types";
+import { selectTypeUrlSchema } from "@/schemas/authSchema";
 
 function AddSubscription({
   customerId,
@@ -63,26 +66,30 @@ function AddSubscription({
   // Register a subscription.
   const handleRegisterSubscription = async () => {
     if (selectedPlan === null || selectedDate === "") {
-      toast.error(
-        "Please select a plan and a date to register the subscription.",
-      );
+      toast.error("プランと日付を選択してください。");
+      return;
+    }
+
+    const parsedUrl = selectTypeUrlSchema.safeParse(selectTypeValue);
+    if (!parsedUrl.success) {
+      toast.error("有効な http:// または https:// のURLを入力してください。");
       return;
     }
 
     const subscriptionData = {
       planId: selectedPlan.id,
       startAt: selectedDate,
-      selectType: selectTypeValue,
+      selectType: parsedUrl.data,
     };
 
     try {
       await registerSubscription(customerId, subscriptionData);
-      toast.success("Subscription registered successfully.");
+      toast.success("サブスクリプションが正常に登録されました。");
       updateSubscription();
       onClose();
     } catch (error) {
       console.error("Error registering subscription:", error);
-      toast.error("There was an error registering the subscription.");
+      toast.error("サブスクリプション登録中にエラーが発生しました。");
     }
   };
 
@@ -112,46 +119,37 @@ function AddSubscription({
           <div className={styles.container}>
             <div className={styles.filterContainer}>
               <div className={styles.formHeader}>
-                <h3>Register New Subscription</h3>
+                <h3>サブスクリプション登録</h3>
                 <p>
-                  Enter the plan details and payment link to complete setup.
+                  プランと開始日を選択し、セレクトタイプのURLを入力してください。
                 </p>
               </div>
               <div className={styles.planDate}>
                 <div className={styles.fieldGroup}>
-                  <h4 className={styles.fieldLabel}>English Background</h4>
+                  <h4 className={styles.fieldLabel}>インストラクタータイプ</h4>
                   <select
                     value={selectedEnglishBG ?? ""}
                     onChange={handleEnglishBGChange}
                     className={styles.selectField}
                   >
                     <option disabled value="">
-                      Select a category
+                      タイプを選択
                     </option>
-                    {englishBGs.map((bg) => {
-                      const label =
-                        bg === 1
-                          ? "Native A"
-                          : bg === 2
-                            ? "Native B"
-                            : "Non Native";
-
-                      return (
-                        <option key={bg} value={bg}>
-                          {label}
-                        </option>
-                      );
-                    })}
+                    {englishBGs.map((bg) => (
+                      <option key={bg} value={bg}>
+                        {ENGLISH_BACKGROUND_LABELS_JP[bg as EnglishBackground]}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className={styles.fieldGroup}>
-                  <h4 className={styles.fieldLabel}>Plan</h4>
+                  <h4 className={styles.fieldLabel}>プラン</h4>
                   <select
                     value={selectedPlanId}
                     onChange={handlePlanChange}
                     className={styles.selectField}
                   >
-                    <option value="">Select a plan</option>
+                    <option value="">プランを選択</option>
                     {plansData
                       .filter(
                         (plan) => plan.englishBackground === selectedEnglishBG,
@@ -164,7 +162,7 @@ function AddSubscription({
                   </select>
                 </div>
                 <div className={styles.fieldGroup}>
-                  <h4 className={styles.fieldLabel}>Subscription Date</h4>
+                  <h4 className={styles.fieldLabel}>支払い日</h4>
                   <input
                     type="date"
                     value={selectedDate}
@@ -175,13 +173,12 @@ function AddSubscription({
                 </div>
               </div>
               <div className={styles.fieldGroup}>
-                <h4 className={styles.fieldLabel}>SelectType URL</h4>
+                <h4 className={styles.fieldLabel}>セレクトタイプのURL</h4>
                 <InputField
                   type="text"
                   name="SelectType url"
                   placeholder="https://dashboard.stripe.com/subscriptions/sub_1234567890abcdef"
                   value={selectTypeValue}
-                  maxLength={50}
                   onChange={(e) => setSelectTypeValue(e.target.value)}
                   className={styles.selectTypeInput}
                 />
@@ -189,12 +186,12 @@ function AddSubscription({
               <div className={styles.buttons}>
                 <ActionButton
                   onClick={handleRegisterSubscription}
-                  btnText="Subscribe"
+                  btnText="追加"
                   className="addBtn"
                 />
                 <ActionButton
                   onClick={handleCancellation}
-                  btnText="Cancel"
+                  btnText="キャンセル"
                   className="cancelBtn"
                 />
               </div>

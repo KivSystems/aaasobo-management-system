@@ -1,5 +1,7 @@
 "use server";
 
+import { localizeAdminMessage } from "@/lib/messages/adminMessages";
+
 import {
   createInstructorTag,
   deleteInstructorTag,
@@ -25,13 +27,15 @@ export async function createInstructorTagAction(
     const tag = await createInstructorTag(label, cookie);
     revalidateInstructorList();
     return {
-      successMessage: "Tag created successfully.",
+      successMessage: "タグを作成しました。",
       tag,
     };
   } catch (error) {
     return {
       errorMessage:
-        error instanceof Error ? error.message : "Failed to create tag.",
+        error instanceof Error
+          ? localizeAdminMessage(error.message)
+          : "タグの作成に失敗しました。",
     };
   }
 }
@@ -44,12 +48,12 @@ export async function deleteInstructorTagAction(
     await deleteInstructorTag(tagId, cookie);
     revalidateInstructorList();
     return {
-      successMessage: "Tag deleted successfully.",
+      successMessage: "タグを削除しました。",
       deletedTagId: tagId,
     };
   } catch {
     return {
-      errorMessage: "Failed to delete tag.",
+      errorMessage: "タグの削除に失敗しました。",
     };
   }
 }
@@ -63,12 +67,12 @@ export async function saveInstructorTagsAction(
     await saveInstructorTags(instructorId, { tagIds }, cookie);
     revalidateInstructorList();
     return {
-      successMessage: "Tags saved successfully.",
+      successMessage: "タグを保存しました。",
       selectedTagIds: tagIds,
     };
   } catch {
     return {
-      errorMessage: "Failed to save tags.",
+      errorMessage: "タグの保存に失敗しました。",
     };
   }
 }

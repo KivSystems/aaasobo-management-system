@@ -1,6 +1,12 @@
 import express, { RequestHandler } from "express";
+import { z } from "zod";
+import {
+  UpdateSelectTypeUrlRequest,
+  UpdateSubscriptionToAddClassRequest,
+} from "../../../shared/schemas/admins";
 import { registerRoutes } from "../../src/middlewares/validationMiddleware";
 import {
+  previewSubscriptionDecreaseController,
   deleteSubscriptionController,
   getSubscriptionByIdController,
   updateSelectTypeUrlController,
@@ -8,6 +14,9 @@ import {
   updateSubscriptionToTerminateClassController,
 } from "../../src/controllers/subscriptionsController";
 import {
+  SubscriptionDecreasePreviewBody,
+  SubscriptionDecreaseBody,
+  SubscriptionDecreasePreview,
   CancelSubscriptionBody,
   DeleteSubscriptionResponse,
   SubscriptionIdParams,
@@ -85,7 +94,11 @@ const deleteSubscription = {
 
 const updateSubscriptionToAddClass = {
   method: "patch" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updateSubscriptionToAddClassController,
+  bodySchema: z.object({
+    updateSubscriptionData: UpdateSubscriptionToAddClassRequest,
+  }),
   paramsSchema: SubscriptionIdParams,
   openapi: {
     summary: "Update a subscription to add recurring classes",
@@ -113,7 +126,9 @@ const updateSubscriptionToAddClass = {
 
 const updateSubscriptionToTerminateClass = {
   method: "patch" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updateSubscriptionToTerminateClassController,
+  bodySchema: SubscriptionDecreaseBody,
   paramsSchema: SubscriptionIdParams,
   openapi: {
     summary: "Update a subscription to terminate recurring classes",
@@ -141,7 +156,9 @@ const updateSubscriptionToTerminateClass = {
 
 const updateSelectTypeUrl = {
   method: "patch" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
   handler: updateSelectTypeUrlController,
+  bodySchema: z.object({ updateSubscriptionData: UpdateSelectTypeUrlRequest }),
   paramsSchema: SubscriptionIdParams,
   openapi: {
     summary: "Update a SelectType url",
@@ -167,6 +184,28 @@ const updateSelectTypeUrl = {
   },
 };
 
+const previewSubscriptionDecrease = {
+  method: "post" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  handler: previewSubscriptionDecreaseController,
+  paramsSchema: SubscriptionIdParams,
+  bodySchema: SubscriptionDecreasePreviewBody,
+  openapi: {
+    summary: "Preview classes affected by a subscription decrease",
+    description:
+      "List rebooked classes canceled when the selected regular classes end.",
+    responses: {
+      200: {
+        description: "Cancellation preview",
+        schema: SubscriptionDecreasePreview,
+      },
+      400: { description: "Invalid selection", schema: ErrorResponse },
+      404: { description: "Not found", schema: ErrorResponse },
+      409: { description: "Bookings changed", schema: ErrorResponse },
+    },
+  },
+};
+
 const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id": [
     getSubscriptionByIdConfig,
@@ -175,6 +214,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
     updateSubscriptionToTerminateClass,
   ],
   "/:id/increase-recurring-class": [updateSubscriptionToAddClass],
+  "/:id/decrease-recurring-class/preview": [previewSubscriptionDecrease],
   "/:id/decrease-recurring-class": [updateSubscriptionToTerminateClass],
   "/:id/update-select-type": [updateSelectTypeUrl],
 };

@@ -14,6 +14,57 @@ import type {
   InstructorPayrollResponse,
 } from "@shared/schemas/admins";
 
+type PayrollLocale = "en" | "ja";
+
+const labels = {
+  en: {
+    unknown: "Unknown",
+    from: "to",
+    current: "Present",
+    noPayableClasses: "There are no payable classes in this period.",
+    date: "Date",
+    trial: "Trial",
+    regular: "Regular",
+    cancel: "Cancellation",
+    cancellationCount: "cancellations",
+    cancelWithoutNotice: "Cancellation without notice",
+    dailyTotal: "Daily total",
+    monthlyCancellationCount: "Monthly cancellation count",
+    dailyBreakdown: "Daily breakdown",
+    lastUpdated: "Last updated",
+    applicablePeriods: "Applicable periods",
+    noApplicablePeriods: "There are no applicable periods.",
+    trialClass: "Trial class",
+    regularClass: "Regular class",
+    monthlyCancellationFormula: "Monthly cancellation count / 10",
+    monthInput: "Select payroll month",
+    loading: "Loading payroll information…",
+  },
+  ja: {
+    unknown: "不明",
+    from: "から",
+    current: "現在",
+    noPayableClasses: "この期間には給与支払い対象のクラスがありません。",
+    date: "日付",
+    trial: "体験",
+    regular: "通常",
+    cancel: "キャンセル",
+    cancellationCount: "キャンセル",
+    cancelWithoutNotice: "通知なしキャンセル",
+    dailyTotal: "日計",
+    monthlyCancellationCount: "月次の合計キャンセル数",
+    dailyBreakdown: "日次内訳",
+    lastUpdated: "最終更新日時",
+    applicablePeriods: "適用期間",
+    noApplicablePeriods: "対象期間がありません。",
+    trialClass: "トライアルクラス",
+    regularClass: "レギュラークラス",
+    monthlyCancellationFormula: "月次の合計キャンセル数 / 10",
+    monthInput: "給与計算対象月を選択",
+    loading: "給与情報を取得中…",
+  },
+} as const;
+
 const getCurrentJstMonth = () => {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Tokyo",
@@ -60,12 +111,15 @@ const formatMoneyWithCurrencyCode = (
   return `${formattedAmount} (${currency})`;
 };
 
-const formatLastUpdatedLabel = (value: string | null) => {
+const formatLastUpdatedLabel = (
+  value: string | null,
+  locale: PayrollLocale,
+) => {
   if (!value) {
-    return "No payroll classes";
+    return labels[locale].unknown;
   }
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", {
     timeZone: "Asia/Tokyo",
     year: "numeric",
     month: "short",
@@ -76,8 +130,8 @@ const formatLastUpdatedLabel = (value: string | null) => {
   }).format(new Date(value));
 };
 
-const formatDayLabel = (date: string) =>
-  new Intl.DateTimeFormat("en-US", {
+const formatDayLabel = (date: string, locale: PayrollLocale) =>
+  new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", {
     timeZone: "Asia/Tokyo",
     day: "2-digit",
     weekday: "short",
@@ -96,13 +150,13 @@ const formatDayLabel = (date: string) =>
       { day: "", weekday: "" },
     );
 
-const formatPeriodLabel = (from: string, to: string) => {
-  return `${from} to ${to}`;
+const formatPeriodLabel = (from: string, to: string, locale: PayrollLocale) => {
+  return `${from} ${labels[locale].from} ${to}`;
 };
 
-const formatFeeCoverageEnd = (value: string | null) => {
+const formatFeeCoverageEnd = (value: string | null, locale: PayrollLocale) => {
   if (!value) {
-    return "Onwards";
+    return labels[locale].current;
   }
 
   const date = new Date(`${value}T00:00:00.000Z`);
@@ -116,13 +170,15 @@ const isSecondHalfPeriod = (period: InstructorPayrollPeriod) =>
 function DailyBreakdownTable({
   rows,
   currency,
+  locale,
 }: {
   rows: InstructorPayrollDailyBreakdown[];
   currency: string | null;
+  locale: PayrollLocale;
 }) {
   if (rows.length === 0) {
     return (
-      <p className={styles.emptyMessage}>No payable classes in this period.</p>
+      <p className={styles.emptyMessage}>{labels[locale].noPayableClasses}</p>
     );
   }
 
@@ -157,17 +213,17 @@ function DailyBreakdownTable({
         </colgroup>
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Trial</th>
-            <th>Regular</th>
-            <th>Cancel</th>
-            <th>Cancel Without Notice</th>
-            <th>Day Total</th>
+            <th>{labels[locale].date}</th>
+            <th>{labels[locale].trial}</th>
+            <th>{labels[locale].regular}</th>
+            <th>{labels[locale].cancel}</th>
+            <th>{labels[locale].cancelWithoutNotice}</th>
+            <th>{labels[locale].dailyTotal}</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => {
-            const dayLabel = formatDayLabel(row.date);
+            const dayLabel = formatDayLabel(row.date, locale);
 
             return (
               <tr key={row.date}>
@@ -185,7 +241,7 @@ function DailyBreakdownTable({
         </tbody>
         <tfoot>
           <tr>
-            <th scope="row">Total</th>
+            <th scope="row">{locale === "ja" ? "合計" : "Total"}</th>
             <td>{totals.trial}</td>
             <td>{totals.regular}</td>
             <td>{totals.cancel}</td>
@@ -201,17 +257,19 @@ function DailyBreakdownTable({
 function MonthlyCancelAdjustment({
   currency,
   monthlyCancelFee,
+  locale,
 }: {
   currency: string | null;
   monthlyCancelFee: InstructorPayrollPeriod["monthlyCancelFee"];
+  locale: PayrollLocale;
 }) {
   return (
     <div className={styles.monthlyCancelAdjustment}>
       <div className={styles.monthlyCancelLabel}>
-        <h5>Monthly Cancel</h5>
+        <h5>{labels[locale].monthlyCancellationCount}</h5>
       </div>
       <p className={styles.monthlyCancelFormula}>
-        {monthlyCancelFee.cancelCount} total cancels /{" "}
+        {monthlyCancelFee.cancelCount} {labels[locale].cancellationCount} /{" "}
         {monthlyCancelFee.threshold} = {monthlyCancelFee.timesApplied} x{" "}
         {formatMoney(monthlyCancelFee.unitFee, currency)}
       </p>
@@ -223,14 +281,20 @@ function MonthlyCancelAdjustment({
   );
 }
 
-function PeriodCard({ period }: { period: InstructorPayrollPeriod }) {
+function PeriodCard({
+  period,
+  locale,
+}: {
+  period: InstructorPayrollPeriod;
+  locale: PayrollLocale;
+}) {
   const showMonthlyCancelAdjustment = isSecondHalfPeriod(period);
 
   return (
     <section className={styles.periodCard}>
       <div className={styles.periodSummary}>
         <div>
-          <h3>{formatPeriodLabel(period.from, period.to)}</h3>
+          <h3>{formatPeriodLabel(period.from, period.to, locale)}</h3>
         </div>
         <div className={styles.summaryStats}>
           <strong>
@@ -241,25 +305,29 @@ function PeriodCard({ period }: { period: InstructorPayrollPeriod }) {
 
       <div className={styles.breakdownSection}>
         <h4>
-          Daily Breakdown (Last Update at{" "}
-          {formatLastUpdatedLabel(period.sourceLastUpdatedAt)})
+          {labels[locale].dailyBreakdown} ({labels[locale].lastUpdated}{" "}
+          {formatLastUpdatedLabel(period.sourceLastUpdatedAt, locale)})
         </h4>
         <DailyBreakdownTable
           rows={period.dailyBreakdown}
           currency={period.currency}
+          locale={locale}
         />
         {showMonthlyCancelAdjustment && (
           <MonthlyCancelAdjustment
             currency={period.currency}
             monthlyCancelFee={period.monthlyCancelFee}
+            locale={locale}
           />
         )}
       </div>
 
       <div className={styles.feePeriodsSection}>
-        <h4>Applied Fee Periods</h4>
+        <h4>{labels[locale].applicablePeriods}</h4>
         {period.appliedFeePeriods.length === 0 ? (
-          <p className={styles.emptyMessage}>No fee periods used.</p>
+          <p className={styles.emptyMessage}>
+            {labels[locale].noApplicablePeriods}
+          </p>
         ) : (
           <div className={styles.feePeriodsList}>
             {period.appliedFeePeriods.map((fee) => (
@@ -269,31 +337,31 @@ function PeriodCard({ period }: { period: InstructorPayrollPeriod }) {
               >
                 <div className={styles.feeCardHeader}>
                   <strong>
-                    {fee.effectiveFrom} to{" "}
-                    {formatFeeCoverageEnd(fee.effectiveTo)}
+                    {fee.effectiveFrom} {labels[locale].from}{" "}
+                    {formatFeeCoverageEnd(fee.effectiveTo, locale)}
                   </strong>
                 </div>
                 <dl className={styles.feeGrid}>
                   <div>
-                    <dt>Trial</dt>
+                    <dt>{labels[locale].trialClass}</dt>
                     <dd>{formatMoney(fee.trialFee, fee.currency)}</dd>
                   </div>
                   <div>
-                    <dt>Regular</dt>
+                    <dt>{labels[locale].regularClass}</dt>
                     <dd>{formatMoney(fee.regularFee, fee.currency)}</dd>
                   </div>
                   <div>
-                    <dt>Cancel</dt>
+                    <dt>{labels[locale].cancel}</dt>
                     <dd>{formatMoney(fee.cancelFee, fee.currency)}</dd>
                   </div>
                   <div>
-                    <dt>Cancel Without Notice</dt>
+                    <dt>{labels[locale].cancelWithoutNotice}</dt>
                     <dd>
                       {formatMoney(fee.cancelWithoutNoticeFee, fee.currency)}
                     </dd>
                   </div>
                   <div>
-                    <dt>Monthly Cancel / 10</dt>
+                    <dt>{labels[locale].monthlyCancellationFormula}</dt>
                     <dd>{formatMoney(fee.monthlyCancelFee, fee.currency)}</dd>
                   </div>
                 </dl>
@@ -308,8 +376,10 @@ function PeriodCard({ period }: { period: InstructorPayrollPeriod }) {
 
 export default function InstructorPayroll({
   instructorId,
+  locale,
 }: {
   instructorId: number;
+  locale: PayrollLocale;
 }) {
   const [selectedMonth, setSelectedMonth] = useState(() =>
     getCurrentJstMonth(),
@@ -372,11 +442,13 @@ export default function InstructorPayroll({
           value={selectedMonth}
           onChange={handleMonthChange}
           className={styles.monthInput}
-          aria-label="Select payroll month"
+          aria-label={labels[locale].monthInput}
         />
       </header>
 
-      {isPending && <p className={styles.pendingMessage}>Loading payroll…</p>}
+      {isPending && (
+        <p className={styles.pendingMessage}>{labels[locale].loading}</p>
+      )}
 
       {error ? (
         <div className={styles.errorBox}>
@@ -386,7 +458,11 @@ export default function InstructorPayroll({
       ) : payroll ? (
         <div className={styles.periodGrid}>
           {payroll.periods.map((period) => (
-            <PeriodCard key={`${period.from}-${period.to}`} period={period} />
+            <PeriodCard
+              key={`${period.from}-${period.to}`}
+              period={period}
+              locale={locale}
+            />
           ))}
         </div>
       ) : null}

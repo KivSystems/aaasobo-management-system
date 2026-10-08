@@ -44,10 +44,14 @@ export const getDayNumberInTimeZone = (
   }).format(date);
 };
 
-export const createRenderEventContent = (userType: UserType) => {
+export const createRenderEventContent = (
+  userType: UserType,
+  timeZone?: string,
+  language: LanguageType = "en",
+) => {
   const RenderEventContent = (eventInfo: EventContentArg) => {
     const classDateTime = new Date(eventInfo.event.startStr);
-    const classTime = formatTime24Hour(classDateTime);
+    const classTime = formatTime24Hour(classDateTime, timeZone);
 
     const { title } = eventInfo.event;
     const { instructorIcon, instructorNickname, classStatus } =
@@ -58,7 +62,8 @@ export const createRenderEventContent = (userType: UserType) => {
 
     return (
       <div
-        className={styles.eventBlock}
+        className={`${styles.eventBlock} ${isCustomer ? styles.customerEvent : ""}`}
+        title={`${classTime} ${instructorNickname || ""} ${title}`.trim()}
         style={{
           cursor: isClickable ? "pointer" : "default",
         }}
@@ -68,7 +73,9 @@ export const createRenderEventContent = (userType: UserType) => {
         instructorIcon ? (
           <Image
             src={instructorIcon}
-            alt={instructorNickname || "Instructor"}
+            alt={
+              instructorNickname || (language === "ja" ? "講師" : "Instructor")
+            }
             width={30}
             height={30}
             priority
@@ -107,8 +114,15 @@ export const createRenderEventContent = (userType: UserType) => {
                     : ""
           }`}
         >
-          <div className={styles.eventTime}>{classTime} -</div>
-          <div className={styles.eventTitle}>{title}</div>
+          <div className={styles.eventTime}>
+            {classTime}
+            <span className={styles.timeSeparator}> -</span>
+          </div>
+          <div className={styles.eventTitle}>
+            {title === "No booked class" && language === "ja"
+              ? "予約なし"
+              : title}
+          </div>
         </div>
       </div>
     );
@@ -117,13 +131,26 @@ export const createRenderEventContent = (userType: UserType) => {
   return RenderEventContent;
 };
 
-export const getValidRange = (createdAt: string, monthsAhead: number) => {
+const getValidRange = (startDate: string, monthsAhead: number) => {
   const now = new Date();
   const end = new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1);
 
   return {
-    start: createdAt.split("T")[0],
+    start: startDate.split("T")[0],
     end: end.toISOString().split("T")[0],
+  };
+};
+
+export const getCurrentMonthValidRange = (monthsAhead: number) => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1);
+  const formatMonthStart = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-01`;
+
+  return {
+    start: formatMonthStart(start),
+    end: formatMonthStart(end),
   };
 };
 
@@ -175,8 +202,6 @@ export function getDayCellColorHandler(
   );
 
   return (arg: DayCellMountArg) => {
-    if (arg.isOther) return;
-
     const dateStr = timeZone
       ? formatDateKeyInTimeZone(arg.date, timeZone)
       : new Intl.DateTimeFormat("en-CA", {
@@ -186,9 +211,7 @@ export function getDayCellColorHandler(
         }).format(arg.date);
     const color = dateToColorMap.get(dateStr);
 
-    if (color) {
-      arg.el.style.backgroundColor = color;
-    }
+    arg.el.style.backgroundColor = color ?? "";
   };
 }
 

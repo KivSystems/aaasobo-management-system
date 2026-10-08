@@ -89,7 +89,7 @@ type Child = {
   customerId?: number;
   name: string;
   birthdate?: string;
-  personalInfo?: string;
+  personalInfo?: string | null;
 };
 
 type Plans = Plan[];
@@ -356,7 +356,6 @@ type BusinessCalendarClientProps = {
 type CustomerCalendarProps = {
   customerId: number;
   classes: CustomerClass[] | [];
-  createdAt: string;
   businessSchedule: BusinessSchedule[];
   colorsForEvents: { event: string; color: string }[];
   userSessionType?: UserType;
@@ -657,15 +656,17 @@ type CurrentListTableProps = {
   omitItems: string[];
   linkItems: string[];
   linkUrls: string[];
+  itemNameLabels: Record<string, string>;
   replaceItems: string[];
   userType: UserType;
   categoryType?: CategoryType;
-  isAddButton?: boolean;
-  isViewPastButton?: boolean;
+  addButton?: [boolean, string];
+  viewPastButton?: [boolean, string];
   isFilterActive?: boolean;
   filterHref?: string;
   clearFilterHref?: string;
   linkTarget?: string;
+  columnOrder?: string[];
 };
 
 type PastListTableProps = {
@@ -673,6 +674,7 @@ type PastListTableProps = {
   omitItems: string[];
   linkItems: string[];
   linkUrls: string[];
+  itemNameLabels: Record<string, string>;
   replaceItems: string[];
   userType: UserType;
   categoryType?: CategoryType;

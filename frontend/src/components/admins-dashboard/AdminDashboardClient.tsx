@@ -19,13 +19,13 @@ export default function AdminTabs({
   const adminName =
     typeof admin !== "string"
       ? admin.email.includes(MASKED_HEAD_LETTERS)
-        ? "Unknown"
+        ? "不明"
         : admin.name
-      : "Unknown";
+      : "不明";
   const breadcrumb = [
-    "Admin List",
+    "管理者リスト",
     "/admins/admin-list",
-    `Admin Page (${adminName})`,
+    `管理者ページ (${adminName})`,
   ];
   const activeTabName = "activeAdminTab";
 
@@ -35,7 +35,7 @@ export default function AdminTabs({
   // Tabs with labels and content
   const tabs = [
     {
-      label: "Admin's Profile",
+      label: "管理者プロフィール",
       content: (
         <AdminProfile
           userId={userId}

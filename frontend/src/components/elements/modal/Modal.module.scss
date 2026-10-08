@@ -16,8 +16,13 @@
   border-radius: 16px;
   position: relative;
   max-height: 700px;
-  overflow-y: auto;
+  overflow: hidden;
   z-index: 10000;
+}
+
+.modalBody {
+  max-height: inherit;
+  overflow-y: auto;
 }
 
 .closeButton {
@@ -26,6 +31,7 @@
   right: 5px;
   height: 35px;
   width: 35px;
+  margin-right: 16px;
   padding: 3px;
   color: #333;
   transition: all 0.3s ease;
@@ -74,6 +80,25 @@
     background-color: rgba(black, 0.4);
     &:hover {
       background-color: rgba(black, 0.7);
+    }
+  }
+}
+
+.instructorProfile {
+  padding: 16px;
+
+  .modalContent {
+    background: transparent;
+    border-radius: 0.5rem;
+    max-height: min(700px, calc(100vh - 32px));
+  }
+
+  .closeButton {
+    z-index: 10001;
+    background-color: rgba(255, 255, 255, 0.9);
+
+    &:hover {
+      background-color: #fff;
     }
   }
 }

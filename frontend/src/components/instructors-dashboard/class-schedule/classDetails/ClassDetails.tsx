@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import { formatShortDate } from "@/lib/utils/dateUtils";
 import ClassDetailsCard from "@/components/instructors-dashboard/class-schedule/classDetails/classDetailsCard/ClassDetailsCard";
@@ -17,12 +18,13 @@ function ClassDetails({
   userSessionType,
   previousPage,
 }: ClassDetailsProps) {
+  const { language } = useLanguage();
   const [isUpdatingData, setIsUpdatingData] = useState<boolean>(false);
 
   const firstClassDateTime = new Date(classes[0].dateTime);
   const classesDate = formatShortDate(
     firstClassDateTime,
-    "en-US",
+    language === "ja" ? "ja-JP" : "en-US",
     "Asia/Tokyo",
   );
 
@@ -39,30 +41,30 @@ function ClassDetails({
     case "class-calendar": // Admin dashboard calendar page
       if (userSessionType === "admin" && adminId) {
         breadcrumbHref = "/admins/calendar";
-        label1 = "Class Calendar";
-        label2 = `Class Details Page (Instructor: ${classDetails.instructorName})`;
+        label1 = "クラスカレンダー";
+        label2 = `クラス詳細ページ (インストラクター: ${classDetails.instructorName})`;
       }
       break;
     case "class-list": // Admin dashboard class list page
       if (userSessionType === "admin" && adminId) {
         breadcrumbHref = "/admins/class-list";
-        label1 = "Class List";
-        label2 = `Class Details Page (Instructor: ${classDetails.instructorName})`;
+        label1 = "クラスリスト";
+        label2 = `クラス詳細ページ (インストラクター: ${classDetails.instructorName})`;
       }
       break;
     case "instructor-list": // Admin dashboard instructor list page
       if (userSessionType === "admin" && adminId) {
         breadcrumbHref = "/admins/instructor-list";
-        label1 = "Instructor List";
-        label2 = `Class Details Page (Instructor: ${classDetails.instructorName})`;
+        label1 = "インストラクターリスト";
+        label2 = `クラス詳細ページ (インストラクター: ${classDetails.instructorName})`;
         // Set the active tab to the instructor calendar tab.
         localStorage.setItem("activeInstructorTab", "0");
       }
       break;
     default:
       breadcrumbHref = "/admins/login"; // Default to login page if no previous page is specified
-      label1 = "Login";
-      label2 = "Unknown";
+      label1 = language === "ja" ? "ログイン" : "Login";
+      label2 = language === "ja" ? "不明" : "Unknown";
       break;
   }
 
@@ -75,7 +77,15 @@ function ClassDetails({
       <main className={styles.classDetails__container}>
         <div className={styles.classItems}>
           <h3 className={styles.classItems__title}>
-            Classes on <span>{classesDate}</span> <span>(JP time)</span>
+            {language === "ja" ? (
+              <>
+                <span>{classesDate}</span>のクラス <span>（日本時間）</span>
+              </>
+            ) : (
+              <>
+                Classes on <span>{classesDate}</span> <span>(JP time)</span>
+              </>
+            )}
           </h3>
           <ul className={styles.classItems__list}>
             {classes.length > 0 ? (
@@ -103,13 +113,17 @@ function ClassDetails({
                 ),
               )
             ) : (
-              <p className={styles.classItems__noClasses}>No classes.</p>
+              <p className={styles.classItems__noClasses}>
+                {language === "ja" ? "クラスはありません。" : "No classes."}
+              </p>
             )}
           </ul>
         </div>
 
         <div className={styles.detailsCard}>
-          <h3 className={styles.detailsCard__title}>Class Details</h3>
+          <h3 className={styles.detailsCard__title}>
+            {language === "ja" ? "クラス詳細" : "Class Details"}
+          </h3>
           <ClassDetailsCard classDetails={classDetails} />
         </div>
       </main>

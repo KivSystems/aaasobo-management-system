@@ -1,3 +1,4 @@
+import { SchedulePreview } from "./schedulePreview";
 import { z } from "zod";
 
 // Parameter schemas
@@ -58,6 +59,10 @@ export const CreateRecurringClassRequest = z.object({
 });
 
 export const UpdateRecurringClassRequest = z.object({
+  previewToken: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .optional(),
   instructorId: z
     .number()
     .int()
@@ -136,4 +141,13 @@ export type CreateRecurringClassResponse = z.infer<
 >;
 export type UpdateRecurringClassResponse = z.infer<
   typeof UpdateRecurringClassResponse
+>;
+
+export const RegularClassChangePreview = z.object({
+  calendar: SchedulePreview,
+  previewToken: z.string(),
+  effectiveAt: z.iso.datetime(),
+});
+export type RegularClassChangePreview = z.infer<
+  typeof RegularClassChangePreview
 >;

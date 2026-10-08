@@ -34,12 +34,18 @@ import type {
   UpdateInstructorTagsRequest,
 } from "@shared/schemas/instructors";
 import { EnglishBackground } from "@/types";
+import type { InstructorFeeRatesResponse } from "@shared/schemas/admins";
 
 const BACKEND_ORIGIN =
   process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "http://localhost:4000";
 const BASE_URL = `${BACKEND_ORIGIN}/instructors`;
 
 type Response<T> = T | { message: string };
+type InstructorFeeApiError = {
+  status: number;
+  code: string;
+  message: string;
+};
 
 export type InstructorSlot = {
   scheduleId: number;
@@ -49,6 +55,47 @@ export type InstructorSlot = {
 
 export type InstructorScheduleWithSlots = InstructorSchedule & {
   slots: InstructorSlot[];
+};
+
+export const getMyInstructorFees = async (): Promise<
+  InstructorFeeRatesResponse | InstructorFeeApiError
+> => {
+  try {
+    const backendEndpoint = "/instructors/fees";
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "backend-endpoint": backendEndpoint,
+          "no-cache": "true",
+        },
+      },
+    );
+    const data = await response.json();
+
+    if (response.status !== 200) {
+      return {
+        status: response.status,
+        code:
+          typeof data?.code === "string" ? data.code : "INSTRUCTOR_FEE_ERROR",
+        message:
+          typeof data?.message === "string"
+            ? data.message
+            : `HTTP error! status: ${response.status}`,
+      };
+    }
+
+    return data as InstructorFeeRatesResponse;
+  } catch (error) {
+    console.error("Failed to fetch authenticated instructor fees:", error);
+    return {
+      status: 500,
+      code: "INSTRUCTOR_FEE_ERROR",
+      message: GENERAL_ERROR_MESSAGE,
+    };
+  }
 };
 
 // GET instructors data
@@ -854,7 +901,7 @@ export const getInstructorAvailableSlots = async (
       end: endDate,
       timezone: "Asia/Tokyo",
       excludeBookedSlots: excludeBookedSlots.toString(),
-    } as AvailableSlotsQuery & { excludeBookedSlots: string });
+    });
 
     let apiURL;
     let headers;
@@ -871,12 +918,17 @@ export const getInstructorAvailableSlots = async (
         cache: "no-store",
       });
     } else {
-      // From client component use the backend directly so instructor-first
-      // availability is not blocked by the proxy request lifecycle.
-      apiURL = `${BASE_URL}/${instructorId}/available-slots?${params}`;
+      // Client authentication is held by the frontend session, so route the
+      // request through the authenticated proxy.
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": `/instructors/${instructorId}/available-slots?${params}`,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
-        credentials: "include",
+        headers,
         cache: "no-store",
       });
     }
@@ -892,6 +944,42 @@ export const getInstructorAvailableSlots = async (
     console.error("Failed to fetch instructor available slots:", error);
     throw error;
   }
+};
+
+export const getAdminInstructorAvailableSlots = async (
+  instructorId: number,
+  startDate: string,
+  endDate: string,
+  excludeBookedSlots: boolean,
+  forRecurringClass = false,
+) => {
+  const params = new URLSearchParams({
+    start: startDate,
+    end: endDate,
+    timezone: "Asia/Tokyo",
+    excludeBookedSlots: excludeBookedSlots.toString(),
+    forRecurringClass: forRecurringClass.toString(),
+  });
+  const backendEndpoint = `/instructors/${instructorId}/available-slots?${params}`;
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "backend-endpoint": backendEndpoint,
+        "no-cache": "no-cache",
+      },
+    },
+  );
+
+  if (response.status !== 200) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = (await response.json()) as { data: AvailableSlot[] };
+
+  return { data: result.data };
 };
 
 export const getInstructorCalendarSlots = async (
@@ -976,12 +1064,15 @@ export const getAllInstructorAvailableSlots = async (
         cache: "no-store",
       });
     } else {
-      // From client component use the backend directly so date-first
-      // availability is not blocked by the proxy request lifecycle.
-      apiURL = `${BASE_URL}/available-slots?${params}`;
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": `/instructors/available-slots?${params}`,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
-        credentials: "include",
+        headers,
         cache: "no-store",
       });
     }
@@ -1026,12 +1117,15 @@ export const getInstructorAvailableSlotsByType = async (
         cache: "no-store",
       });
     } else {
-      // From client component use the backend directly so date-first
-      // booking availability behaves the same as instructor-first.
-      apiURL = `${BASE_URL}/available-slots/by-type?${params}&englishBackground=${englishBackground}`;
+      apiURL = `${process.env.NEXT_PUBLIC_FRONTEND_ORIGIN}/api/proxy`;
+      headers = {
+        "Content-Type": "application/json",
+        "backend-endpoint": `/instructors/available-slots/by-type?${params}&englishBackground=${englishBackground}`,
+        "no-cache": "no-cache",
+      };
       response = await fetch(apiURL, {
         method,
-        credentials: "include",
+        headers,
         cache: "no-store",
       });
     }
@@ -1183,7 +1277,7 @@ export const getActiveInstructorSchedule = async (
   instructorId: number,
   effectiveDate: string,
   cookie?: string,
-) => {
+): Promise<{ schedule: InstructorScheduleWithSlots | null }> => {
   try {
     let apiURL;
     let headers;
@@ -1215,6 +1309,10 @@ export const getActiveInstructorSchedule = async (
         method,
         headers,
       });
+    }
+
+    if (response.status === 404) {
+      return { schedule: null };
     }
 
     if (response.status !== 200) {

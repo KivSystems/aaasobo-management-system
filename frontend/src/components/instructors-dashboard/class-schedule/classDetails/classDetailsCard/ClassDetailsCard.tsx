@@ -1,3 +1,6 @@
+"use client";
+
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   formatClassDetailFooter,
   getEndTime,
@@ -16,8 +19,15 @@ const ClassDetailsCard = ({
 }: {
   classDetails: InstructorClassDetail | null;
 }) => {
+  const { language } = useLanguage();
   if (!classDetails) {
-    return <div>No class details available</div>;
+    return (
+      <div>
+        {language === "ja"
+          ? "クラス詳細がありません"
+          : "No class details available"}
+      </div>
+    );
   }
 
   const isFreeTrial =
@@ -33,12 +43,17 @@ const ClassDetailsCard = ({
     <div
       className={`${styles.classCard} ${isFreeTrial ? styles.freeTrial : styles[classDetails.status]}`}
     >
-      <ClassStatus status={classDetails.status} isFreeTrial={isFreeTrial} />
+      <ClassStatus
+        status={classDetails.status}
+        isFreeTrial={isFreeTrial}
+        language={language}
+      />
 
-      <ClassDateTime classStart={classDetails.dateTime} />
+      <ClassDateTime classStart={classDetails.dateTime} language={language} />
 
       {bookedStatuses.includes(classDetails.status) && (
         <ClassUrl
+          language={language}
           classEnd={classEndTime}
           classStatus={classDetails.status}
           classUrl={classDetails.classURL}
@@ -49,16 +64,28 @@ const ClassDetailsCard = ({
 
       {bookedStatuses.includes(classDetails.status) &&
         !hasTimePassed(classEndTime) && (
-          <InfoBanner info="If you need to cancel a class, please contact our staff promptly via Facebook." />
+          <InfoBanner
+            info={
+              language === "ja"
+                ? "クラスをキャンセルする場合は、速やかにFacebookでスタッフにご連絡ください。"
+                : "If you need to cancel a class, please contact our staff promptly via Facebook."
+            }
+          />
         )}
 
       <div className={styles.children}>
         <div className={styles.children__title}>
           {classDetails.status === "canceledByInstructor"
-            ? "Children"
+            ? language === "ja"
+              ? "お子さま"
+              : "Children"
             : !hasTimePassed(classEndTime)
-              ? "Attending Children"
-              : "Attended Children"}
+              ? language === "ja"
+                ? "参加予定のお子さま"
+                : "Attending Children"
+              : language === "ja"
+                ? "参加したお子さま"
+                : "Attended Children"}
         </div>
 
         {classDetails.status !== "canceledByInstructor" &&
@@ -69,7 +96,9 @@ const ClassDetailsCard = ({
             </div>
             <div className={styles.children__nameContainer}>
               <div className={styles.children__nameTitle}>
-                The registered children were absent.
+                {language === "ja"
+                  ? "参加予定のお子さまは欠席でした。"
+                  : "The registered children were absent."}
               </div>
             </div>
           </div>
@@ -86,7 +115,7 @@ const ClassDetailsCard = ({
         )}
 
         <div className={styles.footer}>
-          <span>{`Class Code: ${classDetails.classCode}`}</span>
+          <span>{`${language === "ja" ? "クラスコード" : "Class Code"}: ${classDetails.classCode}`}</span>
           <span>{formatClassDetailFooter(classDetails.updatedAt)}</span>
         </div>
       </div>

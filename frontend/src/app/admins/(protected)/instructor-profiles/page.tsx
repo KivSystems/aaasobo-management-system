@@ -14,7 +14,7 @@ async function InstructorProfilesPage() {
 
   // Show error message when no instructor profiles are found
   if (!instructorProfiles || instructorProfiles.length === 0) {
-    return <p>Error: No instructor profiles found.</p>;
+    return <p>インストラクターのプロフィールが見つかりません。</p>;
   }
 
   // From this page, admins can only view instructor profiles with limited information the same as customers.

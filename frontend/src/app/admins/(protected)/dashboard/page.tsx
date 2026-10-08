@@ -11,6 +11,10 @@ import { getInstructorProfiles } from "@/lib/api/instructorsApi";
 import { authenticateUserSession } from "@/lib/auth/sessionUtils";
 import { getCookie } from "@/proxy";
 import { defaultUserImageUrl } from "@/lib/data/data";
+import {
+  ENGLISH_BACKGROUND_LABELS,
+  EnglishBackground,
+} from "@/lib/data/englishBackground";
 
 const MONTH_WINDOW = 12;
 
@@ -53,7 +57,7 @@ function parseMonthKey(value: string): string | null {
 function monthYearLabelFromKey(monthKey: string): string {
   const [year, month] = monthKey.split("-").map(Number);
   const date = new Date(year, (month || 1) - 1, 1);
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("ja-JP", {
     month: "short",
     year: "numeric",
   }).format(date);
@@ -77,7 +81,10 @@ function calcInstructorEnglishBackgroundCounts(
     (counts, instructor) => {
       const normalized = instructor.English.trim().toLowerCase();
 
-      if (normalized === "non native") {
+      if (
+        normalized ===
+        ENGLISH_BACKGROUND_LABELS[EnglishBackground.NonNative].toLowerCase()
+      ) {
         counts.nonNative += 1;
       } else if (normalized === "native a") {
         counts.nativeA += 1;
@@ -94,7 +101,7 @@ function calcInstructorEnglishBackgroundCounts(
 function monthLabelFromKey(monthKey: string): string {
   const [year, month] = monthKey.split("-").map(Number);
   const date = new Date(year, (month || 1) - 1, 1);
-  return new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
+  return new Intl.DateTimeFormat("ja-JP", { month: "short" }).format(date);
 }
 
 function toMonthlyData(

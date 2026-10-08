@@ -1,9 +1,11 @@
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import Modal from "@/components/elements/modal/Modal";
 import EditableScheduleCalendar from "./EditableScheduleCalendar";
 import { InstructorSlot } from "@/lib/api/instructorsApi";
 import { slotToKey, keyToSlot } from "@/lib/utils/scheduleUtils";
 import styles from "./AddScheduleModal.module.scss";
+import { getTodayInJapanISODate } from "@/lib/utils/dateUtils";
 
 interface AddScheduleModalProps {
   isOpen: boolean;
@@ -21,6 +23,7 @@ export default function AddScheduleModal({
   onSubmit,
   initialSlots = [],
 }: AddScheduleModalProps) {
+  const { language } = useLanguage();
   const slotsToKeys = (slots: InstructorSlot[]): Set<string> => {
     return new Set(
       slots.map((slot) => {
@@ -42,8 +45,8 @@ export default function AddScheduleModal({
   };
 
   const [effectiveFrom, setEffectiveFrom] = useState(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrow = new Date(`${getTodayInJapanISODate()}T00:00:00.000Z`);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
     return tomorrow.toISOString().split("T")[0];
   });
   const [editedSlots, setEditedSlots] = useState<Set<string>>(() =>
@@ -90,20 +93,24 @@ export default function AddScheduleModal({
     <Modal isOpen={isOpen} onClose={onClose} maxHeight="90vh">
       <div className={styles.content}>
         <div className={styles.header}>
-          <h2>Add New Schedule Version</h2>
+          <h2>
+            {language === "ja"
+              ? "新しいスケジュールを追加する"
+              : "Add a New Schedule"}
+          </h2>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className={styles.body}>
             <div className={styles.dateSection}>
               <label htmlFor="effectiveFrom">
-                <strong>Effective From:</strong>
+                <strong>{language === "ja" ? "開始日:" : "Start date:"}</strong>
                 <input
                   id="effectiveFrom"
                   type="date"
                   value={effectiveFrom}
                   onChange={(e) => setEffectiveFrom(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
+                  min={getTodayInJapanISODate()}
                   required
                   className={styles.dateInput}
                 />
@@ -112,11 +119,16 @@ export default function AddScheduleModal({
 
             <div className={styles.scheduleSection}>
               <p>
-                <strong>Schedule Configuration:</strong>
+                <strong>
+                  {language === "ja"
+                    ? "スケジュール設定:"
+                    : "Schedule settings:"}
+                </strong>
               </p>
               <p>
-                Click time slots to add or remove them from the new schedule
-                version.
+                {language === "ja"
+                  ? "時間枠をクリックして予定を追加または削除します。"
+                  : "Click a time slot to add or remove availability."}
               </p>
 
               <div className={styles.legend}>
@@ -124,17 +136,17 @@ export default function AddScheduleModal({
                   <div
                     className={`${styles.legendDot} ${styles.unchanged}`}
                   ></div>
-                  <span>Unchanged (from current)</span>
+                  <span>{language === "ja" ? "現状" : "Current"}</span>
                 </div>
                 <div className={styles.legendItem}>
                   <div className={`${styles.legendDot} ${styles.added}`}></div>
-                  <span>Added (new)</span>
+                  <span>{language === "ja" ? "追加" : "Added"}</span>
                 </div>
                 <div className={styles.legendItem}>
                   <div
                     className={`${styles.legendDot} ${styles.removed}`}
                   ></div>
-                  <span>Removed</span>
+                  <span>{language === "ja" ? "削除" : "Removed"}</span>
                 </div>
               </div>
 
@@ -154,14 +166,20 @@ export default function AddScheduleModal({
               onClick={handleCancel}
               className={styles.cancelButton}
             >
-              Cancel
+              {language === "ja" ? "キャンセル" : "Cancel"}
             </button>
             <button
               type="submit"
               className={styles.submitButton}
               disabled={!effectiveFrom || isSubmitting}
             >
-              {isSubmitting ? "Creating..." : "Create Schedule"}
+              {isSubmitting
+                ? language === "ja"
+                  ? "作成中..."
+                  : "Creating..."
+                : language === "ja"
+                  ? "スケジュールを作成"
+                  : "Create Schedule"}
             </button>
           </div>
         </form>

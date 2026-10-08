@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+import jaLocale from "@fullcalendar/core/locales/ja";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
@@ -28,6 +30,7 @@ const InstructorCalendarClient = ({
   colorsForEvents,
   messageBoardPosts = [],
 }: InstructorCalendarClientProps) => {
+  const { language } = useLanguage();
   const router = useRouter();
   const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
   const [currentTitle, setCurrentTitle] = useState("");
@@ -51,7 +54,11 @@ const InstructorCalendarClient = ({
     router.push(redirectURL);
   };
 
-  const renderInstructorEventContent = createRenderEventContent("instructor");
+  const renderInstructorEventContent = createRenderEventContent(
+    "instructor",
+    undefined,
+    language,
+  );
 
   const classSlotTimes = getClassSlotTimesForCalendar();
 
@@ -71,7 +78,7 @@ const InstructorCalendarClient = ({
   };
 
   return (
-    <div className={styles.calendarContainer}>
+    <div className={`${styles.calendarContainer} ${styles.withMobileToolbar}`}>
       <MessageBoardPanel
         posts={visiblePosts}
         storageKey="instructorClassScheduleMessageBoardOpenState"
@@ -83,7 +90,7 @@ const InstructorCalendarClient = ({
             type="button"
             className={`${styles.navButton} fc-button fc-button-primary fc-prev-button`}
             onClick={() => handleCalendarNav("prev")}
-            aria-label="Previous"
+            aria-label={language === "ja" ? "前へ" : "Previous"}
           >
             {"<"}
           </button>
@@ -91,7 +98,7 @@ const InstructorCalendarClient = ({
             type="button"
             className={`${styles.navButton} fc-button fc-button-primary fc-next-button`}
             onClick={() => handleCalendarNav("next")}
-            aria-label="Next"
+            aria-label={language === "ja" ? "次へ" : "Next"}
           >
             {">"}
           </button>
@@ -103,7 +110,7 @@ const InstructorCalendarClient = ({
             onClick={() => handleCalendarNav("today")}
             disabled={isTodayInRange}
           >
-            today
+            {language === "ja" ? "今日" : "today"}
           </button>
         </div>
         <div className={styles.mobileTitle}>{currentTitle}</div>
@@ -112,11 +119,21 @@ const InstructorCalendarClient = ({
             className={styles.viewSelect}
             value={currentView}
             onChange={handleViewChange}
-            aria-label="Select calendar view"
+            aria-label={
+              language === "ja"
+                ? "カレンダーの表示を選択"
+                : "Select calendar view"
+            }
           >
-            <option value="dayGridMonth">Month</option>
-            <option value="timeGridWeek">Week</option>
-            <option value="timeGridDay">Day</option>
+            <option value="dayGridMonth">
+              {language === "ja" ? "月" : "Month"}
+            </option>
+            <option value="timeGridWeek">
+              {language === "ja" ? "週" : "Week"}
+            </option>
+            <option value="timeGridDay">
+              {language === "ja" ? "日" : "Day"}
+            </option>
           </select>
         </div>
       </div>
@@ -137,7 +154,8 @@ const InstructorCalendarClient = ({
         eventClick={handleEventClick}
         eventContent={renderInstructorEventContent}
         validRange={validRange}
-        locale="en"
+        locales={[jaLocale]}
+        locale={language}
         contentHeight="auto"
         dayMaxEvents={true}
         editable={false}
@@ -166,7 +184,7 @@ const InstructorCalendarClient = ({
       />
 
       {colorsForEvents.length > 0 && (
-        <CalendarLegend colorsForEvents={colorsForEvents} language="en" />
+        <CalendarLegend colorsForEvents={colorsForEvents} language={language} />
       )}
     </div>
   );

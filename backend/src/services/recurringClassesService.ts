@@ -1,6 +1,15 @@
+import { loadRecurringClassConflictChecker } from "./recurringClassConflictService";
+import { createHash } from "node:crypto";
+import { loadCalendarClasses } from "./schedulePreviewService";
+import type { SchedulePreview } from "../../../shared/schemas/schedulePreview";
 import { prisma } from "../../prisma/prismaClient";
-import { Prisma, RecurringClass, Class } from "../../generated/prisma";
-import { JAPAN_TIME_DIFF, nDaysLater, nHoursBefore } from "../utils/dateUtils";
+import { Prisma, RecurringClass, Class } from "@prisma/client";
+import {
+  getJstDateAtUtcMidnight,
+  JAPAN_TIME_DIFF,
+  nDaysLater,
+  nHoursBefore,
+} from "../utils/dateUtils";
 import {
   NO_CLASS_EVENT_NAME,
   REBOOKABLE_NO_CLASS_EVENT_NAME,
@@ -21,6 +30,7 @@ interface CreateRegularClassParams {
 interface UpdateRegularClassParams
   extends Omit<CreateRegularClassParams, "subscriptionId"> {
   recurringClassId: number;
+  previewToken?: string;
 }
 
 export const createRegularClass = async (params: CreateRegularClassParams) => {
@@ -61,12 +71,7 @@ function getNextWeekdayOccurrence(
 
   const currentWeekday = result.getUTCDay();
   const daysUntilTarget = (targetWeekday - currentWeekday + 7) % 7;
-
-  if (daysUntilTarget === 0 && result.getUTCHours() >= hours) {
-    result.setUTCDate(result.getUTCDate() + 7);
-  } else {
-    result.setUTCDate(result.getUTCDate() + daysUntilTarget);
-  }
+  result.setUTCDate(result.getUTCDate() + daysUntilTarget);
 
   result.setUTCHours(hours - JAPAN_TIME_DIFF, minutes, 0, 0);
 
@@ -79,24 +84,10 @@ async function conflictingRegularClassExists(
   weekday: number,
   startTime: string,
   startDate: Date,
+  excludeId = -1,
 ): Promise<boolean> {
-  const [requestedHours, requestedMinutes] = startTime.split(":").map(Number);
-
-  // Note: We assume weekday and startTime are in JST timezone.
-  // The database stores startAt in UTC, so we convert to Asia/Tokyo for comparison.
-  const result = await tx.$queryRaw<{ exists: boolean }[]>`
-    SELECT EXISTS(
-      SELECT 1
-      FROM "RecurringClass"
-      WHERE "instructorId" = ${instructorId}
-        AND ("endAt" >= ${startDate} OR "endAt" IS NULL)
-        AND EXTRACT(DOW FROM (("startAt" AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Tokyo')) = ${weekday}
-        AND EXTRACT(HOUR FROM (("startAt" AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Tokyo')) = ${requestedHours}
-        AND EXTRACT(MINUTE FROM (("startAt" AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Tokyo')) = ${requestedMinutes}
-    ) as exists
-  `;
-
-  return result[0].exists;
+  const hasConflict = await loadRecurringClassConflictChecker(tx, instructorId);
+  return hasConflict(weekday, startTime, startDate, excludeId);
 }
 
 function createWeeklyDates(start: Date, end: Date): Date[] {
@@ -111,18 +102,8 @@ function createWeeklyDates(start: Date, end: Date): Date[] {
   return dates;
 }
 
-export async function terminateRecurringClass(
-  tx: Prisma.TransactionClient,
-  recurringClassId: number,
-  endDate: Date,
-): Promise<RecurringClass> {
-  // Set endAt to indicate termination
-  const terminatedRecurringClass = await tx.recurringClass.update({
-    where: { id: recurringClassId },
-    data: { endAt: endDate },
-  });
-
-  const startOfEndDate = nHoursBefore(
+function getRecurringClassTerminationCutoff(endDate: Date): Date {
+  return nHoursBefore(
     JAPAN_TIME_DIFF,
     new Date(
       Date.UTC(
@@ -132,12 +113,30 @@ export async function terminateRecurringClass(
       ),
     ),
   );
+}
+
+export async function terminateRecurringClass(
+  tx: Prisma.TransactionClient,
+  recurringClassId: number,
+  endDate: Date,
+  deletionCutoff = getRecurringClassTerminationCutoff(endDate),
+): Promise<RecurringClass> {
+  const existing = await tx.recurringClass.findUniqueOrThrow({
+    where: { id: recurringClassId },
+  });
+  const terminatedRecurringClass = await tx.recurringClass.update({
+    where: { id: recurringClassId },
+    data: {
+      endAt:
+        existing.endAt && existing.endAt < endDate ? existing.endAt : endDate,
+    },
+  });
 
   // Delete future classes
   await tx.class.deleteMany({
     where: {
       recurringClassId,
-      dateTime: { gte: startOfEndDate },
+      dateTime: { gte: deletionCutoff },
     },
   });
   // ClassAttendance records will be cascade deleted automatically
@@ -159,7 +158,7 @@ async function findAvailableInstructorSlot(
       schedule: {
         instructorId,
         effectiveFrom: { lte: effectiveDate },
-        effectiveTo: null,
+        OR: [{ effectiveTo: null }, { effectiveTo: { gt: effectiveDate } }],
       },
     },
     include: {
@@ -168,9 +167,24 @@ async function findAvailableInstructorSlot(
   });
 }
 
+function getClassGenerationEnd(
+  firstOccurrence: Date,
+  existingDates: Date[] = [],
+): Date {
+  const end = new Date(firstOccurrence);
+  end.setMonth(end.getMonth() + 3);
+  for (const date of existingDates) {
+    const throughExistingWeek = nDaysLater(7, date);
+    if (throughExistingWeek > end) end.setTime(throughExistingWeek.getTime());
+  }
+  return end;
+}
+
 async function createRecurringClass(
   tx: Prisma.TransactionClient,
   params: CreateRegularClassParams,
+  generationEnd?: Date,
+  previousRecurringClassId?: number,
 ): Promise<{ recurringClass: RecurringClass; createdClasses: Class[] }> {
   const {
     instructorId,
@@ -187,6 +201,14 @@ async function createRecurringClass(
     throw new Error("Only Asia/Tokyo timezone is supported");
   }
 
+  const subscription = await tx.subscription.findUnique({
+    where: { id: subscriptionId },
+  });
+  if (!subscription || subscription.customerId !== customerId)
+    throw new Error("Regular class not found");
+  if (subscription.endAt)
+    throw new Error("Subscription no longer accepts regular classes");
+
   const startDateObj = new Date(startDate);
 
   // Check if instructor is available
@@ -202,25 +224,27 @@ async function createRecurringClass(
     throw new Error("Instructor is not available at the requested time slot");
   }
 
-  // Check for conflicting regular classes
-  const hasConflict = await conflictingRegularClassExists(
-    tx,
-    instructorId,
-    weekday,
-    startTime,
-    startDateObj,
-  );
-
-  if (hasConflict) {
-    throw new Error("Regular class already exists at this time slot");
-  }
-
   // Calculate first occurrence for startAt
   const firstOccurrence = getNextWeekdayOccurrence(
     startDateObj,
     weekday,
     startTime,
   );
+  if (firstOccurrence < subscription.startAt)
+    throw new Error("Regular class cannot start before subscription");
+
+  // Check for conflicting regular classes
+  const hasConflict = await conflictingRegularClassExists(
+    tx,
+    instructorId,
+    weekday,
+    startTime,
+    firstOccurrence,
+  );
+
+  if (hasConflict) {
+    throw new Error("Regular class already exists at this time slot");
+  }
 
   const recurringClass = await tx.recurringClass.create({
     data: {
@@ -228,6 +252,7 @@ async function createRecurringClass(
       subscriptionId,
       startAt: firstOccurrence,
       endAt: null,
+      previousRecurringClassId,
     },
   });
 
@@ -238,9 +263,7 @@ async function createRecurringClass(
     })),
   });
 
-  // Generate dates for 3 months and create classes
-  const endDate = new Date(firstOccurrence);
-  endDate.setMonth(endDate.getMonth() + 3);
+  const endDate = generationEnd ?? getClassGenerationEnd(firstOccurrence);
 
   const createdClasses = await createClassesUntil(tx, recurringClass, endDate, {
     customerId,
@@ -265,45 +288,35 @@ async function createClassesUntil(
     throw new Error("RecurringClass instructorId cannot be null");
   }
 
-  const dates = await filterNoClassDates(
+  const planned = await planClassDates(
     tx,
-    createWeeklyDates(recurringClass.startAt, endDate),
+    recurringClass.instructorId,
+    recurringClass.startAt,
+    endDate,
   );
-  if (dates.length === 0) {
-    return [];
-  }
-
+  if (planned.length === 0) return [];
   const createdClasses = await tx.class.createManyAndReturn({
-    data: dates.map((dateTime, index) => ({
+    data: planned.map((slot, index) => ({
       instructorId: recurringClass.instructorId!,
       customerId: classParams.customerId,
       recurringClassId: recurringClass.id,
       subscriptionId: recurringClass.subscriptionId,
-      dateTime,
-      status: "pending" as const,
-      rebookableUntil: nDaysLater(180, dateTime),
+      dateTime: slot.dateTime,
+      status: slot.status,
+      canceledAt: slot.status === "booked" ? null : new Date(),
+      rebookableUntil: nDaysLater(180, slot.dateTime),
       updatedAt: new Date(),
       classCode: `${recurringClass.id}-${index}`,
     })),
   });
-
-  // Create ClassAttendance for all created classes
   await tx.classAttendance.createMany({
-    data: createdClasses
-      .map((createdClass: Class) => {
-        return classParams.childrenIds.map((childrenId) => ({
-          classId: createdClass.id,
-          childrenId,
-        }));
-      })
-      .flat(),
+    data: createdClasses.flatMap((c) =>
+      classParams.childrenIds.map((childrenId) => ({
+        classId: c.id,
+        childrenId,
+      })),
+    ),
   });
-
-  // Cancel created classes that conflict with existing classes or absences
-  await cancelConflictingNewClasses(tx, recurringClass.id);
-  await cancelClassesDuringAbsences(tx, recurringClass.id);
-  await cancelClassesDuringRebookableNoClasses(tx, recurringClass.id);
-  await markPendingClassesBooked(tx, recurringClass.id);
 
   return createdClasses;
 }
@@ -331,85 +344,48 @@ async function filterNoClassDates(
   );
 }
 
-async function cancelConflictingNewClasses(
+async function planClassDates(
   tx: Prisma.TransactionClient,
-  newRecurringClassId: number,
-): Promise<void> {
-  await tx.$executeRaw`
-    UPDATE "Class" 
-    SET status = 'canceledByInstructor',
-        "canceledAt" = NOW(),
-        "updatedAt" = NOW()
-    WHERE id IN (
-      SELECT c1.id
-      FROM "Class" as c1
-      INNER JOIN "Class" as c2
-        ON c1."recurringClassId" = ${newRecurringClassId}
-        AND c1.id <> c2.id
-        AND c1."dateTime" = c2."dateTime"
-        AND c1."instructorId" = c2."instructorId"
-        AND c2.status IN ('booked', 'rebooked', 'completed')
-    )
-  `;
-}
-
-async function cancelClassesDuringAbsences(
-  tx: Prisma.TransactionClient,
-  newRecurringClassId: number,
-): Promise<void> {
-  await tx.$executeRaw`
-    UPDATE "Class" 
-    SET status = 'canceledByInstructor',
-        "canceledAt" = NOW(),
-        "updatedAt" = NOW()
-    WHERE id IN (
-      SELECT c.id
-      FROM "Class" as c
-      INNER JOIN "InstructorAbsence" as absence
-        ON c."recurringClassId" = ${newRecurringClassId}
-        AND absence."instructorId" = c."instructorId"
-        AND absence."absentAt" = c."dateTime"
-    )
-  `;
-}
-
-async function cancelClassesDuringRebookableNoClasses(
-  tx: Prisma.TransactionClient,
-  newRecurringClassId: number,
-): Promise<void> {
-  await tx.$executeRaw`
-    UPDATE "Class" 
-    SET status = 'canceledByAdmin',
-        "canceledAt" = NOW(),
-        "updatedAt" = NOW()
-    WHERE id IN (
-      SELECT c.id
-      FROM "Class" as c
-      INNER JOIN "Schedule" as schedule
-        ON c."recurringClassId" = ${newRecurringClassId}
-        AND c.status = 'pending'
-        AND schedule.date = date_trunc('day', c."dateTime")
-      INNER JOIN "Event" as event
-        ON event.id = schedule."eventId"
-        AND event.name = ${REBOOKABLE_NO_CLASS_EVENT_NAME}
-    )
-  `;
-}
-
-async function markPendingClassesBooked(
-  tx: Prisma.TransactionClient,
-  recurringClassId: number,
-): Promise<void> {
-  await tx.class.updateMany({
-    where: {
-      recurringClassId,
-      status: "pending",
-    },
-    data: {
-      status: "booked",
-      updatedAt: new Date(),
-    },
-  });
+  instructorId: number,
+  start: Date,
+  end: Date,
+  removedIds: number[] = [],
+) {
+  const dates = await filterNoClassDates(tx, createWeeklyDates(start, end));
+  if (!dates.length) return [];
+  const [conflicts, absences, closures] = await Promise.all([
+    tx.class.findMany({
+      where: {
+        instructorId,
+        dateTime: { in: dates },
+        status: { in: ["booked", "rebooked", "completed"] },
+        id: { notIn: removedIds },
+      },
+    }),
+    tx.instructorAbsence.findMany({
+      where: { instructorId, absentAt: { in: dates } },
+    }),
+    getSchedulesByEventNameAndDate(
+      REBOOKABLE_NO_CLASS_EVENT_NAME,
+      new Date(dates[0].toISOString().slice(0, 10)),
+      new Date(dates[dates.length - 1].getTime() + 86400000),
+      tx,
+    ),
+  ]);
+  return dates.map((dateTime) => ({
+    dateTime,
+    status:
+      conflicts.some((c) => c.dateTime?.getTime() === dateTime.getTime()) ||
+      absences.some((a) => a.absentAt.getTime() === dateTime.getTime())
+        ? ("canceledByInstructor" as const)
+        : closures.some(
+              (c) =>
+                c.date.toISOString().slice(0, 10) ===
+                dateTime.toISOString().slice(0, 10),
+            )
+          ? ("canceledByAdmin" as const)
+          : ("booked" as const),
+  }));
 }
 
 export const getRegularClassById = async (recurringClassId: number) => {
@@ -448,6 +424,8 @@ export const getRegularClassesBySubscriptionId = async (
 ) => {
   const whereCondition = {
     subscriptionId,
+    instructorId: { not: null },
+    startAt: { not: null },
     ...(status === "active" && { endAt: null }),
     ...(status === "history" && { endAt: { not: null } }),
   };
@@ -496,86 +474,191 @@ export const getRecurringClassesHistoryCountBySubscriptionId = async (
   return prisma.recurringClass.count({
     where: {
       subscriptionId,
+      instructorId: { not: null },
+      startAt: { not: null },
       endAt: { not: null },
     },
   });
 };
 
-export const updateRegularClass = async (params: UpdateRegularClassParams) => {
+async function prepareRegularClassChange(
+  tx: Prisma.TransactionClient,
+  params: UpdateRegularClassParams,
+) {
   const {
     recurringClassId,
     instructorId,
     weekday,
     startTime,
-    customerId,
-    childrenIds,
     startDate,
     timezone,
+    customerId,
+    childrenIds,
   } = params;
-
-  if (timezone !== "Asia/Tokyo") {
+  if (timezone !== "Asia/Tokyo")
     throw new Error("Only Asia/Tokyo timezone is supported");
+  const existing = await tx.recurringClass.findUnique({
+    where: { id: recurringClassId },
+    include: { subscription: true },
+  });
+  if (
+    !existing ||
+    !existing.subscription ||
+    existing.subscription.customerId !== customerId
+  )
+    throw new Error("Regular class not found");
+  if (existing.subscription.endAt)
+    throw new Error("Subscription no longer accepts regular classes");
+  if (existing.endAt) throw new Error("Regular class not found");
+  const children = await tx.child.findMany({
+    where: { id: { in: childrenIds }, customerId },
+    orderBy: { id: "asc" },
+  });
+  if (children.length !== new Set(childrenIds).size)
+    throw new Error("Regular class not found");
+  const startDateObj = new Date(startDate);
+  if (
+    !Number.isFinite(startDateObj.getTime()) ||
+    startDateObj < nDaysLater(7, getJstDateAtUtcMidnight())
+  )
+    throw new Error("Start date must be at least one week from today");
+  const firstOccurrence = getNextWeekdayOccurrence(
+    startDateObj,
+    weekday,
+    startTime,
+  );
+  if (firstOccurrence < existing.subscription.startAt)
+    throw new Error("Regular class cannot start before subscription");
+  if (existing.startAt) {
+    const existingJstDate = new Date(
+      existing.startAt.getTime() + JAPAN_TIME_DIFF * 60 * 60 * 1000,
+    );
+    if (firstOccurrence < getRecurringClassTerminationCutoff(existingJstDate))
+      throw new Error("Regular class change cannot precede its start date");
   }
-
-  return await prisma.$transaction(async (tx) => {
-    // Check if the existing recurring class exists
-    const existingRecurringClass = await tx.recurringClass.findFirst({
-      where: { id: recurringClassId },
-    });
-
-    if (!existingRecurringClass) {
-      throw new Error("Regular class not found");
-    }
-
-    if (!existingRecurringClass.subscriptionId) {
-      throw new Error("Existing recurring class has no subscription ID");
-    }
-
-    // Validate that the start date is at least one week from now
-    const startDateObj = new Date(startDate);
-    const inOneWeek = nDaysLater(7);
-    inOneWeek.setUTCHours(0, 0, 0, 0);
-    if (startDateObj < inOneWeek) {
-      throw new Error("Start date must be at least one week from today");
-    }
-
-    // Calculate the exact start time for the new recurring class
-    const firstOccurrence = getNextWeekdayOccurrence(
-      startDateObj,
-      weekday,
-      startTime,
-    );
-
-    // Step 1: Terminate the existing recurring class
-    const terminatedRecurringClass = await terminateRecurringClass(
+  if (
+    !(await findAvailableInstructorSlot(
       tx,
-      recurringClassId,
-      firstOccurrence,
-    );
-
-    // Step 2: Create the new recurring class
-    // Use the subscriptionId from the existing recurring class
-    const createParams = {
       instructorId,
       weekday,
       startTime,
-      customerId,
-      childrenIds,
-      subscriptionId: existingRecurringClass.subscriptionId,
-      startDate,
-      timezone,
-    };
-
-    const { recurringClass: newRecurringClass, createdClasses } =
-      await createRecurringClass(tx, createParams);
-
-    return {
-      oldRecurringClass: terminatedRecurringClass,
-      newRecurringClass,
-      createdClasses,
-    };
+      startDateObj,
+    ))
+  )
+    throw new Error("Instructor is not available at the requested time slot");
+  if (
+    await conflictingRegularClassExists(
+      tx,
+      instructorId,
+      weekday,
+      startTime,
+      firstOccurrence,
+      recurringClassId,
+    )
+  )
+    throw new Error("Regular class already exists at this time slot");
+  const { rows, events } = await loadCalendarClasses(tx, customerId);
+  const cutoff = getRecurringClassTerminationCutoff(
+    getJstDateAtUtcMidnight(firstOccurrence),
+  );
+  const removedClasses = rows.filter(
+    (c) => c.recurringClassId === recurringClassId && c.dateTime! >= cutoff,
+  );
+  const removedIds = removedClasses.map((c) => c.id);
+  const end = getClassGenerationEnd(
+    firstOccurrence,
+    removedClasses.map((c) => c.dateTime!),
+  );
+  const planned = await planClassDates(
+    tx,
+    instructorId,
+    firstOccurrence,
+    end,
+    removedIds,
+  );
+  const instructor = await tx.instructor.findUniqueOrThrow({
+    where: { id: instructorId },
   });
-};
+  const calendar: SchedulePreview = {
+    before: events,
+    after: [
+      ...events.filter((c) => !removedIds.includes(Number(c.id))),
+      ...planned.map((c) => ({
+        id: `new:${c.dateTime.toISOString()}`,
+        dateTime: c.dateTime.toISOString(),
+        instructorId,
+        childrenIds: children.map((c) => c.id),
+        instructorName: instructor.nickname,
+        instructorIcon: instructor.icon,
+        childrenNames: children.map((c) => c.name),
+        regularStartAt: firstOccurrence.toISOString(),
+        status: c.status,
+      })),
+    ],
+  };
+  const input = {
+    recurringClassId,
+    instructorId,
+    weekday,
+    startTime,
+    startDate,
+    timezone,
+    customerId,
+    childrenIds: [...childrenIds].sort((a, b) => a - b),
+  };
+  const previewToken = createHash("sha256")
+    .update(JSON.stringify({ input, calendar, endAt: existing.endAt }))
+    .digest("hex");
+  return {
+    existing,
+    subscriptionId: existing.subscription.id,
+    firstOccurrence,
+    generationEnd: end,
+    deletionCutoff: cutoff,
+    calendar,
+    previewToken,
+  };
+}
+
+export const previewRegularClassChange = async (
+  params: UpdateRegularClassParams,
+) =>
+  prisma.$transaction(
+    async (tx) => {
+      const { calendar, previewToken, firstOccurrence } =
+        await prepareRegularClassChange(tx, params);
+      return {
+        calendar,
+        previewToken,
+        effectiveAt: firstOccurrence.toISOString(),
+      };
+    },
+    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+  );
+
+export const updateRegularClass = async (params: UpdateRegularClassParams) =>
+  prisma.$transaction(
+    async (tx) => {
+      const prepared = await prepareRegularClassChange(tx, params);
+      if (params.previewToken && params.previewToken !== prepared.previewToken)
+        throw new Error("Schedule changed. Review the preview again.");
+      const oldRecurringClass = await terminateRecurringClass(
+        tx,
+        params.recurringClassId,
+        prepared.firstOccurrence,
+        prepared.deletionCutoff,
+      );
+      const { recurringClass: newRecurringClass, createdClasses } =
+        await createRecurringClass(
+          tx,
+          { ...params, subscriptionId: prepared.subscriptionId },
+          prepared.generationEnd,
+          params.recurringClassId,
+        );
+      return { oldRecurringClass, newRecurringClass, createdClasses };
+    },
+    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+  );
 
 // Fetch recurring classes After endAt or endAt is null
 export const getValidRecurringClasses = async (

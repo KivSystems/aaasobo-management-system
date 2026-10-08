@@ -1,6 +1,19 @@
+import { Prisma } from "@prisma/client";
+import {
+  previewSubscriptionDecrease,
+  applySubscriptionDecrease,
+  SubscriptionDecreaseError,
+} from "../services/subscriptionDecreaseService";
 import { Response } from "express";
-import { RequestWithParams } from "../middlewares/validationMiddleware";
-import type { SubscriptionIdParams } from "../../../shared/schemas/subscriptions";
+import {
+  RequestWithParams,
+  RequestWith,
+} from "../middlewares/validationMiddleware";
+import type {
+  SubscriptionDecreasePreviewBody,
+  SubscriptionDecreaseBody,
+  SubscriptionIdParams,
+} from "../../../shared/schemas/subscriptions";
 import {
   getSubscriptionById,
   terminateSubscription,
@@ -10,7 +23,6 @@ import {
 import { prisma } from "../../prisma/prismaClient";
 import {
   createNewRecurringClass,
-  getRegularClassById,
   getRegularClassesBySubscriptionId,
   terminateRecurringClass,
 } from "../services/recurringClassesService";
@@ -69,10 +81,11 @@ export const deleteSubscriptionController = async (
         cancellationDateObj,
       );
 
-      res.status(200).json({
-        message: "Subscription deleted successfully",
-        id: terminatedSubscription.id,
-      });
+      return terminatedSubscription;
+    });
+    res.status(200).json({
+      message: "Subscription deleted successfully",
+      id: req.params.id,
     });
   } catch (error) {
     console.error("Error deleting recurring class:", error);
@@ -141,75 +154,52 @@ export const updateSubscriptionToAddClassController = async (
   }
 };
 
-export const updateSubscriptionToTerminateClassController = async (
-  req: RequestWithParams<SubscriptionIdParams>,
+function handleDecreaseError(error: unknown, res: Response) {
+  if (error instanceof SubscriptionDecreaseError)
+    return res.status(error.status).json({ error: error.message });
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2034"
+  )
+    return res.status(409).json({
+      error:
+        "予約内容が変更されています。戻ってキャンセル対象を再確認してください。",
+    });
+  console.error("Failed to change subscription", error);
+  return res
+    .status(500)
+    .json({ error: "プラン変更に失敗しました。もう一度お試しください。" });
+}
+
+export const previewSubscriptionDecreaseController = async (
+  req: RequestWith<SubscriptionIdParams, SubscriptionDecreasePreviewBody>,
   res: Response,
 ) => {
   try {
-    const { updateSubscriptionData } = req.body;
+    res.json(
+      await previewSubscriptionDecrease(
+        req.params.id,
+        req.body.updateSubscriptionData,
+      ),
+    );
+  } catch (error) {
+    handleDecreaseError(error, res);
+  }
+};
 
-    const planId = updateSubscriptionData.planId;
-    const recurringClassIds = updateSubscriptionData.recurringClassIds;
-    const selectType = updateSubscriptionData.selectType;
-
-    // validate
-    if (!Array.isArray(recurringClassIds)) {
-      return res.status(400).json({ error: "Recurring Ids must be an array." });
-    }
-
-    const subscription = await getSubscriptionById(req.params.id);
-    if (!subscription) {
-      return res.status(404).json({ error: "Subscription not found." });
-    }
-
-    const plan = await getPlanById(planId);
-    if (!plan) {
-      return res.status(404).json({ error: "Plan not found." });
-    }
-
-    if (!selectType) {
-      return res.status(404).json({ error: "SelectType URL not found." });
-    }
-
-    if (
-      recurringClassIds.length !==
-      subscription.plan.weeklyClassTimes - plan.weeklyClassTimes
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Invalid number of recurring classes." });
-    }
-
-    for (const recurringClassId of recurringClassIds) {
-      const recurringClass = await getRegularClassById(recurringClassId);
-      if (!recurringClass) {
-        return res.status(404).json({ error: "Recurring class not found." });
-      }
-    }
-    const today = new Date();
-
-    await prisma.$transaction(async (tx) => {
-      // Updata the plan id of the subscription.
-      await updatePlanIdOfSubscription(tx, subscription.id, planId, selectType);
-
-      // Terminate recurring classes
-      for (const recurringClassId of recurringClassIds) {
-        await terminateRecurringClass(tx, recurringClassId, today);
-      }
-    });
-
-    res.status(200).json({
+export const updateSubscriptionToTerminateClassController = async (
+  req: RequestWith<SubscriptionIdParams, SubscriptionDecreaseBody>,
+  res: Response,
+) => {
+  try {
+    const { previewToken, ...data } = req.body.updateSubscriptionData;
+    await applySubscriptionDecrease(req.params.id, data, previewToken);
+    res.json({
       message: "Subscription updated successfully",
-      id: subscription.id,
+      id: req.params.id,
     });
   } catch (error) {
-    console.error("Error updating subscription:", error);
-    res.status(500).json({
-      error:
-        error instanceof Error
-          ? error.message
-          : "An unexpected error occurred.",
-    });
+    handleDecreaseError(error, res);
   }
 };
 

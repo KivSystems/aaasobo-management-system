@@ -2,6 +2,12 @@
 .env*.local
 .codex
 .playwright-cli/
+/output/
+frontend/playwright-report/
+frontend/test-results/
+frontend/e2e/.auth/
+frontend/e2e/.fixture/
+frontend/e2e/.runtime/
 
 # Temporary development files
 TEMP-*.md

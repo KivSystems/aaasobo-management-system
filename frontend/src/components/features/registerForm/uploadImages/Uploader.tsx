@@ -1,36 +1,40 @@
 "use client";
 
-import React, { ChangeEvent, DragEvent, useState } from "react";
+import React, { ChangeEvent, DragEvent, useRef, useState } from "react";
 import styles from "./Uploader.module.scss";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type UploaderProps = {
-  onFileSelect: (file: File | null) => void;
-  clearFileInputRef?: () => void;
   label?: string;
 };
 
-function Uploader({ onFileSelect, clearFileInputRef, label }: UploaderProps) {
+function Uploader({ label }: UploaderProps) {
+  const { language } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] as File;
     const url = URL.createObjectURL(e.target.files?.[0] as File);
     setFile(selectedFile);
     setFileName(url);
-    onFileSelect(selectedFile);
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files?.[0] as File;
     const url = URL.createObjectURL(e.dataTransfer.files?.[0] as File);
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(droppedFile);
+    if (fileInputRef.current) {
+      fileInputRef.current.files = dataTransfer.files;
+    }
     setFile(droppedFile);
     setFileName(url);
-    onFileSelect(droppedFile);
     setIsDragging(false);
   };
 
@@ -42,21 +46,19 @@ function Uploader({ onFileSelect, clearFileInputRef, label }: UploaderProps) {
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-    onFileSelect(null);
   };
 
   const handleRemoveFile = () => {
     setFile(null);
     setFileName("");
-    onFileSelect(null);
-    if (typeof clearFileInputRef === "function") {
-      clearFileInputRef();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
   return (
     <section className={styles.dragDrop}>
-      {label && <p className={styles.label}>Instructor profile image</p>}
+      {label && <p className={styles.label}>{label}</p>}
       <div
         className={`${styles.documentUploader} ${isDragging ? styles.dragging : ""}`}
         onDrop={handleDrop}
@@ -66,21 +68,30 @@ function Uploader({ onFileSelect, clearFileInputRef, label }: UploaderProps) {
         <PhotoIcon width={50} height={50} color="#ccc" />
         <div className={styles.uploadInfo}>
           <div>
-            <p>Drop instructor&apos;s profile image here, or&nbsp;</p>
+            <p>
+              {language === "ja"
+                ? "画像をドロップ、または "
+                : "Drop an image or "}
+            </p>
           </div>
           <label htmlFor="icon" className={styles.uploadBtn}>
-            Browse
+            {language === "ja" ? "ファイルを選択" : "Browse"}
             <input
               type="file"
               id="icon"
               name="icon"
+              ref={fileInputRef}
               accept=".png,.jpg"
               onChange={handleFileChange}
               hidden
             />
           </label>
         </div>
-        <p>Supports: JPG and PNG formats (up to 5MB)</p>
+        <p>
+          {language === "ja"
+            ? "JPG・PNG形式（最大5MB）"
+            : "JPG and PNG files (up to 5 MB)"}
+        </p>
       </div>
 
       {file && (
@@ -90,7 +101,7 @@ function Uploader({ onFileSelect, clearFileInputRef, label }: UploaderProps) {
               src={fileName}
               width={50}
               height={50}
-              alt="Uploaded content"
+              alt={language === "ja" ? "アップロード画像" : "Uploaded image"}
             />
             <p>{file.name}</p>
           </div>

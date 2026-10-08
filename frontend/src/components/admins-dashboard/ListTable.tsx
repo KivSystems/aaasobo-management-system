@@ -24,6 +24,46 @@ import GenerateClassesForm from "./GenerateClassesForm";
 import FilterButton from "./FilterButton";
 import { OMIT_CLASS_STATUSES, PAGE_SIZE_OPTIONS } from "@/lib/data/data";
 
+const cellLabels: Record<string, Record<string, string>> = {
+  Status: {
+    Booked: "予約済み",
+    Rebooked: "振替予約済み",
+    Completed: "完了",
+    "Canceled(Customer)": "キャンセル（お客さま）",
+    "Canceled(Instructor)": "キャンセル（インストラクター）",
+    "Canceled(Admin)": "キャンセル（管理者）",
+    Pending: "承認待ち",
+    Declined: "却下",
+  },
+  English: {
+    "Program Original": "プログラムオリジナル",
+    "Native A": "ネイティブA",
+    "Native B": "ネイティブB",
+  },
+  Day: {
+    Sunday: "日",
+    Monday: "月",
+    Tuesday: "火",
+    Wednesday: "水",
+    Thursday: "木",
+    Friday: "金",
+    Saturday: "土",
+    Sun: "日",
+    Mon: "月",
+    Tue: "火",
+    Wed: "水",
+    Thu: "木",
+    Fri: "金",
+    Sat: "土",
+  },
+  Instructor: { "Not Set": "未設定" },
+  "Date/Time (JST)": { "Not Set": "未設定" },
+};
+const displayCellValue = (key: string, value: unknown) =>
+  typeof value === "string" ? (cellLabels[key]?.[value] ?? value) : value;
+
+const ALL_COLUMNS_FILTER = "__all_columns__";
+
 function useTable<TData extends RowData>(options: TableOptions<TData>) {
   const resolvedOptions: TableOptionsResolved<TData> = {
     state: {},
@@ -58,20 +98,24 @@ function ListTable({
   omitItems,
   linkItems,
   linkUrls,
+  itemNameLabels,
   replaceItems,
   userType,
   categoryType,
-  isAddButton,
-  isViewPastButton,
+  addButton,
+  viewPastButton,
   pastListTableProps,
   linkTarget,
   isFilterActive,
   filterHref,
   clearFilterHref,
+  columnOrder,
 }: ListTableProps) {
   const [currentData, setCurrentData] = useState<any[]>(fetchedData);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [filterColumn, setFilterColumn] = useState<string>("0");
+  const [filterColumn, setFilterColumn] = useState<string>(
+    listType === "Customer List" ? ALL_COLUMNS_FILTER : "0",
+  );
   const [filterValue, setFilterValue] = useState<string>("");
   const [pagination, setPagination] = useState({
     pageIndex: 0, // Initial page index
@@ -178,79 +222,128 @@ function ListTable({
   }, [currentData]);
 
   // Define the displays of the table
+  const availableColumnKeys = useMemo(() => {
+    if (currentData.length === 0) return [];
+
+    const keys = Object.keys(currentData[0]).filter(
+      (key) => !omitItems.includes(key),
+    );
+    if (!columnOrder) return keys;
+
+    return [
+      ...columnOrder.filter((key) => keys.includes(key)),
+      ...keys.filter((key) => !columnOrder.includes(key)),
+    ];
+  }, [columnOrder, currentData, omitItems]);
+
   const columns = useMemo<ColumnDef<any>[]>(
     () =>
       currentData.length > 0
-        ? Object.keys(currentData[0])
-            // Omit the item from the table
-            .filter((key) => !omitItems.includes(key))
-            // Set the item to be a link
-            .map((key) => ({
-              accessorKey: key,
-              header: key,
-              cell: (data) => {
-                const value = data.getValue() as any;
+        ? availableColumnKeys.map((key) => ({
+            accessorKey: key,
+            header: key,
+            cell: (data) => {
+              const value = displayCellValue(key, data.getValue()) as any;
 
-                // Only for Event List page
-                // If the item is a color code, display it as a colored box
-                if (key === "Color Code" && typeof value === "string") {
-                  return (
-                    <div className={styles.eventColor}>
-                      <div
-                        className={styles.eventColor__colorBox}
-                        style={{
-                          backgroundColor: value,
-                        }}
-                      />
-                      <span>{value.toUpperCase().replace(/,\s*/g, ", ")}</span>
-                    </div>
-                  );
-                }
-
-                // If the item is not a link item, return the value
-                if (!linkItems.includes(key)) {
-                  return value;
-                }
-
-                // Set the link URL
-                let linkUrl = linkUrls[linkItems.indexOf(key)];
-
-                // Replace the item with the value (e.g., [ID] -> 1, 2, 3...)
-                replaceItems.forEach((replaceItem) => {
-                  linkUrl = linkUrl.replace(
-                    `[${replaceItem}]`,
-                    data.row.original[replaceItem],
-                  );
-                });
-
-                // Only for Class List page
-                // If the class status is in the OMIT_CLASS_STATUSES list, do not set the link URL
-                if (OMIT_CLASS_STATUSES.includes(data.row.original.Status)) {
-                  linkUrl = "";
-                }
-
+              // Only for Event List page
+              // If the item is a color code, display it as a colored box
+              if (key === "Color Code" && typeof value === "string") {
                 return (
-                  <Link href={linkUrl} target={linkTarget}>
-                    {value}
-                  </Link>
+                  <div className={styles.eventColor}>
+                    <div
+                      className={styles.eventColor__colorBox}
+                      style={{
+                        backgroundColor: value,
+                      }}
+                    />
+                    <span>{value.toUpperCase().replace(/,\s*/g, ", ")}</span>
+                  </div>
                 );
-              },
-            }))
+              }
+
+              // If the item is not a link item, return the value
+              if (!linkItems.includes(key)) {
+                return value;
+              }
+
+              // Set the link URL
+              let linkUrl = linkUrls[linkItems.indexOf(key)];
+
+              // Replace the item with the value (e.g., [ID] -> 1, 2, 3...)
+              replaceItems.forEach((replaceItem) => {
+                linkUrl = linkUrl.replace(
+                  `[${replaceItem}]`,
+                  data.row.original[replaceItem],
+                );
+              });
+
+              // Only for Class List page
+              // If the class status is in the OMIT_CLASS_STATUSES list, do not set the link URL
+              if (OMIT_CLASS_STATUSES.includes(data.row.original.Status)) {
+                linkUrl = "";
+              }
+
+              return (
+                <Link href={linkUrl} target={linkTarget}>
+                  {value}
+                </Link>
+              );
+            },
+          }))
         : [],
-    [currentData, omitItems, linkItems, linkUrls, replaceItems, linkTarget],
+    [
+      availableColumnKeys,
+      currentData.length,
+      linkItems,
+      linkUrls,
+      replaceItems,
+      linkTarget,
+    ],
   );
+
+  const filterColumns = useMemo(() => {
+    if (currentData.length === 0) return [];
+
+    const availableColumns = availableColumnKeys;
+
+    if (listType !== "Customer List") return availableColumns;
+
+    const prioritizedColumns = ["Children", "Customer"];
+
+    return [
+      ALL_COLUMNS_FILTER,
+      ...prioritizedColumns.filter((key) => availableColumns.includes(key)),
+      ...availableColumns.filter(
+        (key) => key !== "No" && !prioritizedColumns.includes(key),
+      ),
+    ];
+  }, [availableColumnKeys, currentData.length, listType]);
 
   // Configure the filter
   const filteredData = useMemo(
     () =>
-      currentData.filter((eachData) =>
-        filterColumn && filterValue
-          ? String(eachData[filterColumn])
+      currentData.filter((eachData) => {
+        if (!filterValue) return true;
+
+        const normalizedFilterValue = filterValue.toLowerCase();
+
+        if (filterColumn === ALL_COLUMNS_FILTER) {
+          return Object.keys(eachData)
+            .filter((key) => !omitItems.includes(key))
+            .some((key) =>
+              String(displayCellValue(key, eachData[key]))
+                .toLowerCase()
+                .includes(normalizedFilterValue),
+            );
+        }
+
+        return filterColumn !== "0"
+          ? String(displayCellValue(filterColumn, eachData[filterColumn]))
               .toLowerCase()
-              .includes(filterValue.toLowerCase())
-          : true,
-      ),
-    [currentData, filterColumn, filterValue],
+              .includes(normalizedFilterValue)
+          : true;
+      }),
+    [currentData, filterColumn, filterValue, omitItems],
   );
 
   // Define the table configuration
@@ -268,17 +361,9 @@ function ListTable({
     onPaginationChange: setPagination, // Update the pagination state when internal APIs mutate the pagination state
   });
 
-  // Change the option color when selected
-  const changeOptionColor = (optionTag: HTMLSelectElement) => {
-    if (parseInt(optionTag.value) !== 0) {
-      optionTag.style.color = "#000000";
-    }
-  };
-
   // Handle the filter change
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterColumn(event.target.value);
-    changeOptionColor(event.target);
   };
 
   // Render the modal component based on the modal type
@@ -312,52 +397,52 @@ function ListTable({
       <div className={styles.container}>
         <div className={styles.topContainer}>
           <div className={styles.filterContainer}>
-            <select value={filterColumn} onChange={handleChange}>
+            <select
+              value={filterColumn}
+              onChange={handleChange}
+              style={{ color: filterColumn === "0" ? "#888888" : "#000000" }}
+            >
               <option disabled value="0">
-                Select a column
+                カラムを選択
               </option>
-              {currentData.length > 0 &&
-                Object.keys(currentData[0])
-                  .filter((key) => !omitItems.includes(key))
-                  .map((key) => (
-                    <option key={key} value={key}>
-                      {key}
-                    </option>
-                  ))}
+              {filterColumns.map((key) => (
+                <option key={key} value={key}>
+                  {key === ALL_COLUMNS_FILTER
+                    ? "全項目"
+                    : (itemNameLabels[key] ?? (key === "No" ? "番号" : key))}
+                </option>
+              ))}
             </select>
             <input
               type="text"
-              placeholder="Enter filter value..."
+              placeholder="検索対象を入力"
               value={filterValue}
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </div>
           <div className={`${styles.buttonsContainer}`}>
-            {isViewPastButton && (
+            {viewPastButton && (
               <ActionButton
-                btnText={`View past ${categoryType ? categoryType : userType}s`}
+                btnText={viewPastButton[1] + "を表示"}
                 className="viewPastBtn"
                 onClick={() => setIsModalOpen([true, "viewPast"])}
                 Icon={EyeIcon}
               />
             )}
-            {isAddButton &&
+            {addButton &&
               (listType === "Class List" ? (
                 <>
                   <FilterButton
                     filterHref={filterHref}
                     clearFilterHref={clearFilterHref}
                     isFilterActive={isFilterActive}
-                    displayNames={[
-                      "Filter Today's Classes",
-                      "Show All Classes",
-                    ]}
+                    displayNames={["本日のクラス", "全クラス"]}
                   />
                   <GenerateClassesForm />
                 </>
               ) : (
                 <ActionButton
-                  btnText={`Add ${categoryType ? categoryType : userType}`}
+                  btnText={`${addButton[1]}を追加`}
                   className="addBtn"
                   onClick={() => setIsModalOpen([true, "add"])}
                   Icon={PlusIcon}
@@ -410,13 +495,11 @@ function ListTable({
                           : ""
                       }
                     >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      {itemNameLabels[header.column.id] ??
+                        (header.column.id === "No" ? "番号" : header.column.id)}
                       {{
-                        asc: "▲",
-                        desc: "▼",
+                        asc: " ▲",
+                        desc: " ▼",
                       }[header.column.getIsSorted() as string] ?? "　"}
                     </th>
                   ))}

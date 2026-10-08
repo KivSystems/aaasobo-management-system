@@ -14,6 +14,7 @@ import {
   EDIT_CLASS_ARIA_LABEL,
 } from "@/lib/messages/customerDashboard";
 import { MouseEvent } from "react";
+import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
 
 interface RegularClassCardProps {
   recurringClass: RecurringClass;
@@ -36,12 +37,20 @@ function RegularClassCard({
   selected,
   onToggle,
 }: RegularClassCardProps) {
-  const timeZone = "Asia/Tokyo"; // Use JST for consistency
+  const customerTimeZone = useCustomerTimeZone();
+  const timeZone =
+    userSessionType === "customer" ? customerTimeZone : "Asia/Tokyo";
+
+  if (!timeZone) return null;
 
   const classDateTime = new Date(recurringClass.dateTime);
   const startTime = formatTime(classDateTime, timeZone);
   const endTime = formatTime(getEndTime(classDateTime), timeZone);
-  const day = getWeekday(classDateTime, timeZone);
+  const day = getWeekday(
+    classDateTime,
+    timeZone,
+    language === "ja" ? "ja-JP" : "en-US",
+  );
 
   const handleEdit = (e: MouseEvent) => {
     e.stopPropagation();
@@ -61,7 +70,7 @@ function RegularClassCard({
       className={`${styles.card} ${selected ? styles.selected : ""} ${isSelectable ? styles.clickable : ""}`}
       onClick={handleToggle}
       aria-pressed={isSelectable ? selected : undefined}
-      aria-label={`Recurring class ${recurringClass.id}`}
+      aria-label={`${language === "ja" ? "レギュラークラス" : "Recurring class"} ${recurringClass.id}`}
     >
       {/* Option 1: Edit button in top-right corner */}
       <div className={styles.cardHeader}>
@@ -69,7 +78,8 @@ function RegularClassCard({
           <AcademicCapIcon className={styles.instructorIcon} />
           <div className={styles.headerInfo}>
             <div className={styles.instructorName}>
-              {recurringClass.instructor?.nickname || "Unknown Instructor"}
+              {recurringClass.instructor?.nickname ||
+                (language === "ja" ? "講師未設定" : "Unknown Instructor")}
             </div>
             <div className={styles.scheduleTime}>
               {day} {startTime}-{endTime}
@@ -163,7 +173,13 @@ function RegularClassCard({
       {/* selection overlay / badge */}
       {isSelectable && (
         <div className={styles.selectionBadge}>
-          {selected ? "Selected" : "Select"}
+          {language === "ja"
+            ? selected
+              ? "選択済み"
+              : "選択"
+            : selected
+              ? "Selected"
+              : "Select"}
         </div>
       )}
     </div>

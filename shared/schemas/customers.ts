@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ErrorResponse } from "./common";
-import { SubscriptionResponse } from "./subscriptions";
+import { SelectTypeUrl, SubscriptionResponse } from "./subscriptions";
 
 // Parameter schemas
 export const CustomerIdParams = z.object({
@@ -10,20 +10,20 @@ export const CustomerIdParams = z.object({
 // Request body schemas
 export const RegisterCustomerRequest = z.object({
   customerData: z.object({
-    name: z.string().min(1).describe("Customer's full name"),
+    name: z.string().trim().min(1).describe("Customer's full name"),
     email: z.email().describe("Customer's email address"),
     password: z.string().min(1).describe("Customer's password"),
     prefecture: z.string().min(1).describe("Customer's prefecture"),
   }),
   childData: z.object({
-    name: z.string().min(1).describe("Child's full name"),
+    name: z.string().trim().min(1).describe("Child's full name"),
     birthdate: z.string().min(1).describe("Child's birthdate"),
     personalInfo: z.string().min(1).describe("Child's personal information"),
   }),
 });
 
 export const UpdateCustomerProfileRequest = z.object({
-  name: z.string().min(1).describe("Updated customer name"),
+  name: z.string().trim().min(1).describe("Updated customer name"),
   email: z.email().describe("Updated customer email"),
   prefecture: z.string().min(1).describe("Updated customer prefecture"),
 });
@@ -31,7 +31,7 @@ export const UpdateCustomerProfileRequest = z.object({
 export const RegisterSubscriptionRequest = z.object({
   planId: z.number().int().positive().describe("Plan ID for the subscription"),
   startAt: z.string().describe("Subscription start date"),
-  selectType: z.string().describe("SelectType URL"),
+  selectType: SelectTypeUrl.describe("SelectType URL"),
 });
 
 export const VerifyEmailRequest = z.object({
@@ -176,7 +176,10 @@ export const ChildProfilesResponse = z
       id: z.number().describe("Child ID"),
       name: z.string().describe("Child name"),
       birthdate: z.iso.datetime().describe("Child birthdate"),
-      personalInfo: z.string().describe("Child personal information"),
+      personalInfo: z
+        .string()
+        .nullable()
+        .describe("Child personal information"),
     }),
   )
   .describe("List of child profiles");

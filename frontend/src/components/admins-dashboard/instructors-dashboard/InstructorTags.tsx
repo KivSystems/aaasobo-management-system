@@ -17,10 +17,12 @@ import { confirmAlert } from "@/lib/utils/alertUtils";
 
 export default function InstructorTags({
   instructorId,
+  instructorNickName,
   initialInstructorTags,
   initialTagCatalog,
 }: {
   instructorId: number;
+  instructorNickName: string;
   initialInstructorTags: InstructorTagsResponse | null;
   initialTagCatalog: TagCatalogResponse["tags"];
 }) {
@@ -93,9 +95,9 @@ export default function InstructorTags({
       const nextSelectedTagIds = result.selectedTagIds ?? selectedTagIds;
       setSelectedTagIds(nextSelectedTagIds);
       setPersistedSelectedTagIds(nextSelectedTagIds);
-      toast.success(result.successMessage ?? "Tags saved successfully.");
+      toast.success("タグを保存しました。");
     } catch {
-      toast.error("Failed to save tags.");
+      toast.error("タグの保存に失敗しました。");
     } finally {
       setIsSaving(false);
     }
@@ -121,12 +123,13 @@ export default function InstructorTags({
       ]);
       setNewTagLabel("");
     }
-    toast.success(result.successMessage ?? "Tag created successfully.");
+    toast.success("タグを作成しました。");
   };
 
   const deleteTag = async (tagId: number, tagLabel: string) => {
     const confirmed = await confirmAlert(
-      `Are you sure you want to delete the "${tagLabel}" tag?`,
+      `「${tagLabel}」タグを削除しますか？`,
+      "ja",
     );
     if (!confirmed) {
       return;
@@ -149,7 +152,7 @@ export default function InstructorTags({
     setPersistedSelectedTagIds((prevSelectedTagIds) =>
       prevSelectedTagIds.filter((selectedTagId) => selectedTagId !== tagId),
     );
-    toast.success(result.successMessage ?? "Tag deleted successfully.");
+    toast.success("タグを削除しました。");
   };
 
   const handleSaveSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -165,12 +168,16 @@ export default function InstructorTags({
   return (
     <div className={styles.container}>
       <form className={styles.panel} onSubmit={handleSaveSubmit}>
-        <h3>Assign tags to this instructor</h3>
+        <h3>
+          {instructorNickName
+            ? `タグ設定（${instructorNickName} インストラクター）`
+            : "このインストラクターのタグ設定"}
+        </h3>
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className={styles.search}
-          placeholder="Search tags..."
+          placeholder="タグを検索..."
         />
         <div className={styles.checkList}>
           {filteredCatalog.map((tag) => (
@@ -189,34 +196,34 @@ export default function InstructorTags({
           type="submit"
           disabled={isSaving}
         >
-          {isSaving ? "Saving..." : "Save selections"}
+          {isSaving ? "保存中..." : "保存"}
         </button>
       </form>
 
       <form className={styles.panel} onSubmit={handleCreateSubmit}>
-        <h3>Manage shared tag catalog</h3>
+        <h3>共有タグ管理</h3>
         <div className={styles.addRow}>
           <input
             value={newTagLabel}
             onChange={(e) => setNewTagLabel(e.target.value)}
-            placeholder="New tag name..."
+            placeholder="作成したいタグ名を入力..."
             className={styles.search}
           />
           <button className={styles.primary + " " + styles.add} type="submit">
-            Add
+            追加
           </button>
         </div>
         <div className={styles.checkList}>
           {catalog.map((tag) => (
             <div key={tag.id} className={styles.catalogRow}>
               <span>{tag.label}</span>
-              <span>{tag.assignedCount ?? 0} instructors</span>
+              <span>{tag.assignedCount ?? 0} 人</span>
               <button
                 onClick={() => deleteTag(tag.id, tag.label)}
                 className={styles.delete}
                 type="button"
               >
-                Delete
+                削除
               </button>
             </div>
           ))}

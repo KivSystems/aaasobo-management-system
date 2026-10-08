@@ -1,17 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./InstructorCalendarForAdmin.module.scss";
-import {
-  getCalendarClasses,
-  getInstructorProfile,
-} from "@/lib/api/instructorsApi";
+import { getCalendarClasses } from "@/lib/api/instructorsApi";
 import Loading from "../elements/loading/Loading";
-import { getValidRange } from "@/lib/utils/calendarUtils";
+import { getCurrentMonthValidRange } from "@/lib/utils/calendarUtils";
 import { initialSetup } from "@/lib/utils/initialSetup";
 import InstructorCalendarClient from "../instructors-dashboard/class-schedule/instructorCalendar/InstructorCalendarClient";
 import InstructorSearch from "@/components/admins-dashboard/InstructorSearch";
 import { getAllBusinessSchedules, getAllEvents } from "@/lib/api/adminsApi";
+import type { SchedulesListResponse } from "@shared/schemas/admins";
 
 function InstructorCalendarForAdmin({
   adminId,
@@ -29,28 +27,31 @@ function InstructorCalendarForAdmin({
     start: string;
     end: string;
   } | null>(null);
-  const [schedule, setSchedule] = useState<any>([]);
+  const [schedule, setSchedule] = useState<SchedulesListResponse | null>(null);
   const [colorsForEvents, setColorsForEvents] = useState<
     { event: string; color: string }[]
   >([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
 
   const fetchData = useCallback(async () => {
-    if (!instructorId) return;
+    if (instructorId === null) return;
 
+    const requestId = ++requestIdRef.current;
+    setIsLoading(true);
+    setError(null);
     try {
-      const [classes, instructorProfile, schedule, events] = await Promise.all([
+      const [classes, schedule, events] = await Promise.all([
         getCalendarClasses(instructorId),
-        getInstructorProfile(instructorId),
         getAllBusinessSchedules(),
         getAllEvents(),
       ]);
 
+      if (requestId !== requestIdRef.current) return;
+
       setInstructorCalendarEvents(classes);
-      const instructorCreatedAt = instructorProfile.createdAt;
-      const calendarValidRange = getValidRange(instructorCreatedAt, 3);
-      setCalendarValidRange(calendarValidRange);
+      setCalendarValidRange(getCurrentMonthValidRange(3));
       setSchedule(schedule);
       const colorsForEvents: { event: string; color: string }[] = events
         .map((e: EventColor) => ({
@@ -60,9 +61,12 @@ function InstructorCalendarForAdmin({
         .filter((e: { event: string; color: string }) => e.color !== "#FFFFFF"); // Filter out events with white color (#FFFFFF)
       setColorsForEvents(colorsForEvents);
     } catch (error) {
-      setError("Failed to load classes. Please try again.");
+      if (requestId !== requestIdRef.current) return;
+      setError("クラスを読み込めませんでした。もう一度お試しください。");
     } finally {
-      setIsLoading(false);
+      if (requestId === requestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [instructorId]);
 
@@ -75,46 +79,51 @@ function InstructorCalendarForAdmin({
     initialSetup("admin");
   }, []);
 
-  const handleSendInstructor = async (id: number, name: string) => {
-    localStorage.setItem("activeInstructor", [String(id), name].join(","));
+  const handleSendInstructor = useCallback((id: number, name: string) => {
+    requestIdRef.current += 1;
+    localStorage.setItem("activeInstructor", String(id));
+    setIsLoading(true);
+    setError(null);
+    setInstructorCalendarEvents([]);
     setInstructorId(id);
-    setInstructorName(name);
-  };
-
-  useEffect(() => {
-    const activeInstructor = localStorage.getItem("activeInstructor");
-    const [id, name] = activeInstructor?.split(",") || ["1", ""];
-    setInstructorId(parseInt(id));
     setInstructorName(name);
   }, []);
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
     <div className={styles.calendarContainer}>
+      <InstructorSearch
+        handleSendInstructor={handleSendInstructor}
+        activeInstructorId={instructorId}
+      />
       {isLoading && <Loading />}
       {error && <div>{error}</div>}
-      {!isLoading && !error && (
-        <>
-          <InstructorSearch handleSendInstructor={handleSendInstructor} />
-          {userSessionType === "admin" && instructorName ? (
-            <span className={styles.instructorName}>
-              Instructor: &nbsp;{instructorName}
-            </span>
-          ) : null}
-          <InstructorCalendarClient
-            adminId={adminId}
-            instructorId={instructorId}
-            instructorCalendarEvents={instructorCalendarEvents}
-            validRange={calendarValidRange!}
-            userSessionType={userSessionType}
-            businessSchedule={schedule.organizedData}
-            colorsForEvents={colorsForEvents}
-          />
-        </>
+      {!isLoading && !error && instructorId === null && (
+        <p className={styles.emptyState}>
+          インストラクターを選択するとカレンダーが表示されます。
+        </p>
       )}
+      {!isLoading &&
+        !error &&
+        instructorId !== null &&
+        schedule !== null &&
+        calendarValidRange !== null && (
+          <>
+            {userSessionType === "admin" && instructorName ? (
+              <span className={styles.instructorName}>
+                インストラクター：{instructorName}
+              </span>
+            ) : null}
+            <InstructorCalendarClient
+              adminId={adminId}
+              instructorId={instructorId}
+              instructorCalendarEvents={instructorCalendarEvents}
+              validRange={calendarValidRange}
+              userSessionType={userSessionType}
+              businessSchedule={schedule.organizedData}
+              colorsForEvents={colorsForEvents}
+            />
+          </>
+        )}
     </div>
   );
 }

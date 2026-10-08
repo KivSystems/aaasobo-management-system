@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { confirmAlert, errorAlert, warningAlert } from "@/lib/utils/alertUtils";
 import { EnglishBackground } from "@/types";
 import { rebookClassWithValidation } from "@/app/actions/rebooking";
+import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
 import {
   CONFIRM_BOOKING_WITH_CONFLICT_MESSAGE,
   DOUBLE_BOOKING_CONFIRMATION_MESSAGE,
@@ -30,6 +31,7 @@ interface ProgressiveBookingFlowProps {
   childProfiles: Child[];
   customerId: number;
   plan?: Plan;
+  onBookingSuccess: () => void;
 }
 
 type StepStatus = "completed" | "current" | "pending";
@@ -41,16 +43,26 @@ interface StepState {
   confirmation: StepStatus;
 }
 
-const formatSelectedDateTime = (dateTime: string, language: LanguageType) =>
-  new Intl.DateTimeFormat(language === "ja" ? "ja-JP" : "en-US", {
-    timeZone: "Asia/Tokyo",
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: language !== "ja",
-  }).format(new Date(dateTime));
+const formatSelectedDateTime = (
+  dateTime: string,
+  language: LanguageType,
+  timeZone: string,
+) => {
+  const formattedDateTime = new Intl.DateTimeFormat(
+    language === "ja" ? "ja-JP" : "en-US",
+    {
+      timeZone,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: language !== "ja",
+    },
+  ).format(new Date(dateTime));
+
+  return formattedDateTime;
+};
 
 export default function ProgressiveBookingFlow({
   classId,
@@ -62,7 +74,9 @@ export default function ProgressiveBookingFlow({
   customerId,
   adminId,
   plan,
+  onBookingSuccess,
 }: ProgressiveBookingFlowProps) {
+  const timeZone = useCustomerTimeZone();
   // All hooks must be called at the top level
   const [selectedMode, setSelectedMode] = useState<
     "instructor" | "datetime" | null
@@ -194,6 +208,8 @@ export default function ProgressiveBookingFlow({
       return updated;
     });
   }, []);
+
+  if (!timeZone) return null;
 
   // Early return if no child profiles are available
   if (childProfiles.length === 0) {
@@ -335,7 +351,7 @@ export default function ProgressiveBookingFlow({
           : "Booking completed successfully.",
       );
       onClose();
-      window.location.reload();
+      onBookingSuccess();
     } catch (error) {
       console.error("Booking failed:", error);
       errorAlert(language === "ja" ? "予約に失敗しました" : "Booking failed");
@@ -435,7 +451,11 @@ export default function ProgressiveBookingFlow({
               {stepStatus.datetime === "completed" && selectedDateTime && (
                 <>
                   <span className={styles.selectedValue}>
-                    {formatSelectedDateTime(selectedDateTime, language)}
+                    {formatSelectedDateTime(
+                      selectedDateTime,
+                      language,
+                      timeZone,
+                    )}
                   </span>
                   <button
                     onClick={handleChangeDateTime}
@@ -450,6 +470,7 @@ export default function ProgressiveBookingFlow({
               <div className={styles.sectionContent}>
                 <DateTimeSelection
                   onSlotSelect={handleSlotSelect}
+                  isFreeTrial={isFreeTrial}
                   language={language}
                   selectedInstructor={null}
                   englishBackground={
@@ -469,7 +490,11 @@ export default function ProgressiveBookingFlow({
               {stepStatus.datetime === "completed" && selectedDateTime && (
                 <>
                   <span className={styles.selectedValue}>
-                    {formatSelectedDateTime(selectedDateTime, language)}
+                    {formatSelectedDateTime(
+                      selectedDateTime,
+                      language,
+                      timeZone,
+                    )}
                   </span>
                   <button
                     onClick={handleChangeDateTime}
@@ -484,6 +509,7 @@ export default function ProgressiveBookingFlow({
               <div className={styles.sectionContent}>
                 <DateTimeSelection
                   onSlotSelect={handleSlotSelect}
+                  isFreeTrial={isFreeTrial}
                   language={language}
                   selectedInstructor={selectedInstructor}
                   englishBackground={
@@ -552,16 +578,10 @@ export default function ProgressiveBookingFlow({
                     <strong>
                       {language === "ja" ? "日時:" : "Date & Time:"}
                     </strong>{" "}
-                    {new Date(selectedDateTime).toLocaleString(
-                      language === "ja" ? "ja-JP" : "en-US",
-                      {
-                        year: "numeric",
-                        month: "numeric",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      },
+                    {formatSelectedDateTime(
+                      selectedDateTime,
+                      language,
+                      timeZone,
                     )}
                   </p>
                 </div>

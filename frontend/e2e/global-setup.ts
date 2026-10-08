@@ -1,0 +1,47 @@
+import { chromium, expect, type FullConfig } from "@playwright/test";
+import path from "node:path";
+
+export const ADMIN_STATE = path.join(__dirname, ".auth/admin.json");
+
+export default async function globalSetup(config: FullConfig) {
+  const fixtureZip = process.env.E2E_FIXTURE_ZIP;
+  if (!fixtureZip) throw new Error("E2E_FIXTURE_ZIP is required");
+  const browser = await chromium.launch();
+  const context = await browser.newContext({
+    baseURL: config.projects[0].use.baseURL as string,
+    locale: "en-US",
+  });
+  const page = await context.newPage();
+  await page.goto("/admins/login");
+  await page
+    .locator("#email")
+    .fill(process.env.E2E_ADMIN_EMAIL ?? "e2e-admin@example.com");
+  await page
+    .locator("#password")
+    .fill(process.env.E2E_ADMIN_PASSWORD ?? "E2e-Admin-Password!");
+  await page.getByRole("button", { name: "ログイン" }).click();
+  await expect(page).toHaveURL(/\/admins\/(?!login)/, { timeout: 60_000 });
+  await page.goto("/admins/data-import");
+  await page.locator("#normalized-zip-file").setInputFiles(fixtureZip);
+  await page.getByRole("button", { name: "取り込みを実行" }).click();
+  await page.getByRole("button", { name: "取り込みを実行" }).last().click();
+  try {
+    await expect(
+      page.getByRole("heading", { name: "取り込み結果" }),
+    ).toBeVisible({ timeout: 180_000 });
+  } catch (error) {
+    await page.screenshot({
+      path: path.resolve(process.cwd(), "test-results/global-setup-import.png"),
+      fullPage: true,
+    });
+    const visiblePageText = (await page.locator("body").innerText()).slice(
+      -4_000,
+    );
+    throw new Error(
+      `Fixture import did not complete. Visible page text:\n${visiblePageText}\n\n${String(error)}`,
+    );
+  }
+  await expect(page.getByText("データを取り込みました。")).toBeVisible();
+  await context.storageState({ path: ADMIN_STATE });
+  await browser.close();
+}

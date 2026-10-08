@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SelectTypeUrl } from "./subscriptions";
 
 export const AdminIdParams = z.object({
   id: z
@@ -73,20 +74,20 @@ export const EventIdParams = z.object({
 
 // Admin registration and update schemas
 export const RegisterAdminRequest = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
   email: z.email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
 });
 
 export const UpdateAdminRequest = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
   email: z.email("Invalid email format"),
 });
 
 // Instructor registration and update schemas
 export const RegisterInstructorRequest = z.object({
-  name: z.string().min(1, "Name is required"),
-  nickname: z.string().min(1, "Nickname is required"),
+  name: z.string().trim().min(1, "Name is required"),
+  nickname: z.string().trim().min(1, "Nickname is required"),
   email: z.email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
   birthdate: z.string().min(1, "Birthdate is required"),
@@ -103,10 +104,10 @@ export const RegisterInstructorRequest = z.object({
 });
 
 export const UpdateInstructorRequest = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
   leavingDate: z.string().nullable().optional(),
   email: z.email("Invalid email format"),
-  nickname: z.string().min(1, "Nickname is required"),
+  nickname: z.string().trim().min(1, "Nickname is required"),
   birthdate: z.string().min(1, "Birthdate is required"),
   workingTime: z.string(),
   lifeHistory: z.string(),
@@ -355,6 +356,35 @@ export const CustomersListResponse = z.object({
   data: z.array(CustomerListItem),
 });
 
+export const EnrollmentStatusRecurringClass = z.object({
+  id: z.number().int().positive(),
+  children: z.array(z.string()),
+  instructor: z.string(),
+  weekday: z.string(),
+  time: z.string(),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  endDate: z.union([
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    z.literal("継続中"),
+  ]),
+});
+
+export const EnrollmentStatusSubscription = z.object({
+  id: z.number().int().positive(),
+  planName: z.string(),
+  recurringClasses: z.array(EnrollmentStatusRecurringClass),
+});
+
+export const EnrollmentStatusCustomer = z.object({
+  id: z.number().int().positive(),
+  name: z.string(),
+  subscriptions: z.array(EnrollmentStatusSubscription),
+});
+
+export const EnrollmentStatusResponse = z.object({
+  data: z.array(EnrollmentStatusCustomer),
+});
+
 // Past customer list item for table display
 export const PastCustomerListItem = z.object({
   No: z.number(),
@@ -526,8 +556,9 @@ export const UpdateSubscriptionResponse = z.object({
 });
 
 export const UpdateSubscriptionToAddClassRequest = z.object({
-  planId: z.number(),
-  times: z.number(),
+  planId: z.number().int().positive(),
+  times: z.number().int().positive(),
+  selectType: SelectTypeUrl,
 });
 
 export const UpdateSubscriptionToTerminateClassRequest = z.object({
@@ -536,7 +567,7 @@ export const UpdateSubscriptionToTerminateClassRequest = z.object({
 });
 
 export const UpdateSelectTypeUrlRequest = z.object({
-  selectType: z.string(),
+  selectType: SelectTypeUrl,
 });
 
 // Error response schemas
@@ -582,18 +613,27 @@ export const ImportExecuteValidationIssue = z.object({
   message: z.string(),
 });
 
+export const ImportOperation = z.enum([
+  "clean-start",
+  "incremental-customers",
+  "incremental-instructors",
+]);
+
 export const ImportExecuteReport = z.object({
   rowsByFile: z.record(z.string(), z.number().int().nonnegative()),
+  importedByFile: z.record(z.string(), z.number().int().nonnegative()),
 });
 
 export const ImportExecuteResponse = z.object({
   message: z.string(),
+  operation: ImportOperation,
   imported: z.boolean(),
   report: ImportExecuteReport,
 });
 
 export const ImportExecuteErrorResponse = z.object({
   message: z.string(),
+  operation: ImportOperation,
   report: ImportExecuteReport,
   issues: z.array(ImportExecuteValidationIssue),
 });
@@ -664,6 +704,14 @@ export type PastInstructorsListResponse = z.infer<
   typeof PastInstructorsListResponse
 >;
 export type CustomersListResponse = z.infer<typeof CustomersListResponse>;
+export type EnrollmentStatusRecurringClass = z.infer<
+  typeof EnrollmentStatusRecurringClass
+>;
+export type EnrollmentStatusSubscription = z.infer<
+  typeof EnrollmentStatusSubscription
+>;
+export type EnrollmentStatusCustomer = z.infer<typeof EnrollmentStatusCustomer>;
+export type EnrollmentStatusResponse = z.infer<typeof EnrollmentStatusResponse>;
 export type PastCustomersListResponse = z.infer<
   typeof PastCustomersListResponse
 >;

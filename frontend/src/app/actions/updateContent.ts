@@ -3,7 +3,10 @@
 import { updateEvent } from "@/lib/api/eventsApi";
 import { updatePlan } from "@/lib/api/plansApi";
 import { updateBusinessSchedule } from "@/lib/api/calendarsApi";
-import { GENERAL_ERROR_MESSAGE } from "@/lib/messages/formValidation";
+import {
+  GENERAL_ERROR_MESSAGE,
+  UNEXPECTED_ERROR_MESSAGE,
+} from "@/lib/messages/formValidation";
 import { extractUpdateValidationErrors } from "@/lib/utils/validationErrorUtils";
 import {
   eventUpdateSchema,
@@ -29,13 +32,17 @@ import { revalidatePath } from "next/cache";
 import {
   updateSelectTypeUrl,
   updateSubscriptionToAddClass,
+  previewSubscriptionDecrease,
   updateSubscriptionToTerminateClass,
 } from "@/lib/api/subscriptionsApi";
 import {
   UpdateSelectTypeUrlRequest,
   UpdateSubscriptionToAddClassRequest,
-  UpdateSubscriptionToTerminateClassRequest,
 } from "@shared/schemas/admins";
+import type {
+  SubscriptionDecreaseData,
+  SubscriptionDecreaseBody,
+} from "@shared/schemas/subscriptions";
 import { EnglishBackground } from "@/types";
 
 export async function updateEventAction(
@@ -282,11 +289,8 @@ export async function generateClassesAction(
     });
 
     if (!parsedForm.success) {
-      const fieldErrors = parsedForm.error.flatten().fieldErrors;
-      const firstError =
-        fieldErrors.year?.[0] || fieldErrors.month?.[0] || "Validation failed.";
       return {
-        errorMessage: firstError,
+        errorMessage: "対象月を選択してください。",
       };
     }
 
@@ -300,12 +304,12 @@ export async function generateClassesAction(
     revalidateClassList();
 
     return {
-      successMessage: "Classes generated successfully.",
+      successMessage: "クラスを生成しました。",
     };
   } catch (error) {
     console.error("Unexpected error in updateContent server action:", error);
     return {
-      errorMessage: GENERAL_ERROR_MESSAGE,
+      errorMessage: UNEXPECTED_ERROR_MESSAGE.ja,
     };
   }
 }
@@ -334,9 +338,28 @@ export async function updateSubscriptionToAddClassAction(
   }
 }
 
+export async function previewSubscriptionDecreaseAction(
+  subscriptionId: number,
+  data: SubscriptionDecreaseData,
+) {
+  try {
+    return await previewSubscriptionDecrease(
+      subscriptionId,
+      data,
+      await getCookie(),
+    );
+  } catch (error) {
+    console.error("Failed to preview subscription change", error);
+    return {
+      errorMessage:
+        "キャンセル対象を取得できませんでした。もう一度お試しください。",
+    };
+  }
+}
+
 export async function updateSubscriptionToTerminateClassAction(
   subscriptionId: number,
-  updateDate: UpdateSubscriptionToTerminateClassRequest,
+  updateDate: SubscriptionDecreaseBody["updateSubscriptionData"],
 ): Promise<DeleteFormState> {
   try {
     const cookie = await getCookie();

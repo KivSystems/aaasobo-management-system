@@ -19,6 +19,8 @@ import {
 } from "@/lib/data/data";
 import BookingModal from "../../bookingActions/BookingModal";
 import { errorAlert } from "@/lib/utils/alertUtils";
+import { useBookingSuccess } from "../rebookingModalController/RebookingModalController";
+import { useCustomerTimeZone } from "@/contexts/CustomerTimeZoneContext";
 
 export default function RebookableClassList({
   customerId,
@@ -28,6 +30,9 @@ export default function RebookableClassList({
   userSessionType,
   childProfiles,
 }: RebookableClassListProps) {
+  const onBookingSuccess = useBookingSuccess();
+  const timeZone = useCustomerTimeZone();
+
   const handleRebook = (
     id: number,
     rebookableUntil: Date,
@@ -67,6 +72,8 @@ export default function RebookableClassList({
   const [selectedClassCode, setSelectedClassCode] = useState<string>("");
   const [plan, setPlan] = useState<Plan>();
 
+  if (!timeZone) return null;
+
   return (
     <ul className={styles.modal__list}>
       {rebookableClasses?.map((classItem) => {
@@ -74,8 +81,12 @@ export default function RebookableClassList({
         const date = formatShortDate(
           new Date(classItem.rebookableUntil),
           locale,
+          timeZone,
         );
-        const time = formatTime24Hour(new Date(classItem.rebookableUntil));
+        const time = formatTime24Hour(
+          new Date(classItem.rebookableUntil),
+          timeZone,
+        );
         const isFreeTrial = classItem.isFreeTrial;
 
         const dateTimeText = <span>{`${date} ${time}`}</span>;
@@ -106,6 +117,11 @@ export default function RebookableClassList({
               <>
                 {bookableDateTime}
                 {isFreeTrial && (
+                  <span className={styles.listItem__freeTrialBadge}>
+                    {language === "ja" ? "無料トライアル" : "Free Trial"}
+                  </span>
+                )}
+                {isFreeTrial && (
                   <p className={styles.listItem__declineClass}>
                     {language === "ja"
                       ? "※ 無料トライアルが不要な方は、"
@@ -127,15 +143,6 @@ export default function RebookableClassList({
                   </p>
                 )}
               </>
-            </div>
-            <div className={styles.listItem__classId}>
-              <p>{classItem.classCode}</p>
-              {isFreeTrial &&
-                (language === "ja" ? (
-                  <span>無料トライアル</span>
-                ) : (
-                  <span>Free Trial</span>
-                ))}
             </div>
             <div className={styles.listItem__button}>
               <ActionButton
@@ -168,6 +175,7 @@ export default function RebookableClassList({
           customerId={customerId}
           adminId={adminId}
           plan={plan}
+          onBookingSuccess={onBookingSuccess}
         />
       )}
     </ul>

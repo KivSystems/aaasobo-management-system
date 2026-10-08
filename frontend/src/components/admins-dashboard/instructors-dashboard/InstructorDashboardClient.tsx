@@ -53,15 +53,15 @@ export default function InstructorTabs({
     switch (previousListPage) {
       case "instructor-list":
         return [
-          "Instructor List",
+          "インストラクターリスト",
           "/admins/instructor-list",
-          `Instructor Page (${nickname || "Unknown"})`,
+          `インストラクターページ (${nickname || "不明"})`,
         ];
       case "class-list":
         return [
-          "Class List",
+          "クラスリスト",
           "/admins/class-list",
-          `Instructor Page (${nickname || "Unknown"})`,
+          `インストラクターページ (${nickname || "不明"})`,
         ];
       default:
         return [];
@@ -77,11 +77,11 @@ export default function InstructorTabs({
   // Tabs with labels and content
   const tabs = [
     {
-      label: "Calendar",
+      label: "クラスカレンダー",
       content: classScheduleComponent,
     },
     {
-      label: "Profile",
+      label: "プロフィール",
       content: (
         <InstructorProfile
           instructor={instructor}
@@ -91,7 +91,7 @@ export default function InstructorTabs({
       ),
     },
     {
-      label: "Schedule",
+      label: "スケジュール",
       content: (
         <InstructorSchedule
           instructorId={instructorId}
@@ -102,14 +102,15 @@ export default function InstructorTabs({
       ),
     },
     {
-      label: "Payroll",
-      content: <InstructorPayroll instructorId={instructorId} />,
+      label: "給与管理",
+      content: <InstructorPayroll instructorId={instructorId} locale="ja" />,
     },
     {
-      label: "Tags",
+      label: "タグ設定",
       content: (
         <InstructorTagsTab
           instructorId={instructorId}
+          instructorNickName={nickname || ""}
           initialInstructorTags={initialInstructorTags}
           initialTagCatalog={initialTagCatalog}
         />

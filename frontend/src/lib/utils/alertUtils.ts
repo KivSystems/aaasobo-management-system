@@ -1,13 +1,14 @@
 import Swal from "sweetalert2";
 
-export const confirmAlert: (text: string) => Promise<boolean> = (
+export const confirmAlert = (
   text: string,
-) => {
+  language: LanguageType = "en",
+): Promise<boolean> => {
   const result = Swal.fire({
     text,
     icon: "warning",
     confirmButtonText: "OK",
-    cancelButtonText: "Cancel",
+    cancelButtonText: language === "ja" ? "キャンセル" : "Cancel",
     showCancelButton: true,
     showConfirmButton: true,
     didOpen: () => {

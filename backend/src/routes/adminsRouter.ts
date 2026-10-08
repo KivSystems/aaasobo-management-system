@@ -15,12 +15,12 @@ import {
   getAdminController,
   getAllAdminsController,
   getAllInstructorsController,
-  getInstructorPayrollController,
   getInstructorFeesController,
   createInstructorFeeController,
   deleteLatestInstructorFeeController,
   getAllPastInstructorsController,
   getAllCustomersController,
+  getEnrollmentStatusController,
   getAllPastCustomersController,
   getAllChildrenController,
   getAllPlansController,
@@ -32,6 +32,8 @@ import {
 } from "../../src/controllers/adminsController";
 import {
   downloadNormalizedImportPackageController,
+  executeIncrementalCustomerImportController,
+  executeIncrementalInstructorImportController,
   executeNormalizedImportController,
   normalizeImportSourceController,
 } from "../controllers/adminsImportController";
@@ -50,10 +52,7 @@ import {
   CreateMessageBoardPostRequest,
   CustomerIdParams,
   InstructorIdParams,
-  InstructorPayrollQuery,
   CreateInstructorFeeRequest,
-  InstructorPayrollResponse,
-  InstructorPayrollErrorResponse,
   InstructorFeeRatesResponse,
   CreateInstructorFeeResponse,
   DeleteLatestInstructorFeeResponse,
@@ -74,6 +73,7 @@ import {
   InstructorsListResponse,
   PastInstructorsListResponse,
   CustomersListResponse,
+  EnrollmentStatusResponse,
   PastCustomersListResponse,
   ChildrenListResponse,
   PlansListResponse,
@@ -406,44 +406,6 @@ const getAllInstructorsConfig = {
   },
 } as const;
 
-const getInstructorPayrollConfig = {
-  method: "get" as const,
-  paramsSchema: InstructorIdParams,
-  querySchema: InstructorPayrollQuery,
-  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
-  handler: getInstructorPayrollController,
-  openapi: {
-    summary: "Get instructor payroll",
-    description: "Get current payroll summary for one instructor and month",
-    responses: {
-      200: {
-        description: "Instructor payroll retrieved successfully",
-        schema: InstructorPayrollResponse,
-      },
-      400: {
-        description: "Invalid query parameters",
-        schema: MessageErrorResponse,
-      },
-      401: {
-        description: "Unauthorized",
-        schema: MessageErrorResponse,
-      },
-      404: {
-        description: "Instructor not found",
-        schema: MessageErrorResponse,
-      },
-      422: {
-        description: "Payroll data cannot be resolved",
-        schema: InstructorPayrollErrorResponse,
-      },
-      500: {
-        description: "Internal server error",
-        schema: ErrorResponse,
-      },
-    },
-  },
-} as const;
-
 const getInstructorFeesConfig = {
   method: "get" as const,
   paramsSchema: InstructorIdParams,
@@ -601,6 +563,23 @@ const getAllPastCustomersConfig = {
         description: "Internal server error",
         schema: ErrorResponse,
       },
+    },
+  },
+} as const;
+
+const getEnrollmentStatusConfig = {
+  method: "get" as const,
+  middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
+  handler: getEnrollmentStatusController,
+  openapi: {
+    summary: "Get active enrollment status",
+    description: "Get active subscriptions and recurring classes by customer",
+    responses: {
+      200: {
+        description: "Enrollment status retrieved successfully",
+        schema: EnrollmentStatusResponse,
+      },
+      500: { description: "Internal server error", schema: ErrorResponse },
     },
   },
 } as const;
@@ -1119,6 +1098,59 @@ const executeNormalizedImportConfig = {
   },
 } as const;
 
+const incrementalImportOpenApi = (summary: string, description: string) => ({
+  summary,
+  description,
+  responses: {
+    200: {
+      description: "Incremental import succeeded",
+      schema: ImportExecuteResponse,
+    },
+    400: {
+      description: "Incremental package validation failed",
+      schema: ImportExecuteErrorResponse,
+    },
+    401: {
+      description: "Unauthorized",
+      schema: MessageErrorResponse,
+    },
+    413: {
+      description: "Uploaded file exceeds size limit",
+      schema: MessageErrorResponse,
+    },
+    500: {
+      description: "Internal server error",
+      schema: ErrorResponse,
+    },
+  },
+});
+
+const incrementalCustomerImportConfig = {
+  method: "post" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.A),
+    uploadAdminImportZipFile,
+  ] as RequestHandler[],
+  handler: executeIncrementalCustomerImportController,
+  openapi: incrementalImportOpenApi(
+    "Add customers from a focused import package",
+    "Atomically add customers, children, and subscriptions without changing existing records",
+  ),
+} as const;
+
+const incrementalInstructorImportConfig = {
+  method: "post" as const,
+  middleware: [
+    verifyAuthentication(AUTH_ROLES.A),
+    uploadAdminImportZipFile,
+  ] as RequestHandler[],
+  handler: executeIncrementalInstructorImportController,
+  openapi: incrementalImportOpenApi(
+    "Add instructors from a focused import package",
+    "Atomically add instructors, fees, schedules, and slots without changing existing records",
+  ),
+} as const;
+
 const validatedRouteConfigs = {
   "/:id": [updateAdminConfig],
   "/admin-list": [getAllAdminsConfig],
@@ -1131,6 +1163,7 @@ const validatedRouteConfigs = {
   "/customer-list": [getAllCustomersConfig],
   "/customer-list/past": [getAllPastCustomersConfig],
   "/customer-list/deactivate/:id": [deactivateCustomerConfig],
+  "/enrollment-status": [getEnrollmentStatusConfig],
   "/event-list": [getAllEventsConfig],
   "/event-list/delete/:id": [deleteEventConfig],
   "/event-list/register": [registerEventConfig],
@@ -1138,7 +1171,6 @@ const validatedRouteConfigs = {
   "/instructor-list": [getAllInstructorsConfig],
   "/instructors/:id/fees": [getInstructorFeesConfig, createInstructorFeeConfig],
   "/instructors/:id/fees/latest": [deleteLatestInstructorFeeConfig],
-  "/instructors/:id/payroll": [getInstructorPayrollConfig],
   "/instructor-list/past": [getAllPastInstructorsConfig],
   "/instructor-list/register": [registerInstructorConfig],
   "/instructor-list/register/withIcon": [registerInstructorWithIconConfig],
@@ -1146,6 +1178,8 @@ const validatedRouteConfigs = {
   "/instructor-list/update/:id/withIcon": [updateInstructorWithIconConfig],
   "/import/normalize": [normalizeImportSourceConfig],
   "/import/execute": [executeNormalizedImportConfig],
+  "/import/incremental/customers": [incrementalCustomerImportConfig],
+  "/import/incremental/instructors": [incrementalInstructorImportConfig],
   "/import/normalized/:jobId/download": [downloadNormalizedImportPackageConfig],
   "/message-board": [getMessageBoardPostsConfig, createMessageBoardPostConfig],
   "/plan-list": [getAllPlansConfig],

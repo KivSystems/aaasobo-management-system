@@ -1,7 +1,7 @@
 "use client";
 
 import ErrorPage from "@/components/elements/errorPage/ErrorPage";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { ERROR_PAGE_MESSAGE_JP } from "@/lib/messages/generalMessages";
 
 export default function Error({
   error,
@@ -10,15 +10,18 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const { language } = useLanguage();
   const [messageEn, messageJa] = error.message.split(" / ");
-  const errorMessages = { messageEn, messageJa: messageJa || messageEn };
+  const httpStatus = messageEn.match(/^HTTP error! status: (\d{3})$/)?.[1];
+  const errorMessages = {
+    messageEn,
+    messageJa:
+      messageJa ||
+      (httpStatus
+        ? `データの取得に失敗しました（HTTP ${httpStatus}）。`
+        : ERROR_PAGE_MESSAGE_JP),
+  };
 
   return (
-    <ErrorPage
-      reset={reset}
-      errorMessages={errorMessages}
-      language={language}
-    />
+    <ErrorPage reset={reset} errorMessages={errorMessages} language="ja" />
   );
 }

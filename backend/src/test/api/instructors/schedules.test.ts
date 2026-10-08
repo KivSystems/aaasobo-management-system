@@ -1082,6 +1082,22 @@ describe("GET /instructors/:id/schedules/active", () => {
 
     expect(response.body.data.id).toBe(schedule.id);
   });
+
+  it("succeeds for a finite schedule that is active on the requested date", async () => {
+    const instructor = await createInstructor();
+    const schedule = await createInstructorSchedule(instructor.id, {
+      effectiveFrom: new Date("2024-01-01"),
+      effectiveTo: new Date("2024-07-01"),
+    });
+
+    const response = await request(server)
+      .get(`/instructors/${instructor.id}/schedules/active`)
+      .set("Cookie", authCookie)
+      .query({ effectiveDate: "2024-06-15" })
+      .expect(200);
+
+    expect(response.body.data.id).toBe(schedule.id);
+  });
 });
 
 describe("GET /instructors/:id/schedules/:scheduleId", () => {
@@ -1143,4 +1159,85 @@ describe("POST /instructors/:id/schedules", () => {
       terminatedRecurringClassCount: 0,
     });
   });
+});
+
+describe("regular class slot selection", () => {
+  it.each([
+    {
+      startTime: "16:00",
+      startAt: "2026-10-03T07:00:00Z",
+      endAt: null,
+      blocked: true,
+    },
+    {
+      startTime: "08:00",
+      startAt: "2026-10-02T23:00:00Z",
+      endAt: null,
+      blocked: true,
+    },
+    {
+      startTime: "16:00",
+      startAt: "2026-10-17T07:00:00Z",
+      endAt: null,
+      blocked: true,
+    },
+    {
+      startTime: "16:00",
+      startAt: "2026-10-03T07:00:00Z",
+      endAt: "2026-10-10T07:00:00Z",
+      blocked: false,
+    },
+    {
+      startTime: "16:00",
+      startAt: "2026-10-03T07:00:00Z",
+      endAt: "2026-10-11T07:00:00Z",
+      blocked: true,
+    },
+  ])(
+    "uses weekly conflicts for $startTime, end $endAt, start $startAt",
+    async ({ startTime, startAt, endAt, blocked }) => {
+      const customer = await createCustomer();
+      const cookie = await generateAuthCookie(customer.id, "customer");
+      const instructor = await createInstructor();
+      const plan = await createPlan();
+      const subscription = await createSubscription(plan.id, customer.id);
+      const schedule = await createInstructorSchedule(instructor.id, {
+        effectiveFrom: new Date("2026-09-01"),
+        effectiveTo: null,
+        timezone: "Asia/Tokyo",
+      });
+      await createInstructorSlot(
+        schedule.id,
+        6,
+        new Date(`1970-01-01T${startTime}:00Z`),
+      );
+      await prisma.recurringClass.create({
+        data: {
+          subscriptionId: subscription.id,
+          instructorId: instructor.id,
+          startAt: new Date(startAt),
+          endAt: endAt ? new Date(endAt) : null,
+        },
+      });
+      // No individual booking remains, as when that week's class was canceled or moved.
+      const query = {
+        start: "2026-10-07",
+        end: "2026-10-14",
+        timezone: "Asia/Tokyo",
+        excludeBookedSlots: "true",
+      };
+      const ordinary = await request(server)
+        .get(`/instructors/${instructor.id}/available-slots`)
+        .set("Cookie", cookie)
+        .query(query)
+        .expect(200);
+      expect(ordinary.body.data).toHaveLength(1);
+      const regular = await request(server)
+        .get(`/instructors/${instructor.id}/available-slots`)
+        .set("Cookie", cookie)
+        .query({ ...query, forRecurringClass: "true" })
+        .expect(200);
+      expect(regular.body.data).toHaveLength(blocked ? 0 : 1);
+    },
+  );
 });

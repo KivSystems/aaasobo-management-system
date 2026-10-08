@@ -1,4 +1,4 @@
-import { Prisma, Status } from "../../generated/prisma";
+import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import { getJstDayRange, nDaysLater, nHoursLater } from "../utils/dateUtils";
 import { NewClassToRebookType } from "../controllers/classesController";
@@ -10,9 +10,7 @@ import {
 import {
   CANCELED_CLASS_COLOR,
   COMPLETED_CLASS_COLOR,
-  FREE_TRIAL_CLASS_COLOR,
-  REBOOKED_CLASS_COLOR,
-  REGULAR_CLASS_COLOR,
+  UPCOMING_CLASS_COLOR,
 } from "../utils/colors";
 import { getInstructorAvailableSlots } from "./instructorScheduleService";
 
@@ -127,15 +125,18 @@ export const getAllClasses = async () => {
 export const getClassesWithinPeriod = async (
   startDate: Date,
   endDate: Date,
+  includeUnscheduled = false,
 ) => {
   try {
     const classes: AdminClassPeriodListItem[] = await prisma.class.findMany({
-      where: {
-        dateTime: {
-          gte: startDate,
-          lte: endDate,
-        },
-      },
+      where: includeUnscheduled
+        ? {
+            OR: [
+              { dateTime: { gte: startDate, lte: endDate } },
+              { dateTime: null },
+            ],
+          }
+        : { dateTime: { gte: startDate, lte: endDate } },
       select: {
         id: true,
         dateTime: true,
@@ -165,7 +166,10 @@ export const getClassesWithinPeriod = async (
           },
         },
       },
-      orderBy: { dateTime: "asc" },
+      orderBy: [
+        { instructorId: { sort: "asc", nulls: "last" } },
+        { dateTime: { sort: "asc", nulls: "last" } },
+      ],
     });
 
     return classes;
@@ -676,21 +680,15 @@ export const getCustomerClasses = async (customerId: number) => {
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const statusColorMap: Partial<Record<Status, string>> = {
-      booked: REGULAR_CLASS_COLOR,
-      rebooked: REBOOKED_CLASS_COLOR,
+      booked: UPCOMING_CLASS_COLOR,
+      rebooked: UPCOMING_CLASS_COLOR,
       canceledByCustomer: CANCELED_CLASS_COLOR,
       canceledByInstructor: CANCELED_CLASS_COLOR,
       canceledByAdmin: CANCELED_CLASS_COLOR,
       completed: COMPLETED_CLASS_COLOR,
     };
 
-    const isBookedOrRebooked =
-      classItem.status === "booked" || classItem.status === "rebooked";
-
-    const color =
-      classItem.isFreeTrial && isBookedOrRebooked
-        ? FREE_TRIAL_CLASS_COLOR
-        : statusColorMap[classItem.status];
+    const color = statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)
@@ -752,20 +750,14 @@ export const getCalendarClasses = async (instructorId: number) => {
     const end = new Date(new Date(start).getTime() + 25 * 60000).toISOString();
 
     const statusColorMap: Partial<Record<Status, string>> = {
-      booked: REGULAR_CLASS_COLOR,
-      rebooked: REBOOKED_CLASS_COLOR,
+      booked: UPCOMING_CLASS_COLOR,
+      rebooked: UPCOMING_CLASS_COLOR,
       canceledByInstructor: CANCELED_CLASS_COLOR,
       canceledByAdmin: CANCELED_CLASS_COLOR,
       completed: COMPLETED_CLASS_COLOR,
     };
 
-    const isBookedOrRebooked =
-      classItem.status === "booked" || classItem.status === "rebooked";
-
-    const color =
-      classItem.isFreeTrial && isBookedOrRebooked
-        ? FREE_TRIAL_CLASS_COLOR
-        : statusColorMap[classItem.status];
+    const color = statusColorMap[classItem.status];
 
     const childrenNames = classItem.classAttendance
       .map((attendance) => attendance.children.name)

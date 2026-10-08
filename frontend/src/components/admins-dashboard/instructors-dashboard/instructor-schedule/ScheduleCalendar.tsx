@@ -1,10 +1,12 @@
+import { useLanguage } from "@/contexts/LanguageContext";
 import styles from "./ScheduleCalendar.module.scss";
 import { InstructorSlot } from "@/lib/api/instructorsApi";
 import {
   BusinessTime,
   Weekday,
   WEEKDAYS,
-  weekdayToDay,
+  Weekday_Ja,
+  WEEKDAYS_JA,
 } from "@/lib/utils/scheduleUtils";
 import {
   TimeColumn,
@@ -23,26 +25,31 @@ interface ScheduleCalendarProps {
 }
 
 export default function ScheduleCalendar({ slots }: ScheduleCalendarProps) {
+  const { language } = useLanguage();
   const slotsByDay = slots.reduce(
     (acc, slot) => {
-      const day = weekdayToDay(slot.weekday);
+      const day = WEEKDAYS_JA[slot.weekday];
       if (!acc[day]) acc[day] = [];
 
       acc[day].push(slot.startTime);
       return acc;
     },
-    {} as Record<Weekday, string[]>,
+    {} as Record<Weekday_Ja, string[]>,
   );
 
   Object.keys(slotsByDay).forEach((day) => {
-    slotsByDay[day as Weekday].sort();
+    slotsByDay[day as Weekday_Ja].sort();
   });
 
   return (
     <BaseCalendarRoot>
       <TimeColumn />
-      {WEEKDAYS.map((day) => (
-        <DayColumn key={day} day={day} scheduledTimes={slotsByDay[day] || []} />
+      {WEEKDAYS_JA.map((day) => (
+        <DayColumn
+          key={day}
+          day={language === "ja" ? day : WEEKDAYS[WEEKDAYS_JA.indexOf(day)]}
+          scheduledTimes={slotsByDay[day] || []}
+        />
       ))}
     </BaseCalendarRoot>
   );
@@ -52,7 +59,7 @@ function DayColumn({
   day,
   scheduledTimes,
 }: {
-  day: Weekday;
+  day: Weekday_Ja | Weekday;
   scheduledTimes: string[];
 }) {
   const disabledTimes = BusinessTime.getDisabledTimes(day);
