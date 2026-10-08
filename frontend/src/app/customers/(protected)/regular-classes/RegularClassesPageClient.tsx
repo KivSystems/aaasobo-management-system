@@ -40,7 +40,7 @@ export default function RegularClassesPageClient({
   return (
     <div>
       <div className={styles.header}>Regular Classes</div>
-      <RegularClasses customerId={customerId} />
+      <RegularClasses customerId={customerId} userSessionType="customer" />
     </div>
   );
 }
