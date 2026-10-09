@@ -15,6 +15,7 @@ export default defineConfig({
     exclude: ["**/node_modules/**"],
     env: {
       NODE_ENV: "development",
+      EMAIL_ENV: "develop",
       AUTH_SALT: "test-auth-salt",
       AUTH_SECRET: "test-auth-secret",
     },

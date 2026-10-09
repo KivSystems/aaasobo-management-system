@@ -40,6 +40,7 @@ POSTGRES_URL_NON_POOLING="postgresql://postgres:summer@localhost:5432/mydb?schem
 PORT=4000
 KEY1="<generate_with_openssl_rand_hex_32>"
 KEY2="<generate_with_openssl_rand_hex_32>"
+EMAIL_ENV="develop"
 RESEND_API_KEY="Dummy Resend API Key"
 AUTH_SECRET="<generate_with_openssl_rand_hex_32>"
 AUTH_SALT="next-auth.session-token"
@@ -55,6 +56,10 @@ Note that the following variables should be changed to match your local setup:
 - `POSTGRES_PRISMA_URL`: postgres://<user>:<password>@localhost:<port>/<dbname>?schema=schema
 - `POSTGRES_URL_NON_POOLING`
 - `RESEND_API_KEY` is shared in the development team.
+- Set `EMAIL_ENV=develop` locally and on development/Preview deployments. All outgoing mail uses `onboarding@resend.dev` → `delivered@resend.dev`; CC, BCC and Reply-To are cleared. Database email addresses remain unchanged.
+- Set `EMAIL_ENV=production` only for real delivery. It requires `EMAIL_FROM` (e.g. `contact@aaasobo.org`), used as both sender and admin notification recipient. Missing/invalid configuration prevents sending.
+- Email routing is independent of `NODE_ENV`, Vercel environment and Git branch. Configure `EMAIL_ENV=develop` on both backend projects' Preview/Development environments; backend-dev Production also uses `develop`, while the production backend Production uses `production`.
+- The public contact address in email footers is separate from delivery configuration.
 - `AUTH_SECRET` must match the frontend `AUTH_SECRET` (same value).
 - `AUTH_SALT` must be `next-auth.session-token` (the session cookie name used by the frontend in this repo).
 - `CRON_SECRET` must match the frontend `CRON_SECRET` (same value).
@@ -72,6 +77,22 @@ or
 ```sh
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
+
+#### Inspect sent email status
+
+Successful sends log an `emailId` (without recipient addresses, message bodies or tokens).
+From `backend/`, retrieve that email's sender, recipients and latest delivery event:
+
+```sh
+npm run email:inspect -- <email-id>
+```
+
+This is a read-only Resend API request; it sends no mail and omits bodies that may
+contain authentication tokens. The API key must permit reading sent emails (a
+sending-only key cannot do this). Keep API keys in the local environment, not in
+command arguments or source control. The test address simulates delivery success;
+it does not confirm a real inbox received the message. This command also works
+for production emails, so treat its recipient metadata as private.
 
 #### Launch Database
 
