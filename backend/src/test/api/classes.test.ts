@@ -196,6 +196,7 @@ describe("POST /classes/:id/rebook", () => {
       await ensureInstructorSlotAt(instructor.id, targetDate);
 
       const classOverrides: Parameters<typeof createClass>[3] = {
+        status: "canceledByCustomer",
         isFreeTrial: bookingType === "freeTrial",
         rebookableUntil: new Date("2026-12-31T00:00:00.000Z"),
       };
@@ -254,6 +255,7 @@ describe("POST /classes/:id/rebook", () => {
     await prisma.class.update({
       where: { id: originalClass.id },
       data: {
+        status: "canceledByCustomer",
         isFreeTrial: true,
         rebookableUntil,
       },
@@ -338,6 +340,7 @@ describe("POST /classes/:id/rebook", () => {
     await prisma.class.update({
       where: { id: classToRebook.id },
       data: {
+        status: "canceledByCustomer",
         isFreeTrial: true,
         rebookableUntil: daysFromNow(30),
       },
@@ -371,6 +374,7 @@ describe("POST /classes/:id/rebook", () => {
     await prisma.class.update({
       where: { id: classToRebook.id },
       data: {
+        status: "canceledByCustomer",
         isFreeTrial: true,
         rebookableUntil: daysFromNow(30),
       },

@@ -79,10 +79,56 @@ function getJstRecurringParts(date: Date): { weekday: number; time: string } {
   };
 }
 
+async function authorizeClass(
+  req: RequestWithParams<ClassIdParams>,
+  res: Response,
+) {
+  const target = await prisma.class.findUnique({
+    where: { id: req.params.id },
+  });
+  if (!target) {
+    res.sendStatus(404);
+    return null;
+  }
+  const user = req.user;
+  if (
+    !user ||
+    (user.userType !== "admin" &&
+      (user.userType === "customer"
+        ? target.customerId !== Number(user.id)
+        : target.instructorId !== Number(user.id)))
+  ) {
+    res.sendStatus(403);
+    return null;
+  }
+  return target;
+}
+
+async function childrenBelongToCustomer(
+  childrenIds: number[],
+  customerId: number,
+) {
+  const ids = [...new Set(childrenIds)];
+  return (
+    (await prisma.child.count({ where: { id: { in: ids }, customerId } })) ===
+    ids.length
+  );
+}
+
 // GET all classes along with related instructors and customers data
-export const getAllClassesController = async (_: Request, res: Response) => {
+export const getAllClassesController = async (
+  req: RequestWithBody<unknown>,
+  res: Response,
+) => {
   try {
-    const classes = await getAllClasses();
+    const allClasses = await getAllClasses();
+    const classes = allClasses.filter(
+      (item) =>
+        req.user?.userType === "admin" ||
+        (req.user?.userType === "customer"
+          ? item.customer.id === Number(req.user.id)
+          : item.instructor?.id === Number(req.user?.id)),
+    );
 
     const classesData = classes.map((eachClass) => {
       const { id, dateTime, customer, instructor, status, recurringClassId } =
@@ -121,6 +167,8 @@ export const getClassesByCustomerIdController = async (
   const id = req.params.id;
 
   try {
+    if (req.user?.userType === "customer" && Number(req.user.id) !== id)
+      return res.sendStatus(403);
     const classes = await getClassesByCustomerId(id);
 
     const classesData = classes.map((eachClass) => {
@@ -220,6 +268,13 @@ export const rebookClassController = async (
   const { dateTime, instructorId, customerId, childrenIds } = req.body;
 
   try {
+    const authorizedClass = await authorizeClass(req, res);
+    if (!authorizedClass) return;
+    if (
+      customerId !== authorizedClass.customerId ||
+      !(await childrenBelongToCustomer(childrenIds, customerId))
+    )
+      return res.sendStatus(403);
     const classToRebook = await getRebookTargetClass(classId);
     const subscription = await getSubscriptionForRebook(classToRebook);
     const newClassToRebook = buildRebookClass({
@@ -265,6 +320,9 @@ export const rebookClassController = async (
       message === "instructor unavailable"
     ) {
       return res.status(400).json({ errorType: "instructor unavailable" });
+    }
+    if (message === "rebooking credit unavailable") {
+      return res.status(400).json({ errorType: "invalid class data" });
     }
     if (error instanceof RebookControllerError) {
       return res.status(error.status).json({ errorType: error.errorType });
@@ -332,7 +390,14 @@ const getRebookTargetClass = async (
   if (
     status === undefined ||
     rebookableUntil == null ||
-    classCode === undefined
+    classCode === undefined ||
+    ![
+      "canceledByCustomer",
+      "canceledByInstructor",
+      "canceledByAdmin",
+      "pending",
+    ].includes(status) ||
+    new Date(rebookableUntil) <= new Date()
   ) {
     throwRebookError(400, "invalid class data");
   }
@@ -384,6 +449,9 @@ const buildRebookClass = ({
   subscription: Awaited<ReturnType<typeof getSubscriptionForRebook>>;
 }): NewClassToRebookType => {
   const targetDate = new Date(dateTime);
+  if (targetDate > classToRebook.rebookableUntil) {
+    throwRebookError(400, "invalid class data");
+  }
   const rebookingDeadline = classToRebook.isFreeTrial
     ? nHoursBefore(FREE_TRIAL_BOOKING_HOURS, targetDate)
     : nHoursBefore(REGULAR_REBOOKING_HOURS, targetDate);
@@ -494,6 +562,8 @@ export const deleteClassController = async (
   const classId = req.params.id;
 
   try {
+    const authorizedClass = await authorizeClass(req, res);
+    if (!authorizedClass) return;
     const deletedClass = await deleteClass(classId);
 
     return res.status(200).json(deletedClass);
@@ -513,6 +583,19 @@ export const cancelClassController = async (
   const classId = req.params.id;
 
   try {
+    const authorizedClass = await authorizeClass(req, res);
+    if (!authorizedClass) return;
+    if (
+      req.user?.userType === "customer" &&
+      (!authorizedClass.dateTime ||
+        toJstDateKey(authorizedClass.dateTime) <= toJstDateKey(new Date()) ||
+        !["booked", "rebooked"].includes(authorizedClass.status))
+    ) {
+      return res.status(409).json({
+        message:
+          "Only booked classes before their cancellation deadline can be canceled",
+      });
+    }
     await cancelClassById(classId);
     res.sendStatus(200);
   } catch (error) {
@@ -735,6 +818,8 @@ export const checkDoubleBookingController = async (
   const { customerId, dateTime } = req.body;
 
   try {
+    if (req.user?.userType === "customer" && customerId !== Number(req.user.id))
+      return res.sendStatus(403);
     const isDoubleBooked = await checkDoubleBooking(customerId, dateTime);
 
     res.status(200).json(isDoubleBooked);
@@ -758,6 +843,14 @@ export const checkChildConflictsController = async (
   const { dateTime, selectedChildrenIds } = req.body;
 
   try {
+    if (
+      req.user?.userType === "customer" &&
+      !(await childrenBelongToCustomer(
+        selectedChildrenIds,
+        Number(req.user.id),
+      ))
+    )
+      return res.sendStatus(403);
     const conflictingChildren = await checkChildConflicts(
       dateTime,
       selectedChildrenIds,
@@ -783,6 +876,29 @@ export const cancelClassesController = async (
   const { classIds } = req.body;
 
   try {
+    const targets = await prisma.class.findMany({
+      where: { id: { in: classIds } },
+    });
+    if (targets.length !== new Set(classIds).size) return res.sendStatus(404);
+    if (
+      req.user?.userType !== "admin" &&
+      targets.some((target) => target.customerId !== Number(req.user?.id))
+    )
+      return res.sendStatus(403);
+    if (
+      req.user?.userType === "customer" &&
+      targets.some(
+        (target) =>
+          !target.dateTime ||
+          toJstDateKey(target.dateTime) <= toJstDateKey(new Date()) ||
+          !["booked", "rebooked"].includes(target.status),
+      )
+    ) {
+      return res.status(409).json({
+        message:
+          "Only booked classes before their cancellation deadline can be canceled",
+      });
+    }
     await cancelClasses(classIds);
 
     res.sendStatus(200);
@@ -806,6 +922,12 @@ export const updateAttendanceController = async (
   const { childrenIds } = req.body;
 
   try {
+    const authorizedClass = await authorizeClass(req, res);
+    if (!authorizedClass) return;
+    if (
+      !(await childrenBelongToCustomer(childrenIds, authorizedClass.customerId))
+    )
+      return res.sendStatus(403);
     if (childrenIds.length === 0) {
       await deleteAttendancesByClassId(classId);
     } else {
@@ -837,6 +959,20 @@ export const updateClassStatusController = async (
   const { status } = req.body;
 
   try {
+    const authorizedClass = await authorizeClass(req, res);
+    if (!authorizedClass) return;
+    if (req.user?.userType === "instructor") {
+      if (status !== "completed") return res.sendStatus(403);
+      if (
+        !authorizedClass.dateTime ||
+        authorizedClass.dateTime.getTime() + 25 * 60 * 1000 > Date.now() ||
+        !["booked", "rebooked"].includes(authorizedClass.status)
+      ) {
+        return res
+          .status(409)
+          .json({ message: "Only ended booked classes can be completed" });
+      }
+    }
     const classToUpdate = await getClassToRebook(classId);
     const classDateTime = classToUpdate.dateTime;
 

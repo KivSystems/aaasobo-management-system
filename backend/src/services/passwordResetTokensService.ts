@@ -1,16 +1,20 @@
+import type { UserType } from "../lib/email/mail";
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../../prisma/prismaClient";
 import { nHoursLater } from "../utils/dateUtils";
 import { hashToken, safeCompareHash } from "../utils/tokenUtils";
 
-export const generatePasswordResetToken = async (email: string) => {
+export const generatePasswordResetToken = async (
+  email: string,
+  userType: UserType,
+) => {
   const rawToken = uuidv4();
   const tokenHash = hashToken(rawToken);
   const expires = nHoursLater(1);
 
   // Delete an existing token to make only the latest one valid
   const existingToken = await prisma.passwordResetToken.findFirst({
-    where: { email },
+    where: { email, userType },
   });
 
   if (existingToken) {
@@ -24,6 +28,7 @@ export const generatePasswordResetToken = async (email: string) => {
   const passwordResetToken = await prisma.passwordResetToken.create({
     data: {
       email,
+      userType,
       token: tokenHash,
       expires,
     },
@@ -61,8 +66,8 @@ export const getPasswordResetTokenByToken = async (token: string) => {
   return passwordResetToken;
 };
 
-export const deletePasswordResetToken = (email: string) => {
+export const deletePasswordResetToken = (id: string) => {
   return prisma.passwordResetToken.deleteMany({
-    where: { email },
+    where: { id },
   });
 };

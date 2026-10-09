@@ -59,7 +59,19 @@ export const getSubscriptionById = async (subscriptionId: number) => {
   try {
     const subscription = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
-      include: { plan: true, customer: true },
+      include: {
+        plan: true,
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            prefecture: true,
+            emailVerified: true,
+            hasSeenWelcome: true,
+          },
+        },
+      },
     });
 
     return subscription;

@@ -31,6 +31,12 @@ export const getChildrenController = async (
   res: Response,
 ) => {
   const { customerId } = req.query;
+  if (
+    req.user?.userType === "customer" &&
+    Number(req.user.id) !== Number(customerId)
+  ) {
+    return res.sendStatus(403);
+  }
 
   try {
     const children = await getChildren(customerId);
@@ -46,6 +52,9 @@ export const registerChildController = async (
   res: Response,
 ) => {
   const { name, birthdate, personalInfo, customerId } = req.body;
+  if (req.user?.userType === "customer" && Number(req.user.id) !== customerId) {
+    return res.sendStatus(403);
+  }
 
   const formattedBirthdate = convertToISOString(birthdate);
 
@@ -71,6 +80,9 @@ export const updateChildProfileController = async (
 ) => {
   const childId = req.params.id;
   const { name, birthdate, personalInfo, customerId } = req.body;
+  if (req.user?.userType === "customer" && Number(req.user.id) !== customerId) {
+    return res.sendStatus(403);
+  }
 
   const formattedBirthdate = convertToISOString(birthdate);
 
@@ -80,7 +92,11 @@ export const updateChildProfileController = async (
       return res.sendStatus(404);
     }
 
-    if (childToUpdate.customerId !== customerId) {
+    if (
+      childToUpdate.customerId !== customerId ||
+      (req.user?.userType === "customer" &&
+        childToUpdate.customerId !== Number(req.user.id))
+    ) {
       return res.sendStatus(403);
     }
 
@@ -121,6 +137,14 @@ export const deleteChildController = async (
   const childId = req.params.id;
 
   try {
+    const child = await getChildById(childId);
+    if (!child) return res.sendStatus(404);
+    if (
+      req.user?.userType === "customer" &&
+      child.customerId !== Number(req.user.id)
+    ) {
+      return res.sendStatus(403);
+    }
     const hasCompletedClass = await checkIfChildHasCompletedClass(childId);
     if (hasCompletedClass) {
       return res.status(409).json({ message: "has_completed_class" });
@@ -159,7 +183,13 @@ export const getChildByIdController = async (
 
   try {
     const child = await getChildById(id);
-
+    if (!child) return res.sendStatus(404);
+    if (
+      req.user?.userType === "customer" &&
+      child.customerId !== Number(req.user.id)
+    ) {
+      return res.sendStatus(403);
+    }
     res.json(child);
   } catch (error) {
     console.error("Controller Error:", error);

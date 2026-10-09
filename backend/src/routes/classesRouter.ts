@@ -35,6 +35,8 @@ import {
 import { verifyAuthentication } from "../middlewares/auth.middleware";
 import { AUTH_ROLES } from "../utils/commonUtils";
 
+import { MessageErrorResponse } from "../../../shared/schemas/common";
+
 export const classesRouter = express.Router();
 
 // Route configurations for validation and OpenAPI
@@ -86,7 +88,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
     },
     {
       method: "delete",
-      middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
+      middleware: [verifyAuthentication(AUTH_ROLES.A)] as RequestHandler[],
       handler: deleteClassController,
       paramsSchema: ClassIdParams,
       openapi: {
@@ -184,6 +186,10 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
             description: "Invalid class ID",
             schema: ValidationErrorResponse,
           },
+          "409": {
+            description: "Class state or deadline does not allow this action",
+            schema: MessageErrorResponse,
+          },
           "500": {
             description: "Internal server error",
           },
@@ -194,7 +200,7 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
   "/:id/status": [
     {
       method: "patch",
-      middleware: [verifyAuthentication(AUTH_ROLES.ACI)] as RequestHandler[],
+      middleware: [verifyAuthentication(AUTH_ROLES.AI)] as RequestHandler[],
       handler: updateClassStatusController,
       paramsSchema: ClassIdParams,
       bodySchema: UpdateClassStatusRequest,
@@ -211,6 +217,10 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
           },
           "404": {
             description: "Class not found",
+          },
+          "409": {
+            description: "Class state or deadline does not allow this action",
+            schema: MessageErrorResponse,
           },
           "500": {
             description: "Internal server error",
@@ -313,6 +323,10 @@ const routeConfigs: Record<string, readonly RouteConfig[]> = {
           "400": {
             description: "Invalid class IDs",
             schema: ValidationErrorResponse,
+          },
+          "409": {
+            description: "Class state or deadline does not allow this action",
+            schema: MessageErrorResponse,
           },
           "500": {
             description: "Internal server error",

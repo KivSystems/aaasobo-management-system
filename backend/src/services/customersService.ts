@@ -209,8 +209,9 @@ export const verifyCustomerEmail = async (
 export const updateCustomerPassword = async (
   id: number,
   newPassword: string,
+  tx?: Prisma.TransactionClient,
 ) => {
-  return await prisma.customer.update({
+  return await (tx ?? prisma).customer.update({
     where: { id },
     data: { password: newPassword },
   });
