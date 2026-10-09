@@ -19,7 +19,8 @@
     "test:api": "prisma generate && vitest run src/test/api",
     "test:performance": "prisma generate && vitest run src/test/performance",
     "build": "cd ../shared && npm install && cd ../backend && prisma generate && npm run db:migrate && npm run db:bootstrap",
-    "lint:unused": "knip"
+    "lint:unused": "knip",
+    "email:inspect": "ts-node ./src/scripts/inspectEmail.ts"
   },
   "engines": {
     "node": "20.x || ^22.0.0"

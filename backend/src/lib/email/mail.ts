@@ -1,5 +1,5 @@
 import { CreateEmailResponse } from "resend";
-import { resend } from "./resendClient";
+import { getAdminNotificationRecipient, sendEmail } from "./delivery";
 
 export type UserType = "admin" | "customer" | "instructor";
 const CONTACT_EMAIL = "contact@aaasobo.org";
@@ -12,8 +12,7 @@ export const sendVerificationEmail = async (
   const confirmLink = `${process.env.FRONTEND_ORIGIN}/auth/new-verification/${token}`;
 
   try {
-    const response: CreateEmailResponse = await resend.emails.send({
-      from: `${CONTACT_EMAIL}`,
+    const response: CreateEmailResponse = await sendEmail({
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】メールアドレス認証のお願い / Please confirm your email address",
@@ -112,8 +111,7 @@ export const resendVerificationEmail = async (
   const confirmLink = `${process.env.FRONTEND_ORIGIN}/auth/new-verification/${token}`;
 
   try {
-    const response: CreateEmailResponse = await resend.emails.send({
-      from: `${CONTACT_EMAIL}`,
+    const response: CreateEmailResponse = await sendEmail({
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】メールアドレス認証リンクを再送しました / We've re-sent your email confirmation link",
@@ -214,8 +212,7 @@ export const sendPasswordResetEmail = async (
   const resetLink = `${process.env.FRONTEND_ORIGIN}/auth/reset-password?token=${token}&type=${userType}`;
 
   try {
-    const response: CreateEmailResponse = await resend.emails.send({
-      from: `${CONTACT_EMAIL}`,
+    const response: CreateEmailResponse = await sendEmail({
       to: email,
       subject:
         "【KIVこどもオンライン英会話AaasoBo!】パスワード再設定のお知らせ / Password Reset Notification",
@@ -312,9 +309,8 @@ export const sendAdminSameDayRebookEmail = async (data: {
   children: string;
 }) => {
   try {
-    const response: CreateEmailResponse = await resend.emails.send({
-      from: `${CONTACT_EMAIL}`,
-      to: `${CONTACT_EMAIL}`,
+    const response: CreateEmailResponse = await sendEmail({
+      to: getAdminNotificationRecipient(),
       subject: "【AaasoBo!】当日クラスの予約が入りました。",
       html: `
   <div style="font-family: 'Helvetica Neue', sans-serif; font-size: 16px; line-height: 1.6; color: #333;">
@@ -398,8 +394,7 @@ export const sendInstructorSameDayRebookEmail = async (data: {
   children: string;
 }) => {
   try {
-    const response: CreateEmailResponse = await resend.emails.send({
-      from: `${CONTACT_EMAIL}`,
+    const response: CreateEmailResponse = await sendEmail({
       to: data.instructorEmail,
       subject: "【AaasoBo!】A Class Has Been Booked for Today",
       html: `
