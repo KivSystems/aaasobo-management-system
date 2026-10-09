@@ -239,3 +239,81 @@ describe("DELETE /children/:id", () => {
     expect(stillExists).toBeTruthy();
   });
 });
+
+describe("customer child ownership", () => {
+  it("rejects cross-customer reads and every mutation without changing data", async () => {
+    const attacker = await createCustomer();
+    const owner = await createCustomer();
+    const child = await createChild(owner.id);
+    const cookie = await generateAuthCookie(attacker.id, "customer");
+    const payload = {
+      name: "Unauthorized",
+      birthdate: "2020-02-20",
+      personalInfo: "Unauthorized",
+      customerId: owner.id,
+    };
+    await request(server)
+      .get("/children")
+      .query({ customerId: owner.id })
+      .set("Cookie", cookie)
+      .expect(403);
+    await request(server)
+      .get(`/children/${child.id}`)
+      .set("Cookie", cookie)
+      .expect(403);
+    await request(server)
+      .post("/children")
+      .send(payload)
+      .set("Cookie", cookie)
+      .expect(403);
+    await request(server)
+      .patch(`/children/${child.id}`)
+      .send(payload)
+      .set("Cookie", cookie)
+      .expect(403);
+    await request(server)
+      .patch(`/children/${child.id}`)
+      .send({ ...payload, customerId: attacker.id })
+      .set("Cookie", cookie)
+      .expect(403);
+    await request(server)
+      .delete(`/children/${child.id}`)
+      .set("Cookie", cookie)
+      .expect(403);
+    expect(await prisma.child.findUnique({ where: { id: child.id } })).toEqual(
+      child,
+    );
+    expect(await prisma.child.count({ where: { customerId: owner.id } })).toBe(
+      1,
+    );
+  });
+  it("allows own profile operations and omits customer credentials", async () => {
+    const owner = await createCustomer();
+    const child = await createChild(owner.id);
+    const cookie = await generateAuthCookie(owner.id, "customer");
+    const list = await request(server)
+      .get("/children")
+      .query({ customerId: owner.id })
+      .set("Cookie", cookie)
+      .expect(200);
+    expect(list.body.children[0].customer).not.toHaveProperty("password");
+    await request(server)
+      .get(`/children/${child.id}`)
+      .set("Cookie", cookie)
+      .expect(200);
+    await request(server)
+      .patch(`/children/${child.id}`)
+      .set("Cookie", cookie)
+      .send({
+        name: "Updated",
+        birthdate: "2020-02-20",
+        personalInfo: "Profile",
+        customerId: owner.id,
+      })
+      .expect(200);
+    await request(server)
+      .delete(`/children/${child.id}`)
+      .set("Cookie", cookie)
+      .expect(200);
+  });
+});

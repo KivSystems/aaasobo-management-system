@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma/prismaClient";
-import { Instructor } from "@prisma/client";
+import { Instructor, Prisma } from "@prisma/client";
 import {
   hashPassword,
   defaultUserImageUrl,
@@ -299,8 +299,9 @@ export async function getInstructorProfile(instructorId: number) {
 export const updateInstructorPassword = async (
   id: number,
   newPassword: string,
+  tx?: Prisma.TransactionClient,
 ) => {
-  return await prisma.instructor.update({
+  return await (tx ?? prisma).instructor.update({
     where: { id },
     data: { password: newPassword },
   });

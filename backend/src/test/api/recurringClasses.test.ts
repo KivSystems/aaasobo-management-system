@@ -638,6 +638,7 @@ describe("GET /recurring-classes/:id", () => {
 
     const response = await request(server)
       .get(`/recurring-classes/${recurringClass.id}`)
+      .set("Cookie", await createAdminAuthCookie())
       .expect(200);
 
     expect(response.body.id).toBe(recurringClass.id);
@@ -646,11 +647,17 @@ describe("GET /recurring-classes/:id", () => {
   });
 
   it("return 400 for invalid id", async () => {
-    await request(server).get(`/recurring-classes/invalid`).expect(400);
+    await request(server)
+      .get(`/recurring-classes/invalid`)
+      .expect(400)
+      .set("Cookie", await createAdminAuthCookie());
   });
 
   it("return 404 for missing recurring class", async () => {
-    await request(server).get(`/recurring-classes/999999`).expect(404);
+    await request(server)
+      .get(`/recurring-classes/999999`)
+      .expect(404)
+      .set("Cookie", await createAdminAuthCookie());
   });
 });
 
@@ -672,6 +679,7 @@ describe("GET /recurring-classes/by-instructorId", () => {
 
     const response = await request(server)
       .get(`/recurring-classes/by-instructorId?instructorId=${instructor.id}`)
+      .set("Cookie", await createAdminAuthCookie())
       .expect(200);
 
     expect(response.body.recurringClasses.map((c: any) => c.id)).toContain(
@@ -680,12 +688,16 @@ describe("GET /recurring-classes/by-instructorId", () => {
   });
 
   it("return 400 when instructorId is missing", async () => {
-    await request(server).get(`/recurring-classes/by-instructorId`).expect(400);
+    await request(server)
+      .get(`/recurring-classes/by-instructorId`)
+      .expect(400)
+      .set("Cookie", await createAdminAuthCookie());
   });
 
   it("return 400 for invalid instructorId", async () => {
     await request(server)
       .get(`/recurring-classes/by-instructorId?instructorId=invalid`)
+      .set("Cookie", await createAdminAuthCookie())
       .expect(400);
   });
 });

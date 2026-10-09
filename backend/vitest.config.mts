@@ -16,6 +16,7 @@ export default defineConfig({
     env: {
       NODE_ENV: "development",
       EMAIL_ENV: "develop",
+      RESEND_API_KEY: "re_test_dummy",
       AUTH_SALT: "test-auth-salt",
       AUTH_SECRET: "test-auth-secret",
     },

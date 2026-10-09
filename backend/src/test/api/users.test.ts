@@ -3,6 +3,7 @@ import request from "supertest";
 const { faker } = require("@faker-js/faker");
 import { server } from "../../server";
 import { prisma } from "../setup";
+import { sendPasswordResetEmail } from "../../lib/email/mail";
 import {
   createAdmin,
   createCustomer,
@@ -221,7 +222,11 @@ describe("POST /users/verify-reset-token", () => {
   it("succeed with valid token for admin", async () => {
     const adminData = generateTestAdmin();
     await createAdmin(adminData);
-    const resetToken = await createPasswordResetToken(adminData.email);
+    const resetToken = await createPasswordResetToken(
+      adminData.email,
+      1,
+      "admin",
+    );
 
     await request(server)
       .post("/users/verify-reset-token")
@@ -235,7 +240,11 @@ describe("POST /users/verify-reset-token", () => {
   it("succeed with valid token for customer", async () => {
     const customerData = generateTestCustomer();
     await createCustomer(customerData);
-    const resetToken = await createPasswordResetToken(customerData.email);
+    const resetToken = await createPasswordResetToken(
+      customerData.email,
+      1,
+      "customer",
+    );
 
     await request(server)
       .post("/users/verify-reset-token")
@@ -249,7 +258,11 @@ describe("POST /users/verify-reset-token", () => {
   it("succeed with valid token for instructor", async () => {
     const instructorData = generateTestInstructor();
     await createInstructor(instructorData);
-    const resetToken = await createPasswordResetToken(instructorData.email);
+    const resetToken = await createPasswordResetToken(
+      instructorData.email,
+      1,
+      "instructor",
+    );
 
     await request(server)
       .post("/users/verify-reset-token")
@@ -273,7 +286,11 @@ describe("POST /users/verify-reset-token", () => {
   it("fail with expired token", async () => {
     const adminData = generateTestAdmin();
     await createAdmin(adminData);
-    const resetToken = await createPasswordResetToken(adminData.email, -1);
+    const resetToken = await createPasswordResetToken(
+      adminData.email,
+      -1,
+      "admin",
+    );
 
     await request(server)
       .post("/users/verify-reset-token")
@@ -301,7 +318,11 @@ describe("PATCH /users/update-password", () => {
   it("succeed with valid token for admin", async () => {
     const adminData = generateTestAdmin();
     await createAdmin(adminData);
-    const resetToken = await createPasswordResetToken(adminData.email);
+    const resetToken = await createPasswordResetToken(
+      adminData.email,
+      1,
+      "admin",
+    );
 
     await request(server)
       .patch("/users/update-password")
@@ -316,7 +337,11 @@ describe("PATCH /users/update-password", () => {
   it("succeed with valid token for customer", async () => {
     const customerData = generateTestCustomer();
     await createCustomer(customerData);
-    const resetToken = await createPasswordResetToken(customerData.email);
+    const resetToken = await createPasswordResetToken(
+      customerData.email,
+      1,
+      "customer",
+    );
 
     await request(server)
       .patch("/users/update-password")
@@ -331,7 +356,11 @@ describe("PATCH /users/update-password", () => {
   it("succeed with valid token for instructor", async () => {
     const instructorData = generateTestInstructor();
     await createInstructor(instructorData);
-    const resetToken = await createPasswordResetToken(instructorData.email);
+    const resetToken = await createPasswordResetToken(
+      instructorData.email,
+      1,
+      "instructor",
+    );
 
     await request(server)
       .patch("/users/update-password")
@@ -357,7 +386,11 @@ describe("PATCH /users/update-password", () => {
   it("fail with expired token", async () => {
     const adminData = generateTestAdmin();
     await createAdmin(adminData);
-    const resetToken = await createPasswordResetToken(adminData.email, -1);
+    const resetToken = await createPasswordResetToken(
+      adminData.email,
+      -1,
+      "admin",
+    );
 
     await request(server)
       .patch("/users/update-password")
@@ -380,5 +413,116 @@ describe("PATCH /users/update-password", () => {
         password: faker.internet.password(),
       })
       .expect(404);
+  });
+});
+
+describe("password reset token isolation", () => {
+  it("binds tokens to the requested role and consumes successful resets", async () => {
+    const customer = await createCustomer();
+    const admin = await createAdmin({
+      ...generateTestAdmin(),
+      email: customer.email,
+    });
+    const token = await createPasswordResetToken(customer.email, 1, "customer");
+    await request(server)
+      .post("/users/verify-reset-token")
+      .send({ token: token.token, userType: "admin" })
+      .expect(404);
+    await request(server)
+      .patch("/users/update-password")
+      .send({
+        token: token.token,
+        userType: "admin",
+        password: "NewPassword123!",
+      })
+      .expect(404);
+    expect(
+      (await prisma.admin.findUniqueOrThrow({ where: { id: admin.id } }))
+        .password,
+    ).toBe(admin.password);
+    await request(server)
+      .patch("/users/update-password")
+      .send({
+        token: token.token,
+        userType: "customer",
+        password: "NewPassword123!",
+      })
+      .expect(201);
+    await request(server)
+      .post("/users/verify-reset-token")
+      .send({ token: token.token, userType: "customer" })
+      .expect(404);
+    await request(server)
+      .patch("/users/update-password")
+      .send({
+        token: token.token,
+        userType: "customer",
+        password: "AnotherPassword123!",
+      })
+      .expect(404);
+  });
+  it("rejects legacy tokens that are not role-bound", async () => {
+    const customer = await createCustomer();
+    const token = await prisma.passwordResetToken.create({
+      data: {
+        email: customer.email,
+        token: "legacy-token",
+        expires: new Date(Date.now() + 3600000),
+      },
+    });
+    await request(server)
+      .post("/users/verify-reset-token")
+      .send({ token: token.token, userType: "customer" })
+      .expect(404);
+    await request(server)
+      .patch("/users/update-password")
+      .send({
+        token: token.token,
+        userType: "customer",
+        password: "NewPassword123!",
+      })
+      .expect(404);
+  });
+});
+
+describe("reset token cleanup", () => {
+  it("preserves another role's token when delivery fails", async () => {
+    const customer = await createCustomer();
+    await createAdmin({ ...generateTestAdmin(), email: customer.email });
+    const adminToken = await createPasswordResetToken(
+      customer.email,
+      1,
+      "admin",
+    );
+    vi.mocked(sendPasswordResetEmail).mockResolvedValueOnce({ success: false });
+    await request(server)
+      .post("/users/send-password-reset")
+      .send({ email: customer.email, userType: "customer" })
+      .expect(202);
+    expect(
+      await prisma.passwordResetToken.findUnique({
+        where: { id: adminToken.id },
+      }),
+    ).not.toBeNull();
+    expect(
+      await prisma.passwordResetToken.count({
+        where: { email: customer.email, userType: "customer" },
+      }),
+    ).toBe(0);
+  });
+  it("allows exactly one concurrent use of a reset token", async () => {
+    const customer = await createCustomer();
+    const token = await createPasswordResetToken(customer.email, 1, "customer");
+    const responses = await Promise.all(
+      ["FirstPassword123!", "SecondPassword123!"].map((password) =>
+        request(server)
+          .patch("/users/update-password")
+          .send({ token: token.token, userType: "customer", password }),
+      ),
+    );
+    expect(responses.map((r) => r.status).sort()).toEqual([201, 404]);
+    expect(
+      await prisma.passwordResetToken.findUnique({ where: { id: token.id } }),
+    ).toBeNull();
   });
 });

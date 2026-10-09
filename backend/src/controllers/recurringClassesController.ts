@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { prisma } from "../../prisma/prismaClient";
 import {
   createRegularClass,
   getRegularClassById,
@@ -22,6 +23,28 @@ import type {
   CreateRecurringClassRequest,
   UpdateRecurringClassRequest,
 } from "../../../shared/schemas/recurringClasses";
+
+async function authorizeSubscription(
+  req: { user?: { id: string; userType: string } },
+  res: Response,
+  subscriptionId: number,
+) {
+  const target = await prisma.subscription.findUnique({
+    where: { id: subscriptionId },
+  });
+  if (!target) {
+    res.sendStatus(404);
+    return false;
+  }
+  if (
+    !req.user ||
+    (req.user.userType !== "admin" && target.customerId !== Number(req.user.id))
+  ) {
+    res.sendStatus(403);
+    return false;
+  }
+  return true;
+}
 
 function handleRegularClassError(error: unknown, res: Response): Response {
   const err =
@@ -72,6 +95,8 @@ export const getRegularClassesBySubscriptionIdController = async (
   res: Response,
 ) => {
   try {
+    if (!(await authorizeSubscription(req, res, req.query.subscriptionId)))
+      return;
     const recurringClasses = await getRegularClassesBySubscriptionId(
       req.query.subscriptionId,
       req.query.status,
@@ -90,6 +115,8 @@ export const getRecurringClassesHistoryCountController = async (
   res: Response,
 ) => {
   try {
+    if (!(await authorizeSubscription(req, res, req.query.subscriptionId)))
+      return;
     const count = await getRecurringClassesHistoryCountBySubscriptionId(
       req.query.subscriptionId,
     );
@@ -151,6 +178,9 @@ export const getRegularClassByIdController = async (
 ) => {
   try {
     const recurringClass = await getRegularClassById(req.params.id);
+    if (recurringClass.subscriptionId === null) return res.sendStatus(404);
+    if (!(await authorizeSubscription(req, res, recurringClass.subscriptionId)))
+      return;
     res.status(200).json(recurringClass);
   } catch (error) {
     const err =
@@ -170,6 +200,11 @@ export const getRecurringClassesByInstructorIdController = async (
   res: Response,
 ) => {
   try {
+    if (
+      req.user?.userType === "instructor" &&
+      Number(req.user.id) !== req.query.instructorId
+    )
+      return res.sendStatus(403);
     const recurringClasses = await getValidRecurringClassesByInstructorId(
       req.query.instructorId,
       new Date(),

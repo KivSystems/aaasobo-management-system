@@ -39,6 +39,12 @@ export const getSubscriptionByIdController = async (
       return res.status(404).json({ error: "Subscription not found." });
     }
 
+    if (
+      req.user?.userType === "customer" &&
+      subscription.customerId !== Number(req.user.id)
+    ) {
+      return res.sendStatus(403);
+    }
     res.json(subscription);
   } catch (error) {
     console.error("Error fetching subscription:", error);
