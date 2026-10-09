@@ -15,23 +15,11 @@ function requiredEmail() {
 }
 
 function getDeliveryConfig() {
-  const nodeEnv = process.env.NODE_ENV;
-  if (!["development", "test", "production"].includes(nodeEnv ?? "")) {
-    throw new Error("NODE_ENV must be development, test or production");
+  const environment = process.env.EMAIL_ENV;
+  if (environment !== "develop" && environment !== "production") {
+    throw new Error("EMAIL_ENV must be develop or production");
   }
-  if (
-    nodeEnv === "production" &&
-    (!process.env.VERCEL_ENV || !process.env.VERCEL_GIT_COMMIT_REF)
-  ) {
-    throw new Error(
-      "Vercel environment and Git branch are required for email delivery",
-    );
-  }
-  const production =
-    nodeEnv === "production" &&
-    process.env.VERCEL_ENV === "production" &&
-    process.env.VERCEL_GIT_COMMIT_REF === "main";
-  if (production) {
+  if (environment === "production") {
     const from = requiredEmail();
     return {
       environment: "production" as const,

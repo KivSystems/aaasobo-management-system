@@ -40,6 +40,7 @@ POSTGRES_URL_NON_POOLING="postgresql://postgres:summer@localhost:5432/mydb?schem
 PORT=4000
 KEY1="<generate_with_openssl_rand_hex_32>"
 KEY2="<generate_with_openssl_rand_hex_32>"
+EMAIL_ENV="develop"
 RESEND_API_KEY="Dummy Resend API Key"
 AUTH_SECRET="<generate_with_openssl_rand_hex_32>"
 AUTH_SALT="next-auth.session-token"
@@ -55,9 +56,9 @@ Note that the following variables should be changed to match your local setup:
 - `POSTGRES_PRISMA_URL`: postgres://<user>:<password>@localhost:<port>/<dbname>?schema=schema
 - `POSTGRES_URL_NON_POOLING`
 - `RESEND_API_KEY` is shared in the development team.
-- Email delivery uses `NODE_ENV`: `development` and `test` force all outgoing mail to `delivered@resend.dev` from `onboarding@resend.dev`. CC, BCC and Reply-To are cleared; database email addresses are unchanged.
-- On Vercel, real delivery additionally requires `VERCEL_ENV=production` and `VERCEL_GIT_COMMIT_REF=main`. Develop and Preview deployments use test addresses even with `NODE_ENV=production`. Enable automatic exposure of Vercel system environment variables; missing deployment metadata prevents sending.
-- Real delivery requires `EMAIL_FROM` (a plain email address, e.g. `contact@aaasobo.org`), used as both the sender and admin notification recipient. Configure it and `NODE_ENV=production` on the production backend **before deploying this change**. Missing/invalid settings prevent sending. `NODE_ENV=production` without deployment metadata prevents sending, including local runs.
+- Set `EMAIL_ENV=develop` locally and on development/Preview deployments. All outgoing mail uses `onboarding@resend.dev` → `delivered@resend.dev`; CC, BCC and Reply-To are cleared. Database email addresses remain unchanged.
+- Set `EMAIL_ENV=production` only for real delivery. It requires `EMAIL_FROM` (e.g. `contact@aaasobo.org`), used as both sender and admin notification recipient. Missing/invalid configuration prevents sending.
+- Email routing is independent of `NODE_ENV`, Vercel environment and Git branch. Configure `EMAIL_ENV=develop` on both backend projects' Preview/Development environments; backend-dev Production also uses `develop`, while the production backend Production uses `production`.
 - The public contact address in email footers is separate from delivery configuration.
 - `AUTH_SECRET` must match the frontend `AUTH_SECRET` (same value).
 - `AUTH_SALT` must be `next-auth.session-token` (the session cookie name used by the frontend in this repo).

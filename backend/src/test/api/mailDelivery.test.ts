@@ -31,6 +31,7 @@ describe("email delivery routing", () => {
     vi.stubEnv("VERCEL", "");
     vi.stubEnv("VERCEL_ENV", "");
     vi.stubEnv("VERCEL_GIT_COMMIT_REF", "");
+    vi.stubEnv("EMAIL_ENV", "develop");
     vi.stubEnv("EMAIL_FROM", "sender@example.com");
     send
       .mockReset()
@@ -79,11 +80,9 @@ describe("email delivery routing", () => {
       expect(send.mock.calls[0][0].from).toBe("onboarding@resend.dev");
     },
   );
-  it("preserves intended recipients on main production", async () => {
-    vi.stubEnv("NODE_ENV", "production");
-    vi.stubEnv("VERCEL", "1");
-    vi.stubEnv("VERCEL_ENV", "production");
-    vi.stubEnv("VERCEL_GIT_COMMIT_REF", "main");
+  it("preserves intended recipients in production without deployment metadata", async () => {
+    vi.stubEnv("EMAIL_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     await sendEmail(message);
     expect(send).toHaveBeenCalledWith({
       ...message,
@@ -91,34 +90,24 @@ describe("email delivery routing", () => {
     });
     expect(getAdminNotificationRecipient()).toBe("sender@example.com");
   });
-  it.each(["", "develop", "invalid"])(
-    "rejects unknown NODE_ENV %s before sending",
-    async (env) => {
-      vi.stubEnv("NODE_ENV", env);
-      await expect(sendEmail(message)).rejects.toThrow("NODE_ENV");
+  it.each([undefined, "", "development", "invalid"])(
+    "rejects missing or invalid EMAIL_ENV %s",
+    async (environment) => {
+      vi.stubEnv("EMAIL_ENV", environment);
+      vi.stubEnv("NODE_ENV", "production");
+      await expect(sendEmail(message)).rejects.toThrow("EMAIL_ENV");
       expect(send).not.toHaveBeenCalled();
     },
   );
-  it("prevents real delivery when all Vercel metadata is absent", async () => {
-    vi.stubEnv("NODE_ENV", "production");
-    await expect(sendEmail(message)).rejects.toThrow("Git branch");
-    expect(send).not.toHaveBeenCalled();
-  });
-  it("rejects missing Vercel branch metadata", async () => {
-    vi.stubEnv("NODE_ENV", "production");
-    vi.stubEnv("VERCEL", "1");
-    vi.stubEnv("VERCEL_ENV", "production");
-    await expect(sendEmail(message)).rejects.toThrow("Git branch");
-    expect(send).not.toHaveBeenCalled();
-  });
-  it("rejects invalid production EMAIL_FROM", async () => {
-    vi.stubEnv("NODE_ENV", "production");
-    vi.stubEnv("VERCEL_ENV", "production");
-    vi.stubEnv("VERCEL_GIT_COMMIT_REF", "main");
-    vi.stubEnv("EMAIL_FROM", "not-an-email");
-    await expect(sendEmail(message)).rejects.toThrow("EMAIL_FROM");
-    expect(send).not.toHaveBeenCalled();
-  });
+  it.each([undefined, "", "not-an-email"])(
+    "rejects invalid production EMAIL_FROM %s",
+    async (address) => {
+      vi.stubEnv("EMAIL_ENV", "production");
+      vi.stubEnv("EMAIL_FROM", address);
+      await expect(sendEmail(message)).rejects.toThrow("EMAIL_FROM");
+      expect(send).not.toHaveBeenCalled();
+    },
+  );
   it("routes all five application email flows through the test transport", async () => {
     vi.stubEnv("NODE_ENV", "test");
     const booking = {
