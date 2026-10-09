@@ -6,7 +6,7 @@ export const getChildren = async (customerId: string) => {
   try {
     const children = await prisma.child.findMany({
       where: { customerId: parseInt(customerId) },
-      include: { customer: true },
+      include: { customer: { select: { id: true, name: true, email: true } } },
       orderBy: { id: "asc" },
     });
 
@@ -80,7 +80,7 @@ export const getAllChildren = async () => {
   // Fetch the Children data from the DB
   try {
     const children = await prisma.child.findMany({
-      include: { customer: true },
+      include: { customer: { select: { id: true, name: true, email: true } } },
       orderBy: { id: "asc" },
     });
 

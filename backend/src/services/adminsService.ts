@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import { Admin } from "@prisma/client";
 import {
@@ -47,8 +48,12 @@ export const updateAdmin = async (id: number, name: string, email: string) => {
 };
 
 // Update the admin password
-export const updateAdminPassword = async (id: number, newPassword: string) => {
-  return await prisma.admin.update({
+export const updateAdminPassword = async (
+  id: number,
+  newPassword: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  return await (tx ?? prisma).admin.update({
     where: { id },
     data: { password: newPassword },
   });

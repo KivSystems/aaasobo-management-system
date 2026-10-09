@@ -799,25 +799,50 @@ export const rebookClass = async (
     await lockInstructorSlot(tx, newClass);
     await assertInstructorAvailable(tx, newClass);
 
-    // Step 1: Update or delete the old class to be rebooked.
-    // If the old class status is "canceled", update the rebookableUntil field to null to prevent further rebooking.
+    const eligibleStatuses: Status[] = [
+      "canceledByCustomer",
+      "canceledByInstructor",
+      "canceledByAdmin",
+      "pending",
+    ];
+    const source = await tx.class.findUnique({
+      where: { id: oldClass.id },
+      select: { status: true, rebookableUntil: true, customerId: true },
+    });
+    const targetDate = new Date(newClass.dateTime);
+    const now = new Date();
     if (
-      oldClass.status === "canceledByCustomer" ||
-      oldClass.status === "canceledByInstructor" ||
-      oldClass.status === "canceledByAdmin"
+      !source ||
+      !eligibleStatuses.includes(source.status) ||
+      source.customerId !== newClass.customerId ||
+      !source.rebookableUntil ||
+      source.rebookableUntil <= now ||
+      !Number.isFinite(targetDate.getTime()) ||
+      targetDate > source.rebookableUntil
     ) {
-      await tx.class.update({
-        where: { id: oldClass.id },
-        data: { rebookableUntil: null },
-      });
-      // If the old class status is "pending", the cancelation history is not necessary, so delete the class.
-    } else if (oldClass.status === "pending") {
-      await tx.class.delete({ where: { id: oldClass.id } });
+      throw new Error("rebooking credit unavailable");
+    }
+
+    const creditWhere: Prisma.ClassWhereInput = {
+      id: oldClass.id,
+      customerId: newClass.customerId,
+      status: source.status,
+      rebookableUntil: { equals: source.rebookableUntil, gt: now },
+    };
+    const consumed =
+      source.status === "pending"
+        ? await tx.class.deleteMany({ where: creditWhere })
+        : await tx.class.updateMany({
+            where: creditWhere,
+            data: { rebookableUntil: null },
+          });
+    if (consumed.count !== 1) {
+      throw new Error("rebooking credit unavailable");
     }
 
     // Step 2: Create a new "rebooked" class and classAttendance records.
     const newRebookedClass = await tx.class.create({
-      data: newClass,
+      data: { ...newClass, rebookableUntil: source.rebookableUntil },
     });
     await tx.classAttendance.createMany({
       data: childrenToAttend.map((childrenId) => ({
@@ -869,6 +894,8 @@ const assertInstructorAvailable = async (
     nextDate,
     "Asia/Tokyo",
     false,
+    false,
+    tx,
   );
   const hasSlot = availableSlots.some(
     (slot) => slot.dateTime === targetDateTime.toISOString(),

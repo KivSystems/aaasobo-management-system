@@ -288,10 +288,12 @@ export async function createInstructorFee(
 export async function createPasswordResetToken(
   email: string,
   expiresInHours: number = 1,
+  userType: "admin" | "customer" | "instructor" = "customer",
 ) {
   return await prisma.passwordResetToken.create({
     data: {
       email,
+      userType,
       token: faker.string.alphanumeric(32),
       expires: new Date(Date.now() + expiresInHours * 60 * 60 * 1000),
     },

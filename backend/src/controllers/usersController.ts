@@ -1,5 +1,6 @@
 import { Response } from "express";
 import bcrypt from "bcrypt";
+import { prisma } from "../../prisma/prismaClient";
 import { RequestWithBody } from "../middlewares/validationMiddleware";
 import {
   getAdminAuthByEmail,
@@ -142,7 +143,10 @@ export const sendUserResetEmailController = async (
       return res.sendStatus(202);
     }
 
-    const passwordResetToken = await generatePasswordResetToken(user.email);
+    const passwordResetToken = await generatePasswordResetToken(
+      user.email,
+      userType,
+    );
 
     const sendResult = await sendPasswordResetEmail(
       passwordResetToken.email,
@@ -152,7 +156,7 @@ export const sendUserResetEmailController = async (
     );
 
     if (!sendResult.success) {
-      await deletePasswordResetToken(passwordResetToken.email);
+      await deletePasswordResetToken(passwordResetToken.id);
       console.error("Failed to send password reset email", {
         context: {
           email: normalizedEmail,
@@ -185,7 +189,7 @@ export const updatePasswordController = async (
 
   try {
     const existingToken = await getPasswordResetTokenByToken(token);
-    if (!existingToken) {
+    if (!existingToken || existingToken.userType !== userType) {
       return res.sendStatus(404);
     }
 
@@ -202,19 +206,25 @@ export const updatePasswordController = async (
 
     const hashedPassword = await hashPassword(password);
 
-    switch (userType) {
-      case "admin":
-        await updateAdminPassword(user.id, hashedPassword);
-        break;
-      case "customer":
-        await updateCustomerPassword(user.id, hashedPassword);
-        break;
-      case "instructor":
-        await updateInstructorPassword(user.id, hashedPassword);
-        break;
-    }
-
-    return res.sendStatus(201);
+    const updated = await prisma.$transaction(async (tx) => {
+      const consumed = await tx.passwordResetToken.deleteMany({
+        where: { id: existingToken.id, userType, expires: { gt: new Date() } },
+      });
+      if (consumed.count !== 1) return false;
+      switch (userType) {
+        case "admin":
+          await updateAdminPassword(user.id, hashedPassword, tx);
+          break;
+        case "customer":
+          await updateCustomerPassword(user.id, hashedPassword, tx);
+          break;
+        case "instructor":
+          await updateInstructorPassword(user.id, hashedPassword, tx);
+          break;
+      }
+      return true;
+    });
+    return res.sendStatus(updated ? 201 : 404);
   } catch (error) {
     console.error("Error updating password", {
       error: error instanceof Error ? error.message : "unknown_error",
@@ -236,7 +246,7 @@ export const verifyResetTokenController = async (
 
   try {
     const existingToken = await getPasswordResetTokenByToken(token);
-    if (!existingToken) {
+    if (!existingToken || existingToken.userType !== userType) {
       return res.sendStatus(404);
     }
 
@@ -256,7 +266,7 @@ export const verifyResetTokenController = async (
     console.error("Error verifying password reset token", {
       error,
       context: {
-        token,
+        tokenPresent: Boolean(token),
         userType,
         time: new Date().toISOString(),
       },

@@ -240,3 +240,28 @@ describe("subscription cancellation with class versions", () => {
       ).toEqual(new Date("2026-10-30"));
   });
 });
+
+describe("subscription ownership", () => {
+  it("rejects another customer and omits password hashes for the owner and admin", async () => {
+    const owner = await createCustomer();
+    const other = await createCustomer();
+    const admin = await createAdmin();
+    const plan = await createPlan();
+    const sub = await createSubscription(plan.id, owner.id);
+    await request(server)
+      .get(`/subscriptions/${sub.id}`)
+      .set("Cookie", await generateAuthCookie(other.id, "customer"))
+      .expect(403);
+    for (const cookie of [
+      await generateAuthCookie(owner.id, "customer"),
+      await generateAuthCookie(admin.id, "admin"),
+    ]) {
+      const response = await request(server)
+        .get(`/subscriptions/${sub.id}`)
+        .set("Cookie", cookie)
+        .expect(200);
+      expect(response.body.customer.id).toBe(owner.id);
+      expect(response.body.customer).not.toHaveProperty("password");
+    }
+  });
+});

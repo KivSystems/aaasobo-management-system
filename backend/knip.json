@@ -5,10 +5,12 @@
     "config": ["package.json"]
   },
   "entry": [
+    "api/app.ts",
     "src/seed/bootstrap.ts",
     "src/seed/dummy.ts",
     "src/seed/generateBetaImportFromRawSchedule.ts",
     "src/seed/generateNormalizedImportFixture.ts",
-    "src/seed/generateIncrementalImportFixture.ts"
+    "src/seed/generateIncrementalImportFixture.ts",
+    "src/scripts/inspectEmail.ts"
   ]
 }

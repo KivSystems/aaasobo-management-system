@@ -393,7 +393,7 @@ export const getRegularClassById = async (recurringClassId: number) => {
     const recurringClass = await prisma.recurringClass.findUnique({
       where: { id: recurringClassId },
       include: {
-        instructor: true,
+        instructor: { omit: { password: true } },
         subscription: true,
         recurringClassAttendance: {
           include: {
@@ -433,7 +433,7 @@ export const getRegularClassesBySubscriptionId = async (
   const recurringClasses = await prisma.recurringClass.findMany({
     where: whereCondition,
     include: {
-      instructor: true,
+      instructor: { omit: { password: true } },
       recurringClassAttendance: { include: { children: true } },
     },
     orderBy: [{ startAt: "asc" }, { endAt: "asc" }],

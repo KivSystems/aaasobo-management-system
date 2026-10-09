@@ -348,6 +348,7 @@ export const getInstructorAvailableSlots = async (
   timezone: string,
   excludeBookedSlots: boolean,
   forRecurringClass = false,
+  db: Prisma.TransactionClient = prisma,
 ) => {
   try {
     if (timezone !== "Asia/Tokyo") {
@@ -359,6 +360,7 @@ export const getInstructorAvailableSlots = async (
       startDate,
       endDate,
       excludeBookedSlots,
+      db,
     );
 
     const availableSlots = generateInstructorSlots(
@@ -371,7 +373,7 @@ export const getInstructorAvailableSlots = async (
 
     if (forRecurringClass) {
       const hasConflict = await loadRecurringClassConflictChecker(
-        prisma,
+        db,
         instructorId,
       );
       return availableSlots.filter((slot) => {
@@ -743,12 +745,13 @@ const getSlotConstraints = async (
   startDate: string,
   endDate: string,
   excludeBookedSlots: boolean,
+  db: Prisma.TransactionClient = prisma,
 ): Promise<SlotConstraints> => {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
   const [schedules, absences, completedClasses] = await Promise.all([
-    prisma.instructorSchedule.findMany({
+    db.instructorSchedule.findMany({
       where: {
         instructorId,
         timezone: "Asia/Tokyo",
@@ -764,13 +767,13 @@ const getSlotConstraints = async (
       },
       orderBy: { effectiveFrom: "asc" },
     }),
-    prisma.instructorAbsence.findMany({
+    db.instructorAbsence.findMany({
       where: {
         instructorId,
         absentAt: { gte: jst(startDate), lt: jst(endDate) },
       },
     }),
-    prisma.class.findMany({
+    db.class.findMany({
       where: {
         instructorId,
         dateTime: {
@@ -784,7 +787,7 @@ const getSlotConstraints = async (
   ]);
 
   const bookings = excludeBookedSlots
-    ? await prisma.class.findMany({
+    ? await db.class.findMany({
         where: {
           instructorId,
           dateTime: {

@@ -72,6 +72,7 @@ const getHistoryCountBySubscriptionIdConfig = {
 } as const;
 
 const getByInstructorIdConfig = {
+  middleware: [verifyAuthentication(AUTH_ROLES.AI)] as RequestHandler[],
   method: "get" as const,
   handler: getRecurringClassesByInstructorIdController,
   querySchema: GetRecurringClassesByInstructorQuery,
@@ -93,6 +94,7 @@ const getByInstructorIdConfig = {
 } as const;
 
 const getByIdConfig = {
+  middleware: [verifyAuthentication(AUTH_ROLES.AC)] as RequestHandler[],
   method: "get" as const,
   handler: getRegularClassByIdController,
   paramsSchema: RecurringClassIdParams,
