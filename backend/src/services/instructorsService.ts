@@ -14,6 +14,21 @@ import { put, del } from "@vercel/blob";
 import { randomUUID } from "crypto";
 import { EnglishBackground } from "../types";
 
+const isSameBlobStore = (previousUrl: string, uploadedUrl: string): boolean => {
+  try {
+    const previous = new URL(previousUrl);
+    const uploaded = new URL(uploadedUrl);
+    return (
+      previous.protocol === "https:" &&
+      uploaded.protocol === "https:" &&
+      previous.hostname === uploaded.hostname &&
+      /^[a-z0-9]+\.public\.blob\.vercel-storage\.com$/.test(uploaded.hostname)
+    );
+  } catch {
+    return false;
+  }
+};
+
 // Register a new instructor account in the DB
 export const registerInstructor = async (data: {
   name: string;
@@ -179,7 +194,6 @@ export const updateInstructor = async (
     let blob;
     if (icon) {
       // Update the instructor profile icon.
-      await del(prevData.icon);
       blob = await put(icon.originalname, icon.buffer, {
         access: "public",
         addRandomSuffix: true,
@@ -217,6 +231,13 @@ export const updateInstructor = async (
         englishBackground,
       },
     });
+    if (icon && isSameBlobStore(prevData.icon, blob.url)) {
+      try {
+        await del(prevData.icon);
+      } catch (error) {
+        console.error("Failed to delete the previous instructor icon:", error);
+      }
+    }
     return instructor;
   } catch (error) {
     console.error("Database Error:", error);
