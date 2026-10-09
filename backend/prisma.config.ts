@@ -9,7 +9,10 @@ export default {
     path: "prisma/migrations",
   },
   datasource: {
-    url: env("POSTGRES_PRISMA_URL"),
+    url:
+      process.env.POSTGRES_URL_NON_POOLING ||
+      process.env.DATABASE_URL_UNPOOLED ||
+      env("POSTGRES_PRISMA_URL"),
   },
 } satisfies PrismaConfig;
 
