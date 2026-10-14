@@ -85,12 +85,29 @@ export const UpdateAdminRequest = z.object({
 });
 
 // Instructor registration and update schemas
+const instructorDate = z.string().refine((value) => {
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  const slash = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+  if (!iso && !slash) return false;
+  const [year, month, day] = iso
+    ? [Number(iso[1]), Number(iso[2]), Number(iso[3])]
+    : [Number(slash![3]), Number(slash![1]), Number(slash![2])];
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  return (
+    year >= 100 &&
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  );
+}, "Use a valid date in YYYY-MM-DD or MM/DD/YYYY format");
+
 export const RegisterInstructorRequest = z.object({
   name: z.string().trim().min(1, "Name is required"),
   nickname: z.string().trim().min(1, "Nickname is required"),
   email: z.email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
-  birthdate: z.string().min(1, "Birthdate is required"),
+  birthdate: instructorDate,
   lifeHistory: z.string(),
   favoriteFood: z.string(),
   hobby: z.string(),
@@ -105,10 +122,13 @@ export const RegisterInstructorRequest = z.object({
 
 export const UpdateInstructorRequest = z.object({
   name: z.string().trim().min(1, "Name is required"),
-  leavingDate: z.string().nullable().optional(),
+  leavingDate: z
+    .union([instructorDate, z.literal(""), z.literal("null")])
+    .nullable()
+    .optional(),
   email: z.email("Invalid email format"),
   nickname: z.string().trim().min(1, "Nickname is required"),
-  birthdate: z.string().min(1, "Birthdate is required"),
+  birthdate: instructorDate,
   workingTime: z.string(),
   lifeHistory: z.string(),
   favoriteFood: z.string(),
