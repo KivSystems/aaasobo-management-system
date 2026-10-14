@@ -352,11 +352,6 @@ export const CHILDREN_LABEL = {
   en: "Children",
 };
 
-export const CLASS_URL_LABEL = {
-  ja: "クラスURL",
-  en: "Class URL",
-};
-
 export const STARTED_LABEL = {
   ja: "開始日",
   en: "Started",

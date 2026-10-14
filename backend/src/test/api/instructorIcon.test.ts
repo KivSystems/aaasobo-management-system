@@ -5,11 +5,16 @@ const mocks = vi.hoisted(() => ({
   update: vi.fn(),
   put: vi.fn(),
   del: vi.fn(),
+  head: vi.fn(),
 }));
 vi.mock("../../../prisma/prismaClient", () => ({
   prisma: { instructor: { findFirst: mocks.findFirst, update: mocks.update } },
 }));
-vi.mock("@vercel/blob", () => ({ put: mocks.put, del: mocks.del }));
+vi.mock("@vercel/blob", () => ({
+  put: mocks.put,
+  del: mocks.del,
+  head: mocks.head,
+}));
 import { EnglishBackground } from "../../types";
 import { updateInstructor } from "../../services/instructorsService";
 
@@ -19,10 +24,10 @@ const icon = {
   originalname: "photo.jpg",
   buffer: Buffer.from("image"),
 } as Express.Multer.File;
-const update = () =>
+const update = (replaceIcon = true) =>
   updateInstructor(
     1,
-    icon,
+    replaceIcon ? icon : undefined,
     "Name",
     "Nick",
     null,
@@ -47,6 +52,24 @@ describe("instructor icon replacement", () => {
     mocks.put.mockResolvedValue({ url: newUrl });
     mocks.update.mockResolvedValue({ id: 1, icon: newUrl });
   });
+
+  it.each([oldUrl, "https://import.local/icons/teacher.jpg"])(
+    "preserves %s during a text-only update without contacting Blob",
+    async (url) => {
+      mocks.findFirst.mockResolvedValue({ id: 1, icon: url });
+      mocks.head.mockRejectedValue(new Error("Blob unavailable"));
+      mocks.update.mockResolvedValue({ id: 1, icon: url });
+      await expect(update(false)).resolves.toEqual({ id: 1, icon: url });
+      expect(mocks.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ icon: url }),
+        }),
+      );
+      expect(mocks.head).not.toHaveBeenCalled();
+      expect(mocks.put).not.toHaveBeenCalled();
+      expect(mocks.del).not.toHaveBeenCalled();
+    },
+  );
 
   it.each([
     "https://import.local/icons/teacher.jpg",

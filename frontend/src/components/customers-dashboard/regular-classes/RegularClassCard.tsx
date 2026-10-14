@@ -1,11 +1,14 @@
 "use client";
 
-import { PencilIcon, AcademicCapIcon } from "@heroicons/react/24/solid";
+import {
+  PencilIcon,
+  AcademicCapIcon,
+  LinkIcon,
+} from "@heroicons/react/24/solid";
 import { formatTime, getEndTime, getWeekday } from "@/lib/utils/dateUtils";
 import styles from "./RegularClassCard.module.scss";
 import {
   CHILDREN_LABEL,
-  CLASS_URL_LABEL,
   STARTED_LABEL,
   ENDED_LABEL,
   NO_CHILDREN_ASSIGNED,
@@ -111,28 +114,31 @@ function RegularClassCard({
           </span>
         </div>
 
-        <div className={styles.detailItem}>
-          <span className={styles.text}>
-            <strong>{CLASS_URL_LABEL[language]}:</strong>{" "}
+        <div className={styles.zoomDetails}>
+          {recurringClass.instructor?.classURL ? (
             <a
-              href={recurringClass.instructor?.classURL || undefined}
+              href={recurringClass.instructor.classURL}
               target="_blank"
               rel="noopener noreferrer"
-              className={styles.link}
+              className={`${styles.link} ${styles.zoomLink}`}
               onClick={(e) => e.stopPropagation()}
             >
-              {recurringClass.instructor?.classURL
-                ? (() => {
-                    try {
-                      const url = new URL(recurringClass.instructor.classURL);
-                      return url.hostname.replace("www.", "");
-                    } catch {
-                      return recurringClass.instructor.classURL;
-                    }
-                  })()
-                : NO_URL_PROVIDED[language]}
+              <LinkIcon className={styles.linkIcon} aria-hidden="true" />
+              {language === "ja" ? "Zoom に参加" : "Join Zoom"}
             </a>
-          </span>
+          ) : (
+            <span className={styles.text}>{NO_URL_PROVIDED[language]}</span>
+          )}
+          <div className={styles.zoomCredentials}>
+            <span className={styles.text}>
+              {language === "ja" ? "ミーティングID" : "Meeting ID"}:{" "}
+              {recurringClass.instructor?.meetingId || "—"}
+            </span>
+            <span className={styles.text}>
+              {language === "ja" ? "パスコード" : "Passcode"}:{" "}
+              {recurringClass.instructor?.passcode || "—"}
+            </span>
+          </div>
         </div>
 
         <div className={styles.detailItem}>

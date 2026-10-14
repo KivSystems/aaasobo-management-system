@@ -79,6 +79,7 @@ if [[ "$run_backend" == true ]]; then
     cd backend
     npx prisma generate
     TEST_DATABASE_URL='' POSTGRES_PRISMA_URL='' DATABASE_URL='' \
+      POSTGRES_URL_NON_POOLING='' DATABASE_URL_UNPOOLED='' \
       npx vitest run src/test/api
   )
 else
