@@ -3,7 +3,6 @@ import { Instructor, Prisma } from "@prisma/client";
 import {
   hashPassword,
   defaultUserImageUrl,
-  validateUserImageUrl,
   maskedHeadLetters,
   maskedSuffix,
   maskedBirthdate,
@@ -191,18 +190,13 @@ export const updateInstructor = async (
     if (!prevData) return;
 
     // Check if a new icon is provided.
-    let blob;
+    let blob = { url: prevData.icon };
     if (icon) {
       // Update the instructor profile icon.
       blob = await put(icon.originalname, icon.buffer, {
         access: "public",
         addRandomSuffix: true,
       });
-    } else {
-      // Check if the previous icon URL is valid. If not, use the default icon.
-      const prevIconUrl = prevData.icon;
-      const prevIconId = prevData.id;
-      blob = await validateUserImageUrl(prevIconUrl, prevIconId);
     }
 
     // Update the instructor data.
