@@ -24,18 +24,12 @@ function getDeliveryConfig() {
     return {
       environment: "production" as const,
       from,
-      adminTo: from,
     };
   }
   return {
     environment: "develop" as const,
     from: "onboarding@resend.dev",
-    adminTo: "delivered@resend.dev",
   };
-}
-
-export function getAdminNotificationRecipient() {
-  return getDeliveryConfig().adminTo;
 }
 
 export async function sendEmail(message: EmailMessage) {
