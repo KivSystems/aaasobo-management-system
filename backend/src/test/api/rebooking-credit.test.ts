@@ -7,6 +7,7 @@ import {
   createInstructor,
   createInstructorSchedule,
   createInstructorSlot,
+  createChild,
 } from "../testUtils";
 
 async function fixture() {
@@ -112,7 +113,35 @@ describe("Rebooking credits", () => {
       where: { id: source.id },
       data: { status: "pending" },
     });
-    const replacement = await rebookClass(source, body, []);
+    const children = await Promise.all([
+      createChild(body.customerId),
+      createChild(body.customerId),
+    ]);
+    const replacement = await rebookClass(
+      source,
+      body,
+      children.map((child) => child.id),
+      { id: String(body.customerId), userType: "customer" },
+    );
+    const history = await prisma.classChangeHistory.findFirstOrThrow();
+    expect(history).toMatchObject({
+      type: "CLASS_REBOOKED",
+      actorId: body.customerId,
+      details: {
+        target: {
+          classId: replacement.id,
+          instructorId: body.instructorId,
+          dateTime: body.dateTime.toISOString(),
+        },
+      },
+    });
+    expect(history.children).toEqual(
+      expect.arrayContaining(
+        children.map((child) => ({ id: child.id, name: child.name })),
+      ),
+    );
+    expect(await prisma.classChangeHistory.count()).toBe(1);
+    expect(await prisma.classChangeOutbox.count()).toBe(1);
     expect(replacement.status).toBe("rebooked");
     expect(
       await prisma.class.findUnique({ where: { id: source.id } }),

@@ -1,3 +1,4 @@
+import { classChangeActorFromUser } from "../services/classChangeHistoryService";
 import { Prisma, Status } from "@prisma/client";
 import { Request, Response } from "express";
 import {
@@ -285,6 +286,7 @@ export const rebookClassController = async (
       { id: classId, status: classToRebook.status },
       newClassToRebook,
       [...childrenIds],
+      classChangeActorFromUser(req.user),
     );
 
     await notifySameDayRebookIfNeeded({
@@ -580,7 +582,7 @@ export const cancelClassController = async (
           "Only booked classes before their cancellation deadline can be canceled",
       });
     }
-    await cancelClassById(classId);
+    await cancelClassById(classId, classChangeActorFromUser(req.user));
     res.sendStatus(200);
   } catch (error) {
     console.error("Error canceling a class", {
@@ -883,7 +885,7 @@ export const cancelClassesController = async (
           "Only booked classes before their cancellation deadline can be canceled",
       });
     }
-    await cancelClasses(classIds);
+    await cancelClasses(classIds, classChangeActorFromUser(req.user));
 
     res.sendStatus(200);
   } catch (error) {
@@ -964,7 +966,12 @@ export const updateClassStatusController = async (
       return res.sendStatus(404);
     }
 
-    await updateClass(classId, status, classDateTime);
+    await updateClass(
+      classId,
+      status,
+      classDateTime,
+      classChangeActorFromUser(req.user),
+    );
 
     return res.sendStatus(200);
   } catch (error) {

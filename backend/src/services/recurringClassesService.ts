@@ -1,3 +1,5 @@
+import { ClassChangeActor } from "../../../shared/schemas/classChangeHistory";
+import { recordClassChange } from "./classChangeHistoryService";
 import { loadRecurringClassConflictChecker } from "./recurringClassConflictService";
 import { createHash } from "node:crypto";
 import { loadCalendarClasses } from "./schedulePreviewService";
@@ -636,12 +638,22 @@ export const previewRegularClassChange = async (
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
   );
 
-export const updateRegularClass = async (params: UpdateRegularClassParams) =>
+export const updateRegularClass = async (
+  params: UpdateRegularClassParams,
+  actor?: ClassChangeActor,
+) =>
   prisma.$transaction(
     async (tx) => {
       const prepared = await prepareRegularClassChange(tx, params);
       if (params.previewToken && params.previewToken !== prepared.previewToken)
         throw new Error("Schedule changed. Review the preview again.");
+      const before = await tx.recurringClass.findUniqueOrThrow({
+        where: { id: params.recurringClassId },
+        include: {
+          instructor: true,
+          recurringClassAttendance: { include: { children: true } },
+        },
+      });
       const oldRecurringClass = await terminateRecurringClass(
         tx,
         params.recurringClassId,
@@ -655,6 +667,47 @@ export const updateRegularClass = async (params: UpdateRegularClassParams) =>
           prepared.generationEnd,
           params.recurringClassId,
         );
+      const instructor = newRecurringClass.instructorId
+        ? await tx.instructor.findUniqueOrThrow({
+            where: { id: newRecurringClass.instructorId },
+          })
+        : null;
+      const beforeChildren = before.recurringClassAttendance.map(
+        ({ children }) => ({ id: children.id, name: children.name }),
+      );
+      const afterChildren = await tx.child.findMany({
+        where: { id: { in: params.childrenIds } },
+        select: { id: true, name: true },
+        orderBy: { id: "asc" },
+      });
+      const children = [
+        ...new Map(
+          [...beforeChildren, ...afterChildren].map((child) => [
+            child.id,
+            child,
+          ]),
+        ).values(),
+      ];
+      await recordClassChange(tx, actor, params.customerId, children, {
+        type: "REGULAR_CLASS_CHANGED",
+        before: {
+          recurringClassId: before.id,
+          instructorId: before.instructorId,
+          endAt: before.endAt?.toISOString() ?? null,
+          children: beforeChildren,
+          dateTime: before.startAt?.toISOString() ?? null,
+          instructor: before.instructor?.name ?? "未設定",
+        },
+        after: {
+          recurringClassId: newRecurringClass.id,
+          instructorId: newRecurringClass.instructorId,
+          endAt: newRecurringClass.endAt?.toISOString() ?? null,
+          children: afterChildren,
+          dateTime: newRecurringClass.startAt?.toISOString() ?? null,
+          instructor: instructor?.name ?? "未設定",
+        },
+        effectiveAt: prepared.firstOccurrence.toISOString(),
+      });
       return { oldRecurringClass, newRecurringClass, createdClasses };
     },
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },

@@ -1,3 +1,5 @@
+import { ClassChangeActor } from "../../../shared/schemas/classChangeHistory";
+import { recordClassSnapshot } from "./classChangeHistoryService";
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import { getJstDayRange, nDaysLater, nHoursLater } from "../utils/dateUtils";
@@ -274,11 +276,15 @@ export const updateClass = async (
   id: number,
   status: Status,
   classDateTime: Date | string,
+  actor?: ClassChangeActor,
 ) => {
   const now = new Date();
 
   if (status === "canceledByInstructor" || status === "canceledByAdmin") {
     await prisma.$transaction(async (tx) => {
+      const target = await tx.class.findUniqueOrThrow({ where: { id } });
+      if (["booked", "rebooked"].includes(target.status))
+        await recordClassSnapshot(tx, id, actor, "CLASS_CANCELED");
       await tx.class.update({
         where: { id },
         data: {
@@ -295,22 +301,36 @@ export const updateClass = async (
       // });
     });
   } else {
-    await prisma.class.update({
-      where: { id },
-      data: {
-        status,
-        canceledAt: status === "canceledByCustomer" ? now : null,
-        updatedAt: now,
-        ...(status === "completed" && { rebookableUntil: null }),
-      },
+    await prisma.$transaction(async (tx) => {
+      const target = await tx.class.findUniqueOrThrow({ where: { id } });
+      if (
+        status === "canceledByCustomer" &&
+        ["booked", "rebooked"].includes(target.status)
+      )
+        await recordClassSnapshot(tx, id, actor, "CLASS_CANCELED");
+      await tx.class.update({
+        where: { id },
+        data: {
+          status,
+          canceledAt: status === "canceledByCustomer" ? now : null,
+          updatedAt: now,
+          ...(status === "completed" && { rebookableUntil: null }),
+        },
+      });
     });
   }
 };
 
 // Cancel a class
-export const cancelClassById = async (classId: number) => {
+export const cancelClassById = async (
+  classId: number,
+  actor?: ClassChangeActor,
+) => {
   await prisma.$transaction(async (tx) => {
     const now = new Date();
+    const target = await tx.class.findUniqueOrThrow({ where: { id: classId } });
+    if (["booked", "rebooked"].includes(target.status))
+      await recordClassSnapshot(tx, classId, actor, "CLASS_CANCELED");
 
     await tx.classAttendance.deleteMany({
       where: { classId },
@@ -619,9 +639,17 @@ export const getUpcomingClasses = async (customerId: number) => {
   return upcomingClasses;
 };
 
-export const cancelClasses = async (classIds: number[]) => {
+export const cancelClasses = async (
+  classIds: number[],
+  actor?: ClassChangeActor,
+) => {
   return prisma.$transaction(async (tx) => {
     const now = new Date();
+    for (const id of new Set(classIds)) {
+      const target = await tx.class.findUniqueOrThrow({ where: { id } });
+      if (["booked", "rebooked"].includes(target.status))
+        await recordClassSnapshot(tx, id, actor, "CLASS_CANCELED");
+    }
 
     await tx.classAttendance.deleteMany({
       where: { classId: { in: classIds } },
@@ -794,6 +822,7 @@ export const rebookClass = async (
   oldClass: { id: number; status: Status },
   newClass: NewClassToRebookType,
   childrenToAttend: number[],
+  actor?: ClassChangeActor,
 ) => {
   return await prisma.$transaction(async (tx) => {
     await lockInstructorSlot(tx, newClass);
@@ -851,6 +880,7 @@ export const rebookClass = async (
       })),
     });
 
+    await recordClassSnapshot(tx, newRebookedClass.id, actor, "CLASS_REBOOKED");
     return newRebookedClass;
   });
 };

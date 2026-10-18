@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
 import { server } from "../../../server";
 import {
@@ -36,14 +36,14 @@ describe("GET /admins/class-list", () => {
     const expectedDate1 = dateTimeJST1.toISOString().slice(0, 10);
     const expectedTime1 = dateTimeJST1.toISOString().slice(11, 16);
     const expectedDay1 = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
-      new Date(expectedDate1).getDay()
+      new Date(expectedDate1).getUTCDay()
     ];
 
     const dateTimeJST2 = new Date(dateTime2.getTime() + 9 * 60 * 60 * 1000);
     const expectedDate2 = dateTimeJST2.toISOString().slice(0, 10);
     const expectedTime2 = dateTimeJST2.toISOString().slice(11, 16);
     const expectedDay2 = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
-      new Date(expectedDate2).getDay()
+      new Date(expectedDate2).getUTCDay()
     ];
 
     expect(response.body.data).toEqual([
@@ -78,6 +78,39 @@ describe("GET /admins/class-list", () => {
         "Canceled At": null,
       },
     ]);
+  });
+
+  it("keeps JST dates and weekdays consistent across server timezones", async () => {
+    const originalTimezone = process.env.TZ;
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-10-18T15:00:00Z"));
+    try {
+      const admin = await createAdmin();
+      const customer = await createCustomer();
+      const instructor = await createInstructor();
+      await createClass(
+        customer.id,
+        instructor.id,
+        new Date("2026-10-19T11:00:00Z"),
+      );
+      const cookie = await generateAuthCookie(admin.id, "admin");
+      for (const timezone of ["UTC", "America/Toronto", "Asia/Tokyo"]) {
+        process.env.TZ = timezone;
+        const response = await request(server)
+          .get("/admins/class-list?today=false")
+          .set("Cookie", cookie)
+          .expect(200);
+        expect(response.body.data).toHaveLength(1);
+        expect(response.body.data[0]).toMatchObject({
+          "Date/Time (JST)": "2026-10-19 20:00",
+          Day: "Mon",
+        });
+      }
+    } finally {
+      if (originalTimezone === undefined) delete process.env.TZ;
+      else process.env.TZ = originalTimezone;
+      vi.useRealTimers();
+    }
   });
 
   it("returns only today's JST classes when today=true", async () => {

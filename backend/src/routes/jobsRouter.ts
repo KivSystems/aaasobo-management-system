@@ -1,3 +1,4 @@
+import { sendClassChangeDigest } from "../services/classChangeHistoryService";
 import express, { RequestHandler } from "express";
 import { updateSundayColorController } from "../controllers/schedulesController";
 import {
@@ -34,6 +35,22 @@ import {
 import { MessageErrorResponse } from "../../../shared/schemas/common";
 
 export const jobsRouter = express.Router();
+jobsRouter.post(
+  "/class-change-history",
+  verifyCronJobAuthorization,
+  async (_req, res) => {
+    try {
+      await sendClassChangeDigest();
+      res.sendStatus(200);
+    } catch (error) {
+      console.error(
+        "Class change digest failed; pending entries retained",
+        error,
+      );
+      res.sendStatus(500);
+    }
+  },
+);
 
 // http://localhost:4000/jobs
 

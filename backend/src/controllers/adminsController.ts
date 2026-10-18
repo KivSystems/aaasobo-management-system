@@ -1205,7 +1205,7 @@ export const getClassesWithinPeriodController = async (
       if (date !== "Not Set") {
         const dayOfWeekJST = new Date(date);
         const daysOfWeek = days;
-        dayOfWeekStr = daysOfWeek[dayOfWeekJST.getDay()];
+        dayOfWeekStr = daysOfWeek[dayOfWeekJST.getUTCDay()];
       }
 
       // Format the displayed status.
