@@ -50,12 +50,8 @@ import {
   toJstDateKey,
 } from "../utils/dateUtils";
 import { getInstructorContactById } from "../services/instructorsService";
-import { getCustomerContactById } from "../services/customersService";
 import { getChildrenNamesByIds } from "../services/childrenService";
-import {
-  sendAdminSameDayRebookEmail,
-  sendInstructorSameDayRebookEmail,
-} from "../lib/email/mail";
+import { sendInstructorSameDayRebookEmail } from "../lib/email/mail";
 import {
   FREE_TRIAL_BOOKING_HOURS,
   NO_CLASS_EVENT_NAME,
@@ -496,34 +492,22 @@ const notifySameDayRebookIfNeeded = async ({
   if (!isSameDay) return;
 
   try {
-    const [instructor, customer, children] = await Promise.all([
+    const [instructor, children] = await Promise.all([
       getInstructorContactById(newClass.instructorId!),
-      getCustomerContactById(newClass.customerId),
       getChildrenNamesByIds(childrenIds),
     ]);
 
-    if (!instructor || !customer || !children) {
+    if (!instructor || !children) {
       console.error(
         "Missing required data for sending same-day rebooking emails",
         {
           instructor,
-          customer,
           children,
           classId: newClass.id,
         },
       );
       return;
     }
-
-    await sendAdminSameDayRebookEmail({
-      classCode: newClass.classCode,
-      dateTime: formatYearDateTime(newClass.dateTime),
-      instructorName: instructor.name,
-      instructorEmail: instructor.email,
-      customerName: customer.name,
-      customerEmail: customer.email,
-      children,
-    });
 
     await sendInstructorSameDayRebookEmail({
       classCode: newClass.classCode,

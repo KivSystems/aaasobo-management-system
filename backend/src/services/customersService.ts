@@ -229,16 +229,6 @@ export const deleteCustomer = async (
   });
 };
 
-export const getCustomerContactById = async (id: number) => {
-  return prisma.customer.findUnique({
-    where: { id },
-    select: {
-      name: true,
-      email: true,
-    },
-  });
-};
-
 // Delete customers who have left the service more than 3 years ago
 export const deletePastCustomers = async () => {
   const thresholdDate = new Date();

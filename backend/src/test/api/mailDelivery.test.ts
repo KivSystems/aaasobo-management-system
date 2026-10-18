@@ -4,16 +4,12 @@ const { send } = vi.hoisted(() => ({ send: vi.fn() }));
 vi.mock("../../lib/email/resendClient", () => ({
   resend: { emails: { send } },
 }));
-import {
-  getAdminNotificationRecipient,
-  sendEmail,
-} from "../../lib/email/delivery";
+import { sendEmail } from "../../lib/email/delivery";
 
 import {
   sendVerificationEmail,
   resendVerificationEmail,
   sendPasswordResetEmail,
-  sendAdminSameDayRebookEmail,
   sendInstructorSameDayRebookEmail,
 } from "../../lib/email/mail";
 
@@ -56,7 +52,6 @@ describe("email delivery routing", () => {
         bcc: undefined,
         replyTo: undefined,
       });
-      expect(getAdminNotificationRecipient()).toBe("delivered@resend.dev");
       expect(message).toEqual(original);
       expect(console.info).toHaveBeenCalledWith("Email sent", {
         emailId: "email-id",
@@ -88,7 +83,6 @@ describe("email delivery routing", () => {
       ...message,
       from: "sender@example.com",
     });
-    expect(getAdminNotificationRecipient()).toBe("sender@example.com");
   });
   it.each([undefined, "", "development", "invalid"])(
     "rejects missing or invalid EMAIL_ENV %s",
@@ -108,15 +102,13 @@ describe("email delivery routing", () => {
       expect(send).not.toHaveBeenCalled();
     },
   );
-  it("routes all five application email flows through the test transport", async () => {
+  it("routes all four application email flows through the test transport", async () => {
     vi.stubEnv("NODE_ENV", "test");
     const booking = {
       classCode: "TEST",
       dateTime: "2026-10-08",
       instructorName: "Instructor",
       instructorEmail: "instructor@example.com",
-      customerName: "Customer",
-      customerEmail: "customer@example.com",
       children: "Child",
     };
     await sendVerificationEmail("customer@example.com", "Customer", "token");
@@ -127,15 +119,13 @@ describe("email delivery routing", () => {
       "token",
       "instructor",
     );
-    await sendAdminSameDayRebookEmail(booking);
     await sendInstructorSameDayRebookEmail(booking);
-    expect(send).toHaveBeenCalledTimes(5);
+    expect(send).toHaveBeenCalledTimes(4);
     for (const [payload] of send.mock.calls) {
       expect(payload.from).toBe("onboarding@resend.dev");
       expect(payload.to).toBe("delivered@resend.dev");
     }
     expect(booking.instructorEmail).toBe("instructor@example.com");
-    expect(booking.customerEmail).toBe("customer@example.com");
   });
   it("returns provider errors without logging success", async () => {
     vi.stubEnv("NODE_ENV", "test");
