@@ -1,5 +1,5 @@
 import { CreateEmailResponse } from "resend";
-import { getAdminNotificationRecipient, sendEmail } from "./delivery";
+import { sendEmail } from "./delivery";
 
 export type UserType = "admin" | "customer" | "instructor";
 const CONTACT_EMAIL = "contact@aaasobo.org";
@@ -295,93 +295,6 @@ export const sendPasswordResetEmail = async (
         time: new Date().toISOString(),
       },
     });
-    return { success: false };
-  }
-};
-
-export const sendAdminSameDayRebookEmail = async (data: {
-  classCode: string;
-  dateTime: string;
-  instructorName: string;
-  instructorEmail: string;
-  customerName: string;
-  customerEmail: string;
-  children: string;
-}) => {
-  try {
-    const response: CreateEmailResponse = await sendEmail({
-      to: getAdminNotificationRecipient(),
-      subject: "【AaasoBo!】当日クラスの予約が入りました。",
-      html: `
-  <div style="font-family: 'Helvetica Neue', sans-serif; font-size: 16px; line-height: 1.6; color: #333;">
-    <p>
-      以下の内容で<span style="font-weight: bold;">当日クラスの予約</span>が入りました。
-    </p>
-
-    <table style="border-collapse: collapse; margin-top: 12px;">
-      <tr>
-        <td style="padding: 4px 8px; font-weight: bold;">📅 日時</td>
-        <td style="padding: 4px 8px;">${data.dateTime}</td>
-      </tr>
-      <tr>
-        <td style="padding: 4px 8px; font-weight: bold;">👩‍🏫 インストラクター</td>
-        <td style="padding: 4px 8px;">
-          ${data.instructorName}（${data.instructorEmail}）
-        </td>
-      </tr>
-      <tr>
-        <td style="padding: 4px 8px; font-weight: bold;">👤 お客さま</td>
-        <td style="padding: 4px 8px;">
-          ${data.customerName}（${data.customerEmail}）
-        </td>
-      </tr>
-      <tr>
-        <td style="padding: 4px 8px; font-weight: bold;">👶 お子さま</td>
-        <td style="padding: 4px 8px;">${data.children}</td>
-      </tr>
-      <tr>
-        <td style="padding: 4px 8px; font-weight: bold;">🏷️ クラスコード</td>
-        <td style="padding: 4px 8px;">${data.classCode}</td>
-      </tr>
-    </table>
-
-    <hr style="margin: 24px 0; border: none; border-top: 1px solid #ccc;">
-
-    <p style="font-size: 14px; color: #555;">
-      KIVこどもオンライン英会話 AaasoBo!<br>
-      KIV Online English Program AaasoBo!<br>
-      📧 ${CONTACT_EMAIL}
-    </p>
-  </div>
-`,
-    });
-
-    if ("error" in response && response.error) {
-      console.error(
-        "Error sending admin same-day rebooking notification email with Resend",
-        {
-          error: response.error,
-          context: {
-            classCode: data.classCode,
-            time: new Date().toISOString(),
-          },
-        },
-      );
-      return { success: false };
-    }
-
-    return { success: true };
-  } catch (error: any) {
-    console.error(
-      "Unexpected error sending admin same-day rebooking notification email with Resend",
-      {
-        error,
-        context: {
-          classCode: data.classCode,
-          time: new Date().toISOString(),
-        },
-      },
-    );
     return { success: false };
   }
 };

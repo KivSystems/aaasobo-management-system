@@ -131,7 +131,11 @@ export async function verifyCronJobAuthorization(
 ) {
   const authorization = req.headers.authorization;
 
-  if (!authorization || authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (
+    !process.env.CRON_SECRET ||
+    !authorization ||
+    authorization !== `Bearer ${process.env.CRON_SECRET}`
+  ) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 

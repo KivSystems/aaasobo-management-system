@@ -77,6 +77,11 @@ export function getLinks(
       icon: ClipboardDocumentListIcon,
     },
     {
+      name: "クラス変更履歴",
+      href: "/admins/class-change-history",
+      icon: ClipboardDocumentListIcon,
+    },
+    {
       name: "インストラクター\nリスト",
       href: "/admins/instructor-list",
       icon: UsersIcon,

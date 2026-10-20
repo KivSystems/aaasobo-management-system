@@ -4,6 +4,12 @@ CREATE SCHEMA IF NOT EXISTS "public";
 -- CreateEnum
 CREATE TYPE "Status" AS ENUM ('booked', 'completed', 'canceledByCustomer', 'canceledByInstructor', 'canceledByAdmin', 'pending', 'rebooked', 'declined');
 
+-- CreateEnum
+CREATE TYPE "ClassChangeType" AS ENUM ('REGULAR_CLASS_CHANGED', 'CLASS_CANCELED', 'CLASS_REBOOKED');
+
+-- CreateEnum
+CREATE TYPE "ClassChangeActorRole" AS ENUM ('CUSTOMER', 'ADMIN');
+
 -- CreateTable
 CREATE TABLE "Instructor" (
     "id" SERIAL NOT NULL,
@@ -124,6 +130,7 @@ CREATE TABLE "Subscription" (
 
 -- CreateTable
 CREATE TABLE "RecurringClass" (
+    "previousRecurringClassId" INTEGER,
     "id" SERIAL NOT NULL,
     "instructorId" INTEGER,
     "subscriptionId" INTEGER,
@@ -153,6 +160,7 @@ CREATE TABLE "VerificationToken" (
 
 -- CreateTable
 CREATE TABLE "PasswordResetToken" (
+    "userType" TEXT,
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "token" TEXT NOT NULL,
@@ -270,6 +278,29 @@ CREATE TABLE "MessageBoardPost" (
     CONSTRAINT "MessageBoardPost_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "ClassChangeHistory" (
+    "id" SERIAL NOT NULL,
+    "occurredAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "type" "ClassChangeType" NOT NULL,
+    "actorRole" "ClassChangeActorRole" NOT NULL,
+    "actorId" INTEGER NOT NULL,
+    "customerId" INTEGER NOT NULL,
+    "customerName" TEXT NOT NULL,
+    "children" JSONB NOT NULL,
+    "details" JSONB NOT NULL,
+
+    CONSTRAINT "ClassChangeHistory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ClassChangeOutbox" (
+    "id" SERIAL NOT NULL,
+    "historyId" INTEGER NOT NULL,
+
+    CONSTRAINT "ClassChangeOutbox_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Instructor_email_key" ON "Instructor"("email");
 
@@ -348,15 +379,6 @@ CREATE INDEX "Class_rebookableUntil_idx" ON "Class"("rebookableUntil");
 -- CreateIndex
 CREATE INDEX "Class_canceledAt_idx" ON "Class"("canceledAt");
 
--- Prevent instructor double booking for active classes.
--- Note: Prisma schema cannot express partial unique indexes, so this is raw SQL.
-CREATE UNIQUE INDEX "Class_instructorId_dateTime_unique_active"
-ON "Class" ("instructorId", "dateTime")
-WHERE
-  "instructorId" IS NOT NULL
-  AND "dateTime" IS NOT NULL
-  AND "status" IN ('booked', 'rebooked');
-
 -- CreateIndex
 CREATE INDEX "ClassAttendance_childrenId_idx" ON "ClassAttendance"("childrenId");
 
@@ -374,6 +396,9 @@ CREATE INDEX "Subscription_planId_idx" ON "Subscription"("planId");
 
 -- CreateIndex
 CREATE INDEX "Subscription_customerId_planId_idx" ON "Subscription"("customerId", "planId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RecurringClass_previousRecurringClassId_key" ON "RecurringClass"("previousRecurringClassId");
 
 -- CreateIndex
 CREATE INDEX "RecurringClass_instructorId_endAt_idx" ON "RecurringClass"("instructorId", "endAt");
@@ -453,6 +478,15 @@ CREATE INDEX "MessageBoardPost_target_idx" ON "MessageBoardPost"("target");
 -- CreateIndex
 CREATE INDEX "MessageBoardPost_createdAt_idx" ON "MessageBoardPost"("createdAt");
 
+-- CreateIndex
+CREATE INDEX "ClassChangeHistory_occurredAt_id_idx" ON "ClassChangeHistory"("occurredAt", "id");
+
+-- CreateIndex
+CREATE INDEX "ClassChangeHistory_customerId_occurredAt_id_idx" ON "ClassChangeHistory"("customerId", "occurredAt", "id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ClassChangeOutbox_historyId_key" ON "ClassChangeOutbox"("historyId");
+
 -- AddForeignKey
 ALTER TABLE "InstructorTagAssignment" ADD CONSTRAINT "InstructorTagAssignment_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -484,6 +518,9 @@ ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_customerId_fkey" FOREIGN
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_planId_fkey" FOREIGN KEY ("planId") REFERENCES "Plan"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "RecurringClass" ADD CONSTRAINT "RecurringClass_previousRecurringClassId_fkey" FOREIGN KEY ("previousRecurringClassId") REFERENCES "RecurringClass"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "RecurringClass" ADD CONSTRAINT "RecurringClass_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -512,3 +549,15 @@ ALTER TABLE "InstructorFee" ADD CONSTRAINT "InstructorFee_instructorId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "Child" ADD CONSTRAINT "Child_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ClassChangeOutbox" ADD CONSTRAINT "ClassChangeOutbox_historyId_fkey" FOREIGN KEY ("historyId") REFERENCES "ClassChangeHistory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Prevent instructor double booking for active classes.
+-- Note: Prisma schema cannot express partial unique indexes, so this is raw SQL.
+CREATE UNIQUE INDEX "Class_instructorId_dateTime_unique_active"
+ON "Class" ("instructorId", "dateTime")
+WHERE
+  "instructorId" IS NOT NULL
+  AND "dateTime" IS NOT NULL
+  AND "status" IN ('booked', 'rebooked');

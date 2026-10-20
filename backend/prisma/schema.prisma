@@ -329,3 +329,36 @@ enum Status {
   rebooked
   declined
 }
+
+enum ClassChangeType {
+  REGULAR_CLASS_CHANGED
+  CLASS_CANCELED
+  CLASS_REBOOKED
+}
+
+enum ClassChangeActorRole {
+  CUSTOMER
+  ADMIN
+}
+
+model ClassChangeHistory {
+  id           Int                  @id @default(autoincrement())
+  occurredAt   DateTime             @default(now()) @db.Timestamptz(3)
+  type         ClassChangeType
+  actorRole    ClassChangeActorRole
+  actorId      Int
+  customerId   Int
+  customerName String
+  children     Json
+  details      Json
+  outbox       ClassChangeOutbox?
+
+  @@index([occurredAt, id])
+  @@index([customerId, occurredAt, id])
+}
+
+model ClassChangeOutbox {
+  id        Int                @id @default(autoincrement())
+  historyId Int                @unique
+  history   ClassChangeHistory @relation(fields: [historyId], references: [id], onDelete: Restrict)
+}

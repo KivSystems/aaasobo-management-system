@@ -52,6 +52,7 @@ const nextConfig = {
     },
   },
   turbopack: {
+    root: new URL("..", import.meta.url).pathname,
     resolveAlias: {
       "@": "./src",
     },

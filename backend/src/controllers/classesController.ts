@@ -1,3 +1,4 @@
+import { classChangeActorFromUser } from "../services/classChangeHistoryService";
 import { Prisma, Status } from "@prisma/client";
 import { Request, Response } from "express";
 import {
@@ -50,12 +51,8 @@ import {
   toJstDateKey,
 } from "../utils/dateUtils";
 import { getInstructorContactById } from "../services/instructorsService";
-import { getCustomerContactById } from "../services/customersService";
 import { getChildrenNamesByIds } from "../services/childrenService";
-import {
-  sendAdminSameDayRebookEmail,
-  sendInstructorSameDayRebookEmail,
-} from "../lib/email/mail";
+import { sendInstructorSameDayRebookEmail } from "../lib/email/mail";
 import {
   FREE_TRIAL_BOOKING_HOURS,
   NO_CLASS_EVENT_NAME,
@@ -289,6 +286,7 @@ export const rebookClassController = async (
       { id: classId, status: classToRebook.status },
       newClassToRebook,
       [...childrenIds],
+      classChangeActorFromUser(req.user),
     );
 
     await notifySameDayRebookIfNeeded({
@@ -496,34 +494,22 @@ const notifySameDayRebookIfNeeded = async ({
   if (!isSameDay) return;
 
   try {
-    const [instructor, customer, children] = await Promise.all([
+    const [instructor, children] = await Promise.all([
       getInstructorContactById(newClass.instructorId!),
-      getCustomerContactById(newClass.customerId),
       getChildrenNamesByIds(childrenIds),
     ]);
 
-    if (!instructor || !customer || !children) {
+    if (!instructor || !children) {
       console.error(
         "Missing required data for sending same-day rebooking emails",
         {
           instructor,
-          customer,
           children,
           classId: newClass.id,
         },
       );
       return;
     }
-
-    await sendAdminSameDayRebookEmail({
-      classCode: newClass.classCode,
-      dateTime: formatYearDateTime(newClass.dateTime),
-      instructorName: instructor.name,
-      instructorEmail: instructor.email,
-      customerName: customer.name,
-      customerEmail: customer.email,
-      children,
-    });
 
     await sendInstructorSameDayRebookEmail({
       classCode: newClass.classCode,
@@ -596,7 +582,7 @@ export const cancelClassController = async (
           "Only booked classes before their cancellation deadline can be canceled",
       });
     }
-    await cancelClassById(classId);
+    await cancelClassById(classId, classChangeActorFromUser(req.user));
     res.sendStatus(200);
   } catch (error) {
     console.error("Error canceling a class", {
@@ -899,7 +885,7 @@ export const cancelClassesController = async (
           "Only booked classes before their cancellation deadline can be canceled",
       });
     }
-    await cancelClasses(classIds);
+    await cancelClasses(classIds, classChangeActorFromUser(req.user));
 
     res.sendStatus(200);
   } catch (error) {
@@ -980,7 +966,12 @@ export const updateClassStatusController = async (
       return res.sendStatus(404);
     }
 
-    await updateClass(classId, status, classDateTime);
+    await updateClass(
+      classId,
+      status,
+      classDateTime,
+      classChangeActorFromUser(req.user),
+    );
 
     return res.sendStatus(200);
   } catch (error) {

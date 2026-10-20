@@ -354,6 +354,28 @@ describe("POST /admins/import/execute", () => {
     const admin = await createAdmin();
     const authCookie = await generateAuthCookie(admin.id, "admin");
 
+    const priorHistory = await prisma.classChangeHistory.create({
+      data: {
+        type: "CLASS_CANCELED",
+        actorRole: "ADMIN",
+        actorId: admin.id,
+        customerId: 9999,
+        customerName: "Previous imported customer",
+        children: [],
+        details: {
+          type: "CLASS_CANCELED",
+          target: {
+            classId: 9999,
+            instructorId: null,
+            dateTime: null,
+            instructor: "未設定",
+          },
+        },
+        outbox: { create: {} },
+      },
+      include: { outbox: true },
+    });
+
     const normalizeResponse = await request(server)
       .post("/admins/import/normalize")
       .set("Cookie", authCookie)
@@ -369,6 +391,30 @@ describe("POST /admins/import/execute", () => {
       .send({ jobId: normalizeResponse.body.jobId })
       .expect(200);
 
+    expect(await prisma.classChangeOutbox.count()).toBe(0);
+    expect(await prisma.classChangeHistory.count()).toBe(0);
+    expect(
+      await prisma.admin.findUnique({ where: { id: admin.id } }),
+    ).not.toBeNull();
+    const nextHistory = await prisma.classChangeHistory.create({
+      data: {
+        type: "CLASS_CANCELED",
+        actorRole: "ADMIN",
+        actorId: admin.id,
+        customerId: 9999,
+        customerName: "New imported customer",
+        children: [],
+        details: priorHistory.details as Prisma.InputJsonValue,
+        outbox: { create: {} },
+      },
+      include: { outbox: true },
+    });
+    expect(nextHistory.id).toBeGreaterThan(priorHistory.id);
+    expect(nextHistory.outbox!.id).toBeGreaterThan(priorHistory.outbox!.id);
+    await prisma.classChangeOutbox.deleteMany({
+      where: { id: priorHistory.outbox!.id },
+    });
+    expect(await prisma.classChangeOutbox.count()).toBe(1);
     expect(response.body.imported).toBe(true);
     expect(response.body.report.rowsByFile["system_status.csv"]).toBe(1);
 

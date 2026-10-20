@@ -1,3 +1,4 @@
+import { listClassChangeHistory } from "../services/classChangeHistoryService";
 import express, { RequestHandler } from "express";
 import {
   registerAdminController,
@@ -1190,6 +1191,18 @@ const validatedRouteConfigs = {
 } as const;
 
 export const adminsRouter = express.Router();
+adminsRouter.get(
+  "/class-change-history",
+  verifyAuthentication(["admin"]),
+  async (_req, res) => {
+    try {
+      res.json(await listClassChangeHistory());
+    } catch (error) {
+      console.error("Error fetching class change history", error);
+      res.sendStatus(500);
+    }
+  },
+);
 
 // http://localhost:4000/admins
 

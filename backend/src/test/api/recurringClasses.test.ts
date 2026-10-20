@@ -2,6 +2,8 @@ import { afterEach, describe, it, expect, vi } from "vitest";
 import request from "supertest";
 import { server } from "../../server";
 import { prisma } from "../setup";
+import { Prisma } from "@prisma/client";
+import * as historyService from "../../services/classChangeHistoryService";
 import {
   createAdmin,
   createCustomer,
@@ -85,6 +87,7 @@ async function setupCore({
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.restoreAllMocks();
 });
 
 describe("POST /recurring-classes", () => {
@@ -776,6 +779,28 @@ describe("PUT /recurring-classes/:id", () => {
       })
       .expect(200);
 
+    const history = await prisma.classChangeHistory.findFirstOrThrow();
+    expect(history).toMatchObject({
+      actorRole: "CUSTOMER",
+      actorId: customer.id,
+      type: "REGULAR_CLASS_CHANGED",
+      children: [{ id: child.id, name: child.name }],
+      details: {
+        before: {
+          recurringClassId: oldRecurringClass.id,
+          instructorId: instructor.id,
+          endAt: null,
+          dateTime: "2026-01-01T01:00:00.000Z",
+        },
+        after: {
+          recurringClassId: response.body.newRecurringClass.id,
+          instructorId: instructor.id,
+          dateTime: "2026-01-08T01:00:00.000Z",
+        },
+        effectiveAt: "2026-01-08T01:00:00.000Z",
+      },
+    });
+    expect(await prisma.classChangeOutbox.count()).toBe(1);
     expect(response.body.oldRecurringClass.endAt).toBe(
       "2026-01-08T01:00:00.000Z",
     );
@@ -932,6 +957,16 @@ describe("PUT /recurring-classes/:id", () => {
       })
       .expect(200);
 
+    const history = await prisma.classChangeHistory.findFirstOrThrow();
+    expect(history.children).toEqual([{ id: child.id, name: child.name }]);
+    expect(history.details).toMatchObject({
+      before: { children: [], recurringClassId: oldRecurringClass.id },
+      after: {
+        children: [{ id: child.id, name: child.name }],
+        recurringClassId: response.body.newRecurringClass.id,
+      },
+    });
+    expect(await prisma.classChangeOutbox.count()).toBe(1);
     expect(response.body.oldRecurringClass.id).toBe(oldRecurringClass.id);
     expect(response.body.newRecurringClass.instructorId).toBe(newInstructor.id);
     expect(response.body.newRecurringClass.previousRecurringClassId).toBe(
@@ -1009,6 +1044,80 @@ describe("regular class calendar preview", () => {
       request(server).post(`${url}/preview`).set("Cookie", cookie).send(data);
     return { ...core, cookie, series, data, url, preview };
   }
+
+  it.each(["adapter", "prisma"])(
+    "retries a %s serialization failure with exactly one version, history and outbox",
+    async (kind) => {
+      const f = await fixture();
+      const preview = (await f.preview().expect(200)).body;
+      const original = historyService.recordClassChange;
+      const record = vi.spyOn(historyService, "recordClassChange");
+      record.mockImplementationOnce(async (...args) => {
+        await original(...args);
+        throw kind === "prisma"
+          ? new Prisma.PrismaClientKnownRequestError("write conflict", {
+              code: "P2034",
+              clientVersion: "7.2.0",
+            })
+          : Object.assign(new Error("TransactionWriteConflict"), {
+              name: "DriverAdapterError",
+              cause: { kind: "TransactionWriteConflict" },
+            });
+      });
+      const response = await request(server)
+        .put(f.url)
+        .set("Cookie", f.cookie)
+        .send({ ...f.data, previewToken: preview.previewToken })
+        .expect(200);
+      expect(record).toHaveBeenCalledTimes(2);
+      expect(await prisma.recurringClass.count()).toBe(2);
+      expect(await prisma.classChangeHistory.count()).toBe(1);
+      expect(await prisma.classChangeOutbox.count()).toBe(1);
+      expect(
+        (await prisma.classChangeHistory.findFirstOrThrow()).details,
+      ).toMatchObject({
+        after: { recurringClassId: response.body.newRecurringClass.id },
+      });
+    },
+  );
+
+  it("returns a reviewable conflict after three failed attempts without persisting any mutation", async () => {
+    const f = await fixture();
+    const preview = (await f.preview().expect(200)).body;
+    const before = await prisma.class.findMany({ orderBy: { id: "asc" } });
+    const original = historyService.recordClassChange;
+    const record = vi
+      .spyOn(historyService, "recordClassChange")
+      .mockImplementation(async (...args) => {
+        await original(...args);
+        throw Object.assign(new Error("TransactionWriteConflict"), {
+          name: "DriverAdapterError",
+          cause: { kind: "TransactionWriteConflict" },
+        });
+      });
+    const response = await request(server)
+      .put(f.url)
+      .set("Cookie", f.cookie)
+      .send({ ...f.data, previewToken: preview.previewToken })
+      .expect(409);
+    expect(response.body.message).toBe(
+      "Schedule changed. Review the preview again.",
+    );
+    expect(record).toHaveBeenCalledTimes(3);
+    expect(await prisma.class.findMany({ orderBy: { id: "asc" } })).toEqual(
+      before,
+    );
+    expect(await prisma.recurringClass.count()).toBe(1);
+    expect(
+      (
+        await prisma.recurringClass.findUniqueOrThrow({
+          where: { id: f.series.id },
+        })
+      ).endAt,
+    ).toBeNull();
+    expect(await prisma.classChangeHistory.count()).toBe(0);
+    expect(await prisma.classChangeOutbox.count()).toBe(0);
+  });
 
   it("preserves the previous JST day's makeup when changing to an early morning schedule", async () => {
     const f = await fixture();

@@ -1,3 +1,5 @@
+import { ClassChangeActor } from "../../../shared/schemas/classChangeHistory";
+import { recordClassChange } from "./classChangeHistoryService";
 import { loadRecurringClassConflictChecker } from "./recurringClassConflictService";
 import { createHash } from "node:crypto";
 import { loadCalendarClasses } from "./schedulePreviewService";
@@ -620,45 +622,112 @@ async function prepareRegularClassChange(
   };
 }
 
+async function serializableTransaction<T>(
+  action: (tx: Prisma.TransactionClient) => Promise<T>,
+): Promise<T> {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await prisma.$transaction(action, {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      });
+    } catch (error) {
+      const conflict =
+        (error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2034") ||
+        (error instanceof Error &&
+          error.name === "DriverAdapterError" &&
+          typeof error.cause === "object" &&
+          error.cause !== null &&
+          "kind" in error.cause &&
+          error.cause.kind === "TransactionWriteConflict");
+      if (!conflict) throw error;
+      if (attempt >= 2)
+        throw new Error("Schedule changed. Review the preview again.");
+    }
+  }
+}
+
 export const previewRegularClassChange = async (
   params: UpdateRegularClassParams,
 ) =>
-  prisma.$transaction(
-    async (tx) => {
-      const { calendar, previewToken, firstOccurrence } =
-        await prepareRegularClassChange(tx, params);
-      return {
-        calendar,
-        previewToken,
-        effectiveAt: firstOccurrence.toISOString(),
-      };
-    },
-    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-  );
+  serializableTransaction(async (tx) => {
+    const { calendar, previewToken, firstOccurrence } =
+      await prepareRegularClassChange(tx, params);
+    return {
+      calendar,
+      previewToken,
+      effectiveAt: firstOccurrence.toISOString(),
+    };
+  });
 
-export const updateRegularClass = async (params: UpdateRegularClassParams) =>
-  prisma.$transaction(
-    async (tx) => {
-      const prepared = await prepareRegularClassChange(tx, params);
-      if (params.previewToken && params.previewToken !== prepared.previewToken)
-        throw new Error("Schedule changed. Review the preview again.");
-      const oldRecurringClass = await terminateRecurringClass(
+export const updateRegularClass = async (
+  params: UpdateRegularClassParams,
+  actor?: ClassChangeActor,
+) =>
+  serializableTransaction(async (tx) => {
+    const prepared = await prepareRegularClassChange(tx, params);
+    if (params.previewToken && params.previewToken !== prepared.previewToken)
+      throw new Error("Schedule changed. Review the preview again.");
+    const before = await tx.recurringClass.findUniqueOrThrow({
+      where: { id: params.recurringClassId },
+      include: {
+        instructor: true,
+        recurringClassAttendance: { include: { children: true } },
+      },
+    });
+    const oldRecurringClass = await terminateRecurringClass(
+      tx,
+      params.recurringClassId,
+      prepared.firstOccurrence,
+      prepared.deletionCutoff,
+    );
+    const { recurringClass: newRecurringClass, createdClasses } =
+      await createRecurringClass(
         tx,
+        { ...params, subscriptionId: prepared.subscriptionId },
+        prepared.generationEnd,
         params.recurringClassId,
-        prepared.firstOccurrence,
-        prepared.deletionCutoff,
       );
-      const { recurringClass: newRecurringClass, createdClasses } =
-        await createRecurringClass(
-          tx,
-          { ...params, subscriptionId: prepared.subscriptionId },
-          prepared.generationEnd,
-          params.recurringClassId,
-        );
-      return { oldRecurringClass, newRecurringClass, createdClasses };
-    },
-    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-  );
+    const instructor = newRecurringClass.instructorId
+      ? await tx.instructor.findUniqueOrThrow({
+          where: { id: newRecurringClass.instructorId },
+        })
+      : null;
+    const beforeChildren = before.recurringClassAttendance.map(
+      ({ children }) => ({ id: children.id, name: children.name }),
+    );
+    const afterChildren = await tx.child.findMany({
+      where: { id: { in: params.childrenIds } },
+      select: { id: true, name: true },
+      orderBy: { id: "asc" },
+    });
+    const children = [
+      ...new Map(
+        [...beforeChildren, ...afterChildren].map((child) => [child.id, child]),
+      ).values(),
+    ];
+    await recordClassChange(tx, actor, params.customerId, children, {
+      type: "REGULAR_CLASS_CHANGED",
+      before: {
+        recurringClassId: before.id,
+        instructorId: before.instructorId,
+        endAt: before.endAt?.toISOString() ?? null,
+        children: beforeChildren,
+        dateTime: before.startAt?.toISOString() ?? null,
+        instructor: before.instructor?.name ?? "未設定",
+      },
+      after: {
+        recurringClassId: newRecurringClass.id,
+        instructorId: newRecurringClass.instructorId,
+        endAt: newRecurringClass.endAt?.toISOString() ?? null,
+        children: afterChildren,
+        dateTime: newRecurringClass.startAt?.toISOString() ?? null,
+        instructor: instructor?.name ?? "未設定",
+      },
+      effectiveAt: prepared.firstOccurrence.toISOString(),
+    });
+    return { oldRecurringClass, newRecurringClass, createdClasses };
+  });
 
 // Fetch recurring classes After endAt or endAt is null
 export const getValidRecurringClasses = async (

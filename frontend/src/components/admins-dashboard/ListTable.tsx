@@ -114,7 +114,9 @@ function ListTable({
   const [currentData, setCurrentData] = useState<any[]>(fetchedData);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filterColumn, setFilterColumn] = useState<string>(
-    listType === "Customer List" ? ALL_COLUMNS_FILTER : "0",
+    ["Customer List", "Class Change History"].includes(listType)
+      ? ALL_COLUMNS_FILTER
+      : "0",
   );
   const [filterValue, setFilterValue] = useState<string>("");
   const [pagination, setPagination] = useState({
@@ -223,7 +225,8 @@ function ListTable({
 
   // Define the displays of the table
   const availableColumnKeys = useMemo(() => {
-    if (currentData.length === 0) return [];
+    if (currentData.length === 0)
+      return listType === "Class Change History" ? (columnOrder ?? []) : [];
 
     const keys = Object.keys(currentData[0]).filter(
       (key) => !omitItems.includes(key),
@@ -234,11 +237,11 @@ function ListTable({
       ...columnOrder.filter((key) => keys.includes(key)),
       ...keys.filter((key) => !columnOrder.includes(key)),
     ];
-  }, [columnOrder, currentData, omitItems]);
+  }, [columnOrder, currentData, omitItems, listType]);
 
   const columns = useMemo<ColumnDef<any>[]>(
     () =>
-      currentData.length > 0
+      availableColumnKeys.length > 0
         ? availableColumnKeys.map((key) => ({
             accessorKey: key,
             header: key,
@@ -291,22 +294,16 @@ function ListTable({
             },
           }))
         : [],
-    [
-      availableColumnKeys,
-      currentData.length,
-      linkItems,
-      linkUrls,
-      replaceItems,
-      linkTarget,
-    ],
+    [availableColumnKeys, linkItems, linkUrls, replaceItems, linkTarget],
   );
 
   const filterColumns = useMemo(() => {
-    if (currentData.length === 0) return [];
+    if (availableColumnKeys.length === 0) return [];
 
     const availableColumns = availableColumnKeys;
 
-    if (listType !== "Customer List") return availableColumns;
+    if (!["Customer List", "Class Change History"].includes(listType))
+      return availableColumns;
 
     const prioritizedColumns = ["Children", "Customer"];
 
@@ -317,7 +314,7 @@ function ListTable({
         (key) => key !== "No" && !prioritizedColumns.includes(key),
       ),
     ];
-  }, [availableColumnKeys, currentData.length, listType]);
+  }, [availableColumnKeys, listType]);
 
   // Configure the filter
   const filteredData = useMemo(
@@ -507,12 +504,27 @@ function ListTable({
               ))}
             </thead>
             <tbody className={styles.tableBody}>
+              {listType === "Class Change History" &&
+                filteredData.length === 0 && (
+                  <tr>
+                    <td colSpan={availableColumnKeys.length}>
+                      {filterValue
+                        ? "検索条件に一致する履歴はありません"
+                        : "履歴はありません"}
+                    </td>
+                  </tr>
+                )}
               {table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
                       data-cell-id={cell.id}
+                      style={
+                        listType === "Class Change History"
+                          ? { whiteSpace: "pre-line" }
+                          : undefined
+                      }
                       className={
                         selectedCellId === cell.id ? styles.expanded : ""
                       }

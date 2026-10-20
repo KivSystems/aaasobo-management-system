@@ -172,6 +172,8 @@ const STATUS_VALUES = new Set([
 ]);
 const IMPORT_TRANSACTION_TIMEOUT_MS = 180_000;
 export const IMPORT_RESET_TABLES = [
+  "ClassChangeOutbox",
+  "ClassChangeHistory",
   "ClassAttendance",
   "Class",
   "RecurringClassAttendance",
@@ -195,7 +197,11 @@ export const IMPORT_RESET_TABLES = [
   "VerificationToken",
 ] as const;
 export const IMPORT_PRESERVED_TABLES = ["Admin"] as const;
-const IMPORT_RESET_TRUNCATE_SQL = `TRUNCATE TABLE ${IMPORT_RESET_TABLES.map((table) => `"${table}"`).join(", ")} RESTART IDENTITY CASCADE`;
+const IMPORT_RESET_TRUNCATE_SQL = `TRUNCATE TABLE ${IMPORT_RESET_TABLES.filter(
+  (table) => table !== "ClassChangeOutbox" && table !== "ClassChangeHistory",
+)
+  .map((table) => `"${table}"`)
+  .join(", ")} RESTART IDENTITY CASCADE`;
 
 interface RowEnvelope<T> {
   rowNumber: number;
@@ -1729,6 +1735,9 @@ export function getCreatedIdsInInputOrder(
 }
 
 async function resetImportTargetData(tx: TxClient) {
+  // Keep audit sequences monotonic so an in-flight digest cannot acknowledge a new event after import.
+  await tx.classChangeOutbox.deleteMany();
+  await tx.classChangeHistory.deleteMany();
   await tx.$executeRawUnsafe(IMPORT_RESET_TRUNCATE_SQL);
 }
 
