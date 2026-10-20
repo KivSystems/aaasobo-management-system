@@ -776,6 +776,28 @@ describe("PUT /recurring-classes/:id", () => {
       })
       .expect(200);
 
+    const history = await prisma.classChangeHistory.findFirstOrThrow();
+    expect(history).toMatchObject({
+      actorRole: "CUSTOMER",
+      actorId: customer.id,
+      type: "REGULAR_CLASS_CHANGED",
+      children: [{ id: child.id, name: child.name }],
+      details: {
+        before: {
+          recurringClassId: oldRecurringClass.id,
+          instructorId: instructor.id,
+          endAt: null,
+          dateTime: "2026-01-01T01:00:00.000Z",
+        },
+        after: {
+          recurringClassId: response.body.newRecurringClass.id,
+          instructorId: instructor.id,
+          dateTime: "2026-01-08T01:00:00.000Z",
+        },
+        effectiveAt: "2026-01-08T01:00:00.000Z",
+      },
+    });
+    expect(await prisma.classChangeOutbox.count()).toBe(1);
     expect(response.body.oldRecurringClass.endAt).toBe(
       "2026-01-08T01:00:00.000Z",
     );
@@ -932,6 +954,16 @@ describe("PUT /recurring-classes/:id", () => {
       })
       .expect(200);
 
+    const history = await prisma.classChangeHistory.findFirstOrThrow();
+    expect(history.children).toEqual([{ id: child.id, name: child.name }]);
+    expect(history.details).toMatchObject({
+      before: { children: [], recurringClassId: oldRecurringClass.id },
+      after: {
+        children: [{ id: child.id, name: child.name }],
+        recurringClassId: response.body.newRecurringClass.id,
+      },
+    });
+    expect(await prisma.classChangeOutbox.count()).toBe(1);
     expect(response.body.oldRecurringClass.id).toBe(oldRecurringClass.id);
     expect(response.body.newRecurringClass.instructorId).toBe(newInstructor.id);
     expect(response.body.newRecurringClass.previousRecurringClassId).toBe(

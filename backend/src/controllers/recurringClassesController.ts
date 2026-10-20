@@ -1,3 +1,4 @@
+import { classChangeActorFromUser } from "../services/classChangeHistoryService";
 import { Response } from "express";
 import { prisma } from "../../prisma/prismaClient";
 import {
@@ -157,10 +158,13 @@ export const updateRegularClassController = async (
   if (user?.userType === "customer" && Number(user.id) !== req.body.customerId)
     return res.status(403).json({ message: "Forbidden" });
   try {
-    const result = await updateRegularClass({
-      recurringClassId: req.params.id,
-      ...req.body,
-    });
+    const result = await updateRegularClass(
+      {
+        recurringClassId: req.params.id,
+        ...req.body,
+      },
+      classChangeActorFromUser(req.user),
+    );
 
     res.status(200).json({
       message: "Regular class updated successfully",
