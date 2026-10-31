@@ -792,7 +792,7 @@ function toRecordSet(
           nickname: row.instructorName,
           meeting_id: `9000${serial}`,
           passcode: generateTempPassword().slice(0, 8),
-          birthdate: "1990-01-01",
+          birthdate: "01-01",
           favorite_food: "",
           hobby: "",
           life_history: "",

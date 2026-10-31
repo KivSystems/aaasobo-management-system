@@ -18,7 +18,7 @@ model Instructor {
   meetingId           String                    @unique
   passcode            String                    @unique
   createdAt           DateTime                  @default(now())
-  birthdate           DateTime
+  birthdate           String                    @db.VarChar(5)
   favoriteFood        String
   hobby               String
   lifeHistory         String

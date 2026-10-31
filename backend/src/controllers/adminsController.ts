@@ -561,8 +561,6 @@ export const registerInstructorController = async (
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
-  // Normalize birthdate
-  const normalizedBirthdate = new Date(convertToISOString(birthdate));
   // Convert englishBackground to number
   const englishBackgroundNum = Number(englishBackground);
 
@@ -612,7 +610,7 @@ export const registerInstructorController = async (
       email: normalizedEmail,
       password,
       icon,
-      birthdate: normalizedBirthdate,
+      birthdate,
       lifeHistory,
       favoriteFood,
       hobby,
@@ -659,12 +657,11 @@ export const updateInstructorProfileController = async (
 
   // Normalize email
   const normalizedEmail = email.trim().toLowerCase();
-  // Normalize leavingDate and birthdate
+  // Normalize leavingDate
   const normalizedLeavingDate =
     leavingDate && leavingDate !== "null"
       ? new Date(convertToISOString(leavingDate))
       : null;
-  const normalizedBirthdate = new Date(convertToISOString(birthdate));
   // Convert englishBackground to number
   const englishBackgroundNum = Number(englishBackground);
 
@@ -716,7 +713,7 @@ export const updateInstructorProfileController = async (
       name,
       nickname,
       normalizedLeavingDate,
-      normalizedBirthdate,
+      birthdate,
       workingTime,
       lifeHistory,
       favoriteFood,

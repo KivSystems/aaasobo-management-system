@@ -52,6 +52,7 @@ export async function registerUser(
     switch (userType) {
       case "instructor":
         parsedForm1 = instructorRegisterSchema.safeParse({
+          birthdate,
           name,
           nickname,
           email,

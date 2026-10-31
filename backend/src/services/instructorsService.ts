@@ -5,7 +5,6 @@ import {
   defaultUserImageUrl,
   maskedHeadLetters,
   maskedSuffix,
-  maskedBirthdate,
   MONTHS_TO_DELETE_INSTRUCTORS,
 } from "../utils/commonUtils";
 import { convertToUTCDate } from "../utils/dateUtils";
@@ -35,7 +34,7 @@ export const registerInstructor = async (data: {
   email: string;
   password: string;
   icon: Express.Multer.File | undefined;
-  birthdate: Date;
+  birthdate: string;
   lifeHistory: string;
   favoriteFood: string;
   hobby: string;
@@ -165,7 +164,7 @@ export const updateInstructor = async (
   name: string,
   nickname: string,
   leavingDate: Date | null,
-  birthdate: Date,
+  birthdate: string,
   workingTime: string,
   lifeHistory: string,
   favoriteFood: string,
@@ -468,7 +467,7 @@ export const maskInstructors = async (instructors: Instructor[]) => {
             name: maskedHeadLetters,
             email: `${maskedHeadLetters}@${suffix}${instructor.id}.xxx`,
             password: `${maskedHeadLetters}_${suffix}${instructor.id}`,
-            birthdate: maskedBirthdate,
+            birthdate: "01-01",
             workingTime: maskedHeadLetters,
             lifeHistory: maskedHeadLetters,
             favoriteFood: maskedHeadLetters,

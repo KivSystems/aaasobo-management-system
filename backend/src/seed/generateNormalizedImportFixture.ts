@@ -493,7 +493,7 @@ function instructorRows(
       nickname,
       meeting_id: `MID${String(i).padStart(4, "0")}`,
       passcode: `PIN${String(i).padStart(4, "0")}`,
-      birthdate: `199${i % 10}-01-01`,
+      birthdate: "01-01",
       favorite_food: "Curry",
       hobby: "Reading",
       life_history: `Career summary for ${lowerRef}`,

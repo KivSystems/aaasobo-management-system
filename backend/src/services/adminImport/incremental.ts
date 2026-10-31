@@ -1,3 +1,4 @@
+import { InstructorBirthday } from "../../../../shared/schemas/instructors";
 import JSZip from "jszip";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../../prisma/prismaClient";
@@ -671,7 +672,15 @@ function validateFileData(
         }
       }
     }
-    assertDate(issues, "instructors.csv", row, "birthdate");
+    if (!InstructorBirthday.safeParse(row.data.birthdate).success) {
+      issue(
+        issues,
+        "instructors.csv",
+        row.rowNumber,
+        "birthdate",
+        "Birthday must be a valid MM-DD",
+      );
+    }
     assertDateTime(issues, "instructors.csv", row, "termination_at");
     if (
       row.data.english_background &&
@@ -1160,7 +1169,7 @@ async function insertInstructors(
         nickname: row.data.nickname,
         meetingId: row.data.meeting_id,
         passcode: row.data.passcode,
-        birthdate: dateOnly(row.data.birthdate),
+        birthdate: row.data.birthdate,
         favoriteFood: row.data.favorite_food,
         hobby: row.data.hobby,
         lifeHistory: row.data.life_history,

@@ -6,6 +6,7 @@ import { server } from "../../../server";
 import { generateNormalizedImportFixture } from "../../../seed/generateNormalizedImportFixture";
 import { validateNormalizedImportFiles } from "../../../services/adminImport";
 import {
+  executeNormalizedImportFiles,
   getCreatedIdsInInputOrder,
   IMPORT_PRESERVED_TABLES,
   IMPORT_RESET_TABLES,
@@ -55,7 +56,7 @@ function buildMinimalNormalizedFiles() {
     "subscriptions.csv":
       "subscription_ref,customer_ref,plan_ref,select_type,start_at,end_at\nSU0001,CU0001,PL0001,https://example.com/subscriptions/cu0001-pl0001,2025-01-01T00:00:00+09:00,2025-12-31T00:00:00+09:00\n",
     "instructors.csv":
-      "instructor_ref,name,email,temp_password,class_url,icon,nickname,meeting_id,passcode,birthdate,favorite_food,hobby,life_history,message_for_children,skill,working_time,english_background,termination_at\nIN0001,Instructor One,instructor.one@example.com,TempPass456!,https://import.local/class/in0001,https://import.local/icon/in0001.png,instructor_in0001,11111111111,PASS0001,1990-01-01,Sushi,Reading,Life history,Message,Skill,Weekdays,0,\n",
+      "instructor_ref,name,email,temp_password,class_url,icon,nickname,meeting_id,passcode,birthdate,favorite_food,hobby,life_history,message_for_children,skill,working_time,english_background,termination_at\nIN0001,Instructor One,instructor.one@example.com,TempPass456!,https://import.local/class/in0001,https://import.local/icon/in0001.png,instructor_in0001,11111111111,PASS0001,01-01,Sushi,Reading,Life history,Message,Skill,Weekdays,0,\n",
     "instructor_fees.csv":
       "instructor_ref,currency,effective_from,effective_to,trial_fee,regular_fee,cancel_fee,cancel_without_notice_fee,monthly_cancel_fee\nIN0001,PHP,2025-01-01,,75,100,50,100,200\n",
     "instructor_schedules.csv":
@@ -1119,4 +1120,50 @@ describe("POST /admins/import/execute", () => {
     expect(systemStatusCount).toBe(0);
     expect(instructorCount).toBe(0);
   });
+});
+
+describe("instructor birthdays in replacement imports", () => {
+  it.each(["02-29", "12-31"])(
+    "stores only month/day from %s",
+    async (birthday) => {
+      const files = buildMinimalNormalizedFiles();
+      files["instructors.csv"] = files["instructors.csv"].replace(
+        "01-01",
+        birthday,
+      );
+      await executeNormalizedImportFiles(files);
+      const instructor = await prisma.instructor.findUniqueOrThrow({
+        where: { email: "instructor.one@example.com" },
+      });
+      expect(instructor.birthdate).toBe(birthday);
+      const child = await prisma.child.findFirstOrThrow();
+      expect(child.birthdate?.toISOString().slice(0, 10)).toBe("2016-01-02");
+    },
+  );
+
+  it.each(["02-30", "04-31", "13-01", "1900-02-29", "1990-01-01", ""])(
+    "rejects invalid birthday %s before replacing data",
+    async (birthday) => {
+      const existing = await createInstructor();
+      const files = buildMinimalNormalizedFiles();
+      files["instructors.csv"] = files["instructors.csv"].replace(
+        "01-01",
+        birthday,
+      );
+      expect(validateNormalizedImportFiles(files).issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            file: "instructors.csv",
+            column: "birthdate",
+          }),
+        ]),
+      );
+      await expect(executeNormalizedImportFiles(files)).rejects.toThrow(
+        "validation failed",
+      );
+      expect(
+        await prisma.instructor.findUnique({ where: { id: existing.id } }),
+      ).not.toBeNull();
+    },
+  );
 });
