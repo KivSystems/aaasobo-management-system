@@ -1,3 +1,4 @@
+import { InstructorBirthday } from "./instructors";
 import { z } from "zod";
 import { SelectTypeUrl } from "./subscriptions";
 
@@ -107,7 +108,7 @@ export const RegisterInstructorRequest = z.object({
   nickname: z.string().trim().min(1, "Nickname is required"),
   email: z.email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
-  birthdate: instructorDate,
+  birthdate: InstructorBirthday,
   lifeHistory: z.string(),
   favoriteFood: z.string(),
   hobby: z.string(),
@@ -128,7 +129,7 @@ export const UpdateInstructorRequest = z.object({
     .optional(),
   email: z.email("Invalid email format"),
   nickname: z.string().trim().min(1, "Nickname is required"),
-  birthdate: instructorDate,
+  birthdate: InstructorBirthday,
   workingTime: z.string(),
   lifeHistory: z.string(),
   favoriteFood: z.string(),

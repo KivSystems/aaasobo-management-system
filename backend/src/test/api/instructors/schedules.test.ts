@@ -1128,7 +1128,7 @@ describe("POST /instructors/:id/schedules", () => {
     const testData = generateTestInstructor();
     const instructor = await createInstructor({
       ...testData,
-      birthdate: new Date(testData.birthdate),
+      birthdate: testData.birthdate,
       terminationAt: futureDate,
       englishBackground: EnglishBackground.NonNative,
     });

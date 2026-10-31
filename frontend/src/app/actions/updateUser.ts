@@ -106,6 +106,7 @@ export async function updateInstructorAction(
     let validationErrors;
 
     const parsedForm1 = instructorUpdateSchema.safeParse({
+      birthdate,
       name,
       nickname,
       email,

@@ -107,20 +107,23 @@ export async function sendClassChangeDigest() {
     }
     const rows = pending.map(({ history }) => {
       const children = history.children as { name: string }[];
-      return [
-        formatHistoryDate(history.occurredAt.toISOString()),
-        history.customerName,
-        children.map((child) => child.name).join("、"),
+      const details = ClassChangeDetails.parse(history.details);
+      const type =
         history.type === "REGULAR_CLASS_CHANGED"
           ? "レギュラークラス変更"
           : history.type === "CLASS_CANCELED"
             ? "キャンセル"
-            : "振替予約",
-        formatHistoryDetails(ClassChangeDetails.parse(history.details)),
-        history.actorRole === "CUSTOMER" ? "お客様" : "管理者",
-      ]
-        .map(escapeHtml)
-        .join(" | ");
+            : "振替予約";
+      const actor = history.actorRole === "CUSTOMER" ? "お客様" : "管理者";
+      const target =
+        details.type === "REGULAR_CLASS_CHANGED"
+          ? escapeHtml(formatHistoryDetails(details)).replace(/\n/g, "<br>")
+          : `対象クラス：${escapeHtml(formatHistoryDate(details.target.dateTime))}<br>講師：${escapeHtml(details.target.instructor)}`;
+      return `<div style="padding:20px 0;border-bottom:1px solid #ddd;overflow-wrap:anywhere;">
+<p style="margin:0 0 4px;"><strong>${type} · ${actor}</strong></p>
+<p style="margin:0 0 12px;color:#555;">${escapeHtml(formatHistoryDate(history.occurredAt.toISOString()))}</p>
+<p style="margin:0;">お客様：${escapeHtml(history.customerName)}<br>お子様：${escapeHtml(children.map((child) => child.name).join("、"))}<br>${target}</p>
+</div>`;
     });
     const origin = process.env.FRONTEND_ORIGIN;
     if (!origin)
@@ -128,7 +131,7 @@ export async function sendClassChangeDigest() {
     const response = await sendEmail({
       to: "kidsinternationalvillage@gmail.com",
       subject: `クラス変更履歴 (${pending.length}件)`,
-      html: `<p>日時はすべて日本時間</p><pre>${rows.join("\n\n")}</pre><p><a href="${escapeHtml(new URL("/admins/class-change-history", origin).href)}">クラス変更履歴を確認</a></p>`,
+      html: `<div style="font-family:sans-serif;font-size:14px;line-height:1.7;max-width:640px;"><p>日時はすべて日本時間</p>${rows.join("\n")}<p><a href="${escapeHtml(new URL("/admins/class-change-history", origin).href)}">クラス変更履歴を確認</a></p></div>`,
     });
     if (response.error || !response.data?.id)
       throw new Error(

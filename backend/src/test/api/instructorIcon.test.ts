@@ -31,7 +31,7 @@ const update = (replaceIcon = true) =>
     "Name",
     "Nick",
     null,
-    new Date("1990-01-01"),
+    "01-01",
     "",
     "",
     "",

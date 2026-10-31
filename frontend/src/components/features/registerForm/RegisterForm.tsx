@@ -163,11 +163,14 @@ const RegisterForm = ({
               {/* Birthday */}
               <InputField
                 id="birthdate"
-                label="お誕生日"
-                type="date"
+                label="お誕生日（月-日）"
+                type="text"
                 name="birthdate"
                 defaultValue={persistedValues.birthdate}
-                placeholder="例: 2000-01-01"
+                placeholder="例: 04-26"
+                pattern="[0-9]{2}-[0-9]{2}"
+                maxLength={5}
+                error={localMessages.birthdate}
                 icon={<CakeIcon className={styles.icon} />}
                 inputRequired
                 onChange={() => clearErrorMessage("birthdate")}

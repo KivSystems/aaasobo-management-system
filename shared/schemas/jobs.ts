@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { InstructorBirthday } from "./instructors";
 
 // Request body schemas
 export const UpdateSundayColorRequest = z.object({
@@ -36,7 +37,7 @@ export const MaskInstructorsResponse = z.array(
     name: z.string().describe("Masked instructor name"),
     email: z.string().describe("Masked instructor email"),
     password: z.string().describe("Masked instructor password"),
-    birthdate: z.iso.datetime().describe("Masked birthdate"),
+    birthdate: InstructorBirthday.describe("Masked birthday"),
     workingTime: z.string().describe("Masked working time"),
     lifeHistory: z.string().describe("Masked life history"),
     favoriteFood: z.string().describe("Masked favorite food"),

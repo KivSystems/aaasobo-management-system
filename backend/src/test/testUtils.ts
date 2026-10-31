@@ -53,7 +53,7 @@ export function generateTestInstructor() {
     classURL: `https://example.com/class/${uniqueId}`,
     icon: uniqueIcon,
     nickname: `${faker.person.firstName()}_${uniqueId.slice(0, 8)}`,
-    birthdate: birthdate.toISOString().split("T")[0], // YYYY-MM-DD format for API
+    birthdate: birthdate.toISOString().slice(5, 10),
     lifeHistory: faker.lorem.paragraph(),
     favoriteFood: faker.food.dish(),
     hobby: faker.lorem.sentence(),
@@ -97,7 +97,6 @@ export async function createInstructor(data: any = generateTestInstructor()) {
   return await prisma.instructor.create({
     data: {
       ...data,
-      birthdate: new Date(data.birthdate),
       password: hashPasswordSync(data.password),
     },
   });

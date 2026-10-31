@@ -1,3 +1,4 @@
+import { InstructorBirthday } from "../../../../shared/schemas/instructors";
 import JSZip from "jszip";
 import { Prisma, Status } from "@prisma/client";
 import { prisma } from "../../../prisma/prismaClient";
@@ -843,13 +844,15 @@ export function validateNormalizedImportFiles(
       "english_background",
       row.data.english_background,
     );
-    assertDate(
-      issues,
-      "instructors.csv",
-      row.rowNumber,
-      "birthdate",
-      row.data.birthdate,
-    );
+    if (!InstructorBirthday.safeParse(row.data.birthdate).success) {
+      addIssue(
+        issues,
+        "instructors.csv",
+        row.rowNumber,
+        "birthdate",
+        "Birthday must be a valid MM-DD",
+      );
+    }
     assertDateTime(
       issues,
       "instructors.csv",
@@ -1846,7 +1849,7 @@ async function insertValidatedRows(tx: TxClient, parsed: ParsedNormalizedRows) {
       nickname: row.data.nickname,
       meetingId: row.data.meeting_id,
       passcode: row.data.passcode,
-      birthdate: new Date(`${row.data.birthdate}T00:00:00.000Z`),
+      birthdate: row.data.birthdate,
       favoriteFood: row.data.favorite_food,
       hobby: row.data.hobby,
       lifeHistory: row.data.life_history,
