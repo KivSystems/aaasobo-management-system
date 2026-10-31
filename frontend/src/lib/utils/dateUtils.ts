@@ -130,7 +130,7 @@ export const formatBirthdateMonthDay = (
   dateString: string,
   locale: string = "en-US",
 ): string => {
-  const date = new Date(dateString);
+  const date = new Date(`2000-${dateString}T00:00:00.000Z`);
   if (isNaN(date.getTime())) return "";
 
   return new Intl.DateTimeFormat(locale, {

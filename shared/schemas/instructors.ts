@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+export const InstructorBirthday = z
+  .string()
+  .length(5, "Birthday must be MM-DD")
+  .regex(/^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, "Birthday must be MM-DD")
+  .refine((value) => {
+    const [month, day] = value.split("-").map(Number);
+    const date = new Date(Date.UTC(2000, month - 1, day));
+    return date.getUTCMonth() + 1 === month && date.getUTCDate() === day;
+  }, "Birthday must be a valid month and day")
+  .describe("Instructor birthday (MM-DD), without a birth year");
+
 export const InstructorIdParams = z.object({
   id: z
     .string()
@@ -77,7 +88,7 @@ export const DetailedInstructorProfile = z.object({
       url: z.string().describe("Validated instructor icon URL"),
     })
     .describe("Instructor profile icon object"),
-  birthdate: z.iso.datetime().nullable().describe("Instructor birthdate"),
+  birthdate: InstructorBirthday.nullable(),
   lifeHistory: z.string().nullable().describe("Instructor life history"),
   favoriteFood: z.string().nullable().describe("Instructor favorite food"),
   hobby: z.string().nullable().describe("Instructor hobby"),
@@ -113,7 +124,7 @@ export const CompleteInstructor = z.object({
       url: z.string().describe("Validated instructor icon URL"),
     })
     .describe("Instructor profile icon object"),
-  birthdate: z.iso.datetime().nullable().describe("Instructor birthdate"),
+  birthdate: InstructorBirthday.nullable(),
   lifeHistory: z.string().nullable().describe("Instructor life history"),
   favoriteFood: z.string().nullable().describe("Instructor favorite food"),
   hobby: z.string().nullable().describe("Instructor hobby"),

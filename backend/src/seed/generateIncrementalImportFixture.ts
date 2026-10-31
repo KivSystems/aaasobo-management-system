@@ -408,7 +408,7 @@ function instructorRows(
       nickname,
       meeting_id: `MID${String(index).padStart(4, "0")}`,
       passcode: `PIN${String(index).padStart(4, "0")}`,
-      birthdate: `1990-01-${String(((index - 1) % 28) + 1).padStart(2, "0")}`,
+      birthdate: `01-${String(((index - 1) % 28) + 1).padStart(2, "0")}`,
       favorite_food: "Sushi",
       hobby: "Reading",
       life_history: "Deterministic dummy instructor",

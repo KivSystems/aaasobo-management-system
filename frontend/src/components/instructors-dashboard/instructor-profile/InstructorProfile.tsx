@@ -8,10 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import StatusSwitcher from "@/components/elements/StatusSwitcher/StatusSwitcher";
 import InputField from "../../elements/inputField/InputField";
 import ActionButton from "../../elements/buttons/actionButton/ActionButton";
-import {
-  formatBirthdateMonthDay,
-  formatBirthdateToISO,
-} from "@/lib/utils/dateUtils";
+import { formatBirthdateMonthDay } from "@/lib/utils/dateUtils";
 import {
   CakeIcon,
   CheckIcon,
@@ -31,7 +28,7 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../../elements/loading/Loading";
-import { MASKED_HEAD_LETTERS, MASKED_BIRTHDATE } from "@/lib/data/data";
+import { MASKED_HEAD_LETTERS } from "@/lib/data/data";
 import Uploader from "../../features/registerForm/uploadImages/Uploader";
 import { defaultUserImageUrl } from "@/lib/data/data";
 import Image from "next/image";
@@ -87,6 +84,7 @@ function InstructorProfile({
     }
     const newMessages: Record<string, string> = {};
     if (result.name) newMessages.name = result.name;
+    if (result.birthdate) newMessages.birthdate = result.birthdate;
     if (result.nickname) newMessages.nickname = result.nickname;
     if (result.email) newMessages.email = result.email;
     if (result.classURL) newMessages.classURL = result.classURL;
@@ -390,18 +388,19 @@ function InstructorProfile({
                 {isEditing ? (
                   <InputField
                     name="birthdate"
-                    type="date"
-                    value={formatBirthdateToISO(
-                      latestInstructor.birthdate || undefined,
-                    )}
+                    type="text"
+                    value={latestInstructor.birthdate || ""}
+                    placeholder="MM-DD"
+                    pattern="[0-9]{2}-[0-9]{2}"
+                    maxLength={5}
+                    error={localMessages.birthdate}
                     onChange={(e) => handleInputChange(e, "birthdate")}
-                    onKeyDown={(e) => e.preventDefault()} // Prevent date input from typing
                     className={`${styles.birthdate__inputField} ${isEditing ? styles.editable : ""}`}
                   />
                 ) : (
                   <h4 className={styles.birthdate__text}>
                     {latestInstructor.birthdate
-                      ? latestInstructor.birthdate.includes(MASKED_BIRTHDATE)
+                      ? latestInstructor.name === MASKED_HEAD_LETTERS
                         ? MASKED_HEAD_LETTERS
                         : formatBirthdateMonthDay(
                             latestInstructor.birthdate,

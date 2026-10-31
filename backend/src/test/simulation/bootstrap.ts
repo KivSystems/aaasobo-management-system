@@ -88,7 +88,7 @@ async function registerInstructor(authCookie: string, seed: number, i: number) {
     classURL: `https://example.com/class/${i}`,
     icon: `/images/default-user-icon.jpg?id=${i}`,
     nickname: `SimTeacher${i + 1}`,
-    birthdate: "1990-01-01",
+    birthdate: "01-01",
     lifeHistory: "Simulation life history",
     favoriteFood: "Ramen",
     hobby: "Reading",

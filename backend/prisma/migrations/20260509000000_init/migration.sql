@@ -22,7 +22,7 @@ CREATE TABLE "Instructor" (
     "meetingId" TEXT NOT NULL,
     "passcode" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "birthdate" TIMESTAMP(3) NOT NULL,
+    "birthdate" VARCHAR(5) NOT NULL,
     "favoriteFood" TEXT NOT NULL,
     "hobby" TEXT NOT NULL,
     "lifeHistory" TEXT NOT NULL,
@@ -33,7 +33,8 @@ CREATE TABLE "Instructor" (
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "englishBackground" INTEGER NOT NULL,
 
-    CONSTRAINT "Instructor_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Instructor_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "Instructor_birthdate_month_day_check" CHECK ("birthdate" ~ '^(02-(0[1-9]|1[0-9]|2[0-9])|(04|06|09|11)-(0[1-9]|[12][0-9]|30)|(01|03|05|07|08|10|12)-(0[1-9]|[12][0-9]|3[01]))$')
 );
 
 -- CreateTable

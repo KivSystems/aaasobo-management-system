@@ -227,6 +227,7 @@ type ForgotPasswordFormState = {
 };
 
 type RegisterFormState = {
+  birthdate?: string;
   password?: string;
   name?: string;
   nickname?: string;
@@ -251,6 +252,7 @@ type RegisterFormState = {
 };
 
 type UpdateFormState = {
+  birthdate?: string;
   name?: string;
   englishBackground?: EnglishBackground;
   nickname?: string;

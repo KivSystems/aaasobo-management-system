@@ -60,8 +60,8 @@ function instructorPackage() {
   return {
     "instructors.csv": [
       instructorHeaders.instructors,
-      "IN0001,Instructor One,instructor.one@example.com,TempPass1!,https://example.com/class/1,https://example.com/icon/1.png,nick_one,11111111111,PASS0001,1990-01-01,,,,,,,0,",
-      "IN0002,Instructor Two,instructor.two@example.com,TempPass2!,https://example.com/class/2,https://example.com/icon/2.png,nick_two,22222222222,PASS0002,1991-02-02,Pasta,Music,History two,Hello two,Singing,Weekends,1,",
+      "IN0001,Instructor One,instructor.one@example.com,TempPass1!,https://example.com/class/1,https://example.com/icon/1.png,nick_one,11111111111,PASS0001,01-01,,,,,,,0,",
+      "IN0002,Instructor Two,instructor.two@example.com,TempPass2!,https://example.com/class/2,https://example.com/icon/2.png,nick_two,22222222222,PASS0002,02-02,Pasta,Music,History two,Hello two,Singing,Weekends,1,",
     ].join("\n"),
     "instructor_fees.csv": [
       instructorHeaders.fees,

@@ -12,7 +12,7 @@ const profile = {
   name: "Date validation teacher",
   nickname: "DateTeacher",
   email: "date-validation@example.com",
-  birthdate: "1990-01-01",
+  birthdate: "01-01",
   workingTime: "",
   lifeHistory: "",
   favoriteFood: "",
@@ -43,6 +43,16 @@ const invalidDates = [
   "2026-00-10",
 ];
 
+const invalidBirthdays = [
+  ...invalidDates,
+  "1990-01-01",
+  "02/29/2000",
+  "02-30",
+  "04-31",
+  "2-29",
+  "02-29\n",
+];
+
 describe("instructor profile date validation", () => {
   it("rejects a multipart ISO timestamp without changing the instructor", async () => {
     const instructor = await createInstructor();
@@ -67,7 +77,7 @@ describe("instructor profile date validation", () => {
     ).toEqual(before);
   });
 
-  it.each(invalidDates)(
+  it.each(invalidBirthdays)(
     "rejects invalid birthdate %s before updating",
     async (birthdate) => {
       const instructor = await createInstructor();
@@ -106,12 +116,12 @@ describe("instructor profile date validation", () => {
   );
 
   it.each([
-    { birthdate: "2000-02-29", leavingDate: undefined },
-    { birthdate: "02/29/2000", leavingDate: null },
-    { birthdate: "1990-01-01", leavingDate: "" },
-    { birthdate: "01/01/1990", leavingDate: "null" },
-    { birthdate: "1990-01-01", leavingDate: "2030-02-28" },
-    { birthdate: "01/01/1990", leavingDate: "02/28/2030" },
+    { birthdate: "02-29", leavingDate: undefined },
+    { birthdate: "02-29", leavingDate: null },
+    { birthdate: "01-01", leavingDate: "" },
+    { birthdate: "01-01", leavingDate: "null" },
+    { birthdate: "01-01", leavingDate: "2030-02-28" },
+    { birthdate: "01-01", leavingDate: "02/28/2030" },
   ])(
     "accepts supported dates and leaving sentinel $leavingDate",
     async ({ birthdate, leavingDate }) => {
@@ -124,9 +134,7 @@ describe("instructor profile date validation", () => {
       const saved = await prisma.instructor.findUniqueOrThrow({
         where: { id: instructor.id },
       });
-      expect(saved.birthdate.toISOString().slice(0, 10)).toBe(
-        birthdate.includes("2000") ? "2000-02-29" : "1990-01-01",
-      );
+      expect(saved.birthdate).toBe(birthdate);
       expect(saved.terminationAt?.toISOString() ?? null).toBe(
         leavingDate && leavingDate !== "null"
           ? "2030-02-27T15:00:00.000Z"
@@ -136,7 +144,7 @@ describe("instructor profile date validation", () => {
     },
   );
 
-  it.each(invalidDates)(
+  it.each(invalidBirthdays)(
     "rejects invalid registration birthdate %s before creating",
     async (birthdate) => {
       const before = await prisma.instructor.count();

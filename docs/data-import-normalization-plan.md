@@ -374,3 +374,10 @@ None at this stage.
    - Mitigation: generated stable references + cross-file validation before write.
 4. Risk: large-batch performance.
    - Mitigation: batched inserts and measured limits in hardening phase.
+
+
+## Instructor birthday format (2026-10-30)
+
+Instructor `birthdate` values now use `MM-DD`, without a birth year. This supersedes
+full-date requirements for `instructors.csv` above. Both replacement and incremental imports require this format. Children's birthdates still use `YYYY-MM-DD`.
+See [instructor birthdays](instructor-birthdays.md) for schema and deployment notes.

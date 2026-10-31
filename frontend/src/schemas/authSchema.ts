@@ -1,3 +1,4 @@
+import { InstructorBirthday } from "@shared/schemas/instructors";
 import { z } from "zod";
 import {
   ALPHABET_ONLY_MESSAGE,
@@ -53,6 +54,7 @@ export const createCustomerRegisterSchema = (language: LanguageType) => {
 
 export const instructorRegisterSchema = z
   .object({
+    birthdate: InstructorBirthday,
     name: z.string().trim().min(1, "Name is required."),
     nickname: z.string().trim().min(1, "Nickname is required."),
     email: z
@@ -203,6 +205,7 @@ export const scheduleUpdateSchema = z.object({
 });
 
 export const instructorUpdateSchema = z.object({
+  birthdate: InstructorBirthday,
   name: z.string().trim().min(1, "Name is required."),
   nickname: z.string().trim().min(1, "Nickname is required."),
   email: z
