@@ -10,9 +10,7 @@ the shared schema reject impossible month/day combinations and accept `02-29`.
 Registration and profile editing ask only for month/day. New normalization, dummy
 seeds, and fixture generators output month/day.
 
-Existing main/dev test databases need a one-time manual conversion before using
-the new application. Apply `ALTER TABLE "Instructor" ALTER COLUMN "birthdate"
-TYPE VARCHAR(5) USING to_char("birthdate", 'MM-DD')`, then add the same check
-constraint as the init migration. Prisma does not rerun an already-applied init
-migration. Verify the resulting column and constraint before importing data.
-Deploy the schema, backend, and frontend together.
+Before release, replace the main/dev test databases with the final schema from
+this migration, then import the prepared data packages. Retain admin login
+accounts so the imports can be performed and verified. There is no compatibility
+or conversion path for existing instructor birthdates.
