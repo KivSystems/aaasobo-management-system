@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import { prisma } from "../setup";
 import { prisma as servicePrisma } from "../../../prisma/prismaClient";
@@ -27,7 +27,10 @@ import {
   formatHistoryDetails,
 } from "../../../../shared/schemas/classChangeHistory";
 import { sendEmail } from "../../lib/email/delivery";
-vi.mock("../../lib/email/delivery", () => ({ sendEmail: vi.fn() }));
+vi.mock("../../lib/email/delivery", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../lib/email/delivery")>()),
+  sendEmail: vi.fn(),
+}));
 const mockedSend = vi.mocked(sendEmail);
 async function fixture() {
   const customer = await createCustomer();
@@ -52,6 +55,7 @@ beforeEach(() => {
   process.env.FRONTEND_ORIGIN = "https://example.com";
   mockedSend.mockResolvedValue({ data: { id: "test-email" }, error: null });
 });
+afterEach(() => vi.unstubAllEnvs());
 describe("class change history", () => {
   it("formats dates across JST midnight using sortable padded dates", () => {
     expect(formatHistoryDate("2026-01-31T15:00:00Z")).toBe(
@@ -95,6 +99,24 @@ describe("class change history", () => {
       else process.env.CRON_SECRET = original;
     }
   });
+  it.each([
+    [undefined, "delivered@resend.dev"],
+    ["invalid", "delivered@resend.dev"],
+    [" digest@example.com ", "digest@example.com"],
+  ])(
+    "routes a digest with notification address %s to %s",
+    async (address, to) => {
+      vi.stubEnv("EMAIL_FROM", "sender@example.com");
+      vi.stubEnv("BOOTSTRAP_ADMIN_EMAIL", "seed@example.com");
+      vi.stubEnv("ADMIN_NOTIFICATION_EMAIL", address);
+      const { target, actor } = await fixture();
+      await cancelClassById(target.id, actor);
+
+      await sendClassChangeDigest();
+      expect(mockedSend).toHaveBeenCalledWith(expect.objectContaining({ to }));
+      expect(await prisma.classChangeOutbox.count()).toBe(0);
+    },
+  );
   it("keeps accepted outbox pending if acknowledgment fails", async () => {
     const { target, actor } = await fixture();
     await cancelClassById(target.id, actor);

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../prisma/prismaClient";
 import {
@@ -6,7 +7,7 @@ import {
   formatHistoryDate,
   formatHistoryDetails,
 } from "../../../shared/schemas/classChangeHistory";
-import { sendEmail } from "../lib/email/delivery";
+import { sendEmail, testEmailRecipient } from "../lib/email/delivery";
 
 export function historyCutoff(now = new Date()) {
   return new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
@@ -128,8 +129,13 @@ export async function sendClassChangeDigest() {
     const origin = process.env.FRONTEND_ORIGIN;
     if (!origin)
       throw new Error("FRONTEND_ORIGIN is required for class change digest");
+    const recipient = z
+      .string()
+      .trim()
+      .email()
+      .safeParse(process.env.ADMIN_NOTIFICATION_EMAIL);
     const response = await sendEmail({
-      to: "kidsinternationalvillage@gmail.com",
+      to: recipient.success ? recipient.data : testEmailRecipient,
       subject: `クラス変更履歴 (${pending.length}件)`,
       html: `<div style="font-family:sans-serif;font-size:14px;line-height:1.7;max-width:640px;"><p>日時はすべて日本時間</p>${rows.join("\n")}<p><a href="${escapeHtml(new URL("/admins/class-change-history", origin).href)}">クラス変更履歴を確認</a></p></div>`,
     });

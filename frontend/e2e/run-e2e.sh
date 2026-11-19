@@ -43,7 +43,7 @@ else
   export E2E_ADMIN_EMAIL="${E2E_ADMIN_EMAIL:-e2e-admin@example.com}"
   export E2E_ADMIN_PASSWORD="${E2E_ADMIN_PASSWORD:-E2e-Admin-Password!}"
   export BOOTSTRAP_ADMIN_EMAIL="$E2E_ADMIN_EMAIL" BOOTSTRAP_ADMIN_PASSWORD="$E2E_ADMIN_PASSWORD" BOOTSTRAP_ADMIN_NAME="E2E Admin"
-  export RESEND_API_KEY="re_test_dummy" PORT=4000
+  export EMAIL_FROM="" RESEND_API_KEY="re_test_dummy" PORT=4000
 fi
 
 today_jst="$(TZ=Asia/Tokyo date +%F)"
