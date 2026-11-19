@@ -58,8 +58,8 @@ export function selectChangedCustomers<T>(
 }
 
 export function assertLocalPreviewEnvironment(env: NodeJS.ProcessEnv): void {
-  if (env.EMAIL_ENV !== "develop")
-    throw new Error("seed:preview requires EMAIL_ENV=develop");
+  if (env.EMAIL_FROM?.trim())
+    throw new Error("seed:preview requires EMAIL_FROM to be empty");
   let url: URL;
   try {
     url = new URL(env.POSTGRES_PRISMA_URL ?? "");

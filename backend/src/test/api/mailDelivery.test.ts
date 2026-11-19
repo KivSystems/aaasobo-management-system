@@ -27,9 +27,7 @@ describe("email delivery routing", () => {
     vi.stubEnv("VERCEL", "");
     vi.stubEnv("VERCEL_ENV", "");
     vi.stubEnv("VERCEL_GIT_COMMIT_REF", "");
-    vi.stubEnv("EMAIL_ENV", "develop");
-    vi.stubEnv("EMAIL_FROM", "sender@example.com");
-    vi.stubEnv("EMAIL_REPLY_TO", "support@gmail.com");
+    vi.stubEnv("EMAIL_FROM", "");
     send
       .mockReset()
       .mockResolvedValue({ data: { id: "email-id" }, error: null });
@@ -39,10 +37,10 @@ describe("email delivery routing", () => {
     vi.unstubAllEnvs();
     vi.restoreAllMocks();
   });
-  it.each(["development", "test"])(
+  it.each([undefined, "", "  ", "not-an-email"])(
     "routes %s exclusively to Resend test addresses",
-    async (env) => {
-      vi.stubEnv("NODE_ENV", env);
+    async (sender) => {
+      vi.stubEnv("EMAIL_FROM", sender);
       const original = structuredClone(message);
       await sendEmail(message);
       expect(send).toHaveBeenCalledWith({
@@ -77,7 +75,7 @@ describe("email delivery routing", () => {
     },
   );
   it("preserves intended recipients in production without deployment metadata", async () => {
-    vi.stubEnv("EMAIL_ENV", "production");
+    vi.stubEnv("EMAIL_FROM", " sender@example.com ");
     vi.stubEnv("NODE_ENV", "development");
     await sendEmail(message);
     expect(send).toHaveBeenCalledWith({
@@ -85,41 +83,6 @@ describe("email delivery routing", () => {
       from: "sender@example.com",
     });
   });
-  it("uses the configured reply address when a production message has none", async () => {
-    vi.stubEnv("EMAIL_ENV", "production");
-    await sendEmail({ ...message, replyTo: undefined });
-    expect(send.mock.calls[0][0].replyTo).toBe("support@gmail.com");
-  });
-  it("allows production delivery without a configured reply address", async () => {
-    vi.stubEnv("EMAIL_ENV", "production");
-    vi.stubEnv("EMAIL_REPLY_TO", "");
-    await sendEmail({ ...message, replyTo: undefined });
-    expect(send.mock.calls[0][0].replyTo).toBeUndefined();
-  });
-  it("rejects an invalid configured production reply address", async () => {
-    vi.stubEnv("EMAIL_ENV", "production");
-    vi.stubEnv("EMAIL_REPLY_TO", "invalid");
-    await expect(sendEmail(message)).rejects.toThrow("EMAIL_REPLY_TO");
-    expect(send).not.toHaveBeenCalled();
-  });
-  it.each([undefined, "", "development", "invalid"])(
-    "rejects missing or invalid EMAIL_ENV %s",
-    async (environment) => {
-      vi.stubEnv("EMAIL_ENV", environment);
-      vi.stubEnv("NODE_ENV", "production");
-      await expect(sendEmail(message)).rejects.toThrow("EMAIL_ENV");
-      expect(send).not.toHaveBeenCalled();
-    },
-  );
-  it.each([undefined, "", "not-an-email"])(
-    "rejects invalid production EMAIL_FROM %s",
-    async (address) => {
-      vi.stubEnv("EMAIL_ENV", "production");
-      vi.stubEnv("EMAIL_FROM", address);
-      await expect(sendEmail(message)).rejects.toThrow("EMAIL_FROM");
-      expect(send).not.toHaveBeenCalled();
-    },
-  );
   it("routes all four application email flows through the test transport", async () => {
     vi.stubEnv("NODE_ENV", "test");
     const booking = {

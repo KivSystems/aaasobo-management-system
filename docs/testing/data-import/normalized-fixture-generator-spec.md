@@ -190,7 +190,7 @@ Given the same `--from`, `--completed-until`, and `--to`:
 From `backend`, `npm run seed:preview` generates the same normalized fixture and
 imports it through the actual admin importer. **This resets the local database's
 import target tables**, while preserving admins. Run migrations and
-`npm run db:bootstrap` first. The command requires `EMAIL_ENV=develop` and a
+`npm run db:bootstrap` first. The command requires an empty `EMAIL_FROM` and a
 `POSTGRES_PRISMA_URL` whose parsed host is `localhost`, `127.0.0.1`, or `::1`;
 connection-host override parameters are rejected. An existing bootstrap admin is
 required before the reset starts.
