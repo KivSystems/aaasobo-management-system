@@ -29,6 +29,7 @@ describe("email delivery routing", () => {
     vi.stubEnv("VERCEL_GIT_COMMIT_REF", "");
     vi.stubEnv("EMAIL_ENV", "develop");
     vi.stubEnv("EMAIL_FROM", "sender@example.com");
+    vi.stubEnv("EMAIL_REPLY_TO", "support@gmail.com");
     send
       .mockReset()
       .mockResolvedValue({ data: { id: "email-id" }, error: null });
@@ -83,6 +84,23 @@ describe("email delivery routing", () => {
       ...message,
       from: "sender@example.com",
     });
+  });
+  it("uses the configured reply address when a production message has none", async () => {
+    vi.stubEnv("EMAIL_ENV", "production");
+    await sendEmail({ ...message, replyTo: undefined });
+    expect(send.mock.calls[0][0].replyTo).toBe("support@gmail.com");
+  });
+  it("allows production delivery without a configured reply address", async () => {
+    vi.stubEnv("EMAIL_ENV", "production");
+    vi.stubEnv("EMAIL_REPLY_TO", "");
+    await sendEmail({ ...message, replyTo: undefined });
+    expect(send.mock.calls[0][0].replyTo).toBeUndefined();
+  });
+  it("rejects an invalid configured production reply address", async () => {
+    vi.stubEnv("EMAIL_ENV", "production");
+    vi.stubEnv("EMAIL_REPLY_TO", "invalid");
+    await expect(sendEmail(message)).rejects.toThrow("EMAIL_REPLY_TO");
+    expect(send).not.toHaveBeenCalled();
   });
   it.each([undefined, "", "development", "invalid"])(
     "rejects missing or invalid EMAIL_ENV %s",

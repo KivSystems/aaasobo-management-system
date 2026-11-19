@@ -14,7 +14,7 @@ const pool =
     connectionString: process.env.POSTGRES_PRISMA_URL,
     max: 2,
     idleTimeoutMillis: 30000, // 30 seconds idle timeout
-    connectionTimeoutMillis: 2000, // 2 seconds connection timeout
+    connectionTimeoutMillis: 10000, // Allow a suspended database to resume.
   });
 
 // Initialize the Prisma Adapter with the connection pool
@@ -27,7 +27,7 @@ export const prisma =
     adapter,
     transactionOptions: {
       isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
-      maxWait: 2000, // 2 seconds max wait for acquiring a connection
+      maxWait: 10000, // Match the pool connection timeout.
       timeout: 60000, // 60 seconds transaction timeout
     },
   });
