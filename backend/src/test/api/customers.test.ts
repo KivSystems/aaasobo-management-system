@@ -3,6 +3,8 @@ import request from "supertest";
 const { faker } = require("@faker-js/faker");
 import { server } from "../../server";
 import { prisma } from "../setup";
+import * as mail from "../../lib/email/mail";
+import { resend } from "../../lib/email/resendClient";
 import {
   createAdmin,
   createCustomer,
@@ -112,6 +114,53 @@ describe("POST /customers/register", () => {
       where: { email: customerEmail },
     });
     expect(verificationToken).toBeTruthy();
+  });
+
+  it("verifies and authenticates a development registration using the emailed token", async () => {
+    const actualMail = await vi.importActual<typeof mail>(
+      "../../lib/email/mail",
+    );
+    vi.mocked(mail.sendVerificationEmail).mockImplementationOnce(
+      actualMail.sendVerificationEmail,
+    );
+    const customerData = {
+      name: "Development Registration",
+      email: faker.internet.email().toLowerCase(),
+      password: faker.internet.password(),
+      prefecture: "Tokyo",
+    };
+    await request(server)
+      .post("/customers/register")
+      .send({
+        customerData,
+        childData: {
+          name: "Test Child",
+          birthdate: "2018-01-01",
+          personalInfo: "Registration test",
+        },
+      })
+      .expect(201);
+
+    const payload = vi.mocked(resend.emails.send).mock.calls.at(-1)![0];
+    expect(payload.to).toBe("delivered@resend.dev");
+    const token = payload.html!.match(/new-verification\/([^"<>\s]+)/)?.[1];
+    expect(token).toBeTruthy();
+    await request(server)
+      .patch("/customers/verify-email")
+      .send({ token })
+      .expect(200);
+    await request(server)
+      .post("/users/authenticate")
+      .send({
+        email: customerData.email,
+        password: customerData.password,
+        userType: "customer",
+      })
+      .expect(200);
+    const customer = await prisma.customer.findUnique({
+      where: { email: customerData.email },
+    });
+    expect(customer?.emailVerified).toBeTruthy();
   });
 
   it("fail for missing customerData fields", async () => {
