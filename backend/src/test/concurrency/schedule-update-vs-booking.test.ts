@@ -1,36 +1,11 @@
+import "../mockEmail";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import { server } from "../../server";
 import { prisma } from "../setup";
-import {
-  createAdmin,
-  createChild,
-  createClass,
-  createCustomer,
-  createInstructor,
-  generateAuthCookie,
-} from "../testUtils";
+import { createAdminAuthCookie, createInstructor } from "../testUtils";
+import { createRebookingCustomer, requestRebooking } from "./rebooking";
 import { getConcurrencyConfig } from "./config";
-
-vi.mock("../../lib/email/resendClient", () => ({
-  resend: {
-    emails: {
-      send: vi
-        .fn()
-        .mockResolvedValue({ data: { id: "mock-email-id" }, error: null }),
-    },
-  },
-}));
-
-vi.mock("../../lib/email/mail", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../lib/email/mail")>();
-  return {
-    ...actual,
-    sendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),
-    resendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),
-    sendPasswordResetEmail: vi.fn().mockResolvedValue({ success: true }),
-  };
-});
 
 describe("concurrency: schedule update vs booking race", () => {
   beforeEach(() => {
@@ -46,8 +21,7 @@ describe("concurrency: schedule update vs booking race", () => {
 
   for (let repetition = 1; repetition <= repetitions; repetition += 1) {
     it(`keeps schedule and booking state consistent when slot is removed (run #${repetition})`, async () => {
-      const admin = await createAdmin();
-      const adminAuthCookie = await generateAuthCookie(admin.id, "admin");
+      const adminAuthCookie = await createAdminAuthCookie();
       const instructor = await createInstructor();
 
       await request(server)
@@ -60,29 +34,15 @@ describe("concurrency: schedule update vs booking race", () => {
         })
         .expect(201);
 
-      const customer = await createCustomer();
-      const child = await createChild(customer.id);
-      const oldClass = await createClass(customer.id);
-
-      await prisma.class.update({
-        where: { id: oldClass.id },
-        data: {
-          isFreeTrial: true,
-          rebookableUntil: new Date("2025-12-31T00:00:00.000Z"),
-        },
-      });
-
+      const customer = await createRebookingCustomer();
       const targetDateTime = new Date("2025-01-15T00:00:00.000Z");
 
-      const rebookRequest = request(server)
-        .post(`/classes/${oldClass.id}/rebook`)
-        .set("Cookie", adminAuthCookie)
-        .send({
-          dateTime: targetDateTime.toISOString(),
-          instructorId: instructor.id,
-          customerId: customer.id,
-          childrenIds: [child.id],
-        });
+      const rebookRequest = requestRebooking(
+        customer,
+        adminAuthCookie,
+        instructor.id,
+        targetDateTime,
+      );
 
       const scheduleUpdateRequest = request(server)
         .post(`/instructors/${instructor.id}/schedules`)
@@ -111,12 +71,11 @@ describe("concurrency: schedule update vs booking race", () => {
         },
       });
 
-      const targetDate = new Date("2025-01-15T00:00:00.000Z");
       const activeSchedule = await prisma.instructorSchedule.findFirst({
         where: {
           instructorId: instructor.id,
-          effectiveFrom: { lte: targetDate },
-          OR: [{ effectiveTo: null }, { effectiveTo: { gt: targetDate } }],
+          effectiveFrom: { lte: targetDateTime },
+          OR: [{ effectiveTo: null }, { effectiveTo: { gt: targetDateTime } }],
         },
         include: { slots: true },
       });
@@ -133,7 +92,7 @@ describe("concurrency: schedule update vs booking race", () => {
       const canceledClass = await prisma.class.findFirst({
         where: {
           instructorId: instructor.id,
-          customerId: customer.id,
+          customerId: customer.customerId,
           dateTime: targetDateTime,
           status: "canceledByInstructor",
         },

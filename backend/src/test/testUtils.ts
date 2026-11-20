@@ -415,6 +415,11 @@ async function generateAuthToken(
   return token;
 }
 
+export async function createAdminAuthCookie() {
+  const admin = await createAdmin();
+  return generateAuthCookie(admin.id, "admin");
+}
+
 /**
  * Generate cookie header for authenticated requests
  */

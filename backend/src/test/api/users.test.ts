@@ -1,3 +1,4 @@
+import "../mockEmail";
 import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
 const { faker } = require("@faker-js/faker");
@@ -13,28 +14,6 @@ import {
   generateTestInstructor,
   createPasswordResetToken,
 } from "../testUtils";
-
-// Mock the resend email service to avoid sending real emails
-vi.mock("../../lib/email/resendClient", () => ({
-  resend: {
-    emails: {
-      send: vi
-        .fn()
-        .mockResolvedValue({ data: { id: "mock-email-id" }, error: null }),
-    },
-  },
-}));
-
-// Mock the mail helper functions
-vi.mock("../../lib/email/mail", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../lib/email/mail")>();
-  return {
-    ...actual,
-    sendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),
-    resendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),
-    sendPasswordResetEmail: vi.fn().mockResolvedValue({ success: true }),
-  };
-});
 
 describe("POST /users/authenticate", () => {
   describe("Admin", () => {
