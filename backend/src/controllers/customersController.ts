@@ -67,8 +67,8 @@ export const registerCustomerController = async (
       return res.sendStatus(409);
     }
 
-    const { customer, child, verificationToken } = await prisma.$transaction(
-      async (tx) => {
+    const { customer, child, verificationToken, freeTrialClass } =
+      await prisma.$transaction(async (tx) => {
         const customer = await registerCustomer(
           {
             name: customerData.name,
@@ -93,11 +93,13 @@ export const registerCustomerController = async (
         );
 
         // Create a free trial class
-        await createFreeTrialClass({ tx, customerId: customer.id });
+        const freeTrialClass = await createFreeTrialClass({
+          tx,
+          customerId: customer.id,
+        });
 
-        return { customer, child, verificationToken };
-      },
-    );
+        return { customer, child, verificationToken, freeTrialClass };
+      });
 
     const sendResult = await sendVerificationEmail(
       verificationToken.email,
@@ -107,11 +109,12 @@ export const registerCustomerController = async (
 
     if (!sendResult.success) {
       await prisma.$transaction(async (tx) => {
+        await tx.class.delete({ where: { id: freeTrialClass.id } });
         await deleteChild(tx, child.id);
         await deleteCustomer(customer.id, tx);
         await deleteVerificationToken(normalizedEmail, tx);
       });
-      return res.sendStatus(503); // Failed to send password reset email. 503 Service Unavailable
+      return res.sendStatus(503);
     }
 
     res.sendStatus(201);
