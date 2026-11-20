@@ -2,13 +2,8 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import { server } from "../../server";
 import { prisma } from "../setup";
-import { createAdmin, createPlan, generateAuthCookie } from "../testUtils";
+import { createAdminAuthCookie, createPlan } from "../testUtils";
 import { EnglishBackground } from "../../types";
-
-async function createAdminAuthCookie() {
-  const admin = await createAdmin();
-  return await generateAuthCookie(admin.id, "admin");
-}
 
 describe("GET /plans", () => {
   it("succeed with authenticated admin and return active plans only", async () => {

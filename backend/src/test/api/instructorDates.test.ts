@@ -2,11 +2,7 @@ import { describe, expect, it } from "vitest";
 import request from "supertest";
 import { server } from "../../server";
 import { prisma } from "../../../prisma/prismaClient";
-import {
-  createAdmin,
-  createInstructor,
-  generateAuthCookie,
-} from "../testUtils";
+import { createAdminAuthCookie, createInstructor } from "../testUtils";
 
 const profile = {
   name: "Date validation teacher",
@@ -24,11 +20,6 @@ const profile = {
   passcode: "date-validation-passcode",
   englishBackground: "0",
 };
-
-async function adminCookie() {
-  const admin = await createAdmin();
-  return generateAuthCookie(admin.id, "admin");
-}
 
 const invalidDates = [
   "",
@@ -56,7 +47,7 @@ const invalidBirthdays = [
 describe("instructor profile date validation", () => {
   it("rejects a multipart ISO timestamp without changing the instructor", async () => {
     const instructor = await createInstructor();
-    const cookie = await adminCookie();
+    const cookie = await createAdminAuthCookie();
     const before = await prisma.instructor.findUniqueOrThrow({
       where: { id: instructor.id },
     });
@@ -86,7 +77,7 @@ describe("instructor profile date validation", () => {
       });
       const response = await request(server)
         .patch(`/admins/instructor-list/update/${instructor.id}`)
-        .set("Cookie", await adminCookie())
+        .set("Cookie", await createAdminAuthCookie())
         .send({ ...profile, birthdate })
         .expect(400);
       expect(response.body.message).toBe("Validation failed");
@@ -104,7 +95,7 @@ describe("instructor profile date validation", () => {
       const instructor = await createInstructor();
       const response = await request(server)
         .patch(`/admins/instructor-list/update/${instructor.id}`)
-        .set("Cookie", await adminCookie())
+        .set("Cookie", await createAdminAuthCookie())
         .send({ ...profile, leavingDate })
         .expect(400);
       expect(response.body.details).toEqual(
@@ -128,7 +119,7 @@ describe("instructor profile date validation", () => {
       const instructor = await createInstructor();
       await request(server)
         .patch(`/admins/instructor-list/update/${instructor.id}`)
-        .set("Cookie", await adminCookie())
+        .set("Cookie", await createAdminAuthCookie())
         .send({ ...profile, birthdate, leavingDate })
         .expect(200);
       const saved = await prisma.instructor.findUniqueOrThrow({
@@ -144,13 +135,13 @@ describe("instructor profile date validation", () => {
     },
   );
 
-  it.each(invalidBirthdays)(
+  it.each([...invalidBirthdays, "00-15", "1900-02-29"])(
     "rejects invalid registration birthdate %s before creating",
     async (birthdate) => {
       const before = await prisma.instructor.count();
       await request(server)
         .post("/admins/instructor-list/register")
-        .set("Cookie", await adminCookie())
+        .set("Cookie", await createAdminAuthCookie())
         .send({ ...profile, password: "test-password", birthdate })
         .expect(400);
       expect(await prisma.instructor.count()).toBe(before);

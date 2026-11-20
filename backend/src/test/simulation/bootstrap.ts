@@ -1,3 +1,4 @@
+import { registerSubscription, createRecurringClass } from "../bookingApi";
 import request from "supertest";
 import { server } from "../../server";
 import { prisma } from "../setup";
@@ -97,7 +98,7 @@ async function registerInstructor(authCookie: string, seed: number, i: number) {
     skill: "Conversation",
     meetingId: String(10_000_000_000 + i),
     passcode: `PASS${i}`.padEnd(8, "0"),
-    englishBackground: EnglishBackground.NonNative,
+    englishBackground: String(EnglishBackground.NonNative),
   };
 
   await request(server)
@@ -154,50 +155,6 @@ async function registerCustomer(seed: number, i: number) {
   return created;
 }
 
-async function registerSubscription(
-  authCookie: string,
-  customerId: number,
-  planId: number,
-  subscriptionStartAtIso: string,
-) {
-  await request(server)
-    .post(`/customers/${customerId}/subscription`)
-    .set("Cookie", authCookie)
-    .send({ planId, startAt: subscriptionStartAtIso })
-    .expect(200);
-
-  const created = await prisma.subscription.findFirst({
-    where: { customerId, planId },
-    orderBy: { id: "desc" },
-  });
-  if (!created) throw new Error("Subscription creation failed");
-  return created;
-}
-
-async function createRecurringClass(args: {
-  instructorId: number;
-  customerId: number;
-  childrenIds: number[];
-  subscriptionId: number;
-  startDate: string;
-  timezone: string;
-  slot: Slot;
-}) {
-  await request(server)
-    .post("/recurring-classes")
-    .send({
-      instructorId: args.instructorId,
-      weekday: args.slot.weekday,
-      startTime: args.slot.startTime,
-      customerId: args.customerId,
-      childrenIds: args.childrenIds,
-      subscriptionId: args.subscriptionId,
-      startDate: args.startDate,
-      timezone: args.timezone,
-    })
-    .expect(201);
-}
-
 export async function bootstrapSimulation(
   config: SimulationBootstrapConfig,
 ): Promise<SimulationBootstrapState> {
@@ -247,13 +204,13 @@ export async function bootstrapSimulation(
     const subscriptionIds: number[] = [];
     for (let r = 0; r < config.scale.recurringClassesPerCustomer; r++) {
       const plan = plans[(i + r) % plans.length]!;
-      const subscription = await registerSubscription(
+      const subscriptionId = await registerSubscription(
         adminAuthCookie,
         customer.id,
         plan.id,
         config.subscriptionStartAtIso,
       );
-      subscriptionIds.push(subscription.id);
+      subscriptionIds.push(subscriptionId);
 
       const chosenInstructor = instructors[(i + r) % instructors.length]!;
       const nextSlotIndex =
@@ -264,10 +221,11 @@ export async function bootstrapSimulation(
         (nextSlotIndex + 1) % chosenInstructor.slots.length,
       );
       await createRecurringClass({
+        authCookie: adminAuthCookie,
         instructorId: chosenInstructor.id,
         customerId: customer.id,
         childrenIds: children.map((c) => c.id),
-        subscriptionId: subscription.id,
+        subscriptionId,
         startDate: config.recurringStartDate,
         timezone: config.timezone,
         slot,

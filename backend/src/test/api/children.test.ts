@@ -4,7 +4,7 @@ const { faker } = require("@faker-js/faker");
 import { server } from "../../server";
 import { prisma } from "../setup";
 import {
-  createAdmin,
+  createAdminAuthCookie,
   createCustomer,
   createChild,
   createInstructor,
@@ -12,11 +12,6 @@ import {
   createClassAttendance,
   generateAuthCookie,
 } from "../testUtils";
-
-async function createAdminAuthCookie() {
-  const admin = await createAdmin();
-  return await generateAuthCookie(admin.id, "admin");
-}
 
 describe("GET /children", () => {
   it("succeed with valid customerId", async () => {
