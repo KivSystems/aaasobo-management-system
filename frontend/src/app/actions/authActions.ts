@@ -1,11 +1,14 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { signIn, signOut } from "../../../auth.config";
+import { signIn, signOut, VerificationEmailResent } from "../../../auth.config";
 import { userLoginSchema } from "@/schemas/authSchema";
 import { extractLoginValidationErrors } from "@/lib/utils/validationErrorUtils";
 import { UNEXPECTED_ERROR_MESSAGE } from "@/lib/messages/formValidation";
-import { LOGIN_FAILED_MESSAGE } from "@/lib/messages/formValidation";
+import {
+  LOGIN_FAILED_MESSAGE,
+  VERIFICATION_EMAIL_RESENT_NOTICE,
+} from "@/lib/messages/formValidation";
 
 export async function authenticate(
   prevState: { errorMessage: string } | undefined,
@@ -35,6 +38,9 @@ export async function authenticate(
       redirectTo: "/auth/post-login",
     });
   } catch (error) {
+    if (error instanceof VerificationEmailResent) {
+      return { errorMessage: VERIFICATION_EMAIL_RESENT_NOTICE[language] };
+    }
     if (error instanceof AuthError) {
       console.error("Error in authenticate server action:", error);
       return {

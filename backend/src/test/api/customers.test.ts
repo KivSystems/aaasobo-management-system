@@ -136,6 +136,70 @@ describe("POST /customers/register", () => {
     expect(customer?.emailVerified).toBeTruthy();
   });
 
+  it.each([true, false])(
+    "rejects duplicate registration with email verified=%s",
+    async (verified) => {
+      const customer = await createCustomer({
+        ...generateTestCustomer(),
+        emailVerified: verified ? new Date() : null,
+      });
+      vi.mocked(mail.sendVerificationEmail).mockClear();
+      await request(server)
+        .post("/customers/register")
+        .send({
+          customerData: {
+            name: "Duplicate Account",
+            email: customer.email,
+            password: "NewPassword123!",
+            prefecture: "Tokyo",
+          },
+          childData: {
+            name: "Test Child",
+            birthdate: "2018-01-01",
+            personalInfo: "Registration test",
+          },
+        })
+        .expect(409);
+      expect(mail.sendVerificationEmail).not.toHaveBeenCalled();
+      expect(
+        await prisma.child.count({ where: { customerId: customer.id } }),
+      ).toBe(0);
+    },
+  );
+
+  it("rolls back a new registration if verification email delivery fails", async () => {
+    const customerData = generateTestCustomer();
+    vi.mocked(mail.sendVerificationEmail).mockResolvedValueOnce({
+      success: false,
+    });
+    await request(server)
+      .post("/customers/register")
+      .send({
+        customerData: {
+          name: customerData.name,
+          email: customerData.email,
+          password: customerData.password,
+          prefecture: customerData.prefecture,
+        },
+        childData: {
+          name: "Test Child",
+          birthdate: "2018-01-01",
+          personalInfo: "Registration test",
+        },
+      })
+      .expect(503);
+    expect(
+      await prisma.customer.findUnique({
+        where: { email: customerData.email },
+      }),
+    ).toBeNull();
+    expect(
+      await prisma.verificationToken.count({
+        where: { email: customerData.email },
+      }),
+    ).toBe(0);
+  });
+
   it("fail for missing customerData fields", async () => {
     const requestBody = {
       customerData: {

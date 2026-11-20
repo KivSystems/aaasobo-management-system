@@ -4,7 +4,11 @@ import request from "supertest";
 const { faker } = require("@faker-js/faker");
 import { server } from "../../server";
 import { prisma } from "../setup";
-import { sendPasswordResetEmail } from "../../lib/email/mail";
+import { hashToken } from "../../utils/tokenUtils";
+import {
+  resendVerificationEmail,
+  sendPasswordResetEmail,
+} from "../../lib/email/mail";
 import {
   createAdmin,
   createCustomer,
@@ -76,7 +80,7 @@ describe("POST /users/authenticate", () => {
       expect(response.body).toEqual({ id: customer.id });
     });
 
-    it("fail with unverified email", async () => {
+    it("resends verification when an unverified customer uses the right password", async () => {
       const customerData = generateTestCustomer();
       customerData.emailVerified = null;
       await createCustomer(customerData);
@@ -89,6 +93,52 @@ describe("POST /users/authenticate", () => {
           userType: "customer",
         })
         .expect(403);
+      const token = await prisma.verificationToken.findFirstOrThrow({
+        where: { email: customerData.email },
+      });
+      const [email, name, rawToken] = vi.mocked(resendVerificationEmail).mock
+        .lastCall!;
+      expect([email, name, hashToken(rawToken)]).toEqual([
+        customerData.email,
+        customerData.name,
+        token.token,
+      ]);
+    });
+
+    it("does not resend verification when the password is wrong", async () => {
+      const customer = await createCustomer({
+        ...generateTestCustomer(),
+        emailVerified: null,
+      });
+      vi.mocked(resendVerificationEmail).mockClear();
+      await request(server)
+        .post("/users/authenticate")
+        .send({
+          email: customer.email,
+          password: "WrongPassword123!",
+          userType: "customer",
+        })
+        .expect(401);
+      expect(resendVerificationEmail).not.toHaveBeenCalled();
+    });
+
+    it("removes the verification token if the resend fails", async () => {
+      const data = { ...generateTestCustomer(), emailVerified: null };
+      await createCustomer(data);
+      vi.mocked(resendVerificationEmail).mockResolvedValueOnce({
+        success: false,
+      });
+      await request(server)
+        .post("/users/authenticate")
+        .send({
+          email: data.email,
+          password: data.password,
+          userType: "customer",
+        })
+        .expect(503);
+      expect(
+        await prisma.verificationToken.count({ where: { email: data.email } }),
+      ).toBe(0);
     });
   });
 
@@ -150,23 +200,48 @@ describe("POST /users/send-password-reset", () => {
     expect(token?.email).toBe(adminData.email);
   });
 
-  it("succeed for existing customer", async () => {
-    const customerData = generateTestCustomer();
-    await createCustomer(customerData);
+  it.each([true, false])(
+    "accepts a reset for a customer with email verified=%s",
+    async (verified) => {
+      const customerData = generateTestCustomer();
+      const customer = await createCustomer({
+        ...customerData,
+        emailVerified: verified ? new Date() : null,
+      });
 
-    await request(server)
-      .post("/users/send-password-reset")
-      .send({
-        email: customerData.email,
-        userType: "customer",
-      })
-      .expect(202);
+      await request(server)
+        .post("/users/send-password-reset")
+        .send({
+          email: customerData.email,
+          userType: "customer",
+        })
+        .expect(202);
 
-    const token = await prisma.passwordResetToken.findFirst({
-      where: { email: customerData.email },
-    });
-    expect(token).toBeTruthy();
-  });
+      const token = await prisma.passwordResetToken.findFirstOrThrow({
+        where: { email: customerData.email },
+      });
+      const [email, name, rawToken, role] = vi.mocked(sendPasswordResetEmail)
+        .mock.lastCall!;
+      expect([email, name, hashToken(rawToken), role]).toEqual([
+        customer.email,
+        customer.name,
+        token.token,
+        "customer",
+      ]);
+      await request(server)
+        .patch("/users/update-password")
+        .send({
+          token: rawToken,
+          userType: "customer",
+          password: "NewPassword123!",
+        })
+        .expect(201);
+      const updated = await prisma.customer.findUniqueOrThrow({
+        where: { id: customer.id },
+      });
+      expect(updated.emailVerified).toEqual(customer.emailVerified);
+    },
+  );
 
   it("succeed for existing instructor", async () => {
     const instructorData = generateTestInstructor();
@@ -186,15 +261,24 @@ describe("POST /users/send-password-reset", () => {
     expect(token).toBeTruthy();
   });
 
-  it("returns the same accepted response for non-existent user", async () => {
-    await request(server)
-      .post("/users/send-password-reset")
-      .send({
-        email: faker.internet.email(),
-        userType: "admin",
-      })
-      .expect(202);
-  });
+  it.each(["admin", "customer", "instructor"])(
+    "returns the same accepted response without sending for an unknown %s",
+    async (userType) => {
+      const email = faker.internet.email().toLowerCase();
+      vi.mocked(sendPasswordResetEmail).mockClear();
+      await request(server)
+        .post("/users/send-password-reset")
+        .send({
+          email,
+          userType,
+        })
+        .expect(202);
+      expect(sendPasswordResetEmail).not.toHaveBeenCalled();
+      expect(await prisma.passwordResetToken.count({ where: { email } })).toBe(
+        0,
+      );
+    },
+  );
 });
 
 describe("POST /users/verify-reset-token", () => {

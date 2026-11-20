@@ -1,10 +1,8 @@
 import {
   CONFIRMATION_EMAIL_RESEND_FAILURE,
-  EMAIL_NOT_REGISTERED_MESSAGE,
   EMAIL_VERIFICATION_RESENT_NOTICE,
   LOGIN_FAILED_MESSAGE,
-  PASSWORD_RESET_EMAIL_SEND_FAILURE,
-  PASSWORD_RESET_EMAIL_SENT_MESSAGE,
+  PASSWORD_RESET_EMAIL_ACCEPTED_MESSAGE,
   PASSWORD_RESET_FAILED_MESSAGE,
   PASSWORD_RESET_LINK_EXPIRED,
   PASSWORD_RESET_SUCCESS_MESSAGE,
@@ -39,22 +37,12 @@ export const sendUserResetEmail = async (
       headers,
       body,
     });
-    const statusErrorMessages: Record<number, string> = {
-      404: EMAIL_NOT_REGISTERED_MESSAGE[language],
-      503: PASSWORD_RESET_EMAIL_SEND_FAILURE[language],
-    };
-
-    const errorMessage = statusErrorMessages[response.status];
-    if (errorMessage) {
-      return { errorMessage };
-    }
-
-    if (![200, 201].includes(response.status)) {
+    if (response.status !== 202) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
     return {
-      successMessage: PASSWORD_RESET_EMAIL_SENT_MESSAGE[language],
+      successMessage: PASSWORD_RESET_EMAIL_ACCEPTED_MESSAGE[language],
     };
   } catch (error) {
     console.error("API error while sending password reset email:", error);
