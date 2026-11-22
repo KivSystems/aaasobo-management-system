@@ -1,12 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import { server } from "../../server";
-import { createAdmin, createEvent, generateAuthCookie } from "../testUtils";
-
-async function createAdminAuthCookie() {
-  const admin = await createAdmin();
-  return await generateAuthCookie(admin.id, "admin");
-}
+import { createAdminAuthCookie, createEvent } from "../testUtils";
 
 describe("GET /events/:id", () => {
   it("succeed with authenticated admin and valid ID", async () => {

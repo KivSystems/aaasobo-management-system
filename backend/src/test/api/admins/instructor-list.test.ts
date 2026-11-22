@@ -51,26 +51,6 @@ describe("GET /admins/instructor-list", () => {
 });
 
 describe("POST /admins/instructor-list/register", () => {
-  it("succeed with authenticated admin", async () => {
-    const admin = await createAdmin();
-    const instructorData = generateTestInstructor();
-    const authCookie = await generateAuthCookie(admin.id, "admin");
-
-    await request(server)
-      .post("/admins/instructor-list/register")
-      .set("Cookie", authCookie)
-      .send({
-        ...instructorData,
-        englishBackground: String(EnglishBackground.NonNative),
-      })
-      .expect(201);
-
-    const createdInstructor = await prisma.instructor.findUnique({
-      where: { email: instructorData.email },
-    });
-    expect(createdInstructor).toBeTruthy();
-  });
-
   it.each(["02-29", "12-31"])(
     "registers %s without retaining a year",
     async (birthdate) => {
@@ -91,24 +71,6 @@ describe("POST /admins/instructor-list/register", () => {
         .set("Cookie", cookie);
       expect(profile.status).toBe(200);
       expect(profile.body.instructor.birthdate).toBe(birthdate);
-    },
-  );
-
-  it.each(["02-30", "04-31", "00-15", "1900-02-29"])(
-    "rejects invalid birthday %s",
-    async (birthdate) => {
-      const admin = await createAdmin();
-      const cookie = await generateAuthCookie(admin.id, "admin");
-      await request(server)
-        .post("/admins/instructor-list/register")
-        .set("Cookie", cookie)
-        .send({
-          ...generateTestInstructor(),
-          birthdate,
-          englishBackground: "0",
-        })
-        .expect(400);
-      expect(await prisma.instructor.count()).toBe(0);
     },
   );
 

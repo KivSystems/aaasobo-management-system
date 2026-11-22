@@ -5,27 +5,17 @@ import {
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
-import { mkdir, rm, writeFile } from "fs/promises";
-import path from "path";
+import type { TestProject } from "vitest/node" with { "resolution-mode": "import" };
+import {
+  asAdminDatabaseUrl,
+  quotedIdentifier,
+  requireSafeDbName,
+} from "./testDatabase";
 
-const stateDir = path.join(process.cwd(), ".vitest");
-const baseDatabaseUrlFile = path.join(stateDir, "base-database-url.txt");
-
-function requireSafeDbName(dbName: string) {
-  if (!/^[a-z0-9_]+$/i.test(dbName)) {
-    throw new Error(`Unsafe database name: ${dbName}`);
+declare module "vitest" {
+  interface ProvidedContext {
+    baseDatabaseUrl: string;
   }
-}
-
-function quotedIdentifier(id: string) {
-  requireSafeDbName(id);
-  return `"${id.replaceAll('"', '""')}"`;
-}
-
-function asAdminDatabaseUrl(databaseUrl: string) {
-  const url = new URL(databaseUrl);
-  url.pathname = "/postgres";
-  return url.toString();
 }
 
 async function dropLeakedTestDatabases(baseDatabaseUrl: string) {
@@ -59,12 +49,10 @@ async function dropLeakedTestDatabases(baseDatabaseUrl: string) {
   }
 }
 
-export default async function globalSetup() {
+export default async function globalSetup(project: TestProject) {
   dotenv.config();
-  await mkdir(stateDir, { recursive: true });
 
   let container: StartedPostgreSqlContainer | undefined;
-  let baseDatabaseUrlForTeardown: string | undefined;
 
   const baseDatabaseUrl = await (async () => {
     if (process.env.TEST_DATABASE_URL) return process.env.TEST_DATABASE_URL;
@@ -93,8 +81,7 @@ export default async function globalSetup() {
     }
   })();
 
-  baseDatabaseUrlForTeardown = baseDatabaseUrl;
-  await writeFile(baseDatabaseUrlFile, baseDatabaseUrl, "utf8");
+  project.provide("baseDatabaseUrl", baseDatabaseUrl);
   try {
     await dropLeakedTestDatabases(baseDatabaseUrl);
   } catch (error) {
@@ -103,19 +90,17 @@ export default async function globalSetup() {
   }
 
   return async () => {
-    if (baseDatabaseUrlForTeardown) {
-      try {
-        await dropLeakedTestDatabases(baseDatabaseUrlForTeardown);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.warn(
-          ["Test DB cleanup at shutdown skipped due to error.", message].join(
-            "\n",
-          ),
-        );
-      }
+    try {
+      await dropLeakedTestDatabases(baseDatabaseUrl);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(
+        ["Test DB cleanup at shutdown skipped due to error.", message].join(
+          "\n",
+        ),
+      );
     }
-    await rm(baseDatabaseUrlFile, { force: true });
+
     if (container) await container.stop();
   };
 }

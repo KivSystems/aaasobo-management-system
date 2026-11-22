@@ -1,3 +1,4 @@
+import { registerSubscription, createRecurringClass } from "../bookingApi";
 import request from "supertest";
 import { server } from "../../server";
 import {
@@ -109,64 +110,6 @@ async function createInstructorSchedule(args: {
   }
 }
 
-async function registerSubscription(args: {
-  adminAuthCookie: string;
-  customerId: number;
-  planId: number;
-  startDate: string;
-}) {
-  const response = await request(server)
-    .post(`/customers/${args.customerId}/subscription`)
-    .set("Cookie", args.adminAuthCookie)
-    .send({
-      planId: args.planId,
-      startAt: toJstDateString(args.startDate),
-    });
-
-  if (response.status !== 200) {
-    throw new Error(
-      `failed to register subscription: customerId=${args.customerId}, status=${response.status}, body=${JSON.stringify(response.body)}`,
-    );
-  }
-
-  const subscriptionId = response.body?.newSubscription?.id;
-  if (typeof subscriptionId !== "number") {
-    throw new Error(
-      `missing subscription id in response: customerId=${args.customerId}, body=${JSON.stringify(response.body)}`,
-    );
-  }
-
-  return subscriptionId;
-}
-
-async function createRecurringClass(args: {
-  instructorId: number;
-  customerId: number;
-  childId: number;
-  subscriptionId: number;
-  slot: Slot;
-  startDate: string;
-}) {
-  const response = await request(server)
-    .post("/recurring-classes")
-    .send({
-      instructorId: args.instructorId,
-      weekday: args.slot.weekday,
-      startTime: args.slot.startTime,
-      customerId: args.customerId,
-      childrenIds: [args.childId],
-      subscriptionId: args.subscriptionId,
-      startDate: args.startDate,
-      timezone: "Asia/Tokyo",
-    });
-
-  if (response.status !== 201) {
-    throw new Error(
-      `failed to create recurring class: customerId=${args.customerId}, instructorId=${args.instructorId}, status=${response.status}, body=${JSON.stringify(response.body)}`,
-    );
-  }
-}
-
 export async function initializePerformanceData(
   config: PerformanceTestConfig,
 ): Promise<PerformanceBootstrapState> {
@@ -220,17 +163,19 @@ export async function initializePerformanceData(
     const child = await createChild(customer.id);
     const assignment = assignments[customerIndex]!;
 
-    const subscriptionId = await registerSubscription({
+    const subscriptionId = await registerSubscription(
       adminAuthCookie,
-      customerId: customer.id,
-      planId: plan.id,
-      startDate: config.startDate,
-    });
+      customer.id,
+      plan.id,
+      toJstDateString(config.startDate),
+    );
 
     await createRecurringClass({
+      authCookie: adminAuthCookie,
+      timezone: "Asia/Tokyo",
       instructorId: assignment.instructorId,
       customerId: customer.id,
-      childId: child.id,
+      childrenIds: [child.id],
       subscriptionId,
       slot: assignment.slot,
       startDate: config.startDate,

@@ -608,45 +608,6 @@ describe("POST /classes/create-classes", () => {
     expect(created[1].status).toBe("canceledByInstructor");
   });
 
-  it("succeed generating classes for month", async () => {
-    const admin = await createAdmin();
-    const customer = await createCustomer();
-    const instructor = await createInstructor();
-    const child = await createChild(customer.id);
-    const plan = await createPlan();
-    const subscription = await createSubscription(plan.id, customer.id, {
-      startAt: new Date("2023-01-01T00:00:00.000Z"),
-      endAt: new Date("2025-12-31T00:00:00.000Z"),
-    });
-    const recurringClass = await prisma.recurringClass.create({
-      data: {
-        instructorId: instructor.id,
-        subscriptionId: subscription.id,
-        startAt: new Date("2023-01-01T09:00:00.000Z"),
-        recurringClassAttendance: {
-          create: {
-            childrenId: child.id,
-          },
-        },
-      },
-    });
-
-    const response = await request(server)
-      .post("/classes/create-classes")
-      .set("Cookie", await generateAuthCookie(admin.id, "admin"))
-      .send({
-        year: 2024,
-        month: "January",
-      })
-      .expect(201);
-
-    expect(Array.isArray(response.body.result)).toBe(true);
-    const created = await prisma.class.findMany({
-      where: { recurringClassId: recurringClass.id },
-    });
-    expect(created.length).toBeGreaterThan(0);
-  });
-
   it("preserves JST weekday and time when generating classes for month", async () => {
     const admin = await createAdmin();
     const customer = await createCustomer();
@@ -670,7 +631,7 @@ describe("POST /classes/create-classes", () => {
       },
     });
 
-    await request(server)
+    const response = await request(server)
       .post("/classes/create-classes")
       .set("Cookie", await generateAuthCookie(admin.id, "admin"))
       .send({
@@ -679,6 +640,7 @@ describe("POST /classes/create-classes", () => {
       })
       .expect(201);
 
+    expect(Array.isArray(response.body.result)).toBe(true);
     const created = await prisma.class.findMany({
       where: { recurringClassId: recurringClass.id },
       orderBy: { dateTime: "asc" },

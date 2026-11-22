@@ -73,7 +73,7 @@ export const sendVerificationEmail = async (
         </p>
         <p style="font-size: 14px;">
           KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-          ${CONTACT_EMAIL}
+          <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
         </p>
       </div>
     `,
@@ -170,7 +170,7 @@ export const resendVerificationEmail = async (
         </p>
         <p style="font-size: 14px;">
           KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-          ${CONTACT_EMAIL}
+          <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
         </p>
       </div>
     `,
@@ -269,7 +269,7 @@ export const sendPasswordResetEmail = async (
       </p>
       <p style="font-size: 14px;">
         KIVこどもオンライン英会話AaasoBo! / KIV Online English Program AaasoBo!<br>
-        ${CONTACT_EMAIL}
+        <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
       </p>
     </div>
   `,
@@ -345,7 +345,7 @@ export const sendInstructorSameDayRebookEmail = async (data: {
 
     <p style="font-size: 14px; color: #555;">
       KIV Online English Program AaasoBo!<br>
-      📧 ${CONTACT_EMAIL}
+      📧 <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
     </p>
   </div>
 `,

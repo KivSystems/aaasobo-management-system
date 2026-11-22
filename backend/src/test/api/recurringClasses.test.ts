@@ -5,7 +5,7 @@ import { prisma } from "../setup";
 import { Prisma } from "@prisma/client";
 import * as historyService from "../../services/classChangeHistoryService";
 import {
-  createAdmin,
+  createAdminAuthCookie,
   createCustomer,
   createPlan,
   createSubscription,
@@ -19,11 +19,6 @@ import {
   createSchedule,
   generateAuthCookie,
 } from "../testUtils";
-
-async function createAdminAuthCookie() {
-  const admin = await createAdmin();
-  return await generateAuthCookie(admin.id, "admin");
-}
 
 function time(strings: TemplateStringsArray, ...values: any[]): Date {
   const input = strings[0] + (values[0] || "");

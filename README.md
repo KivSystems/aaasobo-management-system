@@ -38,9 +38,6 @@ FRONTEND_ORIGIN="http://localhost:3000"
 POSTGRES_PRISMA_URL="postgresql://postgres:summer@localhost:5432/mydb?schema=public"
 POSTGRES_URL_NON_POOLING="postgresql://postgres:summer@localhost:5432/mydb?schema=public"
 PORT=4000
-KEY1="<generate_with_openssl_rand_hex_32>"
-KEY2="<generate_with_openssl_rand_hex_32>"
-EMAIL_ENV="develop"
 RESEND_API_KEY="Dummy Resend API Key"
 AUTH_SECRET="<generate_with_openssl_rand_hex_32>"
 AUTH_SALT="next-auth.session-token"
@@ -56,29 +53,15 @@ Note that the following variables should be changed to match your local setup:
 - `POSTGRES_PRISMA_URL`: postgres://<user>:<password>@localhost:<port>/<dbname>?schema=schema
 - `POSTGRES_URL_NON_POOLING`
 - `RESEND_API_KEY` is shared in the development team.
-- Set `EMAIL_ENV=develop` locally and on development/Preview deployments. All outgoing mail uses `onboarding@resend.dev` → `delivered@resend.dev`; CC, BCC and Reply-To are cleared. Database email addresses remain unchanged.
-- Set `EMAIL_ENV=production` only for real delivery. It requires `EMAIL_FROM` (e.g. `contact@aaasobo.org`), used as the sender. Missing/invalid configuration prevents sending.
-- Optionally set `EMAIL_REPLY_TO` to a valid reply address (including Gmail) for production delivery. Individual messages can override it. Development delivery always clears Reply-To.
-- To test registration with `EMAIL_ENV=develop`, open the verification email in the Resend dashboard and follow its link before it expires. `FRONTEND_ORIGIN` on backend-dev must point to the development frontend. Successful simulated delivery does not verify the account automatically.
-- Email routing is independent of `NODE_ENV`, Vercel environment and Git branch. Configure `EMAIL_ENV=develop` on both backend projects' Preview/Development environments; backend-dev Production also uses `develop`, while the production backend Production uses `production`.
+- Leave `EMAIL_FROM` unset locally and on development/Preview deployments. Resend receives mail from `onboarding@resend.dev` to `delivered@resend.dev`, with CC, BCC and Reply-To cleared.
+- Set a verified `EMAIL_FROM` and `ADMIN_NOTIFICATION_EMAIL` on the production backend for real delivery and class-change digests. An invalid sender uses test delivery. A missing or invalid notification address routes digests to the test inbox. See the [Vercel cutover guide](docs/environment-variables.md).
+- To test registration locally, open the verification email in the Resend dashboard and follow its link before it expires. The link uses the backend's `FRONTEND_ORIGIN`.
 - The public contact address in email footers is separate from delivery configuration.
 - `AUTH_SECRET` must match the frontend `AUTH_SECRET` (same value).
 - `AUTH_SALT` must be `next-auth.session-token` (the session cookie name used by the frontend in this repo).
 - `CRON_SECRET` must match the frontend `CRON_SECRET` (same value).
 - `BLOB_READ_WRITE_TOKEN` is required for file uploads and must be a valid Vercel Blob token. Do not commit it.
 - `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_NAME`, and `BOOTSTRAP_ADMIN_PASSWORD` are used by `npm run db:bootstrap` to create the first admin only when it does not already exist. Do not commit real production credentials.
-
-`KEY1` and `KEY2` are used for security purposes. They should be changed to a random string, for example, by running either of the following command:
-
-```sh
-openssl rand -hex 32
-```
-
-or
-
-```sh
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
 
 #### Inspect sent email status
 
@@ -171,9 +154,7 @@ npm install
 Create a `.env` file in the `frontend` directory with the following content:
 
 ```
-NEXTAUTH_SECRET="<generate_with_openssl_rand_hex_32>"
 AUTH_SECRET="<generate_with_openssl_rand_hex_32>"
-AUTH_SALT="next-auth.session-token"
 AUTH_TRUST_HOST=true
 NEXT_PUBLIC_FRONTEND_ORIGIN="http://localhost:3000"
 
@@ -186,7 +167,7 @@ CRON_SECRET="<same_value_as_backend_CRON_SECRET>"
 BLOB_READ_WRITE_TOKEN="<development_vercel_blob_token>"
 ```
 
-`NEXTAUTH_SECRET` and `AUTH_SECRET` should be randomly generated. See the backend section above. `AUTH_SECRET`, `AUTH_SALT`, and `CRON_SECRET` must match the backend values. `BLOB_READ_WRITE_TOKEN` is required for file uploads and must not be committed.
+`AUTH_SECRET` and `CRON_SECRET` must match the backend values. `BLOB_READ_WRITE_TOKEN` is required for file uploads and must not be committed.
 
 #### Start Next.js
 

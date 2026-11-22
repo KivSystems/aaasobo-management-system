@@ -74,6 +74,11 @@ export const CONTENT_DELETE_SUCCESS_MESSAGE = (categoryType: CategoryType) => {
 };
 
 // LoginForm
+export const VERIFICATION_EMAIL_RESENT_NOTICE = {
+  ja: "メールアドレスの認証が完了していません。認証メールを再送しましたので、受信ボックスをご確認ください。",
+  en: "Your email address is not verified yet. We've sent a new confirmation email. Please check your inbox.",
+};
+
 export const LOGIN_FAILED_MESSAGE = {
   ja: "メールアドレスまたはパスワードが正しくありません。",
   en: "Invalid email or password.",
@@ -116,19 +121,9 @@ export const PASSWORD_RESET_INSTRUCTION = {
   en: "Enter your registered email address and click 'Submit' to receive a password reset link.",
 };
 
-export const EMAIL_NOT_REGISTERED_MESSAGE = {
-  ja: "このメールアドレスは登録されていないようです。もう一度ご確認をお願いします。",
-  en: "It looks like this email address isn't registered. Please double-check it.",
-};
-
-export const PASSWORD_RESET_EMAIL_SENT_MESSAGE = {
-  ja: "パスワード再設定用のメールをお送りしました。受信ボックスをご確認ください。",
-  en: "We've sent you a password reset email. Please check your inbox.",
-};
-
-export const PASSWORD_RESET_EMAIL_SEND_FAILURE = {
-  ja: "パスワード再設定メールを送信できませんでした。後ほど再度お試しください。問題が解決しない場合はスタッフまでご連絡ください。ご不便をおかけして申し訳ありません。",
-  en: "We couldn't send the password reset email. Please try again later. If the issue persists, contact us. We're sorry for the inconvenience.",
+export const PASSWORD_RESET_EMAIL_ACCEPTED_MESSAGE = {
+  ja: "入力したメールアドレスが登録されている場合は、パスワード再設定メールが届きます。受信ボックスをご確認ください。",
+  en: "If this email address is registered, you'll receive a password reset link. Please check your inbox.",
 };
 
 // ResetPasswordForm

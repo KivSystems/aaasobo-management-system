@@ -82,28 +82,28 @@ describe("local preview fixture planning", () => {
     for (const host of ["localhost", "127.0.0.1", "[::1]"])
       expect(() =>
         assertLocalPreviewEnvironment({
-          EMAIL_ENV: "develop",
+          EMAIL_FROM: "",
           POSTGRES_PRISMA_URL: `postgresql://preview:preview@${host}:55496/demo`,
         }),
       ).not.toThrow();
     for (const env of [
       {
-        EMAIL_ENV: "production",
+        EMAIL_FROM: "sender@example.com",
         POSTGRES_PRISMA_URL: "postgresql://localhost/demo",
       },
       {
-        EMAIL_ENV: "develop",
+        EMAIL_FROM: "",
         POSTGRES_PRISMA_URL: "postgresql://db.example.com/demo",
       },
       {
-        EMAIL_ENV: "develop",
+        EMAIL_FROM: "",
         POSTGRES_PRISMA_URL: "postgresql://localhost/demo?host=remote",
       },
       {
-        EMAIL_ENV: "develop",
+        EMAIL_FROM: "",
         POSTGRES_PRISMA_URL: "postgresql://localhost/demo?hostaddr=1.2.3.4",
       },
-      { EMAIL_ENV: "develop", POSTGRES_PRISMA_URL: "invalid" },
+      { EMAIL_FROM: "", POSTGRES_PRISMA_URL: "invalid" },
     ])
       expect(() => assertLocalPreviewEnvironment(env)).toThrow();
   });

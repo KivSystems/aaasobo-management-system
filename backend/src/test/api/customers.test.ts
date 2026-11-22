@@ -1,3 +1,4 @@
+import "../mockEmail";
 import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
 const { faker } = require("@faker-js/faker");
@@ -6,7 +7,7 @@ import { prisma } from "../setup";
 import * as mail from "../../lib/email/mail";
 import { resend } from "../../lib/email/resendClient";
 import {
-  createAdmin,
+  createAdminAuthCookie,
   createCustomer,
   createChild,
   createPlan,
@@ -16,35 +17,7 @@ import {
   createVerificationToken,
   createClassAttendance,
   generateTestCustomer,
-  generateAuthCookie,
 } from "../testUtils";
-
-async function createAdminAuthCookie() {
-  const admin = await createAdmin();
-  return await generateAuthCookie(admin.id, "admin");
-}
-
-// Mock the resend email service to avoid sending real emails
-vi.mock("../../lib/email/resendClient", () => ({
-  resend: {
-    emails: {
-      send: vi
-        .fn()
-        .mockResolvedValue({ data: { id: "mock-email-id" }, error: null }),
-    },
-  },
-}));
-
-// Mock the mail helper functions
-vi.mock("../../lib/email/mail", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../lib/email/mail")>();
-  return {
-    ...actual,
-    sendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),
-    resendVerificationEmail: vi.fn().mockResolvedValue({ success: true }),
-    sendPasswordResetEmail: vi.fn().mockResolvedValue({ success: true }),
-  };
-});
 
 describe("POST /customers/check-email-conflicts", () => {
   it("succeed for available email", async () => {
@@ -161,6 +134,70 @@ describe("POST /customers/register", () => {
       where: { email: customerData.email },
     });
     expect(customer?.emailVerified).toBeTruthy();
+  });
+
+  it.each([true, false])(
+    "rejects duplicate registration with email verified=%s",
+    async (verified) => {
+      const customer = await createCustomer({
+        ...generateTestCustomer(),
+        emailVerified: verified ? new Date() : null,
+      });
+      vi.mocked(mail.sendVerificationEmail).mockClear();
+      await request(server)
+        .post("/customers/register")
+        .send({
+          customerData: {
+            name: "Duplicate Account",
+            email: customer.email,
+            password: "NewPassword123!",
+            prefecture: "Tokyo",
+          },
+          childData: {
+            name: "Test Child",
+            birthdate: "2018-01-01",
+            personalInfo: "Registration test",
+          },
+        })
+        .expect(409);
+      expect(mail.sendVerificationEmail).not.toHaveBeenCalled();
+      expect(
+        await prisma.child.count({ where: { customerId: customer.id } }),
+      ).toBe(0);
+    },
+  );
+
+  it("rolls back a new registration if verification email delivery fails", async () => {
+    const customerData = generateTestCustomer();
+    vi.mocked(mail.sendVerificationEmail).mockResolvedValueOnce({
+      success: false,
+    });
+    await request(server)
+      .post("/customers/register")
+      .send({
+        customerData: {
+          name: customerData.name,
+          email: customerData.email,
+          password: customerData.password,
+          prefecture: customerData.prefecture,
+        },
+        childData: {
+          name: "Test Child",
+          birthdate: "2018-01-01",
+          personalInfo: "Registration test",
+        },
+      })
+      .expect(503);
+    expect(
+      await prisma.customer.findUnique({
+        where: { email: customerData.email },
+      }),
+    ).toBeNull();
+    expect(
+      await prisma.verificationToken.count({
+        where: { email: customerData.email },
+      }),
+    ).toBe(0);
   });
 
   it("fail for missing customerData fields", async () => {

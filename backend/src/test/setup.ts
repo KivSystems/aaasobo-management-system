@@ -1,9 +1,12 @@
-import { afterAll, beforeEach } from "vitest";
+import { afterAll, beforeEach, inject } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
-import { readFile } from "fs/promises";
-import path from "path";
+import {
+  asAdminDatabaseUrl,
+  quotedIdentifier,
+  requireSafeDbName,
+} from "./testDatabase";
 
 const { faker } = require("@faker-js/faker");
 
@@ -16,7 +19,7 @@ let prismaInitialized = false;
 // correct connection string immediately.
 await (async () => {
   try {
-    const baseDatabaseUrl = await getBaseDatabaseUrl();
+    const baseDatabaseUrl = inject("baseDatabaseUrl");
 
     const workerId =
       process.env.VITEST_WORKER_ID ?? process.env.VITEST_POOL_ID ?? "0";
@@ -37,7 +40,11 @@ await (async () => {
 
     execSync("npx prisma migrate deploy", {
       stdio: "inherit",
-      env: process.env,
+      env: {
+        ...process.env,
+        POSTGRES_URL_NON_POOLING: workerDatabaseUrl,
+        DATABASE_URL_UNPOOLED: workerDatabaseUrl,
+      },
     });
 
     // Connect Prisma client
@@ -78,34 +85,12 @@ async function truncateAllTables() {
     Array<{ tablename: string }>
   >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
 
-  // Disable foreign key checks temporarily
-  await prisma.$executeRaw`SET session_replication_role = replica;`;
-
-  // Truncate all tables
-  for (const { tablename } of tables) {
-    if (tablename !== "_prisma_migrations") {
-      await prisma.$executeRawUnsafe(`TRUNCATE TABLE "${tablename}" CASCADE;`);
-    }
-  }
-
-  // Re-enable foreign key checks
-  await prisma.$executeRaw`SET session_replication_role = DEFAULT;`;
-}
-
-async function getBaseDatabaseUrl() {
-  if (process.env.TEST_DATABASE_URL) return process.env.TEST_DATABASE_URL;
-
-  const stateDir = path.join(process.cwd(), ".vitest");
-  const baseDatabaseUrlFile = path.join(stateDir, "base-database-url.txt");
-  try {
-    const baseDatabaseUrl = await readFile(baseDatabaseUrlFile, "utf8");
-    return baseDatabaseUrl.trim();
-  } catch {
-    throw new Error(
-      [
-        "TEST_DATABASE_URL is not set and Vitest global setup did not provide a database URL.",
-        "Fix: run tests via `cd backend && npm run test`, or set TEST_DATABASE_URL to a reachable PostgreSQL instance.",
-      ].join("\n"),
+  const names = tables
+    .filter(({ tablename }) => tablename !== "_prisma_migrations")
+    .map(({ tablename }) => '"' + tablename.replaceAll('"', '""') + '"');
+  if (names.length) {
+    await prisma.$executeRawUnsafe(
+      `TRUNCATE TABLE ${names.join(", ")} CASCADE`,
     );
   }
 }
@@ -114,23 +99,6 @@ function withDatabase(databaseUrl: string, databaseName: string) {
   requireSafeDbName(databaseName);
   const url = new URL(databaseUrl);
   url.pathname = `/${databaseName}`;
-  return url.toString();
-}
-
-function requireSafeDbName(dbName: string) {
-  if (!/^[a-z0-9_]+$/i.test(dbName)) {
-    throw new Error(`Unsafe database name: ${dbName}`);
-  }
-}
-
-function quotedIdentifier(id: string) {
-  requireSafeDbName(id);
-  return `"${id.replaceAll('"', '""')}"`;
-}
-
-function asAdminDatabaseUrl(databaseUrl: string) {
-  const url = new URL(databaseUrl);
-  url.pathname = "/postgres";
   return url.toString();
 }
 

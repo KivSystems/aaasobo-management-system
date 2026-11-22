@@ -20,6 +20,17 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+wait_for_server() {
+  local url="$1" pid="$2" attempts="$3" log="$4" attempt
+  for ((attempt=0; attempt<attempts; attempt++)); do
+    kill -0 "$pid" 2>/dev/null || break
+    if curl -fsS --max-time 2 "$url" >/dev/null 2>&1; then return 0; fi
+    sleep 1
+  done
+  echo "Server did not become ready at $url (see $log)." >&2
+  return 1
+}
+
 if [[ "$e2e_target" == "local" && -z "${E2E_DATABASE_URL:-}" ]]; then
   command -v docker >/dev/null 2>&1 || { echo "Docker is required locally, or set E2E_DATABASE_URL to an ephemeral PostgreSQL database." >&2; exit 1; }
   postgres_container="aaasobo-e2e-${RANDOM}-$$"
@@ -36,6 +47,7 @@ if [[ "$e2e_target" == "deployed" ]]; then
 else
   export E2E_BASE_URL="${E2E_BASE_URL:-http://127.0.0.1:3000}"
   export POSTGRES_PRISMA_URL="$E2E_DATABASE_URL" DATABASE_URL="$E2E_DATABASE_URL"
+  export POSTGRES_URL_NON_POOLING="$E2E_DATABASE_URL" DATABASE_URL_UNPOOLED="$E2E_DATABASE_URL"
   export FRONTEND_ORIGIN="$E2E_BASE_URL" NEXT_PUBLIC_FRONTEND_ORIGIN="$E2E_BASE_URL"
   export BACKEND_ORIGIN="http://127.0.0.1:4000" NEXT_PUBLIC_BACKEND_ORIGIN="http://127.0.0.1:4000"
   export AUTH_SECRET="${AUTH_SECRET:-e2e-only-auth-secret-at-least-32-bytes}" AUTH_SALT="${AUTH_SALT:-next-auth.session-token}"
@@ -43,7 +55,7 @@ else
   export E2E_ADMIN_EMAIL="${E2E_ADMIN_EMAIL:-e2e-admin@example.com}"
   export E2E_ADMIN_PASSWORD="${E2E_ADMIN_PASSWORD:-E2e-Admin-Password!}"
   export BOOTSTRAP_ADMIN_EMAIL="$E2E_ADMIN_EMAIL" BOOTSTRAP_ADMIN_PASSWORD="$E2E_ADMIN_PASSWORD" BOOTSTRAP_ADMIN_NAME="E2E Admin"
-  export RESEND_API_KEY="re_test_dummy" PORT=4000
+  export EMAIL_FROM="" RESEND_API_KEY="re_test_dummy" PORT=4000
 fi
 
 today_jst="$(TZ=Asia/Tokyo date +%F)"
@@ -58,11 +70,11 @@ if [[ "$e2e_target" == "local" ]]; then
   (cd "$repo_dir/backend" && npx prisma generate && npx prisma migrate deploy && npm run db:bootstrap)
   (cd "$repo_dir/backend" && exec node -r ts-node/register ./api/app.ts >"$runtime_dir/backend.log" 2>&1) &
   backend_pid=$!
-  for _ in $(seq 1 60); do curl -fsS http://127.0.0.1:4000/openapi.json >/dev/null 2>&1 && break; kill -0 "$backend_pid" 2>/dev/null || { cat "$runtime_dir/backend.log"; exit 1; }; sleep 1; done
+  wait_for_server "$BACKEND_ORIGIN/" "$backend_pid" 60 "$runtime_dir/backend.log"
   (cd "$frontend_dir" && npm run build >"$runtime_dir/frontend-build.log" 2>&1)
   (cd "$frontend_dir" && exec node ./node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3000 >"$runtime_dir/frontend.log" 2>&1) &
   frontend_pid=$!
-  for _ in $(seq 1 120); do curl -fsS "$E2E_BASE_URL/admins/login" >/dev/null 2>&1 && break; kill -0 "$frontend_pid" 2>/dev/null || { cat "$runtime_dir"/*.log 2>/dev/null; exit 1; }; sleep 1; done
+  wait_for_server "$E2E_BASE_URL/admins/login" "$frontend_pid" 120 "$runtime_dir/frontend.log"
 fi
 
 cd "$frontend_dir"

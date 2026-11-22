@@ -1,5 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { SignJWT, jwtVerify } from "jose";
 import { z } from "zod";
@@ -9,6 +9,10 @@ const credentialSchema = z.object({
   password: z.string().min(8),
   userType: z.enum(["admin", "customer", "instructor"]),
 });
+
+export class VerificationEmailResent extends CredentialsSignin {
+  code = "verification_email_resent";
+}
 
 export const authConfig: NextAuthConfig = {
   pages: {
@@ -111,6 +115,13 @@ export const authConfig: NextAuthConfig = {
             cache: "no-store",
           });
 
+          if (
+            response.status === 403 &&
+            parsedCredentials.data.userType === "customer"
+          ) {
+            throw new VerificationEmailResent();
+          }
+
           if (!response.ok) {
             return null;
           }
@@ -122,6 +133,7 @@ export const authConfig: NextAuthConfig = {
             userType: parsedCredentials.data.userType,
           };
         } catch (error) {
+          if (error instanceof VerificationEmailResent) throw error;
           console.error("Unexpected error in authorize:", error);
           return null;
         }
