@@ -82,10 +82,12 @@ export const updateUserPassword = async (
     }
 
     if (response.status === 404) {
-      return { errorMessage: TOKEN_OR_USER_NOT_FOUND_ERROR[language] };
+      return {
+        errorMessageWithResetLink: TOKEN_OR_USER_NOT_FOUND_ERROR[language],
+      };
     }
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error(`HTTP Status: ${response.status} ${response.statusText}`);
     }
 
@@ -118,7 +120,7 @@ export const verifyResetToken = async (
     if (response.status === 404) {
       return {
         valid: false,
-        needsResetLink: false,
+        needsResetLink: true,
         message: TOKEN_OR_USER_NOT_FOUND_ERROR,
       };
     }
