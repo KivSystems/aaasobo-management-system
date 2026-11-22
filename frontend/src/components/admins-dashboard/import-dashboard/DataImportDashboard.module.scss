@@ -122,27 +122,6 @@
   font-weight: 600;
 }
 
-.normalizeButton {
-  width: fit-content;
-  border: 0;
-  border-radius: 0.4rem;
-  padding: 0.5rem 0.85rem;
-  background: $blue_primary;
-  color: #fff;
-  font-weight: 600;
-
-  &:hover {
-    cursor: pointer;
-    background: $blue_primary_hover;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    background: $border-medium;
-  }
-}
-
-.secondaryButton,
 .executeButton,
 .cancelButton,
 .dangerButton {
@@ -160,14 +139,6 @@
   &:disabled {
     cursor: not-allowed;
     background: $border-medium;
-  }
-}
-
-.secondaryButton {
-  background: #667085;
-
-  &:hover {
-    background: #4a5568;
   }
 }
 
@@ -218,10 +189,6 @@
   }
 }
 
-.jobId {
-  font-family: monospace;
-}
-
 .table {
   display: block;
   max-width: 100%;
@@ -245,12 +212,6 @@
 .list {
   margin: 0;
   padding-left: 1.2rem;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
 }
 
 .confirmModal {
