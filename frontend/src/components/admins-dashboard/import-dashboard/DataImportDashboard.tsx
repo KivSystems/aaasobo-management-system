@@ -5,16 +5,13 @@ import { localizeAdminMessage } from "@/lib/messages/adminMessages";
 import { useMemo, useState } from "react";
 import Modal from "@/components/elements/modal/Modal";
 import {
-  downloadNormalizedImportPackage,
   executeIncrementalAdminImport,
   executeNormalizedImport,
-  normalizeAdminImportSource,
   type AdminImportExecuteError,
 } from "@/lib/api/adminImportApi";
 import {
   type ImportExecuteErrorResponse,
   type ImportExecuteResponse,
-  type ImportNormalizeResponse,
 } from "@shared/schemas/admins";
 import styles from "./DataImportDashboard.module.scss";
 
@@ -35,31 +32,15 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
   >({});
   const [activeIncrementalImport, setActiveIncrementalImport] =
     useState<IncrementalTarget | null>(null);
-  const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [normalizedZipFile, setNormalizedZipFile] = useState<File | null>(null);
-  const [normalizeResult, setNormalizeResult] =
-    useState<ImportNormalizeResponse | null>(null);
   const [executeResult, setExecuteResult] =
     useState<ImportExecuteResponse | null>(null);
   const [executeIssues, setExecuteIssues] = useState<
     ImportExecuteErrorResponse["issues"]
   >([]);
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [executeErrorMessage, setExecuteErrorMessage] = useState<string>("");
-  const [isNormalizing, setIsNormalizing] = useState(false);
-  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
   const [isExecutingImport, setIsExecutingImport] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-
-  const normalizedRowsByFile = useMemo(() => {
-    if (!normalizeResult) {
-      return [];
-    }
-
-    return Object.entries(normalizeResult.report.normalizedRowsByFile).sort(
-      ([a], [b]) => a.localeCompare(b),
-    );
-  }, [normalizeResult]);
 
   const executeRowsByFile = useMemo(() => {
     if (!executeResult) {
@@ -199,72 +180,9 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
     );
   };
 
-  const handleNormalize = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!sourceFile) {
-      setErrorMessage("整形するCSVファイルを選択してください。");
-      return;
-    }
-
-    setIsNormalizing(true);
-    setErrorMessage("");
-    setNormalizeResult(null);
-    setExecuteResult(null);
-    setExecuteErrorMessage("");
-    setExecuteIssues([]);
-
-    try {
-      const result = await normalizeAdminImportSource(sourceFile);
-      setNormalizeResult(result);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? localizeAdminMessage(error.message)
-          : "データの整形に失敗しました。";
-      setErrorMessage(message);
-    } finally {
-      setIsNormalizing(false);
-    }
-  };
-
-  const triggerDownload = (blob: Blob, fileName: string) => {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleDownloadNormalizedZip = async () => {
-    if (!normalizeResult?.jobId) {
-      setErrorMessage("ダウンロードする前にデータを整形してください。");
-      return;
-    }
-
-    setIsDownloadingZip(true);
-    setErrorMessage("");
-    try {
-      const blob = await downloadNormalizedImportPackage(normalizeResult.jobId);
-      triggerDownload(blob, `normalized-import-${normalizeResult.jobId}.zip`);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? localizeAdminMessage(error.message)
-          : "ダウンロードに失敗しました。";
-      setErrorMessage(message);
-    } finally {
-      setIsDownloadingZip(false);
-    }
-  };
-
   const openExecuteModal = () => {
-    if (!normalizedZipFile && !normalizeResult?.jobId) {
-      setExecuteErrorMessage(
-        "整形済みのZIPファイルを選択するか、先にデータを整形してください。",
-      );
+    if (!normalizedZipFile) {
+      setExecuteErrorMessage("整形済みのZIPファイルを選択してください。");
       return;
     }
     setExecuteErrorMessage("");
@@ -272,16 +190,14 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
   };
 
   const handleExecuteImport = async () => {
+    if (!normalizedZipFile) return;
     setIsExecutingImport(true);
     setExecuteResult(null);
     setExecuteIssues([]);
     setExecuteErrorMessage("");
 
     try {
-      const result = await executeNormalizedImport({
-        file: normalizedZipFile,
-        jobId: normalizedZipFile ? undefined : normalizeResult?.jobId,
-      });
+      const result = await executeNormalizedImport(normalizedZipFile);
       setExecuteResult(result);
       setIsConfirmModalOpen(false);
     } catch (error) {
@@ -322,108 +238,12 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
         </div>
 
         <div className={styles.formSection}>
-          <h2>1）CSVデータを整形</h2>
-          <form className={styles.form} onSubmit={handleNormalize}>
-            <label className={styles.fileInputLabel} htmlFor="raw-import-file">
-              元のCSVファイル
-            </label>
-            <input
-              id="raw-import-file"
-              type="file"
-              accept=".csv,text/csv"
-              onChange={(event) => {
-                setSourceFile(event.target.files?.[0] ?? null);
-              }}
-            />
-            <button
-              className={styles.normalizeButton}
-              type="submit"
-              disabled={isNormalizing}
-            >
-              {isNormalizing ? "整形中..." : "データを整形"}
-            </button>
-          </form>
-        </div>
-
-        {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-
-        {normalizeResult && (
-          <div className={styles.report}>
-            <h2>整形結果</h2>
-            <p>
-              <strong>処理ID:</strong>{" "}
-              <span className={styles.jobId}>{normalizeResult.jobId}</span>
-            </p>
-            <p>
-              <strong>元データの行数:</strong> {normalizeResult.report.rawRows}
-            </p>
-            <div className={styles.actions}>
-              <button
-                className={styles.secondaryButton}
-                onClick={handleDownloadNormalizedZip}
-                disabled={isDownloadingZip}
-                type="button"
-              >
-                {isDownloadingZip
-                  ? "ダウンロード中..."
-                  : "整形済みZIPをダウンロード"}
-              </button>
-            </div>
-
-            <h3>ファイルごとの行数</h3>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>ファイル</th>
-                  <th>行数</th>
-                </tr>
-              </thead>
-              <tbody>
-                {normalizedRowsByFile.map(([fileName, rowCount]) => (
-                  <tr key={fileName}>
-                    <td>{fileName}</td>
-                    <td>{rowCount}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <h3>自動生成されたお客さまのメールアドレス</h3>
-            {normalizeResult.report.generatedCustomerEmails.length === 0 ? (
-              <p>なし</p>
-            ) : (
-              <ul className={styles.list}>
-                {normalizeResult.report.generatedCustomerEmails.map((item) => (
-                  <li key={`${item.row}:${item.generatedEmail}`}>
-                    行 {item.row}: {item.customerName} ({item.generatedEmail})
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <h3>注意事項</h3>
-            {normalizeResult.report.warnings.length === 0 ? (
-              <p>なし</p>
-            ) : (
-              <ul className={styles.list}>
-                {normalizeResult.report.warnings.map((warning) => (
-                  <li key={localizeAdminMessage(warning)}>
-                    {localizeAdminMessage(warning)}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-
-        <div className={styles.formSection}>
-          <h2>2）データを取り込み</h2>
           <form className={styles.form}>
             <label
               className={styles.fileInputLabel}
               htmlFor="normalized-zip-file"
             >
-              整形済みZIPファイル（上で整形した場合は選択不要）
+              整形済みZIPファイル
             </label>
             <input
               id="normalized-zip-file"
@@ -505,6 +325,7 @@ export default function DataImportDashboard({ adminId }: { adminId: number }) {
       >
         <div className={styles.confirmModal}>
           <h3>一括置き換えの確認</h3>
+          <p>取り込みファイル：{normalizedZipFile?.name}</p>
           <p>
             取り込み対象の既存データをすべて削除し、このファイルのデータに置き換えます。
           </p>
