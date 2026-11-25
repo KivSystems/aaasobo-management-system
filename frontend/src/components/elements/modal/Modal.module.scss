@@ -73,6 +73,12 @@
 }
 
 .classDetail {
+  .modalContent {
+    width: 560px;
+    max-width: calc(100% - 32px);
+    max-height: calc(100dvh - 32px);
+  }
+
   .closeButton {
     top: 10px;
     right: 10px;
