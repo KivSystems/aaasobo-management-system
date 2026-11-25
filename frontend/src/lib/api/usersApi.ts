@@ -57,13 +57,12 @@ export const updateUserPassword = async (
   userType: UserType,
   password: string,
   language: LanguageType,
-  cookie: string,
 ): Promise<StringMessages> => {
   try {
     // From server component
     const apiURL = `${BACKEND_ORIGIN}/users/update-password`;
     const method = "PATCH";
-    const headers = { "Content-Type": "application/json", Cookie: cookie };
+    const headers = { "Content-Type": "application/json" };
     const body = JSON.stringify({
       token,
       userType,
