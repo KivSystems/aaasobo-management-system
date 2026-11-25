@@ -10,11 +10,13 @@
 
   &__icon {
     height: 2rem;
-    margin-right: 50px;
+    margin-right: clamp(16px, 8vw, 50px);
   }
 
   &__details {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 }

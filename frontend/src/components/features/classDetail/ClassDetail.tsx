@@ -79,6 +79,7 @@ const ClassDetail = ({
       className={`${styles.classCard} ${isFreeTrial ? styles.freeTrial : styles[classDetail.classStatus]}`}
     >
       <ClassStatus
+        className="classDetail"
         status={classDetail.classStatus}
         isFreeTrial={isFreeTrial}
         language={language}
