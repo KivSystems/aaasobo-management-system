@@ -8,6 +8,8 @@ import { getChildrenByCustomerId } from "@/lib/api/childrenApi";
 import React, { useEffect, useState } from "react";
 import styles from "./RegularClassesTable.module.scss";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import ActionButton from "@/components/elements/buttons/actionButton/ActionButton";
 import RegularClassCard from "./RegularClassCard";
 import EditRegularClassModal from "./EditRegularClassModal";
 import {
@@ -186,11 +188,16 @@ function RegularClassesTable({
         !subscriptionEndAt &&
         missingClassCount > 0 &&
         !isLoading && (
-          <button type="button" onClick={() => setIsAddingClass(true)}>
-            {language === "ja"
-              ? `レギュラークラスを追加（残り${missingClassCount}枠）`
-              : `Add regular class (${missingClassCount} remaining)`}
-          </button>
+          <ActionButton
+            onClick={() => setIsAddingClass(true)}
+            btnText={
+              language === "ja"
+                ? `レギュラークラスを追加（残り${missingClassCount}枠）`
+                : `Add regular class (${missingClassCount} remaining)`
+            }
+            className="addBtn"
+            Icon={PlusIcon}
+          />
         )}
 
       {!isSelectable && historyCount > 0 && (
