@@ -276,8 +276,8 @@ export const FREE_TRIAL_REMOVE_ERROR_MESSAGE = {
 };
 
 export const WELCOME_MODAL_TITLE1 = {
-  ja: "オンラインこども英会話 AaasoBo! へようこそ！",
-  en: "Welcome to AaasoBo! – Online English Classes for Kids",
+  ja: "AaasoBo! へようこそ！",
+  en: "Welcome to AaasoBo!",
 };
 
 export const WELCOME_SEEN_UPDATE_ERROR_MESSAGE = {
@@ -286,13 +286,13 @@ export const WELCOME_SEEN_UPDATE_ERROR_MESSAGE = {
 };
 
 export const FREE_TRIAL_BOOKING_INSTRUCTION_MESSAGE = {
-  ja: "無料トライアルは、画面右上の「クラスを予約」からご予約ください。",
-  en: "To book your free trial class, click the 'Book Class' button at the top right of the page.",
+  ja: "無料体験は「クラスを予約」から。",
+  en: "Use ‘Book Class’ to book a free trial.",
 };
 
 export const CHILD_PROFILE_UPDATE_INSTRUCTION_MESSAGE = {
-  ja: "お子さまを追加する場合は、左メニューの「お子さまプロフィール」から変更できます。",
-  en: "To add a child, go to 'Children Profiles' in the left-hand menu.",
+  ja: "お子さまの追加は「お子さまプロフィール」から。",
+  en: "Add a child in ‘Children’s Profiles’.",
 };
 
 export const MEMBERSHIP_INSTRUCTION_MESSAGE = {

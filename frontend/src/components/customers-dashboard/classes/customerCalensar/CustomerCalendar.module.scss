@@ -3,6 +3,10 @@
   flex-direction: column;
   gap: 0.75rem;
 
+  :global(.fc .fc-toolbar.fc-header-toolbar) {
+    margin-bottom: 0.75rem;
+  }
+
   :global(.fc) {
     width: 100%;
   }
@@ -49,11 +53,12 @@
     }
 
     :global(.fc-col-header-cell-cushion) {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
     }
 
     :global(.fc-daygrid-day-number) {
-      font-size: 0.75rem;
+      font-size: 0.8125rem;
+      line-height: 1.25;
     }
   }
 }
