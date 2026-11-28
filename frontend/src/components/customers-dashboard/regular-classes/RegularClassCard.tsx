@@ -97,7 +97,8 @@ function RegularClassCard({
               className={styles.editButtonTopRight}
               aria-label={EDIT_CLASS_ARIA_LABEL[language]}
             >
-              <PencilIcon className={styles.editIcon} />
+              <PencilIcon className={styles.editIcon} aria-hidden="true" />
+              <span>{language === "ja" ? "編集" : "Edit"}</span>
             </button>
           )}
       </div>
