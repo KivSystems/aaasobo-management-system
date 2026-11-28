@@ -178,19 +178,16 @@ export default function InstructorSchedule({
   return (
     <div className={styles.scheduleContainer}>
       <div className={styles.calendar}>
-        {/* Header with weekday names */}
-        <div className={styles.header}>
-          {WEEKDAYS.map((day, index) => (
-            <div key={day} className={styles.dayHeader}>
-              {messages.weekdays[index]}
+        {WEEKDAYS.map((day, weekdayIndex) => (
+          <div
+            key={day}
+            className={styles.dayColumn}
+            data-empty={!slotsByWeekday[weekdayIndex]?.length}
+          >
+            <div className={styles.dayHeader}>
+              {messages.weekdays[weekdayIndex]}
             </div>
-          ))}
-        </div>
-
-        {/* Time slots grid */}
-        <div className={styles.slotsGrid}>
-          {WEEKDAYS.map((day, weekdayIndex) => (
-            <div key={day} className={styles.dayColumn}>
+            <div className={styles.daySlots}>
               {slotsByWeekday[weekdayIndex]?.map((slotInfo) => (
                 <button
                   key={`${weekdayIndex}-${slotInfo.displayTime}`}
@@ -214,8 +211,8 @@ export default function InstructorSchedule({
                 </button>
               )) || <div className={styles.noSlots}>{messages.noSlots}</div>}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
