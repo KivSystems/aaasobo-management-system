@@ -46,6 +46,7 @@
 
   .sideNavContainer {
     padding-top: 5.25rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
 

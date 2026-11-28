@@ -72,7 +72,9 @@
   }
 
   .sidebar {
+    height: 100dvh;
     width: 15rem;
+    overscroll-behavior-y: contain;
     transform: translateX(-100%);
   }
 

@@ -76,7 +76,15 @@
   .modalContent {
     width: 560px;
     max-width: calc(100% - 32px);
+    max-height: calc(100vh - 32px);
     max-height: calc(100dvh - 32px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modalBody {
+    min-height: 0;
+    overscroll-behavior-y: contain;
   }
 
   .closeButton {
